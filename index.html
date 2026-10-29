@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&text=0123456789&display=swap" rel="stylesheet">
 <style>
 :root{
   --page:#9FB0C2; --panel:#24264F; --panel-2:#30336A; --edge:#12133A; --line:#3B3E7A;
@@ -23,13 +24,13 @@ html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
 body{height:100%;margin:0;background:var(--page);color:var(--ink);font-family:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-tap-highlight-color:transparent;overflow:hidden}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
 #app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;background:var(--panel);box-shadow:0 0 0 3px var(--edge)}
-.px{font-family:"Pixelify Sans","Trebuchet MS",sans-serif}
+.px{font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif}
 
 /* HUD */
-.hud{display:grid;grid-template-columns:1.05fr 1fr 1fr;gap:6px;padding:8px 8px 6px;background:var(--panel);border-bottom:3px solid var(--edge);font-family:"Pixelify Sans","Trebuchet MS",sans-serif}
+.hud{display:grid;grid-template-columns:1.05fr 1fr 1fr;gap:6px;padding:8px 8px 6px;background:var(--panel);border-bottom:3px solid var(--edge);font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif}
 .stat{background:var(--panel-2);border:2px solid var(--edge);border-radius:6px;padding:5px 8px;min-width:0;box-shadow:inset 0 2px 0 rgba(255,255,255,.07)}
 .stat .k{display:block;font-size:13px;color:var(--ink-dim);letter-spacing:.01em}
-.stat b{display:block;font-size:21px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.stat b{font-variant-numeric:tabular-nums lining-nums;display:block;font-size:21px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
 .stat small{display:block;font-size:13px;color:var(--ink-dim);line-height:1.25}
 .cash b{color:var(--money)} .cash.neg b{color:var(--danger)}
 .stock b{color:var(--gold)}
@@ -47,7 +48,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 #stage{position:relative}
 canvas{display:block;width:100%;cursor:pointer;image-rendering:pixelated;touch-action:manipulation}
 #fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.pop{position:absolute;transform:translate(-50%,-100%);font-family:"Pixelify Sans","Trebuchet MS",sans-serif;font-weight:700;font-size:16px;color:var(--money);white-space:nowrap;
+.pop{position:absolute;transform:translate(-50%,-100%);font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif;font-weight:700;font-size:16px;color:var(--money);white-space:nowrap;
   text-shadow:0 2px 0 var(--edge),2px 0 0 var(--edge),-2px 0 0 var(--edge),0 -2px 0 var(--edge);animation:rise 1.4s ease-out forwards}
 .pop.bad{color:var(--danger)}
 .pop.stamp{color:#fff;background:var(--danger);padding:0 6px;border:2px solid var(--edge);text-shadow:none;rotate:-8deg;font-size:14px}
@@ -56,7 +57,7 @@ canvas{display:block;width:100%;cursor:pointer;image-rendering:pixelated;touch-a
 
 /* Dock */
 .dock{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 8px 10px;background:var(--panel);border-top:3px solid var(--edge)}
-.btn{font-family:"Pixelify Sans","Trebuchet MS",sans-serif;font-weight:600;font-size:17px;line-height:1.1;color:#2A1E00;background:var(--gold);border:3px solid var(--edge);border-radius:7px;padding:10px 12px;box-shadow:0 4px 0 var(--edge),inset 0 -3px 0 rgba(0,0,0,.15),inset 0 2px 0 rgba(255,255,255,.45);cursor:pointer;position:relative;transition:transform .06s,box-shadow .06s}
+.btn{font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif;font-weight:600;font-size:17px;line-height:1.1;color:#2A1E00;background:var(--gold);border:3px solid var(--edge);border-radius:7px;padding:10px 12px;box-shadow:0 4px 0 var(--edge),inset 0 -3px 0 rgba(0,0,0,.15),inset 0 2px 0 rgba(255,255,255,.45);cursor:pointer;position:relative;transition:transform .06s,box-shadow .06s}
 .btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--edge),inset 0 -3px 0 rgba(0,0,0,.15)}
 .btn:disabled{filter:grayscale(.85) brightness(.75);cursor:not-allowed}
 .btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
@@ -81,18 +82,50 @@ canvas{display:block;width:100%;cursor:pointer;image-rendering:pixelated;touch-a
 @media (min-width:700px){#modal{align-items:center}}
 .sheet{width:min(520px,100%);max-height:min(86vh,740px);overflow-y:auto;background:var(--panel);border:3px solid var(--edge);border-radius:10px;box-shadow:0 6px 0 var(--edge),inset 0 0 0 2px var(--line);padding:18px 18px 20px;animation:pop .2s ease-out}
 @keyframes pop{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
-.sheet h2{font-family:"Pixelify Sans","Trebuchet MS",sans-serif;font-size:27px;margin:0 0 8px;color:var(--gold);font-weight:700;line-height:1.12}
-.sheet h3{font-family:"Pixelify Sans","Trebuchet MS",sans-serif;font-size:19px;margin:0 0 4px;font-weight:600}
+.sheet h2{font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif;font-size:27px;margin:0 0 8px;color:var(--gold);font-weight:700;line-height:1.12}
+.sheet h3{font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif;font-size:19px;margin:0 0 4px;font-weight:600}
 .sheet p{margin:0 0 12px;line-height:1.5;font-size:16px;max-width:62ch}
 .sheet .dim{color:var(--ink-dim);font-size:15px}
 .sheet .joke{color:var(--ink-dim);font-style:italic;font-size:15px}
-.closeRow{display:flex;justify-content:flex-end;margin-top:14px}
+.closeRow{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:14px}
+#coach{position:fixed;inset:0;z-index:60}
+#coach[hidden]{display:none}
+.coach-hole{position:fixed;border:3px solid var(--gold);border-radius:10px;box-shadow:0 0 0 9999px rgba(8,9,32,.74);transition:all .3s ease;pointer-events:none}
+.coach-card{position:fixed;background:var(--panel);border:3px solid var(--edge);border-radius:10px;box-shadow:0 6px 0 var(--edge),inset 0 0 0 2px var(--line);padding:14px 16px;transition:top .3s ease,left .3s ease}
+.coach-card h3{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:21px;font-weight:700;color:var(--gold);margin:0 0 6px}
+.coach-card p{margin:0 0 12px;font-size:15px;line-height:1.45}
+.coach-card .coach-step{font-size:13px;color:var(--ink-dim);margin:0 0 2px}
+.coach-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.coach-btns .btn{font-size:15px;padding:8px 12px}
+.coach-dots{display:flex;gap:4px;margin:0 0 10px}
+.coach-dots i{width:8px;height:8px;border-radius:2px;background:rgba(255,255,255,.2)}
+.coach-dots i.on{background:var(--gold)}
+.score{background:var(--panel-2);border:2px solid var(--edge);border-radius:10px;padding:12px;margin:0 0 12px}
+.score-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.score-total{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:36px;font-weight:700;color:#fff;line-height:1.1}
+.grade{flex:none;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:46px;font-weight:700;line-height:1;color:var(--gold);width:66px;height:66px;display:grid;place-items:center;border:3px solid var(--gold);border-radius:10px;box-shadow:0 4px 0 var(--edge)}
+.grade{font-family:"Rubik",system-ui,sans-serif;font-weight:700}
+#lawBtn{flex:none;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:13px;font-weight:600;color:#fff;background:var(--danger);border:2px solid var(--edge);border-radius:6px;padding:2px 7px;cursor:pointer;box-shadow:0 2px 0 var(--edge)}
+#lawBtn[hidden]{display:none}
+#lawBtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+#rate.warn{color:var(--danger);font-weight:600;animation:blink 1s steps(2) infinite}
+.qbar.conf.danger{box-shadow:0 0 0 2px var(--danger);animation:pulse 1s ease-in-out infinite}
+@keyframes blink{50%{opacity:.55}}
+@keyframes pulse{50%{box-shadow:0 0 0 4px rgba(255,107,107,.35)}}
+.law{display:flex;gap:10px;align-items:center;background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:9px 11px;margin:0 0 8px}
+.law div{flex:1;min-width:0} .law b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:16px} .law p{margin:2px 0 0!important;font-size:14px!important;color:var(--ink-dim)}
+.law .btn{flex:none;font-size:14px;padding:7px 10px}
+.seg.four{grid-template-columns:repeat(4,1fr)} .seg.four .btn{font-size:14px;padding:8px 4px}
+@media (prefers-reduced-motion: reduce){ #rate.warn,.qbar.conf.danger{animation:none} }
+.newbest{color:var(--money);font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:16px}
+.score .ledger{margin:10px 0 0}
+@media (prefers-reduced-motion: reduce){ .coach-hole,.coach-card{transition:none} }
 .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.x{background:none;border:0;color:var(--ink-dim);font-size:26px;line-height:1;cursor:pointer;padding:0 4px;font-family:"Pixelify Sans",sans-serif}
+.x{background:none;border:0;color:var(--ink-dim);font-size:26px;line-height:1;cursor:pointer;padding:0 4px;font-family:"Chakra Petch","Pixelify Sans",sans-serif}
 .x:focus-visible{outline:3px solid #fff;border-radius:4px}
 
 .claim{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:12px;margin:0 0 10px}
-.claim-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-family:"Pixelify Sans",sans-serif}
+.claim-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-family:"Chakra Petch","Pixelify Sans",sans-serif}
 .claim-top b{font-size:18px}
 .amt{color:var(--gold);font-size:20px;font-weight:700}
 .claim p{margin:6px 0 8px;font-size:16px}
@@ -110,12 +143,12 @@ canvas{display:block;width:100%;cursor:pointer;image-rendering:pixelated;touch-a
 .type:focus-visible{outline:3px solid #fff}
 .type:disabled{opacity:.5;cursor:not-allowed}
 .type .sw{height:16px;border-radius:3px;border:2px solid var(--edge)}
-.type b{font-family:"Pixelify Sans",sans-serif;font-size:17px}
+.type b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:17px}
 .type span{font-size:14px;line-height:1.4;color:var(--ink-dim)}
 .flist{display:flex;flex-direction:column;gap:6px}
 .frow{display:flex;align-items:center;gap:10px;background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:8px 10px}
 .frow .sw{width:14px;align-self:stretch;border-radius:3px;border:2px solid var(--edge)}
-.frow .nm{flex:1;min-width:0;font-family:"Pixelify Sans",sans-serif;font-size:16px}
+.frow .nm{flex:1;min-width:0;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:16px}
 .frow .btn{font-size:14px;padding:7px 9px}
 .pips{display:inline-flex;gap:3px;margin-left:6px;vertical-align:middle}
 .pips i{width:9px;height:9px;background:rgba(255,255,255,.2);border:1px solid var(--edge)}
@@ -123,7 +156,7 @@ canvas{display:block;width:100%;cursor:pointer;image-rendering:pixelated;touch-a
 .facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
 .fact{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:8px 10px}
 .fact span{display:block;font-size:14px;color:var(--ink-dim)}
-.fact b{font-family:"Pixelify Sans",sans-serif;font-size:19px}
+.fact b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:19px}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 12px}
 .seg .btn{font-size:15px}
 .seg .btn[aria-pressed="false"]{background:#5A5D9A;color:#fff}
@@ -132,7 +165,7 @@ canvas{display:block;width:100%;cursor:pointer;image-rendering:pixelated;touch-a
 .intel{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 10px}
 .intel div{background:rgba(0,0,0,.22);border:2px solid var(--edge);border-radius:6px;padding:5px 7px;min-width:0}
 .intel span{display:block;font-size:13px;color:var(--ink-dim)}
-.intel b{font-family:"Pixelify Sans",sans-serif;font-size:17px;font-weight:600}
+.intel b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:17px;font-weight:600}
 .intel .lock{color:var(--ink-dim);font-size:13px;font-family:"Rubik",sans-serif;font-weight:500}
 .intel .bad,.intel .sev3{color:var(--danger)} .intel .good,.intel .sev1{color:var(--money)} .intel .sev2{color:var(--gold)}
 .sheet .intel-hint{font-size:14px;color:var(--ink-dim);margin:0 0 10px}
@@ -141,30 +174,66 @@ canvas{display:block;width:100%;cursor:pointer;image-rendering:pixelated;touch-a
 
 .ledger{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:15px}
 .ledger td{padding:6px 0;border-bottom:2px dashed var(--line)}
-.ledger td:last-child{text-align:right;font-family:"Pixelify Sans",sans-serif;font-size:17px}
+.ledger td:last-child{text-align:right;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:17px}
 .ledger tr.total td{border-bottom:0;font-weight:700;padding-top:10px}
 .ledger tr.total td:last-child{font-size:21px}
 .ledger tr.exp td{color:var(--ink-dim);border-bottom:0}
 .pos{color:var(--money)} .neg{color:var(--danger)}
-.move{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:10px 12px;margin:0 0 12px;font-family:"Pixelify Sans",sans-serif}
+.move{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:10px 12px;margin:0 0 12px;font-family:"Chakra Petch","Pixelify Sans",sans-serif}
 .move b{font-size:20px} .move em{font-style:normal;font-size:24px;font-weight:700}
 .move.up em{color:var(--money)} .move.down em{color:var(--danger)}
 blockquote{margin:0 0 12px;padding:10px 14px;border-left:5px solid var(--gold);background:rgba(255,255,255,.05);font-size:16px;line-height:1.45;border-radius:0 6px 6px 0}
 blockquote cite{display:block;font-style:normal;color:var(--ink-dim);font-size:14px;margin-top:4px}
 .note{background:rgba(255,107,107,.12);border:2px solid rgba(255,107,107,.4);border-radius:6px;padding:8px 10px;font-size:14px!important}
-.big{font-family:"Pixelify Sans",sans-serif;font-size:48px;color:var(--gold);line-height:1;margin:6px 0 8px}
+.big{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:48px;color:var(--gold);line-height:1;margin:6px 0 8px}
 .spark{width:100%;height:80px;display:block;margin:6px 0 4px;background:var(--panel-2);border:2px solid var(--edge);border-radius:8px}
 .action{display:flex;gap:12px;align-items:center;justify-content:space-between;background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:10px 12px;margin:0 0 8px}
 .action p{margin:0;font-size:15px;color:var(--ink-dim)}
 .action .btn{flex:none;font-size:15px}
 .choices{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 .choices .btn{text-align:left;font-size:17px}
+.pbtn{flex:none;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:14px;font-weight:600;color:#2A1E00;background:var(--gold);border:2px solid var(--edge);border-radius:6px;padding:3px 9px;box-shadow:0 2px 0 var(--edge);cursor:pointer}
+.pbtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.pbtn.on{background:var(--money)}
+.qbar.conf i{background:var(--money);transition:width .4s,background .4s}
+#mktTxt{flex:none;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-weight:600}
+#pauseOv{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:rgba(18,19,58,.55);backdrop-filter:blur(2px);cursor:pointer}
+#pauseOv[hidden]{display:none}
+#pauseOv div{background:var(--panel);border:3px solid var(--edge);border-radius:10px;padding:16px 26px;text-align:center;box-shadow:0 5px 0 var(--edge)}
+#pauseOv b{display:block;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:30px;color:var(--gold)}
+#pauseOv span{font-size:15px;color:var(--ink-dim)}
+.sheet.intro h2{font-size:23px}
+.sheet.intro p{font-size:15px;line-height:1.45}
+.intro-scroll{max-height:min(42vh,320px);overflow-y:auto;background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:10px 12px;margin:0 0 12px}
+.intro-scroll p{display:flex;gap:9px;align-items:flex-start;margin:0 0 10px;font-size:14px!important;line-height:1.4}
+.intro-scroll p:last-child{margin-bottom:0}
+.intro-scroll .intro-h{font-size:17px;color:var(--gold);margin:14px 0 8px;padding-top:10px;border-top:2px dashed var(--line)}
+.intro-scroll .isw{flex:none;width:14px;height:14px;margin-top:3px;border:2px solid var(--edge);border-radius:3px}
+.intro-scroll .intro-room em{display:block;font-style:normal;margin-top:2px}
+.intro-scroll .intro-room em.pro{color:var(--money)}
+.intro-scroll .intro-room em.con{color:#FF9B9B}
+.intro-scroll .intro-tip{background:rgba(255,210,63,.1);border-radius:6px;padding:6px 8px}
+.intro-scroll p span:first-child{flex:none;font-size:18px;line-height:1.2}
+.type .pro,.pc .pro{color:var(--money)} .type .con,.pc .con{color:#FF9B9B}
+.pc{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:8px 10px;margin:0 0 12px}
+.pc p{margin:0 0 4px!important;font-size:15px!important} .pc p:last-child{margin:0!important}
+.stars{font-size:30px;letter-spacing:4px;color:var(--gold);text-align:center;margin:0 0 6px;font-family:"Chakra Petch","Pixelify Sans",sans-serif}
+.reward{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:0 0 12px}
+.reward div{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:6px 8px}
+.reward span{display:block;font-size:13px;color:var(--ink-dim)} .reward b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:17px}
+.achs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 12px}
+.ach{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:7px 9px;font-size:14px;opacity:.55}
+.ach.on{opacity:1;border-color:var(--gold)} .ach b{display:block;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:15px}
+.swan h2{color:var(--danger)!important}
+.status{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0 12px}
+.status div{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:6px 8px}
+.status span{display:block;font-size:13px;color:var(--ink-dim)} .status b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:17px}
 .goals{list-style:none;margin:6px 0;padding:0;display:flex;flex-direction:column;gap:6px}
 .goals li{display:flex;align-items:center;gap:10px;background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:8px 10px;font-size:16px;line-height:1.3}
 .goals li i{flex:none;width:20px;height:20px;border:2px solid var(--edge);border-radius:4px;background:rgba(255,255,255,.1);display:grid;place-items:center;font-style:normal;font-weight:700;color:#12133A}
 .goals li.ok i{background:var(--money)}
 .goals li span{flex:1}
-.goals li b{font-family:"Pixelify Sans",sans-serif;color:var(--ink-dim);white-space:nowrap}
+.goals li b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;color:var(--ink-dim);white-space:nowrap}
 .goals li.ok b{color:var(--money)}
 .ledger small{font-size:13px;color:var(--ink-dim)}
 .howto p{display:flex;gap:10px;align-items:flex-start}
@@ -175,7 +244,7 @@ blockquote cite{display:block;font-style:normal;color:var(--ink-dim);font-size:1
   .btn.hot .badge,.sheet,.toast{animation:none}
 }
 #labels{position:absolute;inset:0;pointer-events:none}
-.flabel{position:absolute;display:flex;align-items:center;gap:5px;padding:0 5px 1px;background:rgba(18,19,58,.88);border-radius:3px;font-family:"Pixelify Sans","Trebuchet MS",sans-serif;font-weight:600;font-size:11.5px;line-height:1.2;color:#fff;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.35);-webkit-font-smoothing:antialiased}
+.flabel{position:absolute;display:flex;align-items:center;gap:5px;padding:0 5px 1px;background:rgba(18,19,58,.88);border-radius:3px;font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif;font-weight:600;font-size:11.5px;line-height:1.2;color:#fff;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.35);-webkit-font-smoothing:antialiased}
 .flabel .pp{display:inline-flex;gap:2px}
 .flabel .pp i{width:5px;height:5px;background:rgba(255,255,255,.28)}
 .flabel .pp i.on{background:#FFD23F}
@@ -192,9 +261,11 @@ blockquote cite{display:block;font-style:normal;color:var(--ink-dim);font-size:1
     <div class="stat cash" id="cashBox"><span class="k">Cash</span><b id="cash">£0</b><small id="rate">+£0/s</small></div>
     <div class="stat stock"><span class="k">Share price</span><b id="stock">£10.00</b><small id="rank">Interim CEO</small></div>
     <div class="stat"><span class="k">Customer mood</span><div class="bar"><i id="happyBar"></i></div><small id="happyTxt">Fine</small></div>
-    <div class="qrow"><span id="qLabel">Q1 earnings call in 60s</span><div class="qbar"><i id="qBar"></i></div></div>
+    <div class="qrow"><span id="qLabel">Q1 earnings call in 60s</span><div class="qbar"><i id="qBar"></i></div><button class="pbtn" id="btnPause">Pause</button><button class="pbtn" id="btnHelp" aria-label="How to play and tutorial">?</button><button class="pbtn" id="btnSound" aria-label="Mute sound">🔊</button></div>
+    <div class="qrow"><span>Board confidence</span><div class="qbar conf"><i id="confBar"></i></div><span id="mktTxt">Steady market</span><button id="lawBtn" hidden></button></div>
   </header>
   <main id="towerWrap">
+    <div id="pauseOv" hidden><div><b>Paused</b><span>Tap to resume</span></div></div>
     <div id="game" role="img" aria-label="Your insurance tower. Tap a floor to manage it, tap a broker in The Room to handle their claim, and drag to scroll."></div>
   </main>
   <nav class="dock">
@@ -205,6 +276,7 @@ blockquote cite{display:block;font-style:normal;color:var(--ink-dim);font-size:1
 </div>
 <div id="toasts" aria-live="polite"></div>
 <div id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div id="coach" hidden><div class="coach-hole" id="coachHole"></div><div class="coach-card" id="coachCard" role="dialog" aria-modal="true" aria-live="polite"></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 <script>
@@ -228,30 +300,46 @@ const fmt2 = n => "£"+n.toFixed(2);
 const TYPES = {
   sales:{name:"Underwriting Box", wall:"#FFB84D", trim:"#D9822B", shirt:"#2F6FE4", pants:"#2B2D52", up:80, screen:"#7FD3F7",
     desc:"Underwriters sign brokers’ slips to take on risk. Every slip brings in premium, which is the money part.",
-    joke:"Motto: “If it moves, we’ll write it. If it doesn’t, we’ll write it twice.”"},
+    joke:"Motto: “If it moves, we’ll write it. If it doesn’t, we’ll write it twice.”", sal:1.0,
+    pro:"Your main source of premium income.", con:"Underwriters are the best-paid people in the building. More business also means more claims, and more floors for Compliance to cover."},
   claims:{name:"Claims Office", wall:"#8FD9CB", trim:"#4FA597", shirt:"#FFFFFF", pants:"#3A3F6B", up:90, screen:"#CDEAFF",
     desc:"Handles claims on its own so The Room doesn’t fill up. You choose how generous it is.",
-    joke:"Hold music: all four hours of one opera."},
+    joke:"Hold music: all four hours of one opera.", sal:0.6,
+    pro:"Handles claims for you, faster with IT.", con:"Salaries, and “Pay all” can drain your cash quickly."},
   actuary:{name:"Cat Modelling", wall:"#2B3157", trim:"#1A1F3D", shirt:"#7C8AA8", pants:"#1F2238", up:120, screen:"#4BE39A",
     desc:"Catastrophe modellers price risk more carefully, so every claim costs you a bit less.",
-    joke:"They’ve simulated 10,000 years of hurricanes and not one weekend."},
+    joke:"They’ve simulated 10,000 years of hurricanes and not one weekend.", sal:0.85,
+    pro:"Claims cost 7% less per level, and catastrophe losses are softened.", con:"Expensive specialists with high salaries."},
   marketing:{name:"Broker Lunches", wall:"#FF9CC2", trim:"#E0628F", shirt:"#7A3FE0", pants:"#2B2D52", up:110, screen:"#FFE27A",
     desc:"Long lunches keep brokers bringing you business, so every Underwriting Box writes more. Hosted by Percy the Pigeon.",
-    joke:"Average lunch: four hours. Average salad eaten: none."},
-  legal:{name:"Wordings Dept", wall:"#B89773", trim:"#7D5F3E", shirt:"#2B2B3A", pants:"#1B1B26", up:100, screen:"#F2E6C8",
-    desc:"Writes the policy wordings. Denied claims upset people less, and fewer of them turn into lawsuits.",
-    joke:"House font size: 4pt. Line spacing: “no.”"},
+    joke:"Average lunch: four hours. Average salad eaten: none.", sal:0.6,
+    pro:"+35% premium income per level.", con:"Brokers bring riskier business: claims get 10% bigger per level."},
+  legal:{name:"Legal", wall:"#B89773", trim:"#7D5F3E", shirt:"#2B2B3A", pants:"#1B1B26", up:100, screen:"#F2E6C8",
+    desc:"Lawyers who write the policy wordings and fight your court cases.",
+    joke:"House font size: 4pt. Line spacing: “no.”", sal:0.85,
+    pro:"Denials upset people less, and fewer turn into lawsuits.", con:"They bill by the minute: high salaries."},
   breakroom:{name:"The Pub", wall:"#B6E37A", trim:"#7DB043", shirt:"#FF7A59", pants:"#3A3F6B", up:90, screen:"#fff",
     desc:"Staff come back from the pub working faster. Somehow. Every floor gets a small boost.",
-    joke:"Officially a “collaboration space.” It has three taps."},
+    joke:"Officially a “collaboration space.” It has three taps.", sal:0.5,
+    pro:"Every floor works 8% faster per level.", con:"Conduct risk: each level is one more thing Compliance has to cover."},
   risk:{name:"Risk Dept", wall:"#F08A6B", trim:"#C25A3D", shirt:"#2B2D52", pants:"#1B1B26", up:110, screen:"#FFD23F",
     desc:"Analysts dig into every claim: how serious it is, how likely it’s real, and how likely they are to sue if you say no. More floors and levels give sharper reads.",
-    joke:"They assume everyone is lying. They’re right about a quarter of the time."},
+    joke:"They assume everyone is lying. They’re right about a quarter of the time.", sal:0.7,
+    pro:"Reveals claim seriousness, fraud and lawsuit odds. At level 3 it warns you before black swans.", con:"Underwriters get cautious: −3% premium income per level."},
   ir:{name:"Capital Relations", wall:"#A9BDFF", trim:"#6E86E0", shirt:"#1F3A8A", pants:"#14162E", up:130, screen:"#fff",
     desc:"Keeps the investors backing your syndicate calm. Good results sound amazing and bad ones sound “transitional.”",
-    joke:"Has never once said the word “loss” out loud."},
+    joke:"Has never once said the word “loss” out loud.", sal:0.7,
+    pro:"Good results lift the share price more, and bad ones hurt less.", con:"Over-promises: the City expects 2% more growth per level."},
+  it:{name:"IT", wall:"#3B4A5E", trim:"#263241", shirt:"#4BB7A8", pants:"#1F2238", up:120, screen:"#7FD3F7",
+    desc:"Runs the systems that price policies, process claims and keep hackers out. The more you automate, the more there is to break.",
+    joke:"Their first answer to everything: “Have you tried turning it off and on again?”", sal:0.7,
+    pro:"+10% premium income and claims handled 15% faster per level. Cuts cyber attack losses by 15% per level.", con:"More systems, more outages: each level adds a 6% chance per quarter of a crash that halves premium income and stops the Claims Office for 20 seconds."},
+  compliance:{name:"Compliance", wall:"#E6E1F5", trim:"#A99CCF", shirt:"#5A4FA0", pants:"#2B2D52", up:100, screen:"#FFFFFF",
+    desc:"Keeps the regulator off your back by ticking every box twice.",
+    joke:"They have a policy about policies. It’s 300 pages.", sal:0.7,
+    pro:"Each level covers 3 more floors for the regulator, and cuts scandal losses.", con:"Box-ticking slows underwriting: −4% premium income per level."},
 };
-const ORDER = ["sales","claims","risk","actuary","marketing","legal","breakroom","ir"];
+const ORDER = ["sales","claims","risk","actuary","marketing","legal","compliance","it","breakroom","ir"];
 const FRAUD_QUIPS = ["The raccoon was a cat in a mask.","The “bees” were a Bluetooth speaker.","The gnome turned up in their own shed.","The science fair volcano was never plugged in.","They filed the same claim with four other syndicates.","The receipt was written in crayon.","The “flood” was a single knocked-over glass of water.","The goat has an alibi."];
 const SEV_MULT = [0.6, 1, 1.6];
 function intelSpread(n){ return Math.max(0, 36 - 6*n); }
@@ -382,26 +470,64 @@ function newState(){
     buffs:{sales:0, morale:0, surge:0}, aiHype:false, nextClaim:6, nextEvent:38,
     lawsuits:[], returns:[], yachts:0, insured:0, rankIdx:0, won:false, over:false, seen:false,
     claimId:1, lastEvent:null, tipClaim:false, warnedNeg:false, served:0,
-    sued:0, bestProfit:0, streak:0, bestStreak:0, recentEv:[], recentInc:[], recentNm:[]};
+    sued:0, bestProfit:0, streak:0, bestStreak:0, recentEv:[], recentInc:[], recentNm:[],
+    diff:1, conf:60, strikes:0, cleanQ:0, cleanRun:0, stars:0, favour:0, perks:{}, ach:{}, earned:0, repSum:0, repT:0, profHist:[], loan:null, lastCall:-9, tipAuto:false, price:1, cyc:0, cycName:null, execs:{}, savedAt:0, divQ:0,
+    cover:{cat:false, cyber:false, dno:false}, swan:null, swansSurvived:0, best3:false};
+}
+function ensureState(){
+  const d = newState();
+  for (const k of ["diff","conf","strikes","cleanQ","cleanRun","stars","favour","perks","ach","cover","swansSurvived","best3","earned","repSum","repT","profHist","lastCall","tipAuto","price","cyc","divQ","execs"]) if (S[k] == null) S[k] = d[k];
+  if (S.swan === undefined) S.swan = null;
+  if (S.loan === undefined) S.loan = null;
 }
 function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === 1) return s; }catch(e){} return null; }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function save(){ try{ S.savedAt = Date.now(); localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 let S = load() || newState();
+ensureState();
 
 /* ---------- Economy ---------- */
 function lv(t){ let s = 0; for (const f of S.floors) if (f.type === t) s += f.level; return s; }
-function morale(){ return 1 + 0.08*lv("breakroom") + (S.buffs.morale > 0 ? 0.3 : 0); }
+function morale(){ return 1 + 0.08*lv("breakroom") + (S.buffs.morale > 0 ? 0.3 : 0) + (perk("espresso") ? 0.05 : 0); }
 function happyMult(){ return 0.4 + S.happy/100*0.9; }
 function salesFloorRate(level){ return 5*Math.pow(level,1.35); }
-function salesMult(){ return (1 + 0.35*lv("marketing")) * happyMult() * morale(); }
-function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level); return s*salesMult(); }
-function income(){ return baseIncome() * (S.buffs.sales > 0 ? 2 : 1); }
-function upkeep(){ let s = 0; for (const f of S.floors) s += (f.type === "sales" ? 0.5 : 0.6)*f.level; return s*(1 + 0.04*S.floors.length); }
+function salesMult(){ return (1 + 0.35*lv("marketing") + 0.10*lv("it") + (perk("loyalty") ? 0.1 : 0)) * happyMult() * morale() * Math.max(0.5, 1 - 0.03*lv("risk") - 0.04*lv("compliance")); }
+const PRICES = [
+  {name:"Undercut", p:0.8, mood:0.04, desc:"Cheaper than your rivals. More customers and more claims, thinner margins. Customers love you."},
+  {name:"Market rate", p:1, mood:0, desc:"Price like everyone else. The safe middle."},
+  {name:"Premium", p:1.25, mood:-0.03, desc:"Fewer, better-paying customers and fewer claims. Customers grumble."},
+  {name:"Gouge", p:1.55, mood:-0.1, desc:"Charge whatever you like. Huge margins, few customers, an angry public, and the regulator may call it unfair value."},
+];
+const CYCLE_MSG = {
+  "Hard market":"The market has hardened. After all those losses, everyone is raising prices, so charging more costs you fewer customers.",
+  "Soft market":"The market has softened. Rivals are slashing prices to win business, so charge too much and customers walk.",
+  "Steady market":"The market has steadied. Prices are back to normal, for now.",
+};
+function cycleVal(){ return Math.sin(S.cyc || 0); }
+function cycleName(){ const c = cycleVal(); return c > 0.35 ? "Hard market" : c < -0.35 ? "Soft market" : "Steady market"; }
+function priceIdx(){ return S.price == null ? 1 : S.price; }
+function marketRate(){ return PRICES[priceIdx()].p*(1 + 0.25*cycleVal()); }
+function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1)); }
+function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + f.level, 0)/70); }
+function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level); return s*salesMult()*marketRate()*volume(); }
+function income(){ return baseIncome() * (S.buffs.sales > 0 ? 2 : 1) * (S.outage > 0 ? 0.5 : 1); }
+function salFactor(){ return 1 + 0.06*S.floors.length; }
+function upkeep(){ let s = 0; for (const f of S.floors) s += (TYPES[f.type].sal || 0.6)*f.level; return s*salFactor() + execCost(); }
+function perk(id){ return !!(S.perks && S.perks[id]); }
+function claimSizeMult(){ return (1 + 0.10*lv("marketing"))*(0.9 + 0.1*S.diff); }
+function claimSpeed(){ return morale()*(1 + 0.15*lv("it")); }
+function regCreep(){ return Math.floor((S.quarter - 1)/8); }
+function compNeed(){ return Math.max(0, S.floors.length - 3 + lv("breakroom") + regCreep()); }
+function compHave(){ return 3*lv("compliance"); }
+function compGap(){ return compNeed() - compHave(); }
+function maxStrikes(){ return perk("lobbyist") ? 4 : 3; }
+function growthRate(){ return Math.max(0.01, (0.06 + 0.04*S.diff + 0.02*lv("ir") - (perk("dinners") ? 0.03 : 0))*(1 - 0.85*maturity())); }
+function mktName(){ return S.diff < 1.6 ? "Calm market" : S.diff < 2.3 ? "Choppy market" : S.diff < 3.1 ? "Stormy market" : "Brutal market"; }
 function actRed(){ return Math.min(0.55, 0.07*lv("actuary")); }
 function buildCost(){ return Math.round(100*Math.pow(1.6, S.floors.length-1)); }
 function upCost(f){ return Math.round(TYPES[f.type].up*Math.pow(1.9, f.level)); }
-function claimInterval(){ return Math.max(4, 20/(1 + 0.12*lv("sales"))) * (S.buffs.surge > 0 ? 0.35 : 1); }
+function claimInterval(){ return Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))/volume() * (S.buffs.surge > 0 ? 0.35 : 1); }
 function B(){ return Math.max(120, Math.round(baseIncome()*25/10)*10); }
+function canPay(a){ return S.cash - a >= -overdraft()*0.6; }
 function overdraft(){ return Math.max(1500, baseIncome()*90); }
 function buybackCost(){ return Math.round(S.stock*40); }
 function bonusCost(){ return Math.round(S.stock*20 + 200); }
@@ -421,7 +547,8 @@ function goalsHtml(next){
   const rows = next.goals.map(g => { const d = GOAL[g[0]], ok = goalMet(g);
     return `<li class="${ok?"ok":""}"><i>${ok?"✓":""}</i><span>${d.label(g[1])}</span><b>${d.show(d.cur())}</b></li>`; }).join("");
   const done = next.goals.filter(goalMet).length;
-  return `<h3>Next promotion: ${next.name} (${done} of ${next.goals.length})</h3><ul class="goals">${rows}</ul><p class="dim">All of these need to be true at the same time. The board is always watching.</p>`;
+  const unl = EXECS.filter(x => x.rank === RANKS.indexOf(next)).map(x => x.name);
+  return `<h3>Next promotion: ${next.name} (${done} of ${next.goals.length})</h3><ul class="goals">${rows}</ul><p class="dim">Reward: +10 board confidence, +2 ★${unl.length ? `, and you can hire a ${unl.join(" and a ")}` : ""}.</p><p class="dim">All of these need to be true at the same time. The board is always watching.</p>`;
 }
 function pickFresh(arr, key, keep){
   if (!Array.isArray(S[key])) S[key] = [];
@@ -432,26 +559,30 @@ function pickFresh(arr, key, keep){
 }
 function mood(d){ S.happy = clamp(S.happy + d, 0, 100); }
 function spend(a, cat){ S.cash -= a; S.q[cat] += a; }
-function gain(a){ S.cash += a; S.q.prem += a; }
+function gain(a){ S.cash += a; S.q.prem += a; S.earned = (S.earned || 0) + a; }
 
 function addClaim(name, desc, amount){
   const nc = {id:S.claimId++, name, desc, amount:Math.max(25, Math.round(amount/5)*5), pat:40, max:40, stalls:0};
   ensureIntel(nc); S.claims.push(nc);
   if (!S.tipClaim){ S.tipClaim = true; toast("A broker just walked into The Room with a claim. Tap them, or open Claims."); }
 }
-function typicalClaim(){ return Math.max(25, Math.max(3, baseIncome())*Math.max(4, 20/(1 + 0.12*lv("sales")))*0.6*(1-actRed())); }
+function typicalClaim(){ return Math.max(25, Math.max(3, baseIncome()/(marketRate()*volume()))*Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))*0.55*(1-actRed())*claimSizeMult()); }
 function ensureIntel(c){
   if (c.sev != null) return;
   const r = c.amount / typicalClaim();
   c.sev = r < 0.8 ? 1 : r < 1.25 ? 2 : 3;
-  c.lp = Math.random() < 0.75 ? rand(0.68, 0.98) : rand(0.05, 0.45);
+  c.lp = Math.random() < (0.75 - 0.05*(S.diff - 1)) ? rand(0.68, 0.98) : rand(0.05, 0.45);
   c.legit = Math.random() < c.lp;
-  c.sue = c.lp < 0.5 ? rand(0.02, 0.12) : clamp(rand(0.08, 0.5) + (c.sev-2)*0.12, 0.03, 0.8);
+  c.lit = rand(-0.08, 0.12);
   c.nz1 = rand(-1,1); c.nz2 = rand(-1,1);
 }
 function estCenter(p, nz, sp){ return clamp(p*100 + nz*sp/2, 0, 100); }
 function legitEst(c){ ensureIntel(c); return estCenter(c.lp, c.nz1, intelSpread(lv("risk"))); }
-function suePct(c){ return c.sue*Math.pow(0.85, lv("legal")); }
+const SEV_SUE = [0.15, 0.45, 0.75];
+function legitFactor(lp){ return Math.pow(clamp((lp - 0.3)/0.65, 0, 1), 1.5); }
+function baseSue(c){ return clamp(0.02 + SEV_SUE[c.sev-1]*legitFactor(c.lp)*(0.85 + (c.lit || 0)) + 0.08*(c.stalls || 0), 0.02, 0.92); }
+function suePct(c){ return Math.min(0.92, baseSue(c)*Math.pow(0.85, lv("legal"))*(0.9 + 0.1*S.diff)); }
+function courtWin(c){ return c.legit ? clamp(0.85 - 0.06*lv("legal"), 0.4, 0.9) : clamp(0.15 - 0.02*lv("legal"), 0.03, 0.15); }
 function estText(p, nz, sp){
   if (sp === 0) return Math.round(p*100) + "%";
   const ctr = estCenter(p, nz, sp);
@@ -472,7 +603,7 @@ function intelHtml(c){
 }
 function spawnClaim(){
   const inc = Math.max(3, baseIncome());
-  const amt = inc*claimInterval()*0.6*rand(0.5,1.5)*(1-actRed()) / (S.buffs.surge > 0 ? 0.35 : 1);
+  const amt = inc*claimInterval()*0.55*rand(0.5,1.5)*(1-actRed())*claimSizeMult() / (S.buffs.surge > 0 ? 0.35 : 1) / marketRate();
   addClaim(pickFresh(NAMES, "recentNm", 20), pickFresh(INCIDENTS, "recentInc", 45), amt);
 }
 
@@ -487,24 +618,24 @@ function resolve(c, action, src){
   const fxY = src === "you" ? L.lobbyY + 22 : floorY(L, src) + 18;
   ensureIntel(c);
   if (action === "pay"){
-    spend(c.amount, "paid"); S.served++;
+    spend(c.amount, "paid"); S.served++; sfx("pay");
     if (c.legit) mood(2.5);
     else { mood(0.5); S.fraudPaid = (S.fraudPaid || 0) + 1; if (src === "you" || Math.random() < .4) toast(`You paid ${c.name}’s claim. It was fraud. ${pick(FRAUD_QUIPS)}`, "bad"); }
     if (src === "you") pop("−"+fmt(c.amount), fxX, fxY, "bad"); else pop("Paid", fxX, fxY, "stamp ok");
     if (u) u.mood = "happy";
   } else if (action === "deny"){
-    const lg = lv("legal");
+    const lg = lv("legal"); sfx("stamp");
     if (c.legit) mood(-7*SEV_MULT[c.sev-1]*Math.max(0.3, 1 - 0.12*lg));
     else { mood(-1); S.fraudCaught = (S.fraudCaught || 0) + 1; if (src === "you") toast(`Good call. ${c.name}’s claim was fraud. ${pick(FRAUD_QUIPS)}`, "good"); }
     const chance = suePct(c);
     if (Math.random() < chance){
-      S.lawsuits.push({t:rand(15,35), amt:Math.round(c.amount*(2 + c.sev*0.5))});
+      S.lawsuits.push({t:rand(15,35), amt:Math.round(c.amount*(2 + c.sev*0.5)), win:courtWin(c), name:c.name});
       if (src === "you") toast(`${c.name} called a lawyer on the way out. This could get expensive.`, "bad");
     }
     pop(c.legit ? "Denied" : "Fraud!", fxX, fxY, c.legit ? "stamp" : "stamp ok");
     if (u) u.mood = "angry";
   } else if (action === "stall"){
-    c.stalls++;
+    c.stalls++; sfx("paper");
     if (Math.random() < 0.65) S.returns.push({t:rand(18,30), c});
     else S.returns.push({t:rand(6,12), c, gaveUp:true});
     pop("Form 27-B", fxX, fxY, "stamp ok");
@@ -534,7 +665,7 @@ const REC = {skin:"#C68650", hair:"#1C1C1C", shirt:"#FFD23F", pants:"#2B2D52", s
 function makeLook(type){
   const t = TYPES[type];
   return {skin:pick(SKINS), hair:pick(HAIRS), shirt:t.shirt, pants:t.pants, style:Math.random()<.5?0:1,
-    tie:(type==="legal"||type==="ir"||type==="sales") ? pick(["#FF5A5F","#FFD23F","#4BE39A","#FF8FB1"]) : null,
+    tie:(type==="legal"||type==="ir"||type==="sales"||type==="compliance") ? pick(["#FF5A5F","#FFD23F","#4BE39A","#FF8FB1"]) : null,
     glasses: type==="actuary" || Math.random()<.15, hat: type==="sales" && Math.random()<.35};
 }
 function rebuildWorkers(i){
@@ -568,7 +699,7 @@ let ctx = null, LH = 0;
 function R(x,y,w,h,c){ ctx.fillStyle = c; ctx.fillRect(x,y,w,h); }
 function T(str,x,y,size,color,align="left",weight=600){
   size = Math.max(size, 4.4) * 1.08;
-  ctx.font = `${weight} ${size}px "Pixelify Sans","Trebuchet MS",sans-serif`;
+  ctx.font = `${weight} ${size}px "Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif`;
   ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = "alphabetic"; ctx.fillText(str,x,y);
 }
 function hexLerp(a,b,t){
@@ -769,7 +900,7 @@ const DESIGNS = {
       decor:y => {
         R(92,y+10,80,6,"#0B1226");
         const msg = "GBP ▲   RISK ▲   LUNCH ▲   SLIPS ▲   HATS ▼   ";
-        ctx.font = `600 4.5px "Pixelify Sans","Trebuchet MS",sans-serif`; const w = ctx.measureText(msg).width; const off = (time*12) % w;
+        ctx.font = `600 4.5px "Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif`; const w = ctx.measureText(msg).width; const off = (time*12) % w;
         ctx.save(); ctx.beginPath(); ctx.rect(92,y+10,80,6); ctx.clip();
         T(msg, 92 - off, y+14.6, 4.5, "#FFD23F", "left", 600); T(msg, 92 - off + w, y+14.6, 4.5, "#FFD23F", "left", 600);
         ctx.restore();
@@ -830,7 +961,7 @@ const DESIGNS = {
       }},
   ],
   legal:[
-    {name:"Classic Wordings"},
+    {name:"Classic Chambers"},
     {name:"Library Vault", wall:"#3B2A20", trim:"#241810",
       decor:y => {
         R(92,y+3,70,20,"#5A3A22"); [y+9,y+15,y+21].forEach(yy => R(92,yy,70,1,"#2E1E12"));
@@ -892,6 +1023,43 @@ const DESIGNS = {
         [[98,y+10,8,6],[108,y+11,6,9],[118,y+9,12,6],[124,y+15,5,5],[134,y+12,9,5],[138,y+18,5,3]].forEach(([x,yy,w,h]) => R(x,yy,w,h,"#7FB069"));
         [[101,y+12],[121,y+11],[137,y+14],[110,y+16]].forEach(([x,yy],k) => { if ((Math.floor(time*2)+k) % 3) R(x,yy,2,2,"#FF5A5F"); });
         [["L",153],["N",162],["T",171]].forEach(([n,x]) => { R(x-3,y+9,7,7,"#FFFFFF"); R(x,y+10,1,3,"#222"); T(n, x+0.5, y+21, 3.4, "#FFFFFF", "center", 600); });
+      }},
+  ],
+  it:[
+    {name:"Server Room",
+      decor:y => {
+        for (let k = 0; k < 4; k++){ const x = 96 + k*18; R(x,y+7,14,16,"#1B2230"); R(x+1,y+8,12,14,"#26303F");
+          for (let r = 0; r < 4; r++){ R(x+2,y+9+r*3,10,2,"#323D4E"); const on = (Math.floor(time*5) + k*3 + r*5) % 4; R(x+3+on*2,y+9+r*3,1,1, (k+r)%3 ? "#4BE39A" : "#FFD23F"); } }
+      }},
+    {name:"Help Desk", wall:"#7FB3D5", trim:"#4F86AB",
+      decor:y => {
+        R(94,y+9,52,12,"#FFFFFF"); T("Have you tried", 120, y+14, 4, "#2B3157", "center", 600); T("turning it off and on?", 120, y+19, 4, "#2B3157", "center", 600);
+        R(150,y+9,20,12,"#2B3157"); T("Tickets", 160, y+13.5, 3.8, "#C9CCF5", "center", 600); T(String(40 + Math.floor(time*2) % 60), 160, y+19.5, 5, "#FFD23F", "center", 700);
+      }},
+    {name:"Hacker Den", wall:"#141A24", trim:"#0B0F16",
+      decor:y => {
+        for (let c = 0; c < 26; c++){ const x = 94 + c*3; const head = Math.floor(time*8 + hash(c,3)*30) % 18;
+          for (let r = 0; r < 5; r++){ const yy = y + 4 + ((head - r*2 + 18) % 18); ctx.globalAlpha = 1 - r*0.2; R(x, yy, 1, 1, "#4BE39A"); } }
+        ctx.globalAlpha = 1;
+      }},
+  ],
+  compliance:[
+    {name:"Checklist Wall",
+      decor:y => {
+        R(94,y+7,44,16,"#FFFFFF"); R(94,y+7,44,1,"#5A4FA0");
+        for (let r = 0; r < 4; r++){ R(97,y+9+r*3,2,2,"#5A4FA0"); R(97,y+10+r*3,1,1,"#4BE39A"); R(101,y+10+r*3,22 + Math.floor(hash(r,8)*10),1,"#C3C7D2"); }
+        R(144,y+8,26,14,"#5A4FA0"); T("Rule 1:", 157, y+13.5, 3.8, "#FFFFFF", "center", 600); T("there are rules", 157, y+19, 3.6, "#FFD23F", "center", 600);
+      }},
+    {name:"Policy Library", wall:"#D9D3EC", trim:"#9A8EC2",
+      decor:y => {
+        R(92,y+8,80,15,"#8A7AB8"); R(92,y+15,80,1,"#6A5A98");
+        const pal = ["#E8452C","#F2A93B","#FFD23F","#4BE39A","#2BB3B1","#5A6FD6","#C04ACB"];
+        for (let x = 94, k = 0; x < 170; x += 4, k++){ R(x, y+9, 3, 6, pal[k % 7]); R(x, y+16, 3, 6, pal[(k+3) % 7]); }
+      }},
+    {name:"Audit Room", wall:"#BFC6D4", trim:"#8892A6",
+      decor:y => {
+        R(94,y+8,34,14,"#FFFFFF"); for (let k = 0; k < 5; k++) R(97, y+10+k*2, 14 + Math.floor(hash(k,2)*14), 1, "#9AA3B5");
+        const ms = Math.floor(time*1.2) % 3; R(132,y+8,38,14,"#2B2D52"); T(["Checking…","Double-checking…","Triple-checking…"][ms], 151, y+16.5, 3.8, "#FFFFFF", "center", 600);
       }},
   ],
   ir:[
@@ -1038,11 +1206,18 @@ function update(dt){
   if (S.over) return;
   const inc = income(), up = upkeep();
   S.cash += (inc - up)*dt; S.q.prem += inc*dt; S.q.sal += up*dt; S.insured += inc*dt*0.04;
+  S.earned = (S.earned || 0) + inc*dt; S.repSum = (S.repSum || 0) + S.happy*dt; S.repT = (S.repT || 0) + dt;
   for (const k in S.buffs) if (S.buffs[k] > 0) S.buffs[k] = Math.max(0, S.buffs[k] - dt);
   S.happy += (50 - S.happy)*0.004*dt;
+  S.happy = clamp(S.happy + PRICES[priceIdx()].mood*dt, 0, 100);
+  S.cyc = (S.cyc || 0) + dt/Q_LEN*(Math.PI*2/10);
+  const cn = cycleName();
+  if (S.cycName && cn !== S.cycName) toast(CYCLE_MSG[cn], cn === "Soft market" ? "bad" : "good");
+  S.cycName = cn;
 
   S.nextClaim -= dt;
   if (S.nextClaim <= 0){ spawnClaim(); S.nextClaim = claimInterval()*rand(0.6,1.4); }
+  if (!S.tipAuto && S.claims.length >= 5){ S.tipAuto = true; toast(lv("claims") ? "Claims are piling up. Upgrade your Claims Office, or tap it to set a payout limit so it handles small claims and leaves the big ones to you." : "Claims are piling up. A Claims Office handles them for you, and you can set a payout limit so the big ones still come to you.", "bad"); }
   for (const c of [...S.claims]){ c.pat -= dt; if (c.pat <= 0) expireClaim(c); }
   for (const r of [...S.returns]){
     r.t -= dt;
@@ -1054,23 +1229,40 @@ function update(dt){
   }
   for (const l of [...S.lawsuits]){
     l.t -= dt;
-    if (l.t <= 0){ S.lawsuits.splice(S.lawsuits.indexOf(l),1); spend(l.amt, "other"); S.sued = (S.sued || 0) + 1; fxShake(); toast(`Lawsuit lost: ${fmt(l.amt)}. ${pick(LAWSUIT_QUIPS)}`, "bad"); }
+    if (l.t <= 0){
+      S.lawsuits.splice(S.lawsuits.indexOf(l),1);
+      if (Math.random() < (l.win != null ? l.win : 0.85)){ spend(l.amt, "other"); S.sued = (S.sued || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); fxShake(); sfx("gavel"); toast(`Lawsuit lost${l.name ? " to " + l.name : ""}: ${fmt(l.amt)}. ${pick(LAWSUIT_QUIPS)}`, "bad"); }
+      else { const fee = Math.round(l.amt*0.15); spend(fee, "other"); sfx("chime"); toast(`You won in court${l.name ? " against " + l.name : ""}. The claim really was dodgy. Legal fees: ${fmt(fee)}.`, "good"); }
+    }
   }
   const L = layout();
   S.floors.forEach((f,i) => {
     if (f.type === "claims"){
       f._t = (f._t || 0) + dt*morale();
-      if (f._t >= 14/f.level){ f._t = 0; if (S.claims.length){ const c = S.claims[0]; let m = f.mode; if (m === "smart") m = (lv("risk") >= 2 && legitEst(c) < 50) ? "deny" : "pay"; if (m === "deny" || S.cash >= c.amount) resolve(c, m, i); } }
+      if (S.outage > 0){ f._t = 0; }
+      if (f._t >= 14/f.level/(1 + 0.15*lv("it"))){ f._t = 0; const cap = f.lim ? typicalClaim()*f.lim : Infinity; const c = S.claims.find(c => c.amount <= cap); if (c){ let m = f.mode; if (m === "smart") m = (lv("risk") >= 2 && legitEst(c) < 50) ? "deny" : "pay"; if (m === "deny" || S.cash >= c.amount) resolve(c, m, i); } }
     }
     if (f.type === "sales"){
       popT[i] = (popT[i] || 0) + dt;
-      if (popT[i] >= 3){ popT[i] = 0; const amt = salesFloorRate(f.level)*salesMult()*(S.buffs.sales>0?2:1)*3; pop("+"+fmt(amt), 70 + Math.random()*60, floorY(L,i)+20, ""); }
+      if (popT[i] >= 3){ popT[i] = 0; const amt = salesFloorRate(f.level)*salesMult()*(S.buffs.sales>0?2:1)*3; pop("+"+fmt(amt), 70 + Math.random()*60, floorY(L,i)+20, ""); sfx("coin"); }
     }
   });
 
-  if (S.cash < 0 && !S.warnedNeg){ S.warnedNeg = true; toast(`You’re overdrawn. If cash drops below ${fmt(-overdraft())}, the bank takes the building.`, "bad"); }
+  if (S.cash < 0 && !S.warnedNeg){ S.warnedNeg = true; sfx("warn"); toast(`You’re overdrawn. If cash drops below ${fmt(-overdraft())}, the bank takes the building.`, "bad"); }
   if (S.cash >= 0) S.warnedNeg = false;
-  if (S.cash < -overdraft()){ gameOver(); return; }
+  if (S.cash < -overdraft()){ gameOver("bankrupt"); return; }
+  if (S.swan){
+    S.swan.t -= dt;
+    if (!S.swan.warned && S.swan.t < 15 && lv("risk") >= 3){ S.swan.warned = true; toast("Risk Dept: something big is coming in the next few seconds. Check your own cover in the Boardroom now.", "bad"); }
+    if (S.swan.t <= 0){ const k = S.swan.kind; S.swan = null; blackSwan(k); return; }
+  }
+  if (S.outageAt != null){
+    S.outageAt -= dt;
+    if (S.outageAt <= 0){ S.outageAt = null; S.outage = 20; sfx("warn"); if (scene) scene.cameras.main.shake(250, 0.003); toast(pick(["IT outage! A server fell over. Premium income is halved and the Claims Office is offline for 20 seconds.","IT outage! Someone updated everything at once. Income halved and claims stalled for 20 seconds.","IT outage! The system says “error 0x00FINE”. Income halved and the Claims Office is down for 20 seconds."]), "bad"); }
+  }
+  autopilot(dt);
+  if (S.outage > 0){ S.outage -= dt; if (S.outage <= 0){ S.outage = 0; toast("IT is back up. They turned it off and on again.", "good"); } }
+  checkAch();
 
   S.qt += dt;
   if (S.qt >= Q_LEN){ S.qt = 0; earnings(); return; }
@@ -1092,6 +1284,7 @@ function pop(text, lx, ly, cls){
   scene.tweens.add({targets:t, y:ly - pxL(42), alpha:0, delay:250, duration:1250, ease:"Cubic.easeIn", onComplete:() => t.destroy()});
 }
 function fxConfetti(){
+  sfx("fanfare");
   if (!scene || !confettiEm) return;
   const cam = scene.cameras.main, vh = viewH();
   [0.25, 0.5, 0.75].forEach((fx, k) => setTimeout(() => confettiEm.explode(40, LW*fx, cam.scrollY + vh*0.25), k*140));
@@ -1107,13 +1300,20 @@ function toast(msg, kind){
 /* ---------- Modal ---------- */
 let modalOpen = false, modalCb = null, modalLocked = false, view = null;
 function openModal(html, opts = {}){
-  $("#sheet").innerHTML = html; $("#modal").hidden = false;
+  $("#sheet").className = "sheet" + (opts.cls ? " " + opts.cls : "");
+  $("#sheet").innerHTML = html; $("#sheet").scrollTop = 0; $("#modal").hidden = false;
   modalOpen = true; modalCb = opts.onClose || null; modalLocked = !!opts.locked; view = opts.view || null;
+  clearInterval(openModal._t);
+  if (opts.auto && hasExec("cos")){
+    const b = $("#sheet").querySelector('[data-act="close"]'); if (b){ const label = b.textContent; let n = 6;
+      b.textContent = `${label} (${n})`;
+      openModal._t = setInterval(() => { if (paused) return; n--; if (n <= 0){ clearInterval(openModal._t); if (!$("#modal").hidden && $("#sheet").contains(b)) b.click(); } else b.textContent = `${label} (${n})`; }, 1000); }
+  }
   const f = $("#sheet").querySelector(".btn:not(:disabled), .type:not(:disabled)"); if (f && opts.focus !== false) f.focus({preventScroll:true});
 }
 function closeModal(){
   if ($("#modal").hidden) return;
-  $("#modal").hidden = true; modalOpen = false; view = null;
+  $("#modal").hidden = true; modalOpen = false; view = null; clearInterval(openModal._t);
   const cb = modalCb; modalCb = null; modalLocked = false; if (cb) cb();
 }
 $("#modal").addEventListener("click", e => { if (e.target.id === "modal" && !modalLocked) closeModal(); });
@@ -1123,23 +1323,34 @@ const pips = l => `<span class="pips" aria-label="Level ${l} of ${MAXL}">${Array
 
 /* Intro */
 function intro(){
-  openModal(`<h2>Welcome to the corner office</h2>
-  <p>You’re the new CEO of Fine Print Syndicate, deep in the London insurance market. Brokers bring you risks, you write them, and the share price goes up. Mostly that last one.</p>
-  <div class="howto">
-    <p><span>🏢</span><span>Build floors to grow. Underwriting Boxes bring in money. The other floors help in sneakier ways.</span></p>
-    <p><span>🙋</span><span>Brokers in bowler hats turn up in The Room with claims. Pay them, deny them, or ask for more paperwork.</span></p>
-    <p><span>📞</span><span>Every 60 seconds, the City checks your profits. They always expect 12% more than last time.</span></p>
-    <p><span>🏆</span><span>The board promotes you when you hit its targets: profit, share price, customer mood, and occasionally getting sued.</span></p>
+  openModal(`<div class="top"><h2>How to play</h2>${xBtn}</div>
+  <p>You run Fine Print Syndicate in the London market. Grow the tower, keep the City happy, and don’t get wiped out.</p>
+  <div class="intro-scroll">
+    <p><span>🏢</span><span><b>Build with a plan.</b> Every floor has an upside and a downside, and every new floor raises all salaries. Scroll down for a guide to every room.</span></p>
+    <p><span>🙋</span><span><b>Handle claims</b> in The Room: pay, deny or stall. A Risk Dept shows you who’s lying.</span></p>
+    <p><span>📞</span><span><b>Earnings calls</b> every 60 seconds. Beat the City’s target to earn stars, a cash bonus and board confidence.</span></p>
+    <p><span>📈</span><span><b>The market fights back.</b> Success attracts competition: more claims, more fraud, higher targets. Meanwhile the insurance cycle swings between hard markets (high prices) and soft markets (price wars).</span></p>
+    <p><span>🏷️</span><span><b>Set your pricing</b> in the Boardroom. Undercut for volume, charge a premium for margin, or gouge and risk the regulator. The best choice depends on the cycle.</span></p>
+    <p><span>🤖</span><span><b>Autopilot.</b> Promotions unlock executives who run parts of the business for a salary: claims, insurance, compliance, pricing, even expansion. Your syndicate also earns while you’re away.</span></p>
+    <p><span>♾️</span><span><b>Play forever, if you can.</b> As your tower matures, the City expects less growth and “in line” results are fine. But regulation keeps piling up, and dividends keep the board sweet.</span></p>
+    <p><span>⚖️</span><span><b>Compliance</b> must cover your floors. Fall short and the regulator issues warnings. Three warnings and you lose your licence.</span></p>
+    <p><span>🦢</span><span><b>Black swans</b> are once-in-a-lifetime disasters: storms, cyber attacks, scandals. Most games never see one, but one hit without cover can wipe you out. Cover is in the Boardroom.</span></p>
+    <p><span>⭐</span><span><b>Spend stars</b> on perks in the Boardroom, and unlock achievements for extra stars.</span></p>
+    <p><span>💀</span><span><b>You lose</b> if you go bankrupt, the board’s confidence hits zero, or you lose your licence.</span></p>
+    <h3 class="intro-h">The rooms you can build</h3>
+    ${ORDER.map(t => `<p class="intro-room"><span class="isw" style="background:${TYPES[t].wall}"></span><span><b>${TYPES[t].name}.</b> ${TYPES[t].desc}<em class="pro">＋ ${TYPES[t].pro}</em><em class="con">− ${TYPES[t].con}</em></span></p>`).join("")}
+    <p class="intro-tip"><span>💡</span><span>Start with Underwriting Boxes for income, keep a cash buffer for big claims, and add Compliance before your 4th floor.</span></p>
   </div>
-  <p class="dim">Happy customers buy more policies. Angry ones sue. Shareholders don’t care either way.</p>
-  <div class="closeRow"><button class="btn" data-act="close">Take the job</button></div>`, {onClose:() => { S.seen = true; save(); }, locked:true});
+  <div class="closeRow"><button class="btn blue" data-act="tutorial">Replay the tutorial</button><button class="btn" data-act="close">Back to the game</button></div>`, {cls:"intro"});
 }
 
 /* Floors */
 function effectText(type, l, d){
   switch(type){
     case "sales": return `Brings in about ${fmtR(salesFloorRate(l)*salesMult())} per second`;
-    case "claims": return `Handles a claim every ${(14/l/morale()).toFixed(1)} seconds`;
+    case "claims": return `Handles a claim every ${(14/l/claimSpeed()).toFixed(1)} seconds`;
+    case "it": return `+${10*l}% premium income, claims ${15*l}% faster, cyber losses ${Math.min(60,15*l)}% smaller, ${Math.min(40, 6*lv("it") + 6*(d || 0))}% outage risk per quarter`;
+    case "compliance": return `Covers ${3*l} floors for the regulator, scandal losses ${Math.min(60,15*l)}% smaller`;
     case "actuary": return `Claims cost ${Math.min(55,7*l)}% less`;
     case "marketing": return `Underwriting Boxes write ${35*l}% more`;
     case "legal": return `Denials ${Math.min(70,12*l)}% less upsetting, fewer lawsuits`;
@@ -1151,7 +1362,7 @@ function effectText(type, l, d){
 function openFloors(){
   const cost = buildCost(), can = S.floors.length < MAXF, afford = S.cash >= cost;
   const types = ORDER.map(t => `<button class="type" data-act="build:${t}" ${(!can||!afford)?"disabled":""}>
-      <div class="sw" style="background:${TYPES[t].wall}"></div><b>${TYPES[t].name}</b><span>${TYPES[t].desc}</span></button>`).join("");
+      <div class="sw" style="background:${TYPES[t].wall}"></div><b>${TYPES[t].name}</b><span class="pro">＋ ${TYPES[t].pro}</span><span class="con">− ${TYPES[t].con}</span></button>`).join("");
   const list = S.floors.map((f,i) => ({f,i})).reverse().map(({f,i}) => {
     const max = f.level >= MAXL, c = upCost(f);
     return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div>
@@ -1160,24 +1371,29 @@ function openFloors(){
       <button class="btn" data-act="up:${i}:floors" ${max||S.cash<c?"disabled":""}>${max?"Maxed":"Upgrade "+fmt(c)}</button></div>`;
   }).join("");
   openModal(`<div class="top"><h2>Floors</h2>${xBtn}</div>
-    ${can ? `<p>Pick what to build next. Cost: <b class="pos">${fmt(cost)}</b>${afford?"":` <span class="dim">(you have ${fmt(S.cash)})</span>`}</p><div class="types">${types}</div>`
+    ${can ? `<p>Pick what to build next. Cost: <b class="pos">${fmt(cost)}</b>${afford?"":` <span class="dim">(you have ${fmt(S.cash)})</span>`}</p>${compHtml()}<p class="dim">Every floor raises everyone’s salaries by 6%, so build with a plan.</p><div class="types">${types}</div>`
           : `<p>The tower is as tall as zoning allows. The zoning board has been offered several yachts.</p>`}
     <h3>Your floors</h3><div class="flist">${list}</div>`, {view:"floors", focus:false});
 }
 function openFloor(i){
   const f = S.floors[i]; if (!f) return; variantOf(f);
   const t = TYPES[f.type], max = f.level >= MAXL, c = upCost(f);
-  const up = (f.type === "sales" ? 0.5 : 0.6)*(1 + 0.04*S.floors.length);
+  const up = (TYPES[f.type].sal || 0.6)*salFactor();
   let extra = "";
   if (f.type === "claims"){
     extra = `<h3>How generous should they be?</h3>
     <div class="seg three"><button class="btn green" data-act="mode:${i}:pay" aria-pressed="${f.mode!=="deny"&&f.mode!=="smart"}">Pay everything</button>
     <button class="btn red" data-act="mode:${i}:deny" aria-pressed="${f.mode==="deny"}">Deny everything</button>
     <button class="btn blue" data-act="mode:${i}:smart" aria-pressed="${f.mode==="smart"}" ${lv("risk")<2?"disabled":""}>Use risk intel</button></div>
-    <p class="dim">Paying keeps customers happy. Denying saves money, angers people, and sometimes ends in court. “Use risk intel” pays claims that look legit and denies ones that look like fraud. It needs a Risk Dept at level 2 or higher, and it’s only as sharp as your Risk Dept.</p>`;
+    <p class="dim">Paying keeps customers happy. Denying saves money, angers people, and sometimes ends in court. “Use risk intel” pays claims that look legit and denies ones that look like fraud. It needs a Risk Dept at level 2 or higher, and it’s only as sharp as your Risk Dept.</p>
+    <h3>Payout limit</h3>
+    <div class="seg four">${[0, 0.6, 1, 2].map(m => `<button class="btn ${m ? "ghost" : ""}" data-act="lim:${i}:${m}" aria-pressed="${(f.lim || 0) === m}">${m ? "Up to " + fmt(typicalClaim()*m) : "No limit"}</button>`).join("")}</div>
+    <p class="dim">Claims above the limit are left for you to decide. The limit grows with your business.</p>`;
   }
   openModal(`<div class="top"><h2>${t.name}</h2>${xBtn}</div>
     <p>${t.desc}</p><p class="joke">${t.joke}</p>
+    <div class="pc"><p class="pro">＋ ${t.pro}</p><p class="con">− ${t.con}</p></div>
+    ${f.type === "compliance" ? compHtml() : ""}
     <div class="facts">
       <div class="fact"><span>Level</span><b>${f.level} of ${MAXL}</b></div>
       <div class="fact"><span>Staff salaries</span><b>${fmtR(up*f.level)}/s</b></div>
@@ -1193,7 +1409,7 @@ function openFloor(i){
 function build(type){
   const cost = buildCost();
   if (S.cash < cost || S.floors.length >= MAXF) return;
-  S.cash -= cost;
+  S.cash -= cost; discSpent += cost;
   S.floors.push({type, level:1, mode:"pay"});
   rebuildWorkers(S.floors.length-1);
   closeModal();
@@ -1203,7 +1419,7 @@ function build(type){
 function upgrade(i, back){
   const f = S.floors[i]; const c = upCost(f);
   if (f.level >= MAXL || S.cash < c) return;
-  S.cash -= c; f.level++; rebuildWorkers(i);
+  S.cash -= c; discSpent += c; f.level++; rebuildWorkers(i);
   const L = layout(); pop("Level "+f.level+"!", 100, floorY(L,i)+16, "");
   if (back === "floors") openFloors(); else openFloor(i);
   save();
@@ -1219,7 +1435,7 @@ function claimCard(c){
     <small class="patlbl">${low ? "About to give up and leave a review" : "Waiting, mostly patiently"}</small>
     ${intelHtml(c)}
     <div class="row3">
-      <button class="btn green" data-act="pay:${c.id}" ${S.cash<c.amount?"disabled":""}>Pay</button>
+      <button class="btn green" data-act="pay:${c.id}" ${!canPay(c.amount)?"disabled":""}>Pay</button>
       <button class="btn red" data-act="deny:${c.id}">Deny</button>
       <button class="btn ghost" data-act="stall:${c.id}" ${c.stalls?"disabled":""}>${c.stalls?"No more stalling":"Paperwork"}</button>
     </div></div>`;
@@ -1232,7 +1448,7 @@ function openClaims(single){
   const body = list.length ? list.map(claimCard).join("")
     : `<div class="empty"><p>No claims right now. Enjoy it while it lasts.</p></div>`;
   openModal(`<div class="top"><h2>${single ? "A claim" : `Claims (${S.claims.length})`}</h2>${xBtn}</div>
-    <p class="dim">Pay to keep customers happy. Deny to keep the money, but they might sue. Paperwork buys time, once.</p>
+    <p class="dim">Pay to keep customers happy. Deny to keep the money, but they might sue. Paperwork buys time, once. Serious claims that look genuine are the most likely to end up in court, and the ones you’re most likely to lose.</p>
     ${body}`, {view:"claims", focus:false});
 }
 
@@ -1254,7 +1470,35 @@ function openBoard(confirmRestart){
   }
   openModal(`<div class="top"><h2>Boardroom</h2>${xBtn}</div>
     <p>Your title: <b>${RANKS[r].name}</b></p>
+    <div class="status">
+      <div><span>Board confidence</span><b class="${S.conf < 30 ? "neg" : "pos"}">${Math.round(S.conf)}%</b></div>
+      <div><span>Regulator warnings</span><b class="${S.strikes ? "neg" : "pos"}">${S.strikes} of ${maxStrikes()}</b></div>
+      <div><span>Competition</span><b>${mktName().replace(" market","")}</b></div>
+    </div>
+    ${execsHtml()}
+    <p class="dim" style="margin-top:12px">Score so far: <b>${scoreParts().total.toLocaleString("en-GB")}</b> (grade ${grade(scoreParts().total)}). Personal best: ${bestScore().toLocaleString("en-GB")}.</p>
     ${goalsHtml(next)}
+    <h3 style="margin-top:14px">Pricing</h3>
+    <p class="dim"><b style="color:var(--ink)">${cycleName()}.</b> ${CYCLE_MSG[cycleName()].replace(/^The market has (hardened|softened|steadied)\. /, "")}</p>
+    <div class="seg four">${PRICES.map((pr, k) => `<button class="btn" data-act="price:${k}" aria-pressed="${priceIdx() === k}">${pr.name}</button>`).join("")}</div>
+    <p class="dim">${PRICES[priceIdx()].desc} Right now: premium income ×${(marketRate()*volume()).toFixed(2)}, customers ×${volume().toFixed(2)}.</p>
+    <h3 style="margin-top:14px">Emergency funding</h3>
+    <p class="dim">Short of cash? These keep you alive, at a price.</p>
+    <div class="action"><div><h3>Cash call</h3><p>Ask your syndicate’s investors for ${fmt(cashCallAmt())}. Share price −15%, board confidence −12. Once every 2 quarters.</p></div>
+      <button class="btn" data-act="cashcall" ${S.quarter - S.lastCall < 2 ? "disabled" : ""}>${S.quarter - S.lastCall < 2 ? "Too soon" : "Raise " + fmt(cashCallAmt())}</button></div>
+    <div class="action"><div><h3>Bank loan</h3><p>${S.loan ? `You owe ${fmt(S.loan.left)}, repaid ${fmt(S.loan.per)} at each earnings call.` : `Borrow ${fmt(loanAmt())} now. Repay ${fmt(Math.round(loanAmt()*1.25))} over 4 earnings calls. One loan at a time.`}</p></div>
+      <button class="btn ghost" data-act="loan" ${S.loan ? "disabled" : ""}>${S.loan ? "In progress" : "Borrow " + fmt(loanAmt())}</button></div>
+    <h3 style="margin-top:14px">Your own insurance</h3>
+    <p class="dim">Black swans are rare, once-in-a-lifetime disasters. Most games never see one, and a second would be extraordinary bad luck, but lightning can strike twice. Without cover you pay the whole loss, which can sink the company. Cover renews at each earnings call. Is it worth it? That’s the gamble.</p>
+    ${Object.keys(COVERS).map(k => { const c = COVERS[k], on = S.cover[k], cost = coverCost(k, income()*Q_LEN);
+      return `<div class="action"><div><h3>${on ? "🛡️ " : ""}${c.name}</h3><p>${c.desc} About ${fmt(cost)} per quarter.</p></div>
+        ${on ? `<button class="btn ghost" data-act="cover:${k}:off">Cancel</button>` : `<button class="btn green" data-act="cover:${k}:on" ${S.cash < cost ? "disabled" : ""}>Buy ${fmt(cost)}</button>`}</div>`; }).join("")}
+    <h3 style="margin-top:14px">Perks <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">You have ${S.favour} ★ to spend</span></h3>
+    ${PERKS.map(pk => { const own = perk(pk.id);
+      return `<div class="action"><div><h3>${own ? "✓ " : ""}${pk.name}</h3><p>${pk.desc}</p></div>
+        ${own ? `<button class="btn ghost" disabled>Owned</button>` : `<button class="btn" data-act="perk:${pk.id}" ${S.favour < pk.cost ? "disabled" : ""}>${pk.cost} ★</button>`}</div>`; }).join("")}
+    <h3 style="margin-top:14px">Achievements (${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length})</h3>
+    <div class="achs">${ACH.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div>
     <div class="big" style="margin-top:14px">${fmt2(S.stock)}</div>
     ${sparkline()}
     <p class="dim">Share price after each earnings call</p>
@@ -1269,6 +1513,8 @@ function openBoard(confirmRestart){
       <div class="fact"><span>Fraud paid out</span><b>${S.fraudPaid || 0}</b></div>
       <div class="fact"><span>Yachts</span><b>${S.yachts}</b></div>
     </div>
+    <div class="action"><div><h3>Pay a dividend</h3><p>Hand ${fmt(divAmt())} to shareholders. Board confidence +8, share price +3%. Once per quarter. Mature companies live on these.</p></div>
+      <button class="btn" data-act="dividend" ${S.divQ === S.quarter || S.cash < divAmt() ? "disabled" : ""}>${S.divQ === S.quarter ? "Paid" : "Pay " + fmt(divAmt())}</button></div>
     <div class="action"><div><h3>Buy back shares</h3><p>Buy your own stock with company cash. Share price up 4%. Helps nobody else.</p></div>
       <button class="btn" data-act="buyback" ${S.cash<buybackCost()?"disabled":""}>${fmt(buybackCost())}</button></div>
     <div class="action"><div><h3>Pay yourself a bonus</h3><p>Buys a yacht. Share price down 1% for “optics.”</p></div>
@@ -1276,54 +1522,111 @@ function openBoard(confirmRestart){
     <p class="dim" style="margin-top:12px">How the money works: premiums come in every second, salaries go out every second, and claims cost money when you pay them. Profit is whatever survives.</p>
     <button class="btn red" style="width:100%" data-act="restart">Start a new company</button>`, {view:"board", focus:false});
 }
-function doBuyback(){ const c = buybackCost(); if (S.cash < c) return false; spend(c, "other"); S.stock *= 1.04; checkRank(); return true; }
+function doBuyback(){ const c = buybackCost(); if (S.cash < c) return false; spend(c, "other"); discSpent += c; S.stock *= 1.04; checkRank(); return true; }
 
 /* Earnings */
 function earnings(){
-  const q = S.q; const profit = q.prem - q.paid - q.sal - q.other;
-  const prev = S.lastProfit;
-  const expected = (prev != null && prev > 0) ? Math.max(40, prev*1.12) : 40;
-  const basis = (prev != null && prev > 0 && prev*1.12 > 40) ? `Last quarter’s ${fmt(prev)}, plus 12%. It’s always 12%.` : `Their minimum. They never accept less than ${fmt(40)}.`;
+  const q = S.q;
+  const notes = [];
+  q.cover = 0;
+  for (const k of Object.keys(COVERS)) if (S.cover[k]){
+    const c = coverCost(k, q.prem);
+    if (S.cash >= c){ S.cash -= c; q.cover += c; }
+    else { S.cover[k] = false; notes.push(`You couldn’t afford to renew ${COVERS[k].name.toLowerCase()}. It has lapsed.`); }
+  }
+  q.loan = 0;
+  if (S.loan){
+    const pay = Math.min(S.loan.per, S.loan.left);
+    S.cash -= pay; S.loan.left -= pay; q.loan = Math.min(S.loan.interest, pay);
+    if (S.loan.left <= 0){ S.loan = null; notes.push("Your bank loan is fully repaid."); }
+  }
+  const profit = q.prem - q.paid - q.sal - q.other - q.cover - q.loan;
+  const hist = (S.profHist || []).slice(-3), g = growthRate();
+  const avg = hist.length ? hist.reduce((a, b) => a + b, 0)/hist.length : 0;
+  const expected = avg > 0 ? Math.max(40, avg*(1+g)) : 40;
+  const basis = avg > 0 && avg*(1+g) > 40 ? `Your average profit over the last ${hist.length === 1 ? "quarter" : hist.length + " quarters"} (${fmt(avg)}), plus ${Math.round(g*100)}%.` : `Their minimum. They never accept less than ${fmt(40)}.`;
   const surprise = (profit - expected)/Math.max(Math.abs(expected), 40);
+  const inLine = profit >= 0 && surprise < 0 && surprise >= -0.05;
   let ch = clamp(surprise*0.2, -0.25, 0.35); const ir = lv("ir");
   if (ch > 0) ch *= 1 + 0.15*ir; else ch *= Math.max(0.3, 1 - 0.12*ir);
-  const notes = [];
   if (S.aiHype){ ch += 0.06; notes.push("You said “AI” forty times. Analysts added 6% out of reflex."); S.aiHype = false; }
   if (S.happy < 25){ ch -= 0.05; notes.push("A sustainability fund sold your stock over customer complaints. Share price down 5%."); }
-  if (S.happy < 20){ const fine = Math.round(Math.max(100, Math.max(0,S.cash)*0.15)); S.cash -= fine; notes.push(`The regulator is “concerned.” Fine: ${fmt(fine)}.`); }
+  const gap = compGap();
+  let strike = false;
+  const gouged = priceIdx() === 3 && Math.random() < 0.35;
+  if (gap > 0 || S.happy < 20 || gouged){
+    strike = true; S.strikes++; S.cleanQ = 0; S.cleanRun = 0;
+    const fine = Math.round(Math.max(100, Math.max(0, S.cash)*0.1)*(perk("lobbyist") ? 0.6 : 1)); S.cash -= fine;
+    notes.push(`Regulator warning ${S.strikes} of ${maxStrikes()}: ${gap > 0 ? `Compliance only covers ${compHave()} of the ${compNeed()} floors it needs to` : S.happy < 20 ? "customers are miserable" : "your prices failed the fair-value test"}. Fine: ${fmt(fine)}.${S.strikes >= maxStrikes() ? "" : " Two clean quarters remove a warning."}`);
+  } else {
+    S.cleanQ++; S.cleanRun = (S.cleanRun || 0) + 1;
+    if (S.strikes > 0 && S.cleanQ >= 2){ S.strikes--; S.cleanQ = 0; notes.push("The regulator removed one of your warnings. Keep it clean."); }
+  }
   const old = S.stock; S.stock = Math.max(0.5, S.stock*(1+ch));
   S.hist.push(S.stock); if (S.hist.length > 40) S.hist.shift();
   const qn = S.quarter; S.quarter++; S.lastProfit = profit; S.q = blankQ();
-  S.streak = profit >= expected ? (S.streak || 0) + 1 : 0;
+  S.profHist = (S.profHist || []).concat([profit]).slice(-3);
+  S.streak = profit >= expected ? (S.streak || 0) + 1 : inLine ? (S.streak || 0) : 0;
   S.bestStreak = Math.max(S.bestStreak || 0, S.streak);
   S.bestProfit = Math.max(S.bestProfit || 0, profit);
+  const stars = (profit < 0 || surprise < 0) ? 0 : surprise >= 0.6 ? 3 : surprise >= 0.25 ? 2 : 1;
+  const bonus = stars ? Math.round(B()*0.35*stars/10)*10 : 0;
+  if (bonus) S.cash += bonus;
+  S.stars += stars; S.favour += stars; if (stars === 3) S.best3 = true;
+  let dc = stars ? 5 + 3*stars + Math.min(S.streak, 5) : profit < 0 ? -20 : inLine ? 2 : -Math.round(4 + 12*Math.min(1, -surprise));
+  if (S.happy < 25) dc -= 6;
+  if (strike) dc -= 10;
+  S.conf = clamp(S.conf + dc, 0, 100);
+  const oldDiff = S.diff;
+  S.diff = clamp(S.diff + 0.02 + (stars ? 0.05 + 0.04*stars : -0.1), 1, 4);
+  if (lv("it") > 0 && S.outageAt == null && Math.random() < Math.min(0.4, 0.06*lv("it"))) S.outageAt = rand(8, 50);
+  if (qn >= 3 && !S.swan && Math.random() < 0.012 + 0.006*(S.diff - 1)){
+    S.swan = {t:rand(12, 48), kind:pick(["storm","storm","storm","ash","cyber","cyber","scandal","scandal","crash"]), warned:false};
+  }
+  if (qn % 8 === 0) notes.push("New regulations: a 400-page rulebook just landed. Compliance must now cover one more floor than before.");
+  if (qn === 3) notes.push("Black swans are rare, once-in-a-lifetime disasters. Most games never see one, but from now on one could strike. Your own insurance is in the Boardroom.");
   const qLabel = `Q${((qn-1)%4)+1}, year ${Math.ceil(qn/4)}`;
   let lede, quote;
   if (profit < 0){ lede = "You lost money this quarter."; quote = pick(["“Is the building on fire? Asking for a client.”","“We’re downgrading you to ‘Hold your breath.’”","“Bold strategy. Incorrect, but bold.”"]); }
+  else if (inLine){ lede = "You came in right on expectations, give or take."; quote = pick(["“In line. We yawned, but in a positive way.”","“Steady. Boring. Acceptable.”","“Neither exciting nor alarming. Like a beige carpet.”"]); }
   else if (surprise < 0){ lede = `You missed the City’s expectations by ${fmt(expected-profit)}.`; quote = pick([`“You made ${fmt(profit)}. We expected ${fmt(expected)}. We are in mourning.”`,"“Disappointing. Have you tried firing someone?”","“A profit, sure. But was it enough profit?”"]); }
   else if (surprise > 0.3){ lede = "You crushed the City’s expectations."; quote = pick(["“Exceptional. Do it again, but more.”","“We’re upgrading you to ‘Buy, immediately, with both hands.’”","“I just named my son after your margins.”"]); }
   else { lede = "You beat the City’s expectations."; quote = pick(["“Solid quarter. Next time we’ll expect 12% more, for no reason.”","“Cautiously ecstatic.”","“Fine. Good, even. Don’t let it go to your head.”"]); }
   const pct = (S.stock/old - 1)*100;
-  bell.t = 3; lede += profit >= expected ? " In The Room, the bell rings twice." : " In The Room, the bell rings once.";
+  bell.t = 3; bell.n = profit >= expected ? 2 : 1; lede += profit >= expected ? " In The Room, the bell rings twice." : " In The Room, the bell rings once.";
   openModal(`<h2>Earnings call, ${qLabel}</h2>
+    <div class="stars" aria-label="${stars} of 3 stars">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</div>
     <p>${lede}${S.streak > 1 ? ` That’s ${S.streak} quarters in a row.` : ""}</p>
+    <div class="reward">
+      <div><span>Board bonus</span><b class="${bonus ? "pos" : ""}">${bonus ? "+" + fmt(bonus) : "None"}</b></div>
+      <div><span>Board confidence</span><b class="${dc >= 0 ? "pos" : "neg"}">${dc >= 0 ? "+" : "−"}${Math.abs(dc)} (${Math.round(S.conf)}%)</b></div>
+      <div><span>Competition</span><b>${mktName().replace(" market","")}${S.diff > oldDiff + 0.04 ? " ↑" : S.diff < oldDiff ? " ↓" : ""}</b></div>
+    </div>
     <table class="ledger">
       <tr><td>Premiums collected</td><td class="pos">+${fmt(q.prem)}</td></tr>
       <tr><td>Claims paid</td><td class="neg">−${fmt(q.paid)}</td></tr>
       <tr><td>Salaries</td><td class="neg">−${fmt(q.sal)}</td></tr>
       <tr><td>Lawsuits, fines and “other”</td><td class="neg">−${fmt(q.other)}</td></tr>
+      <tr><td>Your own insurance</td><td class="neg">−${fmt(q.cover)}</td></tr>
+      ${q.loan ? `<tr><td>Loan interest</td><td class="neg">−${fmt(q.loan)}</td></tr>` : ""}
       <tr class="total"><td>Profit</td><td class="${profit>=0?"pos":"neg"}">${fmt(profit)}</td></tr>
       <tr class="exp"><td>The City expected<br><small>${basis}</small></td><td>${fmt(expected)}</td></tr>
     </table>
     <div class="move ${pct>=0?"up":"down"}"><span>Share price<br><b>${fmt2(old)} to ${fmt2(S.stock)}</b></span><em>${pct>=0?"+":"−"}${Math.abs(pct).toFixed(1)}%</em></div>
     <blockquote>${quote}<cite>An analyst who has never bought insurance</cite></blockquote>
     ${notes.map(n => `<p class="note">${n}</p>`).join("")}
-    <div class="closeRow"><button class="btn" data-act="close">Hang up</button></div>`, {locked:true, onClose:() => { checkRank(); save(); }});
+    <div class="closeRow"><button class="btn" data-act="close">Hang up</button></div>`, {locked:true, auto:true, onClose:() => {
+      if (S.strikes >= maxStrikes()) return gameOver("licence");
+      if (S.conf <= 0) return gameOver("fired");
+      if (S.conf < 25) toast("The board is losing patience. If their confidence hits zero, you’re out.", "bad");
+      checkRank(); save(); }});
 }
 function checkRank(){
   const next = RANKS[S.rankIdx + 1]; if (!next) return;
   if (next.goals.every(goalMet)){
-    S.rankIdx++; toast(`Promoted: ${next.name}! The board has new targets for you.`, "good"); fxConfetti();
+    S.rankIdx++; S.conf = clamp(S.conf + 10, 0, 100); S.favour += 2;
+    const unl = EXECS.filter(x => x.rank === S.rankIdx).map(x => x.name);
+    toast(`Promoted: ${next.name}! +10 board confidence and +2 ★.${unl.length ? ` You can now hire: ${unl.join(" and ")}.` : ""}`, "good"); fxConfetti();
     if (S.rankIdx === RANKS.length-1 && !S.won){ S.won = true; setTimeout(victory, 300); }
   }
 }
@@ -1333,17 +1636,390 @@ function victory(){
     <p class="dim">Shareholders are thrilled. Customers are confused. Percy has asked for a raise.</p>
     <div class="closeRow"><button class="btn" data-act="close">Keep growing anyway</button></div>`, {locked:true});
 }
-function gameOver(){
+/* ---------- Score ---------- */
+function daysSurvived(){ return Math.floor((S.quarter - 1)*91 + S.qt/Q_LEN*91); }
+function avgRep(){ return S.repT > 0 ? S.repSum/S.repT : S.happy; }
+function scoreParts(){
+  const money = Math.round(Math.sqrt(Math.max(0, S.earned || 0))*8);
+  const days = daysSurvived()*4;
+  const achN = ACH.filter(a => S.ach[a.id]).length;
+  const bonus = (S.stars || 0)*40 + achN*150 + S.rankIdx*400;
+  const rep = avgRep(), mult = 0.5 + rep/100;
+  return {money, days, bonus, achN, rep, mult, total:Math.round((money + days + bonus)*mult)};
+}
+function grade(t){ return t >= 25000 ? "S" : t >= 15000 ? "A" : t >= 8000 ? "B" : t >= 4000 ? "C" : "D"; }
+const BEST_KEY = "fineprint-best-score";
+function bestScore(){ try { return +localStorage.getItem(BEST_KEY) || 0; } catch(e){ return 0; } }
+function saveBest(v){ try { localStorage.setItem(BEST_KEY, String(v)); } catch(e){} }
+function scoreHtml(sp, best, isNew){
+  const n = v => v.toLocaleString("en-GB");
+  return `<div class="score">
+    <div class="score-top"><div><span class="dim">Final score</span><div class="score-total">${n(sp.total)}</div>${isNew ? `<span class="newbest">New personal best!</span>` : `<span class="dim">Personal best: ${n(best)}</span>`}</div>
+      <div class="grade" aria-label="Grade ${grade(sp.total)}">${grade(sp.total)}</div></div>
+    <table class="ledger">
+      <tr><td>Money generated<br><small>${fmt(S.earned || 0)} in premiums</small></td><td>${n(sp.money)}</td></tr>
+      <tr><td>Days survived<br><small>${n(daysSurvived())} days</small></td><td>${n(sp.days)}</td></tr>
+      <tr><td>Bonuses<br><small>${S.stars || 0} stars, ${sp.achN} achievements, your title</small></td><td>${n(sp.bonus)}</td></tr>
+      <tr><td>Reputation<br><small>Average customer mood ${Math.round(sp.rep)}%</small></td><td>×${sp.mult.toFixed(2)}</td></tr>
+    </table></div>`;
+}
+
+/* ---------- Tutorial ---------- */
+const TUT = [
+  {el:null, title:"Welcome to Fine Print Syndicate", text:"You’re the new CEO of a syndicate in the London insurance market. This quick tour shows you how everything works. The game is paused while it runs."},
+  {el:"#cashBox", title:"Cash", text:"Your money, and what you earn each second before claims. If cash falls too far below zero, the bank takes the building."},
+  {el:".hud .stock", title:"Share price and title", text:"Earnings calls move your share price. The numbers in brackets show how many of the board’s targets you’ve hit toward your next promotion."},
+  {el:() => $("#happyBar").closest(".stat"), title:"Customer mood", text:"Paying claims keeps customers happy, and happy customers buy more. Very unhappy customers bring regulator warnings. Mood is also your reputation in the final score."},
+  {el:() => $("#qLabel").closest(".qrow"), title:"Earnings calls", text:"Every 60 seconds the City checks your profit against its target. Beat it to earn up to 3 stars, a cash bonus and board confidence. The better you do, the higher the target goes."},
+  {el:() => $("#confBar").closest(".qrow"), title:"Board confidence and the market", text:"If board confidence reaches zero, you’re fired. The label on the right shows the insurance cycle: hard markets mean high prices, soft markets mean price wars. Set your pricing to match in the Boardroom."},
+  {el:"#btnHelp", title:"Pause and help", text:"Pause the game any time with the Pause button or the P key. This ? button reopens the tutorial and the full room guide whenever you need them."},
+  {el:"#game", title:"Your tower", text:"Drag to scroll. Tap a floor to upgrade it or change its design. Brokers with a “!” in The Room at the bottom are claims waiting for you. Tap them."},
+  {el:"#btnFloors", title:"Build floors", text:"Every room has an upside and a downside, and each new floor raises all salaries by 6%. After your first 3 floors, Compliance must cover the rest or the regulator will warn you."},
+  {el:"#btnClaims", title:"Handle claims", text:"Pay, deny or stall with paperwork. Serious claims that look genuine are the most likely to sue, and to win. A Risk Dept shows you the odds."},
+  {el:"#btnBoard", title:"The Boardroom", text:"Check your promotion targets, buy your own insurance against rare black swan disasters, spend stars on perks and track achievements."},
+  {el:null, title:"How it ends", text:"You lose if you go bankrupt, get fired, or lose your licence after three warnings. Your final score combines the money you generate, the days you survive and your reputation. Good luck."},
+];
+let tutorialOn = false, tutI = 0;
+function tutTarget(st){ if (!st.el) return null; const el = typeof st.el === "function" ? st.el() : $(st.el); return el && el.getClientRects().length ? el : null; }
+function startTutorial(){ tutorialOn = true; tutI = 0; $("#coach").hidden = false; showStep(); }
+function endTutorial(){
+  tutorialOn = false; $("#coach").hidden = true;
+  if (!S.seen){ S.seen = true; save(); }
+  toast("You can reopen the tutorial any time with the ? button at the top.", "good");
+}
+function showStep(){
+  const st = TUT[tutI], last = tutI === TUT.length - 1, first = tutI === 0;
+  $("#coachCard").innerHTML = `<div class="coach-dots" aria-hidden="true">${TUT.map((_, k) => `<i class="${k <= tutI ? "on" : ""}"></i>`).join("")}</div>
+    <p class="coach-step">${first ? "Tutorial" : `Step ${tutI} of ${TUT.length - 1}`}</p>
+    <h3>${st.title}</h3><p>${st.text}</p>
+    <div class="coach-btns">${last ? "" : `<button class="btn ghost" data-tut="skip">Skip tutorial</button>`}<span style="flex:1"></span>${first ? "" : `<button class="btn ghost" data-tut="back">Back</button>`}<button class="btn" data-tut="next">${first ? "Start the tour" : last ? "Start playing" : "Next"}</button></div>`;
+  placeCoach();
+  $("#coachCard").querySelector('[data-tut="next"]').focus({preventScroll:true});
+}
+function placeCoach(){
+  if (!tutorialOn) return;
+  const el = tutTarget(TUT[tutI]), card = $("#coachCard"), hole = $("#coachHole");
+  const W = window.innerWidth, H = window.innerHeight, cw = Math.min(360, W - 24);
+  card.style.width = cw + "px";
+  const ch = card.offsetHeight;
+  if (!el){
+    hole.style.cssText = `left:${W/2}px;top:${H/2}px;width:0;height:0;border-width:0`;
+    card.style.left = (W - cw)/2 + "px"; card.style.top = Math.max(12, (H - ch)/2) + "px";
+    return;
+  }
+  const r = el.getBoundingClientRect(), pad = 6;
+  hole.style.cssText = `left:${r.left - pad}px;top:${r.top - pad}px;width:${r.width + pad*2}px;height:${r.height + pad*2}px`;
+  let top;
+  if (r.bottom + pad + 12 + ch < H - 8) top = r.bottom + pad + 12;
+  else if (r.top - pad - 12 - ch > 8) top = r.top - pad - 12 - ch;
+  else top = Math.max(12, (H - ch)/2);
+  card.style.top = top + "px";
+  card.style.left = clamp(r.left + r.width/2 - cw/2, 12, W - cw - 12) + "px";
+}
+function tutNext(){ if (tutI >= TUT.length - 1) endTutorial(); else { tutI++; showStep(); } }
+$("#coach").addEventListener("click", e => {
+  const b = e.target.closest("[data-tut]"); if (!b) return;
+  const a = b.dataset.tut;
+  if (a === "skip") endTutorial();
+  else if (a === "back"){ tutI = Math.max(0, tutI - 1); showStep(); }
+  else tutNext();
+});
+document.addEventListener("keydown", e => {
+  if (!tutorialOn) return;
+  if (e.key === "Escape") endTutorial();
+  else if (e.key === "ArrowRight") tutNext();
+  else if (e.key === "ArrowLeft" && tutI > 0){ tutI--; showStep(); }
+});
+window.addEventListener("resize", () => placeCoach());
+$("#btnHelp").addEventListener("click", () => { if (!tutorialOn) intro(); });
+
+/* ---------- Funding, lawsuits, runway ---------- */
+function divAmt(){ const h = (S.profHist || []).filter(x => x > 0); const avg = h.length ? h.reduce((a, b) => a + b, 0)/h.length : B(); return Math.round(Math.max(150, avg*0.4)/10)*10; }
+function cashCallAmt(){ return Math.round(Math.max(1000, baseIncome()*Q_LEN*1.0)/10)*10; }
+function loanAmt(){ return Math.round(Math.max(800, baseIncome()*Q_LEN*0.8)/10)*10; }
+function settleCost(l){ return lv("legal") ? Math.round(l.amt*(l.win != null ? l.win : 0.85)*0.6) : Math.round(l.amt*0.5); }
+const cashSamples = [];
+let discSpent = 0;
+function sampleCash(){ cashSamples.push(S.cash + discSpent); if (cashSamples.length > 20) cashSamples.shift(); }
+function runway(){
+  if (cashSamples.length < 8) return null;
+  const slope = (cashSamples[cashSamples.length - 1] - cashSamples[0])/(cashSamples.length - 1);
+  if (slope >= -0.5) return null;
+  const left = S.cash + overdraft();
+  return left <= 0 ? 0 : left/(-slope);
+}
+function openLawsuits(){
+  const rows = S.lawsuits.map((l, k) => `<div class="law"><div><b>${l.name || "A former customer"}: ${fmt(l.amt)}</b>
+      <p>Court date in ${Math.max(1, Math.ceil(l.t))}s. ${lv("legal") ? `Legal rates your chances: you’d probably ${(l.win != null ? l.win : 0.85) >= 0.5 ? "lose" : "win"}.` : "Build Legal to find out your chances."}</p></div>
+      <button class="btn" data-act="settle:${k}">Settle ${fmt(settleCost(l))}</button></div>`).join("");
+  openModal(`<div class="top"><h2>Pending lawsuits</h2>${xBtn}</div>
+    <p class="dim">Lose in court and you pay the full amount. Settling costs less than a likely loss, but you pay it now. ${lv("legal") ? "Your Legal team prices each settlement on your real chances." : "Without Legal, every settlement costs half the claim."}</p>
+    ${rows || `<div class="empty"><p>No lawsuits right now.</p></div>`}`, {view:"law"});
+}
+$("#lawBtn").addEventListener("click", () => { if (!tutorialOn) openLawsuits(); });
+
+/* ---------- Sound ---------- */
+const SND = {ctx:null, master:null, muted:false, last:{}, rain:null, rainWanted:false, buf:null};
+try { SND.muted = localStorage.getItem("fineprint-muted") === "1"; } catch(e){}
+function audioInit(){
+  if (SND.ctx){ if (SND.ctx.state === "suspended") SND.ctx.resume(); return; }
+  const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+  SND.ctx = new AC(); SND.master = SND.ctx.createGain(); SND.master.gain.value = SND.muted ? 0 : 0.5; SND.master.connect(SND.ctx.destination);
+  const c = SND.ctx, b = c.createBuffer(1, c.sampleRate, c.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random()*2 - 1;
+  SND.buf = b; setRainSound(SND.rainWanted);
+}
+window.addEventListener("pointerdown", audioInit, {capture:true});
+window.addEventListener("keydown", audioInit, {capture:true});
+function tone(f, t0, dur, type, vol, slide){
+  const c = SND.ctx, o = c.createOscillator(), g = c.createGain();
+  o.type = type || "square"; o.frequency.setValueAtTime(f, t0);
+  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, f*slide), t0 + dur);
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol || 0.1, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(SND.master); o.start(t0); o.stop(t0 + dur + 0.03);
+}
+function noise(t0, dur, vol, freq, type){
+  const c = SND.ctx, src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+  src.buffer = SND.buf; f.type = type || "lowpass"; f.frequency.value = freq || 800;
+  g.gain.setValueAtTime(vol || 0.2, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  src.connect(f); f.connect(g); g.connect(SND.master); src.start(t0); src.stop(t0 + dur + 0.05);
+}
+function sfx(name, n){
+  if (!SND.ctx || SND.muted || SND.ctx.state !== "running") return;
+  const now = SND.ctx.currentTime, gap = {coin:1.4, tick:0.05, pay:0.12, stamp:0.12}[name] || 0.08;
+  if (SND.last[name] && now - SND.last[name] < gap) return;
+  SND.last[name] = now; const t = now + 0.01;
+  switch (name){
+    case "coin": tone(1320,t,0.07,"square",0.03); tone(1760,t+0.06,0.09,"square",0.03); break;
+    case "pay": tone(880,t,0.07,"square",0.07); tone(1320,t+0.07,0.12,"square",0.07); noise(t+0.02,0.05,0.04,6000,"highpass"); break;
+    case "stamp": noise(t,0.12,0.35,420); tone(110,t,0.12,"sine",0.25,0.5); break;
+    case "paper": noise(t,0.2,0.12,3000,"bandpass"); break;
+    case "gavel": noise(t,0.07,0.4,500); tone(150,t,0.1,"triangle",0.25,0.6); noise(t+0.22,0.07,0.4,500); tone(150,t+0.22,0.1,"triangle",0.25,0.6); break;
+    case "chime": [784,988,1175].forEach((f,k) => tone(f,t+k*0.08,0.25,"triangle",0.08)); break;
+    case "bell": for (let k = 0; k < (n || 1); k++){ const tt = t + k*0.55; tone(660,tt,1.4,"sine",0.16); tone(1650,tt,0.7,"sine",0.05); tone(990,tt,1.0,"triangle",0.04); } break;
+    case "build": noise(t,0.25,0.3,300); tone(196,t,0.2,"triangle",0.2,0.7); [523,659,784].forEach((f,k) => tone(f,t+0.3+k*0.07,0.15,"square",0.05)); break;
+    case "upgrade": [523,659,784,1047].forEach((f,k) => tone(f,t+k*0.06,0.12,"square",0.05)); break;
+    case "fanfare": [523,659,784,1047,784,1047].forEach((f,k) => tone(f,t+k*0.09,0.18,"square",0.05)); break;
+    case "swan": tone(70,t,1.6,"sawtooth",0.16,0.5); noise(t,1.5,0.3,200); break;
+    case "lose": [392,330,262,196].forEach((f,k) => tone(f,t+k*0.22,0.35,"triangle",0.12)); break;
+    case "warn": tone(440,t,0.12,"square",0.06); tone(330,t+0.14,0.16,"square",0.06); break;
+    case "tick": tone(1800,t,0.03,"square",0.02); break;
+  }
+}
+function setRainSound(on){
+  SND.rainWanted = on;
+  if (!SND.ctx) return;
+  if (on && !SND.muted && !paused && !SND.rain){
+    const c = SND.ctx, src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    src.buffer = SND.buf; src.loop = true; f.type = "lowpass"; f.frequency.value = 1400; g.gain.value = 0.0001;
+    g.gain.exponentialRampToValueAtTime(0.03, c.currentTime + 1.5);
+    src.connect(f); f.connect(g); g.connect(SND.master); src.start(); SND.rain = {src, g};
+  } else if ((!on || SND.muted || paused) && SND.rain){
+    const r = SND.rain, c = SND.ctx; SND.rain = null;
+    r.g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.8); r.src.stop(c.currentTime + 0.9);
+  }
+}
+function setMuted(m){
+  SND.muted = m; try { localStorage.setItem("fineprint-muted", m ? "1" : "0"); } catch(e){}
+  $("#btnSound").textContent = m ? "🔇" : "🔊"; $("#btnSound").setAttribute("aria-label", m ? "Turn sound on" : "Mute sound");
+  if (SND.master) SND.master.gain.value = m ? 0 : 0.5;
+  setRainSound(SND.rainWanted);
+}
+$("#btnSound").addEventListener("click", () => { audioInit(); setMuted(!SND.muted); });
+setMuted(SND.muted);
+document.addEventListener("click", e => { if (e.target.closest(".btn, .type, .pbtn")) sfx("tick"); });
+
+/* ---------- Executives and autopilot ---------- */
+const EXECS = [
+  {id:"cos", name:"Chief of Staff", rank:1, sal:0.6, desc:"Handles events and earnings calls for you, always picking the cautious option. The game no longer stops to wait for you.", joke:"Wears a lanyard with seven badges on it."},
+  {id:"claims", name:"Head of Claims", rank:1, sal:0.8, desc:"Decides any claim left waiting over 10 seconds: pays ones that look genuine, denies likely fraud, and uses Risk Dept intel if you have it.", joke:"Bonus tied to “claim outcomes.” Nobody will say which outcomes."},
+  {id:"cro", name:"Chief Risk Officer", rank:2, sal:1.0, desc:"Keeps your own insurance in force and settles lawsuits you’d probably lose.", joke:"Sleeps in a hard hat."},
+  {id:"cco", name:"Chief Compliance Officer", rank:2, sal:1.0, desc:"Upgrades or builds Compliance before the regulator spots a gap.", joke:"Has read all 400 pages. Twice. For fun."},
+  {id:"cfo", name:"Chief Financial Officer", rank:3, sal:1.3, desc:"Sets pricing for the market cycle, pays dividends when the board gets twitchy, and borrows if cash is about to run out.", joke:"Speaks only in basis points."},
+  {id:"coo", name:"Chief Operating Officer", rank:4, sal:1.3, desc:"Spends spare cash on upgrades and new floors, always keeping a safety buffer.", joke:"Has never met a problem a new floor couldn’t fix."},
+];
+function hasExec(id){ return !!(S.execs && S.execs[id]); }
+function execCount(){ return EXECS.filter(x => hasExec(x.id)).length; }
+function execRate(x){ return x.sal*(0.4 + Math.max(0, baseIncome())*0.03); }
+function execCost(){ let c = 0; for (const x of EXECS) if (hasExec(x.id)) c += execRate(x); return c; }
+function execBuffer(){ return typicalClaim()*6 + Object.keys(COVERS).reduce((a, k) => a + (S.cover[k] ? coverCost(k, income()*Q_LEN) : 0), 0); }
+let apT = 0;
+function autopilot(dt){
+  apT += dt; if (apT < 0.5) return; apT = 0;
+  if (hasExec("claims")){
+    for (const c of [...S.claims]){
+      if (c.max - c.pat < 10) continue;
+      let act = lv("risk") >= 2 && legitEst(c) < 50 ? "deny" : "pay";
+      if (act === "pay" && lv("risk") < 2 && !c.stalls && c.amount > typicalClaim()*1.3 && S.cash < typicalClaim()*4) act = "stall";
+      if (act === "pay" && !canPay(c.amount)) act = c.stalls ? "deny" : "stall";
+      resolve(c, act, "you");
+    }
+  }
+  if (hasExec("cro")){
+    for (const k of Object.keys(COVERS)){ const cost = coverCost(k, income()*Q_LEN); if (!S.cover[k] && S.quarter >= 3 && S.cash > cost*4){ S.cash -= cost; discSpent += cost; S.cover[k] = true; toast(`Your Chief Risk Officer bought ${COVERS[k].name.toLowerCase()}.`); } }
+    for (let k = S.lawsuits.length - 1; k >= 0; k--){ const l = S.lawsuits[k], cost = settleCost(l); if ((l.win != null ? l.win : 0.85) >= 0.5 && S.cash > cost*2){ spend(cost, "other"); S.lawsuits.splice(k, 1); toast(`Your Chief Risk Officer settled with ${l.name || "a former customer"} for ${fmt(cost)}.`); } }
+  }
+  if (hasExec("cco") && compGap() >= 0 && S.floors.length >= 3){
+    const cf = S.floors.filter(f => f.type === "compliance" && f.level < MAXL).sort((a, b) => a.level - b.level)[0];
+    if (compGap() > 0 || S.qt > 35){
+      if (cf && S.cash - execBuffer() > upCost(cf)){ S.cash -= upCost(cf); discSpent += upCost(cf); cf.level++; rebuildWorkers(S.floors.indexOf(cf)); toast("Your Chief Compliance Officer upgraded Compliance."); }
+      else if (!cf && S.floors.length < MAXF && S.cash - execBuffer() > buildCost()){ const c = buildCost(); S.cash -= c; discSpent += c; S.floors.push({type:"compliance", level:1, mode:"pay"}); rebuildWorkers(S.floors.length-1); toast("Your Chief Compliance Officer built a Compliance floor."); }
+    }
+  }
+  if (hasExec("cfo")){
+    const cn = cycleName(), want = cn === "Hard market" ? 2 : (cn === "Soft market" && S.happy < 50) ? 0 : 1;
+    if (priceIdx() !== want && priceIdx() !== 3){ S.price = want; toast(`Your CFO switched pricing to ${PRICES[want].name.toLowerCase()} for the ${cn.toLowerCase()}.`); }
+    if (S.divQ !== S.quarter && S.conf < 70 && S.qt > 45 && S.cash > divAmt() + execBuffer()){ const a = divAmt(); S.cash -= a; discSpent += a; S.divQ = S.quarter; S.conf = clamp(S.conf + 8, 0, 100); S.stock *= 1.03; toast(`Your CFO paid a ${fmt(a)} dividend to calm the board.`, "good"); }
+    const run = runway();
+    if (run != null && run < 30 && !S.loan){ const a = loanAmt(), tot = Math.round(a*1.25); S.cash += a; discSpent -= a; S.loan = {left:tot, per:Math.ceil(tot/4), interest:Math.round((tot - a)/4)}; toast(`Your CFO took out a ${fmt(a)} loan to keep the lights on.`, "bad"); }
+  }
+  if (hasExec("coo")){
+    const buffer = execBuffer()*1.5;
+    const want = {sales:5, claims:2, marketing:1, actuary:1, legal:1, risk:1, it:1, ir:1};
+    if (S.floors.length < MAXF && S.cash - buffer > buildCost()*1.3){
+      const need = Object.keys(want).map(t => [t, S.floors.filter(f => f.type === t).length/want[t]]).sort((a, b) => a[1] - b[1])[0][0];
+      const c = buildCost(); S.cash -= c; discSpent += c; S.floors.push({type:need, level:1, mode:"pay"}); rebuildWorkers(S.floors.length-1);
+      toast(`Your COO built a new ${TYPES[need].name}.`);
+    } else {
+      const f = S.floors.filter(f => f.level < MAXL && f.type !== "compliance").sort((a, b) => (a.type === "sales" ? 0 : 1) - (b.type === "sales" ? 0 : 1) || upCost(a) - upCost(b))[0];
+      if (f && S.cash - buffer > upCost(f)*1.5){ const c = upCost(f); S.cash -= c; discSpent += c; f.level++; rebuildWorkers(S.floors.indexOf(f)); }
+    }
+  }
+}
+function execsHtml(){
+  return `<h3 style="margin-top:14px">Executive team</h3>
+    <p class="dim">Promotions unlock executives who run parts of the business on autopilot. Their pay scales with revenue, so autopilot costs margin. Hire or let go at any time.</p>
+    ${EXECS.map(x => { const locked = S.rankIdx < x.rank, on = hasExec(x.id);
+      return `<div class="action"><div><h3>${on ? "🤖 " : ""}${x.name}</h3><p>${x.desc} <i>${x.joke}</i> ${locked ? "" : `Pay: about ${fmtR(execRate(x))}/s.`}</p></div>
+        ${locked ? `<button class="btn ghost" disabled>🔒 ${RANKS[x.rank].name}</button>` : on ? `<button class="btn ghost" data-act="exec:${x.id}:off">Let go</button>` : `<button class="btn green" data-act="exec:${x.id}:on">Hire</button>`}</div>`; }).join("")}`;
+}
+function offlineCheck(){
+  if (!S.savedAt || S.over || !S.seen) return;
+  const away = (Date.now() - S.savedAt)/1000;
+  if (away < 120) return;
+  const h = (S.profHist || []).filter(x => x > 0);
+  const qProfit = h.length ? h.reduce((a, b) => a + b, 0)/h.length : 0;
+  if (qProfit <= 0) return;
+  const eff = Math.min(0.75, 0.15 + 0.1*execCount() + (lv("claims") ? 0.05 : 0));
+  const quarters = Math.min(12, away/Q_LEN);
+  const amt = Math.round(qProfit*quarters*eff);
+  if (amt < 10) return;
+  S.cash += amt; S.earned = (S.earned || 0) + amt; save();
+  const hrs = Math.floor(away/3600), mins = Math.floor(away % 3600/60);
+  openModal(`<h2>While you were away</h2>
+    <p>You were gone for ${hrs ? hrs + "h " : ""}${mins}m. Your syndicate kept writing business and earned <b class="pos">${fmt(amt)}</b>.</p>
+    <p class="dim">Away earnings are ${Math.round(eff*100)}% of your normal quarterly profit, for up to 12 quarters. ${execCount() < 6 ? "Every executive you hire adds 10%, up to 75%." : "Your full executive team is running things at 75%."}</p>
+    <div class="closeRow"><button class="btn" data-act="close">Back to work</button></div>`);
+}
+
+const ENDINGS = {
+  bankrupt:{title:"Bankrupt", text:"The bank has taken the building. The board replaced you with a golden retriever named Biscuit. The share price rose 4% on the news."},
+  fired:{title:"Fired", text:"The board has lost all confidence in you. Security walked you out holding a box with one sad plant. Percy kept your parking space."},
+  licence:{title:"Licence revoked", text:"After three warnings, the regulator has pulled your licence. Fine Print Syndicate is now a very tall coffee shop."},
+};
+function gameOver(reason){
+  reason = reason || "bankrupt";
+  if (perk("parachute")){
+    delete S.perks.parachute;
+    S.cash = Math.max(S.cash, 0); S.conf = Math.max(S.conf, 35); S.strikes = Math.min(S.strikes, maxStrikes() - 1);
+    fxConfetti(); save();
+    openModal(`<h2>Golden parachute deployed</h2><p>You were about to be ${reason === "bankrupt" ? "bankrupt" : reason === "fired" ? "fired" : "shut down"}, but your golden parachute saved you. Cash, confidence and warnings have been patched up, just this once.</p>
+      <div class="closeRow"><button class="btn" data-act="close">Never again</button></div>`, {locked:true});
+    return;
+  }
+  const e = ENDINGS[reason]; sfx("lose");
+  const sp = scoreParts(), prevBest = bestScore(), isNew = sp.total > prevBest;
+  if (isNew) saveBest(sp.total);
   S.over = true; save();
-  openModal(`<h2>Bankrupt</h2>
-    <p>The bank has taken the building. The board replaced you with a golden retriever named Biscuit. The share price rose 4% on the news.</p>
+  openModal(`<h2>${e.title}</h2>
+    <p>${e.text}</p>
+    ${scoreHtml(sp, Math.max(prevBest, sp.total), isNew)}
     <div class="facts">
       <div class="fact"><span>Quarters survived</span><b>${S.quarter-1}</b></div>
       <div class="fact"><span>Best title</span><b style="font-size:15px">${RANKS[S.rankIdx].name}</b></div>
-      <div class="fact"><span>Floors built</span><b>${S.floors.length}</b></div>
-      <div class="fact"><span>Yachts</span><b>${S.yachts}</b></div>
+      <div class="fact"><span>Stars earned</span><b>${S.stars} ★</b></div>
+      <div class="fact"><span>Achievements</span><b>${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length}</b></div>
     </div>
     <button class="btn" style="width:100%" data-act="restart-yes">Start a new company</button>`, {locked:true});
+}
+const COVERS = {
+  cat:{name:"Catastrophe reinsurance", rate:0.02, desc:"Pays 90% of storms, volcanoes and other natural disasters."},
+  cyber:{name:"Cyber cover", rate:0.015, desc:"Pays 90% of a global cyber attack."},
+  dno:{name:"Directors’ and officers’ cover", rate:0.01, desc:"Pays 90% if a scandal blows up inside the company."},
+};
+function coverCost(k, prem){ return Math.round(Math.max(60, prem*COVERS[k].rate)*(perk("reinsdisc") ? 0.75 : 1)); }
+const SWANS = {
+  storm:{title:"The storm of the century", text:"A hurricane tears through three countries and half your portfolio in one weekend.", cover:"cat", mit:() => Math.min(0.5, 0.08*lv("actuary")), mitName:"Cat Modelling"},
+  ash:{title:"The volcano that grounded the world", text:"An ash cloud shuts every airport for a month. Travel, cargo and event policies all claim at once.", cover:"cat", mit:() => Math.min(0.5, 0.08*lv("actuary")), mitName:"Cat Modelling"},
+  cyber:{title:"Global cyber attack", text:"Ransomware hits every client you insure on the same Tuesday morning.", cover:"cyber", mit:() => Math.min(0.6, 0.15*lv("it")), mitName:"IT"},
+  scandal:{title:"Rogue underwriter scandal", text:"One of your underwriters wrote £2bn of cover on a napkin, then left for a beach with no extradition treaty.", cover:"dno", mit:() => Math.min(0.6, 0.15*lv("compliance")), mitName:"Compliance"},
+  crash:{title:"Market crash", text:"Global markets fall off a cliff. Nobody can insure against this one.", cover:null},
+};
+function blackSwan(kind){
+  S.swanDone = true; S.cyc = Math.PI/2;
+  sfx("swan");
+  const sw = SWANS[kind];
+  if (scene){ scene.cameras.main.shake(700, 0.012); scene.cameras.main.flash(500, 255, 60, 60); }
+  let body;
+  if (!sw.cover){
+    const drop = 0.3*Math.max(0.4, 1 - 0.1*lv("ir"));
+    S.stock = Math.max(0.5, S.stock*(1 - drop)); S.conf = clamp(S.conf - 10, 0, 100);
+    body = `<p>Your share price fell ${Math.round(drop*100)}%. ${lv("ir") ? "Capital Relations softened the blow." : "Capital Relations could have softened the blow."} Board confidence −10.</p>`;
+  } else {
+    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)));
+    const mit = sw.mit(), net = Math.round(gross*(1 - mit));
+    const covered = S.cover[sw.cover];
+    const loss = covered ? Math.round(net*0.1) : net;
+    spend(loss, "other");
+    if (covered){ S.swansSurvived = (S.swansSurvived || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); }
+    else S.conf = clamp(S.conf - 25, 0, 100);
+    body = `<table class="ledger">
+      <tr><td>Total loss</td><td class="neg">−${fmt(gross)}</td></tr>
+      ${mit ? `<tr><td>Saved by ${sw.mitName}</td><td class="pos">+${fmt(gross - net)}</td></tr>` : ""}
+      ${covered ? `<tr><td>Paid by your ${COVERS[sw.cover].name.toLowerCase()}</td><td class="pos">+${fmt(net - loss)}</td></tr>` : ""}
+      <tr class="total"><td>You pay</td><td class="neg">−${fmt(loss)}</td></tr></table>
+      <p>${covered ? "Your cover held. You paid only the 10% retention." : `You had no ${COVERS[sw.cover].name.toLowerCase()}, so you paid the lot. Board confidence −25.`}</p>
+      ${S.cash < -overdraft() ? `<p class="note">This loss is bigger than the bank will tolerate.</p>` : ""}`;
+  }
+  openModal(`<div class="swan"><h2>🦢 Black swan: ${sw.title}</h2><p>${sw.text}</p>${body}</div>
+    <div class="closeRow"><button class="btn red" data-act="close">Brace</button></div>`, {locked:true, auto:true, onClose:() => {
+      if (S.cash < -overdraft()) return gameOver("bankrupt");
+      if (S.conf <= 0) return gameOver("fired");
+      save(); }});
+}
+const PERKS = [
+  {id:"espresso", name:"Espresso machine", cost:2, desc:"Every floor works 5% faster."},
+  {id:"dinners", name:"Analyst dinners", cost:3, desc:"The City expects 3% less growth each quarter."},
+  {id:"reinsdisc", name:"Reinsurance discount", cost:4, desc:"Your own insurance costs 25% less."},
+  {id:"lobbyist", name:"A lobbyist", cost:4, desc:"Regulator fines are 40% lower, and you can take 4 warnings instead of 3."},
+  {id:"loyalty", name:"Broker loyalty scheme", cost:5, desc:"+10% premium income."},
+  {id:"parachute", name:"Golden parachute", cost:6, desc:"Saves you from one game-ending disaster, then it’s gone."},
+];
+const ACH = [
+  {id:"floor5", name:"Five-floor walk-up", desc:"Build 5 floors.", test:() => S.floors.length >= 5},
+  {id:"floor10", name:"Skyline material", desc:"Build 10 floors.", test:() => S.floors.length >= 10},
+  {id:"full", name:"Zoning limit", desc:"Build all 14 floors.", test:() => S.floors.length >= 14},
+  {id:"beat", name:"Beat the City", desc:"Beat expectations once.", test:() => S.bestStreak >= 1},
+  {id:"streak3", name:"On a roll", desc:"Beat expectations 3 quarters running.", test:() => S.bestStreak >= 3},
+  {id:"streak6", name:"Unstoppable", desc:"Beat expectations 6 quarters running.", test:() => S.bestStreak >= 6},
+  {id:"three", name:"Three stars", desc:"Earn 3 stars in one quarter.", test:() => S.best3},
+  {id:"fraud10", name:"Fraud buster", desc:"Catch 10 fraudulent claims.", test:() => (S.fraudCaught || 0) >= 10},
+  {id:"happy90", name:"Beloved", desc:"Get customer mood to 90%.", test:() => S.happy >= 90},
+  {id:"swan", name:"Black swan survivor", desc:"Survive a black swan with cover.", test:() => (S.swansSurvived || 0) >= 1},
+  {id:"clean", name:"Spotless record", desc:"6 quarters without a warning.", test:() => (S.cleanRun || 0) >= 6},
+  {id:"brutal", name:"Brutal market", desc:"Push the market to Brutal.", test:() => S.diff >= 3.1},
+  {id:"stock100", name:"Triple digits", desc:"Reach a £100 share price.", test:() => S.stock >= 100},
+  {id:"yacht3", name:"Yacht club", desc:"Own 3 yachts.", test:() => S.yachts >= 3},
+];
+function checkAch(){
+  for (const a of ACH){
+    if (!S.ach[a.id] && a.test()){ S.ach[a.id] = true; S.favour++; toast(`Achievement: ${a.name}! +1 ★ to spend in the Boardroom.`, "good"); fxConfetti(); }
+  }
+}
+function compHtml(){
+  const need = compNeed(), have = compHave(), gap = need - have;
+  if (need === 0) return `<p class="dim">Compliance: your first 3 floors don’t need cover yet.</p>`;
+  return `<p class="${gap > 0 ? "note" : "dim"}">Compliance covers ${have} of the ${need} floors the regulator wants covered.${gap > 0 ? " You’ll get a warning at the next earnings call unless you add Compliance." : ""}</p>`;
 }
 function restart(){
   S = newState(); S.seen = true; W = []; CUST = []; popT = []; elev.init = false;
@@ -1369,7 +2045,7 @@ const EVENTS = [
     {label:() => "Politely decline", run(){ return "He says Doughlores will remember this. She is yeast."; }}]},
   {id:"regulator", title:"The regulator is here", text:() => S.happy < 40 ? "They’ve been reading your reviews. They brought a clipboard." : "Just a routine visit. They brought a clipboard anyway.", choices:[
     {label:() => "Offer them pastries", run(){ if (S.happy < 40){ const f = B()*1.5; spend(f,"other"); return `The pastries were noted as “a lot.” Fine: ${fmt(f)}.`; } return "They took two croissants and left happy."; }},
-    {label:() => "Show them the fine print", run(){ if (lv("legal") >= 2) return "They needed a microscope. They gave up. You’re in the clear."; const f = B(); spend(f,"other"); return `They could read it. That was the problem. Fine: ${fmt(f)}. (A bigger Wordings Dept would help.)`; }}]},
+    {label:() => "Show them the fine print", run(){ if (lv("legal") >= 2) return "They needed a microscope. They gave up. You’re in the clear."; const f = B(); spend(f,"other"); return `They could read it. That was the problem. Fine: ${fmt(f)}. (A bigger Legal team would help.)`; }}]},
   {id:"printer", title:"The printer has demands", text:"The office printer has become self-aware. It wants dental coverage and to never print in color again.", choices:[
     {label:() => `Give it dental (${fmt(B()*0.5)})`, run(){ spend(B()*0.5,"other"); S.buffs.morale = 40; return "Morale soared. Everyone works faster for a while."; }},
     {label:() => "Unplug it", run(){ return "It printed one final page that just said “why.” Nobody talks about it."; }}]},
@@ -1483,7 +2159,7 @@ const EVENTS = [
     {label:() => "Decline", run(){ return "He shrugs and goes back to saying “bring snacks.”"; }}]},
   {id:"lawyerup", title:"A former customer sues", text:"Someone you denied three years ago is back. Their lawyer has a billboard and a catchphrase.", cond:() => S.quarter > 2, choices:[
     {label:() => `Settle quietly (${fmt(B()*1.2)})`, run(){ spend(B()*1.2,"other"); return "Settled. The billboard now says “We won!” next to your logo."; }},
-    {label:() => "Fight it in court", run(){ if (lv("legal") >= 2 && Math.random() < .7) return "Your Wordings Dept found clause 88-Q. Case dismissed. The lawyer’s billboard is for rent."; sue(B()*2.5); return "Court date set. Your lawyers seem “optimistic,” which is not a word lawyers use."; }}]},
+    {label:() => "Fight it in court", run(){ if (lv("legal") >= 2 && Math.random() < .7) return "Your Legal team found clause 88-Q. Case dismissed. The lawyer’s billboard is for rent."; sue(B()*2.5); return "Court date set. Your lawyers seem “optimistic,” which is not a word lawyers use."; }}]},
   {id:"scorchie", title:"The building melted a car", text:"Your curved glass facade focused the afternoon sun into a beam and melted a parked sports car. The papers are calling it a death ray.", choices:[
     {label:() => `Pay for the car (${fmt(B())})`, run(){ spend(B(),"paid"); mood(4); return "The owner is placated. A tabloid fried an egg on the pavement for a photo."; }},
     {label:() => `Sell tickets to the beam (+${fmt(B()*0.6)})`, run(){ gain(B()*0.6); mood(-4); return "Tourists love it. The car owner does not. Legal is “monitoring the situation.”"; }}]},
@@ -1519,6 +2195,10 @@ function fireEvent(){
   if (!pool.length) pool = EVENTS.filter(e => !e.cond || e.cond());
   const e = pick(pool); S.recentEv.push(e.id); if (S.recentEv.length > 22) S.recentEv.shift(); curEvent = e;
   const txt = typeof e.text === "function" ? e.text() : e.text;
+  if (hasExec("cos")){
+    const k = e.choices.length - 1, label = e.choices[k].label(), res = e.choices[k].run(); curEvent = null;
+    toast(`${e.title}: your Chief of Staff chose “${label}.” ${res}`); checkRank(); save(); return;
+  }
   openModal(`<h2>${e.title}</h2><p>${txt}</p>
     <div class="choices">${e.choices.map((c,k) => `<button class="btn ${k?"ghost":""}" data-act="ev:${k}">${c.label()}</button>`).join("")}</div>`, {locked:true});
 }
@@ -1531,6 +2211,14 @@ $("#sheet").addEventListener("click", e => {
   else if (a === "build") build(p);
   else if (a === "up") upgrade(+p, q);
   else if (a === "floor") openFloor(+p);
+  else if (a === "exec"){ const x = EXECS.find(x => x.id === p); if (!x || S.rankIdx < x.rank) return; S.execs[p] = q === "on"; toast(q === "on" ? `You hired a ${x.name}. ${x.joke}` : `Your ${x.name} has left to “spend more time with their yacht.”`, q === "on" ? "good" : ""); save(); openBoard(); }
+  else if (a === "price"){ S.price = +p; save(); openBoard(); }
+  else if (a === "dividend"){
+    const amt = divAmt(); if (S.divQ === S.quarter || S.cash < amt) return;
+    S.cash -= amt; discSpent += amt; S.divQ = S.quarter; S.conf = clamp(S.conf + 8, 0, 100); S.stock *= 1.03;
+    sfx("chime"); toast(`Dividend of ${fmt(amt)} paid. Shareholders are briefly content.`, "good"); checkRank(); save(); openBoard();
+  }
+  else if (a === "lim"){ S.floors[+p].lim = +q || 0; sfx("tick"); openFloor(+p); save(); }
   else if (a === "mode"){ S.floors[+p].mode = q; openFloor(+p); }
   else if (a === "skin"){ S.floors[+p].skin = +q; openFloor(+p); save(); }
   else if (a === "pay" || a === "deny" || a === "stall"){
@@ -1547,8 +2235,35 @@ $("#sheet").addEventListener("click", e => {
   else if (a === "buyback"){ if (doBuyback()){ toast("Shares bought back. Share price up 4%. Customers didn’t notice.", "good"); openBoard(); } }
   else if (a === "bonus"){
     const c = bonusCost(); if (S.cash < c) return;
-    spend(c,"other"); S.yachts++; S.stock *= 0.99;
+    spend(c,"other"); discSpent += c; S.yachts++; S.stock *= 0.99;
     toast(`You bought yacht #${S.yachts}: “${YACHTS[(S.yachts-1)%YACHTS.length]}.”`, "good"); openBoard();
+  }
+  else if (a === "cover"){
+    if (q === "on"){ const c = coverCost(p, income()*Q_LEN); if (S.cash < c) return; S.cash -= c; discSpent += c; S.q.other += c; S.cover[p] = true; toast(`You bought ${COVERS[p].name.toLowerCase()}. It renews each earnings call.`, "good"); }
+    else { S.cover[p] = false; toast(`${COVERS[p].name} cancelled. Good luck.`, "bad"); }
+    save(); openBoard();
+  }
+  else if (a === "perk"){
+    const pk = PERKS.find(x => x.id === p); if (!pk || S.favour < pk.cost || perk(p)) return;
+    S.favour -= pk.cost; S.perks[p] = true; toast(`Perk unlocked: ${pk.name}.`, "good"); fxConfetti(); save(); openBoard();
+  }
+  else if (a === "tutorial"){ closeModal(); startTutorial(); }
+  else if (a === "cashcall"){
+    if (S.quarter - S.lastCall < 2) return;
+    const amt = cashCallAmt(); S.cash += amt; discSpent -= amt; S.stock = Math.max(0.5, S.stock*0.85); S.conf = clamp(S.conf - 12, 0, 100); S.lastCall = S.quarter;
+    sfx("pay"); toast(`Cash call raised ${fmt(amt)}. Investors are not amused.`, "bad"); save(); openBoard();
+  }
+  else if (a === "loan"){
+    if (S.loan) return;
+    const amt = loanAmt(), total = Math.round(amt*1.25);
+    S.cash += amt; discSpent -= amt; S.loan = {left:total, per:Math.ceil(total/4), interest:Math.round((total - amt)/4)};
+    sfx("pay"); toast(`Loan of ${fmt(amt)} received. Repayments start at the next earnings call.`, "good"); save(); openBoard();
+  }
+  else if (a === "settle"){
+    const l = S.lawsuits[+p]; if (!l) return;
+    const cost = settleCost(l); spend(cost, "other"); S.lawsuits.splice(+p, 1);
+    sfx("paper"); toast(`Settled out of court for ${fmt(cost)}. Nobody admits anything.`, "good"); save();
+    if (S.lawsuits.length) openLawsuits(); else closeModal();
   }
   else if (a === "restart") openBoard(true);
   else if (a === "restart-yes") restart();
@@ -1565,7 +2280,14 @@ function hud(){
   const net = income() - upkeep();
   let rate = `${net>=0?"+":"−"}${fmtR(Math.abs(net)).replace("−","")}/s`;
   if (S.buffs.sales > 0) rate += " ×2";
-  $("#rate").textContent = rate + " income";
+  if (S.outage > 0) rate += " (IT outage)";
+  const run = runway();
+  $("#rate").textContent = run != null && run < 90 ? `⚠ Broke in ${Math.max(1, Math.round(run))}s` : rate + " income";
+  $("#rate").classList.toggle("warn", run != null && run < 90);
+  $("#confBar").parentElement.classList.toggle("danger", S.conf < 25);
+  const lb = $("#lawBtn");
+  if (S.lawsuits.length){ lb.hidden = false; lb.textContent = `⚖ ${S.lawsuits.length}`; lb.setAttribute("aria-label", `${S.lawsuits.length} pending lawsuits, worth up to ${fmt(S.lawsuits.reduce((a, l) => a + l.amt, 0))}`); }
+  else lb.hidden = true;
   $("#stock").textContent = fmt2(S.stock);
   const nx = RANKS[S.rankIdx+1];
   $("#rank").textContent = nx ? `${RANKS[S.rankIdx].name} (${nx.goals.filter(goalMet).length}/${nx.goals.length})` : RANKS[S.rankIdx].name;
@@ -1574,12 +2296,16 @@ function hud(){
   const qn = S.quarter;
   $("#qLabel").textContent = `Q${((qn-1)%4)+1} earnings call in ${Math.ceil(Q_LEN - S.qt)}s`;
   $("#qBar").style.width = (S.qt/Q_LEN*100) + "%";
+  $("#confBar").style.width = S.conf + "%";
+  $("#confBar").style.background = S.conf < 25 ? "var(--danger)" : S.conf < 50 ? "var(--gold)" : "var(--money)";
+  const cnm = cycleName(); $("#mktTxt").textContent = cnm;
+  $("#mktTxt").style.color = cnm === "Hard market" ? "var(--money)" : cnm === "Soft market" ? "#FF9F1C" : "var(--ink-dim)";
   $("#badge").textContent = S.claims.length;
   $("#btnClaims").classList.toggle("hot", S.claims.length > 0);
 }
 
 /* ---------- Phaser renderer ---------- */
-const FONT = '"Pixelify Sans", "Trebuchet MS", sans-serif';
+const FONT = '"Chakra Petch", "Chakra Petch","Pixelify Sans", "Trebuchet MS", sans-serif';
 let scene = null, game = null, RS = 2, cz = 1, cssW = 360, cssH = 600, dpr = 1;
 let objs = [], floorObjs = [], custSpr = new Map(), cloudObjs = [];
 let gSky = null, gStars = null, sunImg = null, imgSlot = null, imgLobby = null, imgRoof = null, imgSkyline = null, imgGround = null, imgFacade = null, elevImg = null, bellImg = null;
@@ -1661,7 +2387,7 @@ function isAnimated(f){
   return d && d.decor ? /time/.test(String(d.decor)) : f.type === "breakroom";
 }
 function addImg(key, x, y, depth){ const im = scene.add.image(x, y, key).setOrigin(0,0).setScale(1/RS).setDepth(depth); objs.push(im); return im; }
-function towerKey(){ return `${RS}|${cssW}|${cssH}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}`).join(","); }
+function towerKey(){ return `${RS}|${cssW}|${cssH}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}${f.lim || 0}`).join(","); }
 function viewH(){ return scene.cameras.main.height/scene.cameras.main.zoom; }
 function clampScroll(y){ const vh = viewH(); const mn = Math.min(0, LH - vh), mx = Math.max(mn, LH - vh); return clamp(y, mn, mx); }
 
@@ -1681,7 +2407,8 @@ function buildFloorObjs(L, i){
   objs.push(o.lt);
   let tagW = 0;
   if (f.type === "claims"){
-    const [txt, c] = f.mode === "deny" ? ["Deny all","#FF8A8A"] : f.mode === "smart" ? ["Intel","#8FDCFA"] : ["Pay all","#5BEFA6"];
+    const [txt0, c] = f.mode === "deny" ? ["Deny all","#FF8A8A"] : f.mode === "smart" ? ["Intel","#8FDCFA"] : ["Pay all","#5BEFA6"];
+    const txt = f.lim ? txt0.replace(" all", "") + ({0.6:" small", 1:" mid", 2:" most"}[f.lim] || "") : txt0;
     o.tag = scene.add.text(0, 0, txt, {fontFamily:FONT, fontSize:(fs*0.9)+"px", fontStyle:"600", color:c, resolution:Math.ceil(cz)}).setDepth(20.2);
     objs.push(o.tag); tagW = o.tag.width + pxL(5);
   }
@@ -1769,11 +2496,11 @@ function rebuildAll(){
   const L2 = layout();
   if (prevCount && S.floors.length > prevCount){
     const o = floorObjs[S.floors.length-1];
-    o.anim.dy = -46; o.anim.a = 0;
+    o.anim.dy = -46; o.anim.a = 0; sfx("build");
     scene.tweens.add({targets:o.anim, dy:0, a:1, duration:800, ease:"Bounce.easeOut", onComplete:() => { [50,100,150].forEach(x => dustEm.explode(8, OX+x, o.fy+38)); }});
     scene.tweens.add({targets:cam, scrollY:clampScroll(o.fy - 50), duration:600, ease:"Cubic.easeOut"});
   }
-  S.floors.forEach((f, i) => { if (prevLevels[i] != null && f.level > prevLevels[i] && i < prevCount) confettiEm.explode(18, OX+100, floorY(L2, i)+22); });
+  S.floors.forEach((f, i) => { if (prevLevels[i] != null && f.level > prevLevels[i] && i < prevCount){ confettiEm.explode(18, OX+100, floorY(L2, i)+22); sfx("upgrade"); } });
   prevCount = S.floors.length; prevLevels = S.floors.map(f => f.level);
   lastKey = towerKey();
   if (!scrollHint && LH > vh + 20){ scrollHint = true; setTimeout(() => toast("Drag the tower (or use your mouse wheel) to scroll up and down."), 1200); }
@@ -1798,14 +2525,14 @@ function redrawStars(){
 
 function frameSync(dt){
   const L = layout();
-  if (rainOn !== weather.rain){ rainOn = weather.rain; if (rainOn) rainEm.start(); else rainEm.stop(); }
+  if (rainOn !== weather.rain){ rainOn = weather.rain; if (rainOn) rainEm.start(); else rainEm.stop(); setRainSound(rainOn); }
   const p = phase();
   const tint = p > 0.72 ? (p > 0.86 ? 0x7878BE : 0xFFC9B0) : (weather.rain ? 0xBCC5D0 : 0xFFFFFF);
   for (const c of cloudObjs){ c.x += c._s*dt; if (c.x > LW + 10){ c.x = -30; c.y = rand(4, 62); } c.setTint(tint).setAlpha(p > 0.86 ? .5 : 1); }
   for (const o of floorObjs) if (o) placeFloor(o);
   elevImg.y = elev.y;
   if (bell.t > 0 && !bellRinging){
-    bell.t = 0; bellRinging = true;
+    bell.t = 0; bellRinging = true; sfx("bell", bell.n);
     scene.tweens.add({targets:bellImg, angle:{from:-28, to:28}, duration:130, yoyo:true, repeat:5, ease:"Sine.easeInOut", onComplete:() => { bellImg.angle = 0; bellRinging = false; }});
   }
   const fyL = L.lobbyY + 40, alive = new Set();
@@ -1880,9 +2607,9 @@ class TowerScene extends Phaser.Scene {
     rebuildAll();
   }
   update(_, dms){
-    const dt = Math.min(0.1, dms/1000); time += dt;
-    if (!modalOpen && !S.over) update(dt);
-    animate(dt);
+    const dt = paused ? 0 : Math.min(0.1, dms/1000); time += dt;
+    if (!modalOpen && !S.over && !paused && !tutorialOn) update(dt);
+    if (!paused) animate(dt);
     if (towerKey() !== lastKey) rebuildAll();
     const cam = this.cameras.main;
     if (!drag && Math.abs(vel) > 2){ cam.scrollY = clampScroll(cam.scrollY + vel*dt); vel *= Math.pow(0.03, dt); }
@@ -1890,9 +2617,23 @@ class TowerScene extends Phaser.Scene {
     tick8 += dt; if (tick8 > 0.125){ tick8 = 0; redrawDynamic(); }
     tick2 += dt; if (tick2 > 0.5){ tick2 = 0; redrawSlow(); }
     hudT += dt; if (hudT > 0.1){ hud(); hudT = 0; }
+    if (!paused && !modalOpen && !tutorialOn){ this.__cs = (this.__cs || 0) + dt; if (this.__cs >= 1){ this.__cs = 0; sampleCash(); } }
     saveT += dt; if (saveT > 5){ save(); saveT = 0; }
   }
 }
+let paused = false;
+function setPaused(v){
+  paused = v;
+  $("#pauseOv").hidden = !v;
+  $("#btnPause").textContent = v ? "Resume" : "Pause";
+  $("#btnPause").classList.toggle("on", v);
+  if (scene){ if (v){ scene.tweens.pauseAll(); } else { scene.tweens.resumeAll(); } }
+  if (rainEm){ if (v) rainEm.pause(); else rainEm.resume(); }
+  setRainSound(SND.rainWanted);
+}
+$("#btnPause").addEventListener("click", () => setPaused(!paused));
+$("#pauseOv").addEventListener("click", () => setPaused(false));
+document.addEventListener("keydown", e => { if ((e.key === "p" || e.key === "P") && !modalOpen && !e.target.closest("input,textarea")) setPaused(!paused); });
 function measure(){
   const el = $("#game");
   cssW = Math.max(200, el.clientWidth); cssH = Math.max(200, el.clientHeight);
@@ -1920,10 +2661,10 @@ function boot(){
 }
 document.addEventListener("visibilitychange", () => { if (document.hidden) save(); });
 hud();
-const fontReady = document.fonts && document.fonts.load ? Promise.race([document.fonts.load('600 12px "Pixelify Sans"'), new Promise(r => setTimeout(r, 2500))]) : Promise.resolve();
+const fontReady = document.fonts && document.fonts.load ? Promise.race([Promise.all([document.fonts.load('600 12px "Pixelify Sans"'), document.fonts.load('700 12px "Chakra Petch"', "0123456789")]), new Promise(r => setTimeout(r, 2500))]) : Promise.resolve();
 fontReady.then(() => {
   boot();
-  if (S.over) gameOver(); else if (!S.seen) intro();
+  if (S.over) gameOver(); else if (!S.seen) startTutorial(); else offlineCheck();
 });
 })();
 </script>
