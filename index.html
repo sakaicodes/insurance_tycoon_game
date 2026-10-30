@@ -225,7 +225,7 @@ blockquote cite{display:block;font-style:normal;color:var(--ink-dim);font-size:1
 .ach{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:7px 9px;font-size:14px;opacity:.55}
 .ach.on{opacity:1;border-color:var(--gold)} .ach b{display:block;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:15px}
 .swan h2{color:var(--danger)!important}
-.status{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0 12px}
+.status{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 12px}
 .status div{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:6px 8px}
 .status span{display:block;font-size:13px;color:var(--ink-dim)} .status b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:17px}
 .goals{list-style:none;margin:6px 0;padding:0;display:flex;flex-direction:column;gap:6px}
@@ -252,7 +252,43 @@ blockquote cite{display:block;font-style:normal;color:var(--ink-dim);font-size:1
 @media (min-width:480px){ .flabel{font-size:13px} .flabel .tg{font-size:12px} .flabel .pp i{width:6px;height:6px} }
 @media (prefers-reduced-motion: reduce){
 }
-@media (max-width:380px){ .stat b{font-size:18px} .btn{font-size:15px} }
+@media (max-width:480px){
+  .hud{gap:5px;padding:6px 6px 4px}
+  .stat{padding:4px 6px}
+  .stat .k{font-size:12px}
+  .stat b{font-size:18px}
+  .stat small{font-size:12px}
+  .qrow{font-size:13px;gap:6px}
+  .pbtn{padding:4px 8px;min-height:30px}
+  .dock{gap:6px;padding:6px 6px 8px}
+  .dock .btn{min-height:48px;font-size:16px;padding:8px 6px}
+  #modal{padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+  .sheet{padding:14px 14px 16px;max-height:88vh;max-height:88dvh}
+  .sheet h2{font-size:24px}
+  .row3 .btn,.seg .btn,.choices .btn,.action .btn{min-height:44px}
+}
+@media (max-width:360px){ .stat b{font-size:16px} .stat .k{font-size:11px} .btn{font-size:15px} }
+button,.type{touch-action:manipulation}
+body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input{-webkit-user-select:text;user-select:text}
+.lb{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0 4px}
+.lb th{text-align:left;font-size:12px;color:var(--ink-dim);font-weight:500;padding:4px 6px;border-bottom:2px solid var(--line)}
+.lb td{padding:7px 6px;border-bottom:1px dashed var(--line);vertical-align:top}
+.lb td:nth-child(3),.lb td:nth-child(5){font-family:"Chakra Petch","Pixelify Sans",sans-serif;text-align:right}
+.lb td small{display:block;font-size:12px;color:var(--ink-dim)}
+.lb tr.me td{background:rgba(255,210,63,.14)}
+.lbname{display:flex;gap:8px;margin:6px 0 10px}
+.lbname input{flex:1;min-width:0;font:inherit;font-size:16px;color:var(--ink);background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:9px 10px}
+.lbname input:focus-visible{outline:3px solid var(--gold)}
+@media (min-width:700px){
+  #app{max-width:none;box-shadow:none}
+  .hud{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(270px,1.4fr);grid-template-rows:auto auto;column-gap:10px;row-gap:6px;padding:10px max(14px, calc((100% - 1240px)/2)) 8px}
+  .hud .stat{grid-row:1 / span 2;display:flex;flex-direction:column;justify-content:center}
+  .hud .qrow{grid-column:4;padding:0}
+  .stat b{font-size:24px}
+  .dock{padding:10px max(14px, calc((100% - 1240px)/2)) 12px;gap:12px}
+  .dock .btn{min-height:54px;font-size:19px}
+}
 </style>
 </head>
 <body>
@@ -338,8 +374,20 @@ const TYPES = {
     desc:"Keeps the regulator off your back by ticking every box twice.",
     joke:"They have a policy about policies. It’s 300 pages.", sal:0.7,
     pro:"Each level covers 3 more floors for the regulator, and cuts scandal losses.", con:"Box-ticking slows underwriting: −4% premium income per level."},
+  pr:{name:"PR", wall:"#FFE9B8", trim:"#D9B25E", shirt:"#E8452C", pants:"#2B2D52", up:100, screen:"#FFD23F",
+    desc:"Spin doctors who turn disasters into “learning opportunities.”",
+    joke:"Their entire crisis plan is one slide: “Stay calm. Blame the weather.”", sal:0.7,
+    pro:"Customer mood recovers faster, and fines and lost board confidence hurt 10% less per level. Unlocks damage-control campaigns.", con:"Spin can backfire: each level adds a 5% chance per quarter that a cover-up leaks, hitting mood and confidence."},
+  hr:{name:"HR", wall:"#CDE7D8", trim:"#8DBFA4", shirt:"#5A6FD6", pants:"#2B2D52", up:95, screen:"#FFFFFF",
+    desc:"Hires better people, trains them, and occasionally reorganises everyone.",
+    joke:"Latest initiative: a mandatory workshop on reducing mandatory workshops.", sal:0.6,
+    pro:"Better hires: every floor works 5% faster and Underwriting Boxes write 5% more per level. Each level also cancels one Pub level of conduct risk.", con:"Initiatives backfire: each level adds an 8% chance per quarter of a “mandatory fun day” that slows everyone by 25% for 30 seconds."},
+  invest:{name:"Investments", wall:"#1F4D3A", trim:"#123326", shirt:"#C9A227", pants:"#14162E", up:140, screen:"#4BE39A", unlock:5,
+    desc:"Puts your spare cash to work in the markets. What could possibly go wrong?",
+    joke:"Their strategy deck is one slide titled “Number go up.”", sal:0.8,
+    pro:"Earns returns on your spare cash every quarter. Choose low, medium or high risk.", con:"Returns can be negative, a market crash hits it hard, and high risk adds a floor for Compliance to cover. Needs 5 floors first."},
 };
-const ORDER = ["sales","claims","risk","actuary","marketing","legal","compliance","it","breakroom","ir"];
+const ORDER = ["sales","claims","risk","actuary","marketing","legal","compliance","it","pr","hr","invest","breakroom","ir"];
 const FRAUD_QUIPS = ["The raccoon was a cat in a mask.","The “bees” were a Bluetooth speaker.","The gnome turned up in their own shed.","The science fair volcano was never plugged in.","They filed the same claim with four other syndicates.","The receipt was written in crayon.","The “flood” was a single knocked-over glass of water.","The goat has an alibi."];
 const SEV_MULT = [0.6, 1, 1.6];
 function intelSpread(n){ return Math.max(0, 36 - 6*n); }
@@ -447,6 +495,42 @@ const INCIDENTS = [
   "A chef’s insured tongue was burned on a test spoon of soup.",
   "A pianist’s insured hands got shut in a car door. The car is also insured.",
   "A container ship lost 400 boxes overboard. One was full of garden gnomes.",
+  "A robot lawnmower joined a union and now refuses to mow at weekends.",
+  "The sat-nav insisted the lake was a road. The sat-nav was wrong.",
+  "A neighbour’s delivery drone dropped a lasagna through the skylight.",
+  "The cat walked across the laptop and bought 400 shares in a yoghurt company.",
+  "The Christmas tree fell on the TV during the Christmas special.",
+  "The self-cleaning oven cleaned itself to death.",
+  "An escaped llama ate the hedge, the bins and part of a Volvo.",
+  "The bath overflowed during a 45-minute podcast about saving water.",
+  "A science fair volcano exceeded expectations by roughly one kitchen.",
+  "Their vintage wine collection turned out to be vintage vinegar.",
+  "A hired bouncy castle bounced into the next postcode.",
+  "A pigeon flew in through the office window and now attends every meeting.",
+  "The garden shed was struck by lightning while storing every metal object they own.",
+  "A wedding drone caught the bouquet and flew into a tree.",
+  "The removal van reversed into the house they were moving into.",
+  "The hamster’s exercise wheel caused a power cut on the whole street.",
+  "The “waterproof” phone was not, it turns out, sea-proof.",
+  "A goose attacked the postman. The postman is fine. The goose is suing.",
+  "A spray-tan booth malfunctioned. The customer is now “tangerine adjacent.”",
+  "An indoor skydiving session ended slightly outdoors.",
+  "The office printer jammed so hard it became a new shape.",
+  "An emotional support peacock caused a small stampede at the garden centre.",
+  "They left a pizza in the oven for a three-week holiday.",
+  "The escape room was a bit too good. They’re still slightly inside it.",
+  "A smart toilet updated its firmware mid-use.",
+];
+const NAMED = [
+  ["Nathaniel","Lost his glasses. He’s filling in this claim from memory, possibly at the wrong insurer."],
+  ["Nathaniel","Sat on his glasses while looking for his glasses."],
+  ["Nathaniel","His glasses flew off on a rollercoaster. He describes the rest of the ride as “impressionist.”"],
+  ["Gareth","Dropped his mechanical keyboard. Every key survived except the spacebar, which he insists was “load-bearing.”"],
+  ["Gareth","His mechanical keyboard fell down the stairs. Neighbours say it was “still clicking all the way down.”"],
+  ["Gareth","Spilled an energy drink into his custom mechanical keyboard. The switches are now “extremely tactile.”"],
+  ["Nick","Tried to fix his own boiler by following a video tutorial at double speed."],
+  ["Nick","His smart doorbell stopped recognising him and has now locked him out of his own house twice."],
+  ["Nick","Insured his fantasy football team. It lost. He’d like to make a claim."],
 ];
 const REVIEWS = ["Would not recommend. Would anti-recommend.","Zero stars. Negative stars if allowed.","The hold music is in my dreams now.","My raccoon has more empathy.","They said “per the policy” eleven times.","I aged visibly while on hold.","Their mascot waved at me. That was the only help I got.","I’d rather be insured by the goat.","Called six times. Spoke to the same recording six times. It was rude each time.","The forms had forms.","One star, and only because I had to pick one.","They asked for a receipt for the bees.","I have been transferred to every department, including the Break Room.","My grandma could process this faster, and she’s a ghost.","Great lobby. Terrible everything else."];
 const LAWSUIT_QUIPS = ["The fine print had a typo.","The judge has the same raccoon problem.","Their lawyer brought charts.","The jury was mostly gnome owners.","Your lawyer called the jury “guys.”","The other side had a very sad dog in court.","Exhibit A was your hold music.","The judge read the fine print. Out loud. With a magnifying glass.","Your expert witness was Percy. That was a mistake.","Their lawyer has a billboard and a jingle.","The jury found your logo “suspicious.”","Clause 14b turned out to mean the opposite."];
@@ -460,7 +544,7 @@ const RANKS = [
   {name:"Too Big To Fail", goals:[["price",120],["profit",6000],["floors",10],["sued",5]]},
   {name:"Owner of the Weather", goals:[["price",250],["profit",15000],["mood",70],["streak",5],["yachts",3]]},
 ];
-const Q_LEN = 60, MAXL = 5, MAXF = 14, KEY = "fineprint-mutual-v1";
+const Q_LEN = 60, MAXL = 5, MAXF = Infinity, KEY = "fineprint-mutual-v1";
 
 /* ---------- State ---------- */
 function blankQ(){ return {prem:0, paid:0, sal:0, other:0}; }
@@ -471,14 +555,15 @@ function newState(){
     lawsuits:[], returns:[], yachts:0, insured:0, rankIdx:0, won:false, over:false, seen:false,
     claimId:1, lastEvent:null, tipClaim:false, warnedNeg:false, served:0,
     sued:0, bestProfit:0, streak:0, bestStreak:0, recentEv:[], recentInc:[], recentNm:[],
-    diff:1, conf:60, strikes:0, cleanQ:0, cleanRun:0, stars:0, favour:0, perks:{}, ach:{}, earned:0, repSum:0, repT:0, profHist:[], loan:null, lastCall:-9, tipAuto:false, price:1, cyc:0, cycName:null, execs:{}, savedAt:0, divQ:0,
+    diff:1, conf:60, strikes:0, cleanQ:0, cleanRun:0, stars:0, favour:0, perks:{}, ach:{}, earned:0, repSum:0, repT:0, profHist:[], loan:null, lastCall:-9, tipAuto:false, price:1, cyc:0, cycName:null, execs:{}, savedAt:0, invRisk:0, invLast:0, prQ:0, runId:0, unlocked:{}, divQ:0,
     cover:{cat:false, cyber:false, dno:false}, swan:null, swansSurvived:0, best3:false};
 }
 function ensureState(){
   const d = newState();
-  for (const k of ["diff","conf","strikes","cleanQ","cleanRun","stars","favour","perks","ach","cover","swansSurvived","best3","earned","repSum","repT","profHist","lastCall","tipAuto","price","cyc","divQ","execs"]) if (S[k] == null) S[k] = d[k];
+  for (const k of ["diff","conf","strikes","cleanQ","cleanRun","stars","favour","perks","ach","cover","swansSurvived","best3","earned","repSum","repT","profHist","lastCall","tipAuto","price","cyc","divQ","execs","invRisk","invLast","prQ","unlocked"]) if (S[k] == null) S[k] = d[k];
   if (S.swan === undefined) S.swan = null;
   if (S.loan === undefined) S.loan = null;
+  for (const f of S.floors) S.unlocked[f.type] = true;
 }
 function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === 1) return s; }catch(e){} return null; }
 function save(){ try{ S.savedAt = Date.now(); localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -487,10 +572,12 @@ ensureState();
 
 /* ---------- Economy ---------- */
 function lv(t){ let s = 0; for (const f of S.floors) if (f.type === t) s += f.level; return s; }
-function morale(){ return 1 + 0.08*lv("breakroom") + (S.buffs.morale > 0 ? 0.3 : 0) + (perk("espresso") ? 0.05 : 0); }
+function morale(){ return (1 + 0.08*lv("breakroom") + 0.05*lv("hr") + (S.buffs.morale > 0 ? 0.3 : 0) + (perk("espresso") ? 0.05 : 0))*(S.hrSlump > 0 ? 0.75 : 1); }
 function happyMult(){ return 0.4 + S.happy/100*0.9; }
-function salesFloorRate(level){ return 5*Math.pow(level,1.35); }
-function salesMult(){ return (1 + 0.35*lv("marketing") + 0.10*lv("it") + (perk("loyalty") ? 0.1 : 0)) * happyMult() * morale() * Math.max(0.5, 1 - 0.03*lv("risk") - 0.04*lv("compliance")); }
+function salesFloorRate(level){ return 5.5*Math.pow(level,1.38); }
+function exposureRate(level){ return 5.5*Math.pow(level,1.27); }
+function exposure(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += exposureRate(f.level); return s*salesMult()*volume(); }
+function salesMult(){ return (1 + 0.35*lv("marketing") + 0.10*lv("it") + 0.05*lv("hr") + (perk("loyalty") ? 0.1 : 0)) * happyMult() * morale() * Math.max(0.5, 1 - 0.03*lv("risk") - 0.04*lv("compliance")); }
 const PRICES = [
   {name:"Undercut", p:0.8, mood:0.04, desc:"Cheaper than your rivals. More customers and more claims, thinner margins. Customers love you."},
   {name:"Market rate", p:1, mood:0, desc:"Price like everyone else. The safe middle."},
@@ -516,14 +603,84 @@ function perk(id){ return !!(S.perks && S.perks[id]); }
 function claimSizeMult(){ return (1 + 0.10*lv("marketing"))*(0.9 + 0.1*S.diff); }
 function claimSpeed(){ return morale()*(1 + 0.15*lv("it")); }
 function regCreep(){ return Math.floor((S.quarter - 1)/8); }
-function compNeed(){ return Math.max(0, S.floors.length - 3 + lv("breakroom") + regCreep()); }
+function compNeed(){ return Math.max(0, S.floors.length - 3 + Math.max(0, lv("breakroom") - lv("hr")) + regCreep() + (lv("invest") && S.invRisk === 2 ? 1 : 0)); }
+const UNLOCKS = {
+  compliance:{test:() => S.floors.length >= 3 || compNeed() > 0, text:"Unlocks when the regulator first needs it (at 3 floors)", why:"From your 4th floor on, the regulator wants Compliance cover."},
+  marketing:{test:() => S.floors.filter(f => f.type === "sales").length >= 2, text:"Unlocks with 2 Underwriting Boxes", why:"Brokers have noticed you. Time for long lunches."},
+  risk:{test:() => S.quarter >= 3, text:"Unlocks after 2 earnings calls", why:"You’ve seen enough claims to start asking who’s lying."},
+  legal:{test:() => (S.sued || 0) > 0 || S.lawsuits.length > 0 || S.quarter >= 4, text:"Unlocks after your first lawsuit, or after 3 earnings calls", why:"Someone has threatened to sue. You need lawyers."},
+  it:{test:() => S.quarter >= 4, text:"Unlocks after 3 earnings calls", why:"The spreadsheets are getting out of hand."},
+  breakroom:{test:() => S.floors.length >= 4, text:"Unlocks with 4 floors", why:"Your staff would like somewhere to sit that isn’t their desk."},
+  pr:{test:() => S.quarter >= 5 || S.strikes > 0 || S.happy < 35, text:"Unlocks after 4 earnings calls, or sooner if things go badly", why:"Things are getting awkward in public. You need spin."},
+  invest:{test:() => S.floors.length >= 5, text:"Unlocks with 5 floors", why:"You have spare cash, and the markets would love to have it."},
+  hr:{test:() => S.floors.length >= 6, text:"Unlocks with 6 floors", why:"You now have enough people to need a department about people."},
+  ir:{test:() => S.quarter >= 7, text:"Unlocks after 6 earnings calls", why:"Investors want someone to talk to who isn’t you."},
+};
+function isUnlocked(t){ return !UNLOCKS[t] || !!(S.unlocked && S.unlocked[t]) || S.floors.some(f => f.type === t) || UNLOCKS[t].test(); }
+function checkUnlocks(){
+  if (!S.unlocked) S.unlocked = {};
+  for (const t of ORDER){
+    const u = UNLOCKS[t]; if (!u || S.unlocked[t]) continue;
+    if (S.floors.some(f => f.type === t) || u.test()){ S.unlocked[t] = true; if (S.seen){ toast(`New floor unlocked: ${TYPES[t].name}. ${u.why}`, "good"); sfx("chime"); } }
+  }
+}
+function capReq(){
+  if (S.quarter < 6) return 0;
+  const ramp = Math.min(1, (S.quarter - 5)/8), annual = Math.max(0, baseIncome())*Q_LEN*4;
+  const risk = (S.cover && S.cover.cat ? 0.8 : 1)*(1 - Math.min(0.3, 0.05*lv("actuary")))*(lv("invest") && S.invRisk === 2 ? 1.15 : 1)*(1 + 0.1*Math.max(0, S.diff - 1));
+  return Math.round(annual*(0.08 + 0.32*maturity())*risk*ramp/10)*10;
+}
+function capRatio(){ const r = capReq(); return r ? Math.max(0, S.cash)/r : Infinity; }
+const RIVALS = ["Small Print & Sons","Caveat Emptor Mutual","Get Out Clause Ltd","Loophole Holdings","Act of God Underwriting","Excess & Exclusions plc"];
+let curRival = null;
+function lunchOdds(){ return Math.min(0.9, 0.4 + 0.15*lv("marketing")); }
+function hrOdds(){ return Math.min(0.9, 0.5 + 0.1*lv("hr")); }
+function rivalPoach(){
+  const targets = S.floors.map((f, i) => ({f, i})).filter(x => (x.f.type === "sales" || x.f.type === "marketing") && x.f.level >= 2);
+  if (!targets.length) return;
+  const t = pick(targets), name = pick(RIVALS), cost = Math.round(B()*0.8*(1 + 0.2*Math.max(0, S.diff - 2))/10)*10;
+  const who = t.f.type === "sales" ? "your best underwriters" : "your favourite brokers";
+  curRival = {i:t.i, name, cost};
+  sfx("warn");
+  if (hasExec("cos")){ resolveRival(S.cash - cost > execBuffer() ? 0 : lv("marketing") ? 1 : 3, true); return; }
+  openModal(`<h2>🦈 ${name} is poaching</h2><p>A rival syndicate is trying to hire ${who} away from your ${TYPES[t.f.type].name} (level ${t.f.level}). If they go, that floor drops a level.</p>
+    <div class="choices">
+      <button class="btn" data-act="rival:0" ${S.cash < cost ? "disabled" : ""}>Match their offer (${fmt(cost)})</button>
+      <button class="btn ghost" data-act="rival:1" ${!lv("marketing") ? "disabled" : ""}>Take them to a long lunch (${lv("marketing") ? Math.round(lunchOdds()*100) + "% chance" : "needs Broker Lunches"})</button>
+      <button class="btn ghost" data-act="rival:2" ${!lv("hr") || S.cash < cost/2 ? "disabled" : ""}>Ask HR for a retention deal (${fmt(Math.round(cost/2))}${lv("hr") ? ", " + Math.round(hrOdds()*100) + "% chance" : ", needs HR"})</button>
+      <button class="btn ghost" data-act="rival:3">Let them go</button>
+    </div>`, {locked:true});
+}
+function resolveRival(k, auto){
+  const r = curRival; curRival = null; if (!r) return;
+  const f = S.floors[r.i]; if (!f) return;
+  let kept = false, msg;
+  if (k === 0){ spend(r.cost, "other"); kept = true; msg = `You matched ${r.name}’s offer. Everyone stays, now slightly richer.`; }
+  else if (k === 1){ kept = Math.random() < lunchOdds(); msg = kept ? `Four hours, three courses and a cheese trolley later, nobody remembers ${r.name}’s offer.` : `The lunch was lovely. They still left for ${r.name}.`; }
+  else if (k === 2){ spend(Math.round(r.cost/2), "other"); kept = Math.random() < hrOdds(); msg = kept ? "HR found a retention bonus and a nicer chair. They’re staying." : `HR’s retention plan was a branded mug. They left for ${r.name}.`; }
+  else msg = `They left for ${r.name}.`;
+  if (!kept){ f.level = Math.max(1, f.level - 1); rebuildWorkers(r.i); msg += ` Your ${TYPES[f.type].name} drops to level ${f.level}.`; }
+  if (auto){ toast(`${r.name} tried to poach your staff. ${msg}`, kept ? "good" : "bad"); save(); return; }
+  openModal(`<h2>🦈 ${r.name}</h2><p>${msg}</p><div class="closeRow"><button class="btn" data-act="close">Back to work</button></div>`, {locked:true, onClose:() => save()});
+}
+function demoRefund(f){ let c = 0; for (let l = 1; l < f.level; l++) c += TYPES[f.type].up*Math.pow(1.9, l); return Math.round((c*0.2 + buildCost()*0.05)/10)*10; }
+function prDamp(){ return 1 - Math.min(0.5, 0.1*lv("pr")); }
+function prCost(){ return Math.round(B()*0.6/10)*10; }
+const INV = [
+  {name:"Low risk", mean:0.025, sd:0.01, crash:0.05, desc:"Government bonds and other very sensible things. Small, steady returns."},
+  {name:"Medium risk", mean:0.06, sd:0.08, crash:0.2, desc:"A balanced mix. Usually up, sometimes down."},
+  {name:"High risk", mean:0.14, sd:0.3, crash:0.5, desc:"Meme stocks, crypto and a racehorse called Liquidity. Big wins, big losses, and Compliance must cover an extra floor."},
+];
+function invCap(){ return Math.round(lv("invest")*Math.max(300, income()*Q_LEN*0.3)); }
+function invCapital(){ return Math.max(0, Math.min(S.cash, invCap())); }
+function gauss(){ let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
 function compHave(){ return 3*lv("compliance"); }
 function compGap(){ return compNeed() - compHave(); }
 function maxStrikes(){ return perk("lobbyist") ? 4 : 3; }
 function growthRate(){ return Math.max(0.01, (0.06 + 0.04*S.diff + 0.02*lv("ir") - (perk("dinners") ? 0.03 : 0))*(1 - 0.85*maturity())); }
-function mktName(){ return S.diff < 1.6 ? "Calm market" : S.diff < 2.3 ? "Choppy market" : S.diff < 3.1 ? "Stormy market" : "Brutal market"; }
+function mktName(){ return S.diff < 1.6 ? "Calm market" : S.diff < 2.3 ? "Choppy market" : S.diff < 3.1 ? "Stormy market" : S.diff < 4 ? "Brutal market" : S.diff < 5 ? "Cutthroat market" : "Feeding frenzy"; }
 function actRed(){ return Math.min(0.55, 0.07*lv("actuary")); }
-function buildCost(){ return Math.round(100*Math.pow(1.6, S.floors.length-1)); }
+function buildCost(){ const n = S.floors.length - 1; return Math.round(100*Math.pow(1.6, Math.min(n, 13))*Math.pow(1.25, Math.max(0, n - 13))); }
 function upCost(f){ return Math.round(TYPES[f.type].up*Math.pow(1.9, f.level)); }
 function claimInterval(){ return Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))/volume() * (S.buffs.surge > 0 ? 0.35 : 1); }
 function B(){ return Math.max(120, Math.round(baseIncome()*25/10)*10); }
@@ -566,12 +723,12 @@ function addClaim(name, desc, amount){
   ensureIntel(nc); S.claims.push(nc);
   if (!S.tipClaim){ S.tipClaim = true; toast("A broker just walked into The Room with a claim. Tap them, or open Claims."); }
 }
-function typicalClaim(){ return Math.max(25, Math.max(3, baseIncome()/(marketRate()*volume()))*Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))*0.55*(1-actRed())*claimSizeMult()); }
+function typicalClaim(){ return Math.max(25, Math.max(3, exposure()/volume())*Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))*0.55*(1-actRed())*claimSizeMult()); }
 function ensureIntel(c){
   if (c.sev != null) return;
   const r = c.amount / typicalClaim();
   c.sev = r < 0.8 ? 1 : r < 1.25 ? 2 : 3;
-  c.lp = Math.random() < (0.75 - 0.05*(S.diff - 1)) ? rand(0.68, 0.98) : rand(0.05, 0.45);
+  c.lp = Math.random() < Math.max(0.45, 0.75 - 0.05*(S.diff - 1)) ? rand(0.68, 0.98) : rand(0.05, 0.45);
   c.legit = Math.random() < c.lp;
   c.lit = rand(-0.08, 0.12);
   c.nz1 = rand(-1,1); c.nz2 = rand(-1,1);
@@ -602,9 +759,10 @@ function intelHtml(c){
   </div>`;
 }
 function spawnClaim(){
-  const inc = Math.max(3, baseIncome());
+  const inc = Math.max(3, exposure()*marketRate());
   const amt = inc*claimInterval()*0.55*rand(0.5,1.5)*(1-actRed())*claimSizeMult() / (S.buffs.surge > 0 ? 0.35 : 1) / marketRate();
-  addClaim(pickFresh(NAMES, "recentNm", 20), pickFresh(INCIDENTS, "recentInc", 45), amt);
+  if (Math.random() < 0.12){ const n = pickFresh(NAMED, "recentNamed", 6); addClaim(n[0], n[1], amt); }
+  else addClaim(pickFresh(NAMES, "recentNm", 20), pickFresh(INCIDENTS, "recentInc", 45), amt);
 }
 
 /* ---------- Claims ---------- */
@@ -684,7 +842,7 @@ function rebuildWorkers(i){
 S.floors.forEach((f,i) => rebuildWorkers(i));
 
 /* ---------- Layout ---------- */
-const LW = 256, OX = 18, FH = 40, TOP = 82, LOBBY_H = 44, GROUND = 24;
+const LW = 232, OX = 6, FH = 40, TOP = 82, LOBBY_H = 44, GROUND = 24;
 function layout(){
   const n = S.floors.length, can = n < MAXF;
   const floorsTop = TOP + (can ? FH : 0);
@@ -784,7 +942,7 @@ function drawSkyline(L){
   const gy = L.groundY, night = isNight();
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#161B38" : "#73849B";
   const lit = "#FFE88A";
-  for (let x = 0, k = 0; x < LW; k++){ const w = 6 + Math.floor(hash(k,11)*10), h = 10 + Math.floor(hash(k,12)*28); R(x, gy-h, w, h, far); if (night && hash(k,13) > .5) R(x+2, gy-h+3, 1, 1, lit); x += w; }
+  for (let x = 0, k = 0; x < 256; k++){ const w = 6 + Math.floor(hash(k,11)*10), h = 10 + Math.floor(hash(k,12)*28); R(x, gy-h, w, h, far); if (night && hash(k,13) > .5) R(x+2, gy-h+3, 1, 1, lit); x += w; }
   // The big wheel
   const ex = 216, ey = gy-44, er = 26, rot = time*0.04;
   for (let a = 0; a < 90; a++){ const t = a/90*Math.PI*2; R(Math.round(ex+Math.cos(t)*er), Math.round(ey+Math.sin(t)*er), 1, 1, mid); }
@@ -808,6 +966,22 @@ function drawSkyline(L){
   for (let r = 0; r < 14; r++){ const w = Math.max(1, Math.round(9 - r*0.62)); R(250 - Math.floor(w/2), gy-74-r, w, 1, near); }
   R(250,gy-92,1,5,near);
   R(247,gy-66,7,7, night ? lit : "#E4DDC0"); R(250,gy-65,1,3,"#3A3A4A"); R(250,gy-63,2,1,"#3A3A4A");
+  ctx.globalCompositeOperation = "source-atop"; const hz = ctx.createLinearGradient(0, gy-160, 0, gy); hz.addColorStop(0, "rgba(255,255,255,0)"); hz.addColorStop(1, night ? "rgba(30,36,80,.3)" : "rgba(226,233,241,.42)"); ctx.fillStyle = hz; ctx.fillRect(0, gy-160, 256, 160); ctx.globalCompositeOperation = "source-over";
+}
+function drawSkylineFiller(L){
+  const gy = L.groundY, night = isNight();
+  const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#181D3B" : "#7C8DA4", lit = "#FFE88A";
+  for (let x = 0, k = 0; x < 256; k++){ const w = 6 + Math.floor(hash(k + 40, 11)*10), h = 12 + Math.floor(hash(k + 40, 12)*30); R(x, gy-h, w, h, far); if (night && hash(k + 40, 13) > .5) R(x+2, gy-h+3, 1, 1, lit); x += w; }
+  for (let x = 2, k = 0; x < 250; k++){
+    const w = 12 + Math.floor(hash(k, 21)*16), h = 34 + Math.floor(hash(k, 22)*60), c = hash(k, 25) > .5 ? mid : near;
+    if (hash(k, 23) > 0.35){
+      R(x, gy-h, w, h, c);
+      if (hash(k, 26) > .6){ R(x + w/2 - 1, gy-h-8, 1.5, 8, c); R(x + w/2 - 0.5, gy-h-10, 0.8, 2, night ? "#FF5A5F" : c); }
+      for (let yy = gy-h+4; yy < gy-5; yy += 5) for (let xx = x+2; xx < x+w-2; xx += 4) if (night ? hash(xx, yy) > .5 : hash(xx, yy) > .82) R(xx, yy, 1.6, 2, night ? lit : "#B4C2D3");
+    }
+    x += w + 4 + Math.floor(hash(k, 24)*14);
+  }
+  ctx.globalCompositeOperation = "source-atop"; const hz = ctx.createLinearGradient(0, gy-160, 0, gy); hz.addColorStop(0, "rgba(255,255,255,0)"); hz.addColorStop(1, night ? "rgba(30,36,80,.3)" : "rgba(226,233,241,.42)"); ctx.fillStyle = hz; ctx.fillRect(0, gy-160, 256, 160); ctx.globalCompositeOperation = "source-over";
 }
 function drawRain(){
   if (!weather.rain) return;
@@ -819,8 +993,8 @@ function drawGround(L){
   const gy = L.groundY, night = isNight();
   R(0,gy,LW,4,"#B9BEC8"); R(0,gy+4,LW,1,"#8E94A8"); R(0,gy+5,LW,GROUND-5,"#3D4250");
   for (let x = 2; x < LW; x += 12) R(x, gy+14, 6, 1, "#D8DCE4");
-  R(32,gy-26,1,26,"#1E2240"); R(29,gy-28,7,2,"#1E2240"); R(30,gy-26,5,1, night ? "#FFE88A" : "#C8C8C8");
-  if (night){ ctx.globalAlpha = .22; R(24,gy-25,17,25,"#FFE88A"); ctx.globalAlpha = 1; }
+  R(12,gy-26,1,26,"#1E2240"); R(9,gy-28,7,2,"#1E2240"); R(10,gy-26,5,1, night ? "#FFE88A" : "#C8C8C8");
+  if (night){ ctx.globalAlpha = .22; R(4,gy-25,17,25,"#FFE88A"); ctx.globalAlpha = 1; }
   for (const c of cars){
     if (c.wait > 0) continue; const x = Math.round(c.x);
     if (c.kind === "bus"){ const y = gy+6;
@@ -832,29 +1006,53 @@ function drawGround(L){
       R(x+8,y-1,3,1,"#FFD23F"); R(x+2,y+7,3,2,"#555"); R(x+14,y+7,3,2,"#555"); R(x+18,y+4,1,1,"#FFE88A"); }
   }
 }
-function flareAt(L, y){ const u = Math.max(0, (L.lobbyY - y)/FH)/Math.max(L.n, 6); return Math.round(3 + 27*Math.pow(u, 1.4)); }
+function flareF(L, y){
+  const body = 14, base = 5, crown = 30, sm = t => t*t*(3 - 2*t);
+  if (y < L.floorsTop){ const t = clamp((L.floorsTop - y)/Math.max(1, L.floorsTop - TOP), 0, 1); return body + (crown - body)*sm(t); }
+  const baseTop = L.lobbyY - FH*0.6;
+  if (y > baseTop){ const t = clamp((L.groundY - y)/(L.groundY - baseTop), 0, 1); return base + (body - base)*sm(t); }
+  return body;
+}
+function flareAt(L, y){ return Math.round(flareF(L, y)); }
 function facadeRows(L){
-  const night = isNight();
-  const glass = night ? "#2F4562" : "#7EA6C2", fin = night ? "#22344D" : "#5D86A6", hi = night ? "#45618A" : "#B9D6E8", slab = "#2E3B55", edge = "#3E5672";
-  for (let y = L.floorsTop; y < L.groundY; y++){
-    const f = flareAt(L, y);
-    const isSlab = y < L.lobbyY && (y - L.floorsTop) % FH >= 38;
-    R(24-f, y, f, 1, isSlab ? slab : glass); R(196, y, f, 1, isSlab ? slab : glass);
-    if (!isSlab) for (let k = 3; k < f; k += 3){ const c = k % 9 === 0 ? hi : fin; R(24-k, y, 1, 1, c); R(195+k, y, 1, 1, c); }
-    R(24-f, y, 1, 1, edge); R(195+f, y, 1, 1, edge);
+  const night = isNight(), top = TOP, bot = L.groundY;
+  const fl = y => flareF(L, y);
+  for (const side of [-1, 1]){
+    const base = side < 0 ? 24 : 196, maxF = fl(top), x0 = Math.min(base, base + side*maxF);
+    ctx.beginPath(); ctx.moveTo(base, top);
+    for (let y = top; y <= bot; y += 1) ctx.lineTo(base + side*fl(y), y);
+    ctx.lineTo(base, bot); ctx.closePath();
+    const g = ctx.createLinearGradient(base, 0, base + side*maxF, 0);
+    g.addColorStop(0, night ? "#3A5577" : "#A7C8DE"); g.addColorStop(0.5, night ? "#2C4262" : "#7EA6C2"); g.addColorStop(1, night ? "#1E3049" : "#56809F");
+    ctx.save(); ctx.fillStyle = g; ctx.fill(); ctx.clip();
+    ctx.fillStyle = night ? "rgba(8,16,34,.4)" : "rgba(36,66,96,.32)";
+    for (let k = 3; k < maxF; k += 3) ctx.fillRect(base + side*k - 0.25, top, 0.5, bot - top);
+    ctx.fillStyle = "rgba(30,42,68,.9)";
+    for (let i = 0; i < L.n; i++) ctx.fillRect(x0, L.floorsTop + i*FH + 38, maxF, 2);
+    const sh = ctx.createLinearGradient(base, top, base + side*maxF*1.5, top + 160);
+    sh.addColorStop(0, "rgba(255,255,255,0)"); sh.addColorStop(0.42, night ? "rgba(255,255,255,.04)" : "rgba(255,255,255,.24)"); sh.addColorStop(0.5, "rgba(255,255,255,0)");
+    ctx.fillStyle = sh; ctx.fillRect(x0, top, maxF, bot - top);
+    if (night) for (let i = 0; i < L.n; i++) for (let k = 4; k < maxF - 1; k += 6) if (hash(i, k) > .72){ ctx.fillStyle = "rgba(255,226,140,.55)"; ctx.fillRect(base + side*k - 1, L.floorsTop + i*FH + 12, 2, 6); }
+    ctx.restore();
+    ctx.beginPath(); for (let y = top; y <= bot; y += 1){ const x = base + side*fl(y); if (y === top) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+    ctx.strokeStyle = night ? "rgba(140,170,210,.55)" : "rgba(235,245,255,.85)"; ctx.lineWidth = 0.6; ctx.stroke();
   }
 }
 function drawRoof(L){
   const base = TOP, night = isNight();
-  const tf = flareAt(L, L.floorsTop) + 2, x0 = 24 - tf, x1 = 196 + tf, w = x1 - x0;
+  const tf = flareAt(L, TOP) + 2, x0 = 24 - tf, x1 = 196 + tf, w = x1 - x0;
   for (let x = x0; x < x1; x++){
     const h = Math.round(20 + 16*(x - x0)/w);
     R(x, base-h, 1, h-9, (x - x0) % 6 === 0 ? (night ? "#22344D" : "#6E95B3") : (night ? "#2F4562" : "#B4D0E2"));
     R(x, base-h-1, 1, 1, "#3E5672");
   }
+  ctx.beginPath(); ctx.moveTo(x0, base-9); ctx.lineTo(x0, base-20); ctx.lineTo(x1, base-36); ctx.lineTo(x1, base-9); ctx.closePath();
+  const rg = ctx.createLinearGradient(0, base-36, 0, base-9); rg.addColorStop(0, "rgba(255,255,255,.3)"); rg.addColorStop(1, "rgba(255,255,255,0)"); ctx.fillStyle = rg; ctx.fill();
   for (let x = x0 + 3, k = 0; x < x1 - 6; x += 7, k++){
     const hh = 4 + Math.floor(hash(k,7)*7);
-    R(x+2, base-11, 2, 2, "#6B4A2B"); R(x, base-9-hh, 6, hh-1, "#3FA05A"); R(x+1, base-10-hh, 4, 2, "#56C46E");
+    R(x+2.5, base-12, 1, 3, "#6B4A2B");
+    ctx.fillStyle = "#3FA05A"; ctx.beginPath(); ctx.arc(x+3, base-11-hh*0.45, 2+hh*0.35, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#62C977"; ctx.beginPath(); ctx.arc(x+2.2, base-12-hh*0.6, 1+hh*0.18, 0, Math.PI*2); ctx.fill();
   }
   R(x0+20, base-12, 1, 3, "#1B1B2F"); R(x0+20, base-14, 1, 2, "#FFD23F");
   R(x1-40, base-12, 1, 3, "#1B1B2F"); R(x1-40, base-14, 1, 2, "#FF8FB1");
@@ -877,9 +1075,11 @@ function drawSlot(L){
 }
 function drawDesk(sx, y, type, slot){
   const t = TYPES[type];
+  ctx.fillStyle = "rgba(0,0,0,.2)"; ctx.beginPath(); ctx.ellipse(sx + 7, y + 35.2, 8, 1.3, 0, 0, Math.PI*2); ctx.fill();
   R(sx,y+28,14,2,"#7A4B2A"); R(sx,y+30,14,1,"#5E3A20");
   R(sx+1,y+31,1,4,"#5E3A20"); R(sx+12,y+31,1,4,"#5E3A20");
   R(sx+6,y+21,7,6,"#1E2240"); R(sx+7,y+22,5,4,t.screen); R(sx+9,y+27,1,1,"#1E2240");
+  R(sx,y+28,14,0.5,"rgba(255,255,255,.3)"); R(sx+7,y+22,5,0.9,"rgba(255,255,255,.35)");
   if (type === "actuary"){ ctx.globalAlpha = .18; R(sx+4,y+19,11,10,"#4BE39A"); ctx.globalAlpha = 1;
     const bl = Math.floor(time*4 + slot) % 4; R(sx+8, y+23 + (bl%2), 1+bl, 1, "#1E2240"); }
   if (type === "sales"){ R(sx+1,y+27,3,1,"#222"); R(sx+1,y+26,1,1,"#222"); }
@@ -1062,6 +1262,67 @@ const DESIGNS = {
         const ms = Math.floor(time*1.2) % 3; R(132,y+8,38,14,"#2B2D52"); T(["Checking…","Double-checking…","Triple-checking…"][ms], 151, y+16.5, 3.8, "#FFFFFF", "center", 600);
       }},
   ],
+  pr:[
+    {name:"Press Office",
+      decor:y => {
+        for (let k = 0; k < 3; k++){ const x = 94 + k*16; R(x,y+8+(k%2),14,13,"#F4F1E8"); R(x+1,y+10+(k%2),12,2,"#E8452C"); for (let r = 0; r < 3; r++) R(x+2,y+14+r*2+(k%2),10 - (r%2)*3,1,"#9AA3B5"); }
+        const cx = 158, cy = y+20; ctx.fillStyle = "#2B2D52"; ctx.beginPath(); ctx.arc(cx, cy, 10, Math.PI, 0); ctx.fill();
+        ctx.strokeStyle = "#FFD23F"; ctx.lineWidth = 1; ctx.beginPath(); const a = Math.PI*(1.2 + 0.6*(0.5 + 0.5*Math.sin(time*1.6))); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a)*8, cy + Math.sin(a)*8); ctx.stroke();
+        T("Spin", cx, cy - 3, 4, "#FFFFFF", "center", 700);
+      }},
+    {name:"Crisis Room", wall:"#3A2E3E", trim:"#241C27",
+      decor:y => {
+        R(94,y+8,44,15,"#111"); R(95,y+9,42,10,"#2B3157"); R(95,y+19,42,3,"#E8452C");
+        ctx.save(); ctx.beginPath(); ctx.rect(95,y+19,42,3); ctx.clip(); T("Breaking: everything is fine   Breaking: everything is fine", 137 - (time*10 % 120), y+21.6, 2.8, "#FFFFFF", "left", 600); ctx.restore();
+        T("Live", 99, y+12.5, 3.2, "#FF6B6B", "left", 700);
+        const ring = Math.floor(time*4) % 2; R(154,y+14,12,7,ring ? "#E8452C" : "#B8352A"); R(152,y+12,16,3,"#B8352A"); if (ring) T("Ring!", 160, y+10.5, 3.6, "#FFD23F", "center", 700);
+      }},
+    {name:"Influencer Studio", wall:"#FCE4EC", trim:"#E8A0BF",
+      decor:y => {
+        const cx = 118, cy = y+15; for (let a = 0; a < 24; a++){ const t = a/24*Math.PI*2; R(cx + Math.cos(t)*7, cy + Math.sin(t)*7, 1.2, 1.2, "#FFF6C8"); }
+        ctx.globalAlpha = .25 + .1*Math.sin(time*3); ctx.fillStyle = "#FFF6C8"; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1;
+        for (let k = 0; k < 6; k++){ R(146 + k*4, y+8 + (k%2)*3, 3, 3, "#3FA05A"); R(147 + k*4, y+12 + (k%2)*3, 2, 2, "#62C977"); }
+        T("Like & subscribe", 160, y+22, 3.4, "#E8452C", "center", 700);
+      }},
+  ],
+  hr:[
+    {name:"People Team",
+      decor:y => {
+        R(94,y+8,40,14,"#FFFFFF"); R(110,y+9,8,3,"#5A6FD6"); R(113,y+12,1,2,"#9AA3B5"); R(99,y+14,30,1,"#9AA3B5");
+        [97,107,117,127].forEach(x => { R(x+1,y+14,1,2,"#9AA3B5"); R(x-1,y+16,6,3,"#8DBFA4"); });
+        R(142,y+8,28,14,"#5A6FD6"); T("Teamwork", 156, y+14, 4, "#FFFFFF", "center", 700); T("makes the", 156, y+18.5, 3.2, "#FFD23F", "center", 600);
+      }},
+    {name:"Wellbeing Hub", wall:"#E3F2E1", trim:"#A9CFA4",
+      decor:y => {
+        R(94,y+9,34,12,"#FFFFFF"); T("You are a", 111, y+14, 3.6, "#2B3157", "center", 600); T("valued resource", 111, y+18.5, 3.6, "#3FA05A", "center", 700);
+        for (let k = 0; k < 5; k++){ R(138 + k*7, y+16, 5, 5, "#C96A3A"); ctx.fillStyle = "#3FA05A"; ctx.beginPath(); ctx.arc(140.5 + k*7, y+13 - (k%2), 3.2, 0, Math.PI*2); ctx.fill(); }
+      }},
+    {name:"Recruitment Drive", wall:"#FFF3D6", trim:"#E0C27A",
+      decor:y => {
+        R(94,y+8,50,9,"#E8452C"); T("We’re hiring!", 119, y+14.2, 5, "#FFFFFF", "center", 700);
+        for (let k = 0; k < 6; k++) R(150 + (k%2)*2, y+20 - k*2, 14, 2, k%2 ? "#F4F1E8" : "#FFFFFF");
+        T("CVs", 157, y+23.5, 3.4, "#7D5F3E", "center", 700);
+      }},
+  ],
+  invest:[
+    {name:"Trading Desk",
+      decor:y => {
+        for (let k = 0; k < 4; k++){ const x = 94 + k*19; R(x,y+8,16,13,"#0B1226");
+          for (let c = 0; c < 6; c++){ const up = Math.sin(time*1.5 + k*2 + c) > 0; const h = 2 + Math.floor((Math.sin(time + c*1.7 + k) + 1)*2.5); R(x+2+c*2.2, y+19-h, 1.4, h, up ? "#4BE39A" : "#FF6B6B"); } }
+      }},
+    {name:"Crypto Corner", wall:"#141428", trim:"#0B0B1A",
+      decor:y => {
+        const g = 0.6 + 0.4*Math.sin(time*4); ctx.globalAlpha = g; T("HODL", 112, y+19, 10, "#FF4FD8", "center", 700); ctx.globalAlpha = 1;
+        const cx = 156, cy = y+15; ctx.fillStyle = "#C9A227"; ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = "#FFD23F"; ctx.beginPath(); ctx.arc(cx, cy, 5.5, 0, Math.PI*2); ctx.fill();
+        T("£?", cx, cy + 2.3, 6, "#7A5A10", "center", 700);
+      }},
+    {name:"Gilt Club", wall:"#2F2A40", trim:"#1D1A2A",
+      decor:y => {
+        R(96,y+8,18,14,"#C9A227"); R(97,y+9,16,12,"#3A2A1E"); R(102,y+11,6,6,"#E0A878"); R(102,y+10,6,2,"#EDEDED"); R(101,y+17,8,4,"#1B1B2F");
+        R(124,y+10,22,12,"#5E5A6E"); ctx.fillStyle = "#3A3650"; ctx.beginPath(); ctx.arc(135, y+16, 4, 0, Math.PI*2); ctx.fill(); R(134.5,y+13,1,6,"#C9CCF5");
+        T("Since 1694", 160, y+16, 3.8, "#C9A227", "center", 700);
+      }},
+  ],
   ir:[
     {name:"Classic Briefing"},
     {name:"Gold Vault", wall:"#3D3520", trim:"#2A2414",
@@ -1149,6 +1410,8 @@ function drawLobby(L){
   R(46,y+33,6,7,"#C96A3A"); R(44,y+25,10,8,"#3FA05A"); R(47,y+22,4,4,"#56C46E");
   person(162, y+33, REC, -1, -1, Math.floor(time*1.5)%2);
   R(152,y+28,20,12,"#5B4B8A"); R(151,y+27,22,2,"#FFD23F"); T("Claims", 162, y+36.5, 5.2, "#FFFFFF", "center", 700);
+  roomLighting(y, null, 40);
+  R(28, y+40, 146, 0.6, "rgba(255,255,255,.55)");
   if (S.claims.length > 6){ R(46,y+12,30,8,"#E8452C"); T(`+${S.claims.length-6} waiting`, 61, y+17.5, 4.5, "#FFFFFF", "center", 700); }
 }
 function drawShaftStatic(L){
@@ -1210,6 +1473,7 @@ function update(dt){
   for (const k in S.buffs) if (S.buffs[k] > 0) S.buffs[k] = Math.max(0, S.buffs[k] - dt);
   S.happy += (50 - S.happy)*0.004*dt;
   S.happy = clamp(S.happy + PRICES[priceIdx()].mood*dt, 0, 100);
+  if (S.happy < 55 && lv("pr")) S.happy = Math.min(55, S.happy + 0.025*lv("pr")*dt);
   S.cyc = (S.cyc || 0) + dt/Q_LEN*(Math.PI*2/10);
   const cn = cycleName();
   if (S.cycName && cn !== S.cycName) toast(CYCLE_MSG[cn], cn === "Soft market" ? "bad" : "good");
@@ -1260,7 +1524,15 @@ function update(dt){
     S.outageAt -= dt;
     if (S.outageAt <= 0){ S.outageAt = null; S.outage = 20; sfx("warn"); if (scene) scene.cameras.main.shake(250, 0.003); toast(pick(["IT outage! A server fell over. Premium income is halved and the Claims Office is offline for 20 seconds.","IT outage! Someone updated everything at once. Income halved and claims stalled for 20 seconds.","IT outage! The system says “error 0x00FINE”. Income halved and the Claims Office is down for 20 seconds."]), "bad"); }
   }
+  checkUnlocks();
   autopilot(dt);
+  if (S.prLeakAt != null){ S.prLeakAt -= dt; if (S.prLeakAt <= 0){ S.prLeakAt = null; mood(-12); S.conf = clamp(S.conf - 8, 0, 100); sfx("warn");
+    toast(pick(["Leaked: PR’s plan to rename claim denials “customer journeys.” The internet is not amused.","Leaked: a PR memo titled “How to say sorry without saying sorry.” Mood and confidence take a hit.","Leaked: PR paid an influencer to praise your hold music. The influencer posted the invoice."]), "bad"); } }
+  if (S.hrAt != null){ S.hrAt -= dt; if (S.hrAt <= 0){ S.hrAt = null; S.hrSlump = 30; sfx("warn");
+    toast(pick(["HR announced a mandatory fun day. Everyone is 25% slower for 30 seconds.","HR is running a trust-fall workshop. Productivity has fallen, and so has Kevin.","HR reorganised every team into “pods.” Nobody knows which pod they’re in. Everything slows down."]), "bad"); } }
+  if (S.hrSlump > 0) S.hrSlump = Math.max(0, S.hrSlump - dt);
+  if (capReq() > 0 && S.cash < capReq() && S.capWarnQ !== S.quarter){ S.capWarnQ = S.quarter; sfx("warn"); toast(`Your capital is below what the regulator requires (${fmt(capReq())}). Below 80% of that at an earnings call means a warning.`, "bad"); }
+  if (S.rivalT != null){ S.rivalT -= dt; if (S.rivalT <= 0){ S.rivalT = null; rivalPoach(); if (modalOpen) return; } }
   if (S.outage > 0){ S.outage -= dt; if (S.outage <= 0){ S.outage = 0; toast("IT is back up. They turned it off and on again.", "good"); } }
   checkAch();
 
@@ -1300,8 +1572,9 @@ function toast(msg, kind){
 /* ---------- Modal ---------- */
 let modalOpen = false, modalCb = null, modalLocked = false, view = null;
 function openModal(html, opts = {}){
+  const keepScroll = modalOpen && opts.view && opts.view === view ? $("#sheet").scrollTop : 0;
   $("#sheet").className = "sheet" + (opts.cls ? " " + opts.cls : "");
-  $("#sheet").innerHTML = html; $("#sheet").scrollTop = 0; $("#modal").hidden = false;
+  $("#sheet").innerHTML = html; $("#modal").hidden = false; $("#sheet").scrollTop = keepScroll;
   modalOpen = true; modalCb = opts.onClose || null; modalLocked = !!opts.locked; view = opts.view || null;
   clearInterval(openModal._t);
   if (opts.auto && hasExec("cos")){
@@ -1332,13 +1605,16 @@ function intro(){
     <p><span>📈</span><span><b>The market fights back.</b> Success attracts competition: more claims, more fraud, higher targets. Meanwhile the insurance cycle swings between hard markets (high prices) and soft markets (price wars).</span></p>
     <p><span>🏷️</span><span><b>Set your pricing</b> in the Boardroom. Undercut for volume, charge a premium for margin, or gouge and risk the regulator. The best choice depends on the cycle.</span></p>
     <p><span>🤖</span><span><b>Autopilot.</b> Promotions unlock executives who run parts of the business for a salary: claims, insurance, compliance, pricing, even expansion. Your syndicate also earns while you’re away.</span></p>
+    <p><span>🏦</span><span><b>Capital rules.</b> From quarter 6 the regulator requires you to hold cash in proportion to the premiums you write. Fall short at an earnings call and you get a warning. Catastrophe reinsurance and Cat Modelling lower the requirement.</span></p>
+    <p><span>🦈</span><span><b>Rivals.</b> Later on, rival syndicates try to poach your underwriters and brokers. Match their offer, take them to lunch, ask HR, or let them go.</span></p>
+    <p><span>🛋️</span><span><b>Idle mode.</b> Prefer to watch? Turn on idle mode in the Boardroom and the board makes every decision. It can’t be undone, and the run won’t be scored.</span></p>
     <p><span>♾️</span><span><b>Play forever, if you can.</b> As your tower matures, the City expects less growth and “in line” results are fine. But regulation keeps piling up, and dividends keep the board sweet.</span></p>
     <p><span>⚖️</span><span><b>Compliance</b> must cover your floors. Fall short and the regulator issues warnings. Three warnings and you lose your licence.</span></p>
     <p><span>🦢</span><span><b>Black swans</b> are once-in-a-lifetime disasters: storms, cyber attacks, scandals. Most games never see one, but one hit without cover can wipe you out. Cover is in the Boardroom.</span></p>
     <p><span>⭐</span><span><b>Spend stars</b> on perks in the Boardroom, and unlock achievements for extra stars.</span></p>
     <p><span>💀</span><span><b>You lose</b> if you go bankrupt, the board’s confidence hits zero, or you lose your licence.</span></p>
     <h3 class="intro-h">The rooms you can build</h3>
-    ${ORDER.map(t => `<p class="intro-room"><span class="isw" style="background:${TYPES[t].wall}"></span><span><b>${TYPES[t].name}.</b> ${TYPES[t].desc}<em class="pro">＋ ${TYPES[t].pro}</em><em class="con">− ${TYPES[t].con}</em></span></p>`).join("")}
+    ${ORDER.map(t => `<p class="intro-room"><span class="isw" style="background:${TYPES[t].wall}"></span><span><b>${TYPES[t].name}.</b> ${TYPES[t].desc}<em class="pro">＋ ${TYPES[t].pro}</em><em class="con">− ${TYPES[t].con}</em>${UNLOCKS[t] ? `<em class="dim">🔓 ${UNLOCKS[t].text}</em>` : ""}</span></p>`).join("")}
     <p class="intro-tip"><span>💡</span><span>Start with Underwriting Boxes for income, keep a cash buffer for big claims, and add Compliance before your 4th floor.</span></p>
   </div>
   <div class="closeRow"><button class="btn blue" data-act="tutorial">Replay the tutorial</button><button class="btn" data-act="close">Back to the game</button></div>`, {cls:"intro"});
@@ -1350,6 +1626,9 @@ function effectText(type, l, d){
     case "sales": return `Brings in about ${fmtR(salesFloorRate(l)*salesMult())} per second`;
     case "claims": return `Handles a claim every ${(14/l/claimSpeed()).toFixed(1)} seconds`;
     case "it": return `+${10*l}% premium income, claims ${15*l}% faster, cyber losses ${Math.min(60,15*l)}% smaller, ${Math.min(40, 6*lv("it") + 6*(d || 0))}% outage risk per quarter`;
+    case "pr": return `Mood recovers faster, fines and confidence losses ${Math.min(50, 10*l)}% smaller, ${Math.min(30, 5*l)}% leak risk per quarter`;
+    case "hr": return `Everyone ${5*l}% faster, +${5*l}% premium income, ${Math.min(40, 8*l)}% backfire risk per quarter`;
+    case "invest": return `Invests up to ${fmt(Math.round(l*Math.max(300, income()*Q_LEN*0.3)))} of spare cash per quarter`;
     case "compliance": return `Covers ${3*l} floors for the regulator, scandal losses ${Math.min(60,15*l)}% smaller`;
     case "actuary": return `Claims cost ${Math.min(55,7*l)}% less`;
     case "marketing": return `Underwriting Boxes write ${35*l}% more`;
@@ -1361,8 +1640,8 @@ function effectText(type, l, d){
 }
 function openFloors(){
   const cost = buildCost(), can = S.floors.length < MAXF, afford = S.cash >= cost;
-  const types = ORDER.map(t => `<button class="type" data-act="build:${t}" ${(!can||!afford)?"disabled":""}>
-      <div class="sw" style="background:${TYPES[t].wall}"></div><b>${TYPES[t].name}</b><span class="pro">＋ ${TYPES[t].pro}</span><span class="con">− ${TYPES[t].con}</span></button>`).join("");
+  const types = [...ORDER].sort((a, b) => isUnlocked(b) - isUnlocked(a)).map(t => `<button class="type" data-act="build:${t}" ${(!can||!afford||!isUnlocked(t))?"disabled":""}>
+      <div class="sw" style="background:${TYPES[t].wall}"></div><b>${TYPES[t].name}</b><span class="pro">＋ ${TYPES[t].pro}</span><span class="con">− ${TYPES[t].con}</span>${!isUnlocked(t) ? `<span class="dim">🔒 ${UNLOCKS[t].text}</span>` : ""}</button>`).join("");
   const list = S.floors.map((f,i) => ({f,i})).reverse().map(({f,i}) => {
     const max = f.level >= MAXL, c = upCost(f);
     return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div>
@@ -1380,6 +1659,15 @@ function openFloor(i){
   const t = TYPES[f.type], max = f.level >= MAXL, c = upCost(f);
   const up = (TYPES[f.type].sal || 0.6)*salFactor();
   let extra = "";
+  if (f.type === "pr"){
+    const cost = prCost(), ready = S.prQ !== S.quarter;
+    extra = `<h3>Damage control</h3><div class="action"><div><h3>Launch a campaign</h3><p>Apologies, a charity photo op and a heartfelt video. Customer mood +15, board confidence +6. Once per quarter.</p></div>
+      <button class="btn" data-act="prcamp" ${!ready || S.cash < cost ? "disabled" : ""}>${ready ? fmt(cost) : "Done"}</button></div>`;
+  }
+  if (f.type === "invest"){
+    extra = `<h3>Investment strategy</h3><div class="seg three">${INV.map((st, k) => `<button class="btn" data-act="inv:${k}:${i}" aria-pressed="${(S.invRisk || 0) === k}">${st.name}</button>`).join("")}</div>
+      <p class="dim">${INV[S.invRisk || 0].desc} Your Investment floors put up to ${fmt(invCap())} of spare cash to work, with returns paid at each earnings call.${S.invLast ? ` Last quarter: ${S.invLast >= 0 ? "+" : "−"}${fmt(Math.abs(S.invLast))}.` : ""}</p>`;
+  }
   if (f.type === "claims"){
     extra = `<h3>How generous should they be?</h3>
     <div class="seg three"><button class="btn green" data-act="mode:${i}:pay" aria-pressed="${f.mode!=="deny"&&f.mode!=="smart"}">Pay everything</button>
@@ -1404,11 +1692,19 @@ function openFloor(i){
     <div class="designs">${DESIGNS[f.type].map((d,k) => `<button class="btn" data-act="skin:${i}:${k}" aria-pressed="${k===f.skin}">${d.name}</button>`).join("")}</div>
     <p class="dim">Redecorating is free. The interior designer is paid in exposure.</p>
     ${extra}
-    <button class="btn" style="width:100%" data-act="up:${i}:floor" ${max||S.cash<c?"disabled":""}>${max?"Fully upgraded":`Upgrade for ${fmt(c)}`}${!max&&S.cash<c?`<small>You have ${fmt(S.cash)}</small>`:""}</button>`, {view:"floor"});
+    <button class="btn" style="width:100%" data-act="up:${i}:floor" ${max||S.cash<c?"disabled":""}>${max?"Fully upgraded":`Upgrade for ${fmt(c)}`}${!max&&S.cash<c?`<small>You have ${fmt(S.cash)}</small>`:""}</button>
+    <h3 style="margin-top:16px">Arrange</h3>
+    <p class="dim">This is floor ${i + 1} of ${S.floors.length}, counting up from The Room. Moving floors is free and purely cosmetic.</p>
+    <div class="seg three">
+      <button class="btn ghost" data-act="mv:${i}:1" ${i >= S.floors.length - 1 ? "disabled" : ""}>Move up</button>
+      <button class="btn ghost" data-act="mv:${i}:-1" ${i <= 0 ? "disabled" : ""}>Move down</button>
+      <button class="btn red" data-act="demo:${i}" ${S.floors.length <= 1 ? "disabled" : ""}>Demolish</button>
+    </div>`, {view:"floor" + i});
 }
 function build(type){
   const cost = buildCost();
   if (S.cash < cost || S.floors.length >= MAXF) return;
+  if (!isUnlocked(type)) return;
   S.cash -= cost; discSpent += cost;
   S.floors.push({type, level:1, mode:"pay"});
   rebuildWorkers(S.floors.length-1);
@@ -1461,7 +1757,15 @@ function sparkline(){
     <polygon points="2,76 ${pts} 298,76" fill="rgba(255,210,63,.18)"/>
     <polyline points="${pts}" fill="none" stroke="#FFD23F" stroke-width="3" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>`;
 }
-function openBoard(confirmRestart){
+function pricingIntroHtml(){
+  return `<div class="pc" style="border-color:var(--gold)">
+    <h3>Start here: choose your pricing</h3>
+    <p>This is the Boardroom, your strategy room. Your first big decision is how to price your policies. Right now the market is <b>${cycleName().replace(" market", "").toLowerCase()}</b>: ${cycleName() === "Hard market" ? "prices are high, so Premium costs you fewer customers" : cycleName() === "Soft market" ? "rivals are cutting prices, so charging more loses customers" : "prices are normal"}.</p>
+    ${PRICES.map((pr, k) => `<button class="type" style="width:100%;margin:0 0 6px;${priceIdx() === k ? "border-color:var(--gold)" : ""}" data-act="price:${k}"><b>${priceIdx() === k ? "✓ " : ""}${pr.name}</b><span>${pr.desc}</span></button>`).join("")}
+    <p class="dim">Market rate is the safe start. Everything else in the Boardroom (insurance, executives, perks and more) is below, and you can change pricing any time.</p>
+  </div>`;
+}
+function openBoard(confirmRestart, intro){
   const r = S.rankIdx, next = RANKS[r+1];
   if (confirmRestart){
     openModal(`<h2>Start over?</h2><p>Your tower, your yachts and your share price all go away. Percy keeps his contract.</p>
@@ -1469,14 +1773,17 @@ function openBoard(confirmRestart){
     return;
   }
   openModal(`<div class="top"><h2>Boardroom</h2>${xBtn}</div>
+    ${intro ? pricingIntroHtml() : ""}
     <p>Your title: <b>${RANKS[r].name}</b></p>
     <div class="status">
       <div><span>Board confidence</span><b class="${S.conf < 30 ? "neg" : "pos"}">${Math.round(S.conf)}%</b></div>
       <div><span>Regulator warnings</span><b class="${S.strikes ? "neg" : "pos"}">${S.strikes} of ${maxStrikes()}</b></div>
       <div><span>Competition</span><b>${mktName().replace(" market","")}</b></div>
+      <div><span>Capital held</span><b class="${capReq() && S.cash < capReq() ? "neg" : "pos"}">${capReq() ? Math.round(capRatio()*100) + "% of required" : "Not required yet"}</b></div>
     </div>
     ${execsHtml()}
-    <p class="dim" style="margin-top:12px">Score so far: <b>${scoreParts().total.toLocaleString("en-GB")}</b> (grade ${grade(scoreParts().total)}). Personal best: ${bestScore().toLocaleString("en-GB")}.</p>
+    <div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb">🏆 Leaderboard</button></div>
+    <p class="dim" style="margin-top:12px">Score so far: <b>${scoreParts().total.toLocaleString("en-GB")}</b> (grade ${grade(scoreParts().total)})${S.idleMode ? ", not recorded in idle mode" : ""}. Personal best: ${bestScore().toLocaleString("en-GB")}.</p>
     ${goalsHtml(next)}
     <h3 style="margin-top:14px">Pricing</h3>
     <p class="dim"><b style="color:var(--ink)">${cycleName()}.</b> ${CYCLE_MSG[cycleName()].replace(/^The market has (hardened|softened|steadied)\. /, "")}</p>
@@ -1520,6 +1827,11 @@ function openBoard(confirmRestart){
     <div class="action"><div><h3>Pay yourself a bonus</h3><p>Buys a yacht. Share price down 1% for “optics.”</p></div>
       <button class="btn ghost" data-act="bonus" ${S.cash<bonusCost()?"disabled":""}>${fmt(bonusCost())}</button></div>
     <p class="dim" style="margin-top:12px">How the money works: premiums come in every second, salaries go out every second, and claims cost money when you pay them. Profit is whatever survives.</p>
+    <h3 style="margin-top:14px">Idle mode</h3>
+    ${S.idleMode ? `<p class="note">Idle mode is on. The board is making every decision, and this run’s score won’t be recorded.</p>
+      <h3>Watching speed</h3>
+      <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
+      <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
     <button class="btn red" style="width:100%" data-act="restart">Start a new company</button>`, {view:"board", focus:false});
 }
 function doBuyback(){ const c = buybackCost(); if (S.cash < c) return false; spend(c, "other"); discSpent += c; S.stock *= 1.04; checkRank(); return true; }
@@ -1540,7 +1852,10 @@ function earnings(){
     S.cash -= pay; S.loan.left -= pay; q.loan = Math.min(S.loan.interest, pay);
     if (S.loan.left <= 0){ S.loan = null; notes.push("Your bank loan is fully repaid."); }
   }
-  const profit = q.prem - q.paid - q.sal - q.other - q.cover - q.loan;
+  q.inv = 0;
+  if (lv("invest")){ const cap = invCapital(), st = INV[S.invRisk || 0]; q.inv = Math.round(cap*(st.mean + st.sd*gauss())); S.cash += q.inv; S.invLast = q.inv;
+    if (q.inv < 0) notes.push(`Your ${st.name.toLowerCase()} investments lost ${fmt(-q.inv)} this quarter.`); }
+  const profit = q.prem - q.paid - q.sal - q.other - q.cover - q.loan + q.inv;
   const hist = (S.profHist || []).slice(-3), g = growthRate();
   const avg = hist.length ? hist.reduce((a, b) => a + b, 0)/hist.length : 0;
   const expected = avg > 0 ? Math.max(40, avg*(1+g)) : 40;
@@ -1554,10 +1869,12 @@ function earnings(){
   const gap = compGap();
   let strike = false;
   const gouged = priceIdx() === 3 && Math.random() < 0.35;
-  if (gap > 0 || S.happy < 20 || gouged){
+  const capShort = capReq() > 0 && S.cash < capReq()*0.8;
+  if (!capShort && capReq() > 0 && S.cash < capReq()) notes.push(`Your capital is ${Math.round(capRatio()*100)}% of what the regulator requires. That’s within tolerance, but below 80% you’ll get a warning.`);
+  if (gap > 0 || S.happy < 20 || gouged || capShort){
     strike = true; S.strikes++; S.cleanQ = 0; S.cleanRun = 0;
-    const fine = Math.round(Math.max(100, Math.max(0, S.cash)*0.1)*(perk("lobbyist") ? 0.6 : 1)); S.cash -= fine;
-    notes.push(`Regulator warning ${S.strikes} of ${maxStrikes()}: ${gap > 0 ? `Compliance only covers ${compHave()} of the ${compNeed()} floors it needs to` : S.happy < 20 ? "customers are miserable" : "your prices failed the fair-value test"}. Fine: ${fmt(fine)}.${S.strikes >= maxStrikes() ? "" : " Two clean quarters remove a warning."}`);
+    const fine = Math.round(Math.max(100, Math.max(0, S.cash)*0.1)*(perk("lobbyist") ? 0.6 : 1)*prDamp()); S.cash -= fine;
+    notes.push(`Regulator warning ${S.strikes} of ${maxStrikes()}: ${gap > 0 ? `Compliance only covers ${compHave()} of the ${compNeed()} floors it needs to` : capShort ? `you hold ${fmt(Math.max(0, S.cash))} but must hold ${fmt(capReq())} in capital` : S.happy < 20 ? "customers are miserable" : "your prices failed the fair-value test"}. Fine: ${fmt(fine)}.${S.strikes >= maxStrikes() ? "" : " Two clean quarters remove a warning."}`);
   } else {
     S.cleanQ++; S.cleanRun = (S.cleanRun || 0) + 1;
     if (S.strikes > 0 && S.cleanQ >= 2){ S.strikes--; S.cleanQ = 0; notes.push("The regulator removed one of your warnings. Keep it clean."); }
@@ -1576,14 +1893,24 @@ function earnings(){
   let dc = stars ? 5 + 3*stars + Math.min(S.streak, 5) : profit < 0 ? -20 : inLine ? 2 : -Math.round(4 + 12*Math.min(1, -surprise));
   if (S.happy < 25) dc -= 6;
   if (strike) dc -= 10;
+  if (dc < 0) dc = Math.round(dc*prDamp());
   S.conf = clamp(S.conf + dc, 0, 100);
   const oldDiff = S.diff;
-  S.diff = clamp(S.diff + 0.02 + (stars ? 0.05 + 0.04*stars : -0.1), 1, 4);
+  { let dd = 0.02 + (stars ? 0.05 + 0.04*stars : -0.1); if (dd > 0 && S.diff > 3) dd /= (S.diff - 2); S.diff = Math.max(1, 1 + 0.035*qn, S.diff + dd); }
+  if (qn >= 9 && S.rivalT == null && Math.random() < Math.min(0.6, 0.15 + 0.08*Math.max(0, S.diff - 2) + 0.01*Math.max(0, S.floors.length - 10))) S.rivalT = rand(10, 50);
+  if (S.idleMode && qn > 4 && Math.random() < 0.22*Math.min(1, (qn - 4)/8)){
+    const bl = pick(BLUNDERS), cost = Math.round(Math.max(150, Math.abs(profit)*bl.k)/10)*10;
+    S.cash -= cost; if (bl.conf) S.conf = clamp(S.conf - bl.conf, 0, 100); if (bl.mood) mood(-bl.mood);
+    notes.push(`Board blunder: ${bl.text} It cost ${fmt(cost)}.`);
+  }
+  if (lv("pr") && S.prLeakAt == null && Math.random() < Math.min(0.3, 0.05*lv("pr"))) S.prLeakAt = rand(8, 50);
+  if (lv("hr") && S.hrAt == null && Math.random() < Math.min(0.4, 0.08*lv("hr"))) S.hrAt = rand(8, 50);
   if (lv("it") > 0 && S.outageAt == null && Math.random() < Math.min(0.4, 0.06*lv("it"))) S.outageAt = rand(8, 50);
-  if (qn >= 3 && !S.swan && Math.random() < 0.012 + 0.006*(S.diff - 1)){
-    S.swan = {t:rand(12, 48), kind:pick(["storm","storm","storm","ash","cyber","cyber","scandal","scandal","crash"]), warned:false};
+  if (qn >= 3 && !S.swan && Math.random() < (0.012 + 0.006*(S.diff - 1))*(S.idleMode && qn > 8 ? 2.5 : 1)){
+    S.swan = {t:rand(12, 48), kind:pick(["storm","storm","tornado","tornado","bridge","bridge","ash","cyber","cyber","scandal","scandal","crash"]), warned:false};
   }
   if (qn % 8 === 0) notes.push("New regulations: a 400-page rulebook just landed. Compliance must now cover one more floor than before.");
+  if (qn === 5) notes.push("Coming next quarter: capital rules. The regulator will require you to hold cash in proportion to the premiums you write. Catastrophe reinsurance and Cat Modelling reduce how much.");
   if (qn === 3) notes.push("Black swans are rare, once-in-a-lifetime disasters. Most games never see one, but from now on one could strike. Your own insurance is in the Boardroom.");
   const qLabel = `Q${((qn-1)%4)+1}, year ${Math.ceil(qn/4)}`;
   let lede, quote;
@@ -1608,9 +1935,11 @@ function earnings(){
       <tr><td>Salaries</td><td class="neg">−${fmt(q.sal)}</td></tr>
       <tr><td>Lawsuits, fines and “other”</td><td class="neg">−${fmt(q.other)}</td></tr>
       <tr><td>Your own insurance</td><td class="neg">−${fmt(q.cover)}</td></tr>
+      ${q.inv ? `<tr><td>Investment returns</td><td class="${q.inv >= 0 ? "pos" : "neg"}">${q.inv >= 0 ? "+" : "−"}${fmt(Math.abs(q.inv))}</td></tr>` : ""}
       ${q.loan ? `<tr><td>Loan interest</td><td class="neg">−${fmt(q.loan)}</td></tr>` : ""}
       <tr class="total"><td>Profit</td><td class="${profit>=0?"pos":"neg"}">${fmt(profit)}</td></tr>
       <tr class="exp"><td>The City expected<br><small>${basis}</small></td><td>${fmt(expected)}</td></tr>
+      ${capReq() ? `<tr class="exp"><td>Capital the regulator requires<br><small>You hold ${fmt(Math.max(0, S.cash))}</small></td><td class="${S.cash < capReq() ? "neg" : ""}">${fmt(capReq())}</td></tr>` : ""}
     </table>
     <div class="move ${pct>=0?"up":"down"}"><span>Share price<br><b>${fmt2(old)} to ${fmt2(S.stock)}</b></span><em>${pct>=0?"+":"−"}${Math.abs(pct).toFixed(1)}%</em></div>
     <blockquote>${quote}<cite>An analyst who has never bought insurance</cite></blockquote>
@@ -1674,17 +2003,18 @@ const TUT = [
   {el:() => $("#confBar").closest(".qrow"), title:"Board confidence and the market", text:"If board confidence reaches zero, you’re fired. The label on the right shows the insurance cycle: hard markets mean high prices, soft markets mean price wars. Set your pricing to match in the Boardroom."},
   {el:"#btnHelp", title:"Pause and help", text:"Pause the game any time with the Pause button or the P key. This ? button reopens the tutorial and the full room guide whenever you need them."},
   {el:"#game", title:"Your tower", text:"Drag to scroll. Tap a floor to upgrade it or change its design. Brokers with a “!” in The Room at the bottom are claims waiting for you. Tap them."},
-  {el:"#btnFloors", title:"Build floors", text:"Every room has an upside and a downside, and each new floor raises all salaries by 6%. After your first 3 floors, Compliance must cover the rest or the regulator will warn you."},
+  {el:"#btnFloors", title:"Build floors", text:"Every room has an upside and a downside, and each new floor raises all salaries by 6%. After your first 3 floors, Compliance must cover the rest or the regulator will warn you. New kinds of floor unlock as you grow."},
   {el:"#btnClaims", title:"Handle claims", text:"Pay, deny or stall with paperwork. Serious claims that look genuine are the most likely to sue, and to win. A Risk Dept shows you the odds."},
-  {el:"#btnBoard", title:"The Boardroom", text:"Check your promotion targets, buy your own insurance against rare black swan disasters, spend stars on perks and track achievements."},
-  {el:null, title:"How it ends", text:"You lose if you go bankrupt, get fired, or lose your licence after three warnings. Your final score combines the money you generate, the days you survive and your reputation. Good luck."},
+  {el:"#btnBoard", title:"The Boardroom", text:"Your strategy room. Check promotion targets, buy your own insurance against black swans, hire executives, pay dividends, spend stars on perks and see the leaderboard. It opens for you as soon as this tour ends."},
+  {el:"#btnBoard", title:"Pricing strategy", text:"Your first Boardroom decision. Undercut wins customers but thins margins. Market rate is the safe middle. Premium earns more per policy but loses customers in a soft market. Gouge makes a fortune until the regulator notices. Match it to the market cycle shown in the top bar."},
+  {el:null, title:"How it ends", text:"You lose if you go bankrupt, get fired, or lose your licence after three warnings. Your final score combines the money you generate, the days you survive and your reputation. Prefer to just watch? Idle mode in the Boardroom lets the board run everything, but that run’s score won’t count."},
 ];
 let tutorialOn = false, tutI = 0;
 function tutTarget(st){ if (!st.el) return null; const el = typeof st.el === "function" ? st.el() : $(st.el); return el && el.getClientRects().length ? el : null; }
 function startTutorial(){ tutorialOn = true; tutI = 0; $("#coach").hidden = false; showStep(); }
 function endTutorial(){
   tutorialOn = false; $("#coach").hidden = true;
-  if (!S.seen){ S.seen = true; save(); }
+  if (!S.seen){ S.seen = true; save(); setTimeout(() => openBoard(false, true), 250); }
   toast("You can reopen the tutorial any time with the ? button at the top.", "good");
 }
 function showStep(){
@@ -1784,7 +2114,10 @@ function noise(t0, dur, vol, freq, type){
   g.gain.setValueAtTime(vol || 0.2, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
   src.connect(f); f.connect(g); g.connect(SND.master); src.start(t0); src.stop(t0 + dur + 0.05);
 }
+function buzz(p){ try { if (!SND.muted && navigator.vibrate) navigator.vibrate(p); } catch(e){} }
 function sfx(name, n){
+  const BZ = {gavel:40, swan:[80,60,140], lose:[60,40,200], build:15, warn:25};
+  if (BZ[name] && !(SND.last["bz" + name] && performance.now() - SND.last["bz" + name] < 400)){ SND.last["bz" + name] = performance.now(); buzz(BZ[name]); }
   if (!SND.ctx || SND.muted || SND.ctx.state !== "running") return;
   const now = SND.ctx.currentTime, gap = {coin:1.4, tick:0.05, pay:0.12, stamp:0.12}[name] || 0.08;
   if (SND.last[name] && now - SND.last[name] < gap) return;
@@ -1838,11 +2171,11 @@ const EXECS = [
   {id:"cfo", name:"Chief Financial Officer", rank:3, sal:1.3, desc:"Sets pricing for the market cycle, pays dividends when the board gets twitchy, and borrows if cash is about to run out.", joke:"Speaks only in basis points."},
   {id:"coo", name:"Chief Operating Officer", rank:4, sal:1.3, desc:"Spends spare cash on upgrades and new floors, always keeping a safety buffer.", joke:"Has never met a problem a new floor couldn’t fix."},
 ];
-function hasExec(id){ return !!(S.execs && S.execs[id]); }
+function hasExec(id){ return !!(S.idleMode || (S.execs && S.execs[id])); }
 function execCount(){ return EXECS.filter(x => hasExec(x.id)).length; }
-function execRate(x){ return x.sal*(0.4 + Math.max(0, baseIncome())*0.03); }
+function execRate(x){ return x.sal*((S.idleMode ? 0 : 0.4) + Math.max(0, baseIncome())*0.03); }
 function execCost(){ let c = 0; for (const x of EXECS) if (hasExec(x.id)) c += execRate(x); return c; }
-function execBuffer(){ return typicalClaim()*6 + Object.keys(COVERS).reduce((a, k) => a + (S.cover[k] ? coverCost(k, income()*Q_LEN) : 0), 0); }
+function execBuffer(){ return typicalClaim()*6 + capReq() + Object.keys(COVERS).reduce((a, k) => a + (S.cover[k] ? coverCost(k, income()*Q_LEN) : 0), 0); }
 let apT = 0;
 function autopilot(dt){
   apT += dt; if (apT < 0.5) return; apT = 0;
@@ -1852,11 +2185,12 @@ function autopilot(dt){
       let act = lv("risk") >= 2 && legitEst(c) < 50 ? "deny" : "pay";
       if (act === "pay" && lv("risk") < 2 && !c.stalls && c.amount > typicalClaim()*1.3 && S.cash < typicalClaim()*4) act = "stall";
       if (act === "pay" && !canPay(c.amount)) act = c.stalls ? "deny" : "stall";
+      if (S.idleMode && S.quarter > 3 && act !== "stall" && Math.random() < 0.15*Math.min(1, (S.quarter - 3)/10)) act = act === "pay" ? "deny" : (canPay(c.amount) ? "pay" : "deny");
       resolve(c, act, "you");
     }
   }
   if (hasExec("cro")){
-    for (const k of Object.keys(COVERS)){ const cost = coverCost(k, income()*Q_LEN); if (!S.cover[k] && S.quarter >= 3 && S.cash > cost*4){ S.cash -= cost; discSpent += cost; S.cover[k] = true; toast(`Your Chief Risk Officer bought ${COVERS[k].name.toLowerCase()}.`); } }
+    for (const k of Object.keys(COVERS)){ const cost = coverCost(k, income()*Q_LEN); if (!S.cover[k] && S.quarter >= (S.idleMode ? 4 : 3) && S.cash > cost*4 && (!S.idleMode || Math.random() < 0.015)){ S.cash -= cost; discSpent += cost; S.cover[k] = true; toast(`Your Chief Risk Officer bought ${COVERS[k].name.toLowerCase()}.`); } }
     for (let k = S.lawsuits.length - 1; k >= 0; k--){ const l = S.lawsuits[k], cost = settleCost(l); if ((l.win != null ? l.win : 0.85) >= 0.5 && S.cash > cost*2){ spend(cost, "other"); S.lawsuits.splice(k, 1); toast(`Your Chief Risk Officer settled with ${l.name || "a former customer"} for ${fmt(cost)}.`); } }
   }
   if (hasExec("cco") && compGap() >= 0 && S.floors.length >= 3){
@@ -1867,24 +2201,51 @@ function autopilot(dt){
     }
   }
   if (hasExec("cfo")){
-    const cn = cycleName(), want = cn === "Hard market" ? 2 : (cn === "Soft market" && S.happy < 50) ? 0 : 1;
-    if (priceIdx() !== want && priceIdx() !== 3){ S.price = want; toast(`Your CFO switched pricing to ${PRICES[want].name.toLowerCase()} for the ${cn.toLowerCase()}.`); }
+    const cn = cycleName(); let want = cn === "Hard market" ? 2 : (cn === "Soft market" && S.happy < 50) ? 0 : 1;
+    if (S.idleMode){ if (S.bpCycle !== cn){ S.bpCycle = cn; S.bpPick = S.quarter > 4 && Math.random() < 0.3 ? Math.floor(Math.random()*4) : want; } want = S.bpPick; }
+    if (priceIdx() !== want && (S.idleMode || priceIdx() !== 3)){ S.price = want; toast(`${S.idleMode ? "The board" : "Your CFO"} switched pricing to ${PRICES[want].name.toLowerCase()} for the ${cn.toLowerCase()}.${S.idleMode && want === 3 ? " Bold." : ""}`, want === 3 ? "bad" : ""); }
     if (S.divQ !== S.quarter && S.conf < 70 && S.qt > 45 && S.cash > divAmt() + execBuffer()){ const a = divAmt(); S.cash -= a; discSpent += a; S.divQ = S.quarter; S.conf = clamp(S.conf + 8, 0, 100); S.stock *= 1.03; toast(`Your CFO paid a ${fmt(a)} dividend to calm the board.`, "good"); }
     const run = runway();
     if (run != null && run < 30 && !S.loan){ const a = loanAmt(), tot = Math.round(a*1.25); S.cash += a; discSpent -= a; S.loan = {left:tot, per:Math.ceil(tot/4), interest:Math.round((tot - a)/4)}; toast(`Your CFO took out a ${fmt(a)} loan to keep the lights on.`, "bad"); }
   }
-  if (hasExec("coo")){
-    const buffer = execBuffer()*1.5;
+  if (S.idleMode) idleAutopilot();
+  if (hasExec("coo") && (!S.idleMode || (S.cooCd = (S.cooCd || 0) - 0.5) <= 0)){
+    const buffer = S.floors.length < 5 ? typicalClaim()*2 + capReq() : execBuffer()*1.5;
     const want = {sales:5, claims:2, marketing:1, actuary:1, legal:1, risk:1, it:1, ir:1};
-    if (S.floors.length < MAXF && S.cash - buffer > buildCost()*1.3){
-      const need = Object.keys(want).map(t => [t, S.floors.filter(f => f.type === t).length/want[t]]).sort((a, b) => a[1] - b[1])[0][0];
-      const c = buildCost(); S.cash -= c; discSpent += c; S.floors.push({type:need, level:1, mode:"pay"}); rebuildWorkers(S.floors.length-1);
-      toast(`Your COO built a new ${TYPES[need].name}.`);
+    const boxes = S.floors.filter(f => f.type === "sales"), boxAvg = boxes.length ? boxes.reduce((a, f) => a + f.level, 0)/boxes.length : 0;
+    const avgLvl = S.floors.reduce((a, f) => a + f.level, 0)/Math.max(1, S.floors.length);
+    if (S.floors.length < MAXF && (S.floors.length < 3 || (boxAvg >= 2 && avgLvl >= 2.2)) && S.cash - buffer > buildCost()*1.3){
+      const need = (isUnlocked("compliance") && S.floors.length >= 3 && compNeed() + 1 > compHave() && !S.floors.some(f => f.type === "compliance" && f.level < MAXL)) ? "compliance" : S.floors.filter(f => f.type === "sales").length < 3 ? "sales" : Object.keys(want).filter(t => isUnlocked(t)).map(t => [t, S.floors.filter(f => f.type === t).length/want[t]]).sort((a, b) => a[1] - b[1])[0][0];
+      if (S.floors.length >= 3 && compNeed() + 1 > compHave() && need !== "compliance") { /* a Compliance upgrade is cheaper: leave it to the Compliance Officer this time */ }
+      else {
+      const odd = S.idleMode && S.quarter > 4 && need !== "compliance" && Math.random() < 0.12;
+      const kind = odd ? pick(ORDER.filter(t => isUnlocked(t) && t !== need)) || need : need;
+      const c = buildCost(); S.cash -= c; discSpent += c; S.floors.push({type:kind, level:1, mode:"pay"}); rebuildWorkers(S.floors.length-1); if (S.idleMode) S.cooCd = 20;
+      toast(odd ? `The board built a ${TYPES[kind].name} nobody asked for. Someone’s nephew runs it.` : `Your COO built a new ${TYPES[kind].name}.`, odd ? "bad" : "");
+      }
     } else {
-      const f = S.floors.filter(f => f.level < MAXL && f.type !== "compliance").sort((a, b) => (a.type === "sales" ? 0 : 1) - (b.type === "sales" ? 0 : 1) || upCost(a) - upCost(b))[0];
-      if (f && S.cash - buffer > upCost(f)*1.5){ const c = upCost(f); S.cash -= c; discSpent += c; f.level++; rebuildWorkers(S.floors.indexOf(f)); }
+      const f = S.floors.filter(f => f.level < MAXL && f.type !== "compliance").sort((a, b) => a.level - b.level || (a.type === "sales" ? 0 : 1) - (b.type === "sales" ? 0 : 1) || upCost(a) - upCost(b))[0];
+      if (f && S.cash - buffer > upCost(f)*1.5){ const c = upCost(f); S.cash -= c; discSpent += c; f.level++; rebuildWorkers(S.floors.indexOf(f)); if (S.idleMode){ S.cooCd = 8; toast(`The board upgraded ${TYPES[f.type].name} to level ${f.level}.`); } }
     }
   }
+}
+const BLUNDERS = [
+  {text:"The board approved a gold-plated lift.", k:0.4},
+  {text:"The board hired a consultant to explain the last consultant.", k:0.3},
+  {text:"The board held its away day in Monaco.", k:0.5, conf:4},
+  {text:"The board rebranded the company, then rebranded it back.", k:0.35, mood:4},
+  {text:"The board bought a racehorse “as a hedge.”", k:0.6},
+  {text:"The board missed a regulatory filing and paid the late fee.", k:0.3, conf:3},
+  {text:"The board sponsored a yacht race. Nobody watched.", k:0.45},
+  {text:"The board approved a new logo. It’s the old logo, in italics.", k:0.25},
+  {text:"The board commissioned a portrait of the board.", k:0.35},
+  {text:"The board invested in a start-up that sells NFTs of hold music.", k:0.55},
+];
+function idleAutopilot(){
+  const pk = PERKS.filter(x => !perk(x.id) && S.favour >= x.cost).sort((a, b) => a.cost - b.cost)[0];
+  if (pk){ S.favour -= pk.cost; S.perks[pk.id] = true; }
+  if (S.cash < -overdraft()*0.4 && S.quarter - S.lastCall >= 2){ S.cash += cashCallAmt(); S.stock = Math.max(0.5, S.stock*0.85); S.conf = clamp(S.conf - 12, 0, 100); S.lastCall = S.quarter; toast("The board made a cash call to keep things afloat.", "bad"); }
+  for (const f of S.floors) if (f.type === "claims"){ if (lv("risk") >= 2) f.mode = "smart"; if (!f.lim) f.lim = 1; }
 }
 function execsHtml(){
   return `<h3 style="margin-top:14px">Executive team</h3>
@@ -1912,6 +2273,23 @@ function offlineCheck(){
     <div class="closeRow"><button class="btn" data-act="close">Back to work</button></div>`);
 }
 
+/* ---------- Leaderboard (stored on this device) ---------- */
+const RUNS_KEY = "fineprint-runs", NAME_KEY = "fineprint-name";
+function loadRuns(){ try { return JSON.parse(localStorage.getItem(RUNS_KEY)) || []; } catch(e){ return []; } }
+function saveRuns(r){ try { localStorage.setItem(RUNS_KEY, JSON.stringify(r)); } catch(e){} }
+function playerName(){ try { return localStorage.getItem(NAME_KEY) || ""; } catch(e){ return ""; } }
+function esc(t){ return String(t).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch])); }
+function recordRun(sp, reason){
+  const runs = loadRuns(), run = {id:Date.now(), name:playerName() || "Fine Print Syndicate", score:sp.total, grade:grade(sp.total), quarters:S.quarter - 1, title:RANKS[S.rankIdx].name, end:reason, at:Date.now()};
+  runs.push(run); runs.sort((a, b) => b.score - a.score); saveRuns(runs.slice(0, 20)); return run;
+}
+function lbTable(hl){
+  const runs = loadRuns().slice(0, 10);
+  if (!runs.length) return `<div class="empty"><p>No finished runs yet. Your first one will appear here.</p></div>`;
+  return `<table class="lb"><tr><th>#</th><th>Syndicate</th><th>Score</th><th>Grade</th><th>Qtrs</th></tr>${runs.map((r, k) => `<tr class="${r.id === hl ? "me" : ""}"><td>${k + 1}</td><td>${esc(r.name)}<small>${esc(r.title)}</small></td><td>${r.score.toLocaleString("en-GB")}</td><td>${r.grade}</td><td>${r.quarters}</td></tr>`).join("")}</table>`;
+}
+function openLeaderboard(){ openModal(`<div class="top"><h2>Leaderboard</h2>${xBtn}</div><p class="dim">Your 10 best runs on this device.</p>${lbTable()}`, {view:"lb"}); }
+
 const ENDINGS = {
   bankrupt:{title:"Bankrupt", text:"The bank has taken the building. The board replaced you with a golden retriever named Biscuit. The share price rose 4% on the news."},
   fired:{title:"Fired", text:"The board has lost all confidence in you. Security walked you out holding a box with one sad plant. Percy kept your parking space."},
@@ -1928,7 +2306,9 @@ function gameOver(reason){
     return;
   }
   const e = ENDINGS[reason]; sfx("lose");
-  const sp = scoreParts(), prevBest = bestScore(), isNew = sp.total > prevBest;
+  const spR = scoreParts(); let run = S.runId ? loadRuns().find(r => r.id === S.runId) : null;
+  if (!run && !S.idleMode){ run = recordRun(spR, reason); S.runId = run.id; }
+  const sp = scoreParts(), prevBest = bestScore(), isNew = !S.idleMode && sp.total > prevBest;
   if (isNew) saveBest(sp.total);
   S.over = true; save();
   openModal(`<h2>${e.title}</h2>
@@ -1940,7 +2320,10 @@ function gameOver(reason){
       <div class="fact"><span>Stars earned</span><b>${S.stars} ★</b></div>
       <div class="fact"><span>Achievements</span><b>${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length}</b></div>
     </div>
-    <button class="btn" style="width:100%" data-act="restart-yes">Start a new company</button>`, {locked:true});
+    ${S.idleMode ? `<p class="note">This was an idle mode run. The board made the decisions, so the score isn’t recorded.</p>` : `<h3>Leaderboard</h3>
+    <div class="lbname"><input id="lbName" maxlength="24" placeholder="Name your syndicate" value="${esc(run.name)}" aria-label="Your name on the leaderboard"><button class="btn ghost" data-act="lbname:${run.id}">Save name</button></div>
+    <div id="lbArea">${lbTable(run.id)}</div>`}
+    <button class="btn" style="width:100%;margin-top:12px" data-act="restart-yes">Start a new company</button>`, {locked:true});
 }
 const COVERS = {
   cat:{name:"Catastrophe reinsurance", rate:0.02, desc:"Pays 90% of storms, volcanoes and other natural disasters."},
@@ -1950,29 +2333,30 @@ const COVERS = {
 function coverCost(k, prem){ return Math.round(Math.max(60, prem*COVERS[k].rate)*(perk("reinsdisc") ? 0.75 : 1)); }
 const SWANS = {
   storm:{title:"The storm of the century", text:"A hurricane tears through three countries and half your portfolio in one weekend.", cover:"cat", mit:() => Math.min(0.5, 0.08*lv("actuary")), mitName:"Cat Modelling"},
+  tornado:{title:"Tornado in the business district", text:"A tornado tours the city, picking up cars, cows and a surprising number of your policyholders.", cover:"cat", mit:() => Math.min(0.5, 0.08*lv("actuary")), mitName:"Cat Modelling"},
+  bridge:{title:"Ship meets bridge", text:"A container ship you insure lost power and parked itself in a major bridge. The bridge has opinions about this.", cover:"cat", mit:() => Math.min(0.5, 0.08*lv("actuary")), mitName:"Cat Modelling"},
   ash:{title:"The volcano that grounded the world", text:"An ash cloud shuts every airport for a month. Travel, cargo and event policies all claim at once.", cover:"cat", mit:() => Math.min(0.5, 0.08*lv("actuary")), mitName:"Cat Modelling"},
   cyber:{title:"Global cyber attack", text:"Ransomware hits every client you insure on the same Tuesday morning.", cover:"cyber", mit:() => Math.min(0.6, 0.15*lv("it")), mitName:"IT"},
   scandal:{title:"Rogue underwriter scandal", text:"One of your underwriters wrote £2bn of cover on a napkin, then left for a beach with no extradition treaty.", cover:"dno", mit:() => Math.min(0.6, 0.15*lv("compliance")), mitName:"Compliance"},
   crash:{title:"Market crash", text:"Global markets fall off a cliff. Nobody can insure against this one.", cover:null},
 };
-function blackSwan(kind){
-  S.swanDone = true; S.cyc = Math.PI/2;
-  sfx("swan");
+function blackSwan(kind){ S.swanDone = true; S.cyc = Math.PI/2; playCutscene(kind, () => swanResolve(kind)); }
+function swanResolve(kind){
   const sw = SWANS[kind];
-  if (scene){ scene.cameras.main.shake(700, 0.012); scene.cameras.main.flash(500, 255, 60, 60); }
   let body;
   if (!sw.cover){
     const drop = 0.3*Math.max(0.4, 1 - 0.1*lv("ir"));
-    S.stock = Math.max(0.5, S.stock*(1 - drop)); S.conf = clamp(S.conf - 10, 0, 100);
-    body = `<p>Your share price fell ${Math.round(drop*100)}%. ${lv("ir") ? "Capital Relations softened the blow." : "Capital Relations could have softened the blow."} Board confidence −10.</p>`;
+    S.stock = Math.max(0.5, S.stock*(1 - drop)); S.conf = clamp(S.conf - Math.round(10*prDamp()), 0, 100);
+    const il = lv("invest") ? Math.round(invCapital()*INV[S.invRisk || 0].crash) : 0; if (il){ S.cash -= il; S.q.other += il; }
+    body = `<p>Your share price fell ${Math.round(drop*100)}%. ${lv("ir") ? "Capital Relations softened the blow." : "Capital Relations could have softened the blow."} Board confidence fell.${il ? ` Your ${INV[S.invRisk || 0].name.toLowerCase()} investments lost ${fmt(il)}.` : ""}</p>`;
   } else {
-    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)));
+    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, S.floors.length - 10))*(1 + 0.1*Math.max(0, S.diff - 2))));
     const mit = sw.mit(), net = Math.round(gross*(1 - mit));
     const covered = S.cover[sw.cover];
     const loss = covered ? Math.round(net*0.1) : net;
     spend(loss, "other");
     if (covered){ S.swansSurvived = (S.swansSurvived || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); }
-    else S.conf = clamp(S.conf - 25, 0, 100);
+    else S.conf = clamp(S.conf - Math.round(25*prDamp()), 0, 100);
     body = `<table class="ledger">
       <tr><td>Total loss</td><td class="neg">−${fmt(gross)}</td></tr>
       ${mit ? `<tr><td>Saved by ${sw.mitName}</td><td class="pos">+${fmt(gross - net)}</td></tr>` : ""}
@@ -1987,6 +2371,424 @@ function blackSwan(kind){
       if (S.conf <= 0) return gameOver("fired");
       save(); }});
 }
+/* ---------- Black swan cutscenes: hand-built pixel art ---------- */
+const CUT = (() => {
+const SW = 240, SH = 135, OUT = "#140f24";
+let c = null;
+const P = (x, y, w, h, col) => { c.fillStyle = col; c.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(w)), Math.max(1, Math.round(h))); };
+const px = (x, y, col) => { c.fillStyle = col; c.fillRect(Math.round(x), Math.round(y), 1, 1); };
+const hs = (a, b) => { const s = Math.sin(a*127.1 + b*311.7)*43758.5453; return s - Math.floor(s); };
+const fr = v => v - Math.floor(v);
+const ease = t => t < 0 ? 0 : t > 1 ? 1 : t*t*(3 - 2*t);
+
+function bands(y0, y1, cols, x0 = 0, w = SW){
+  const n = cols.length, bh = (y1 - y0)/n;
+  for (let i = 0; i < n; i++){ const a = Math.round(y0 + i*bh), b = Math.round(y0 + (i + 1)*bh); P(x0, a, w, b - a, cols[i]); }
+  for (let i = 1; i < n; i++){ const yb = Math.round(y0 + i*bh);
+    for (let x = x0; x < x0 + w; x++){ if ((x + yb) % 2 === 0) px(x, yb - 1, cols[i]); else px(x, yb, cols[i - 1]); if (x % 4 === 0) px(x, yb - 2, cols[i]); } }
+}
+function disc(cx, cy, r, col){ for (let y = -r; y <= r; y++){ const w = Math.floor(Math.sqrt(r*r - y*y) + 0.35); P(cx - w, cy + y, w*2 + 1, 1, col); } }
+function oval(cx, cy, rx, ry, col){ for (let y = -ry; y <= ry; y++){ const w = Math.floor(rx*Math.sqrt(Math.max(0, 1 - (y*y)/(ry*ry))) + 0.35); P(cx - w, cy + y, w*2 + 1, 1, col); } }
+function tri(x1, y1, x2, y2, x3, y3, col){
+  const minY = Math.floor(Math.min(y1, y2, y3)), maxY = Math.ceil(Math.max(y1, y2, y3));
+  for (let y = minY; y <= maxY; y++){
+    const xs = [];
+    for (const [ax, ay, bx, by] of [[x1,y1,x2,y2],[x2,y2,x3,y3],[x3,y3,x1,y1]]) if (y >= Math.min(ay, by) && y < Math.max(ay, by)) xs.push(ax + (y - ay)*(bx - ax)/(by - ay));
+    if (xs.length >= 2){ const a = Math.min(...xs), b = Math.max(...xs); P(a, y, b - a + 1, 1, col); }
+  }
+}
+function line(x0, y0, x1, y1, col){ const n = Math.max(1, Math.round(Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)))); for (let i = 0; i <= n; i++) px(x0 + (x1 - x0)*i/n, y0 + (y1 - y0)*i/n, col); }
+function dither(x, y, w, h, col, density = 0.5, seed = 0){ for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++){ const d = (xx + yy) % 2 === 0 ? 0.25 : 0.75; if (hs(x + xx + seed, y + yy) < density*(d + 0.25)) px(x + xx, y + yy, col); } }
+
+/* 3x5 pixel font */
+const G = {A:"010101111101101",B:"110101110101110",C:"011100100100011",D:"110101101101110",E:"111100110100111",F:"111100110100100",G:"011100101101011",H:"101101111101101",I:"111010010010111",J:"001001001101010",K:"101101110101101",L:"100100100100111",M:"101111111101101",N:"110101101101101",O:"010101101101010",P:"110101110100100",Q:"010101101110011",R:"110101110101101",S:"011100010001110",T:"111010010010010",U:"101101101101111",V:"101101101101010",W:"101101111111101",X:"101101010101101",Y:"101101010010010",Z:"111001010100111",
+  "0":"111101101101111","1":"010110010010111","2":"110001010100111","3":"110001010001110","4":"101101111001001","5":"111100110001110","6":"011100110101010","7":"111001010010010","8":"010101010101010","9":"010101011001110","!":"010010010000010","?":"110001010000010","%":"101001010100101","£":"011010111010111","-":"000000111000000",".":"000000000000010",":":"000010000010000","'":"010010000000000"," ":"000000000000000"};
+function text(str, x, y, col, s = 1, shadow){
+  str = String(str).toUpperCase(); let cx = x;
+  for (const ch of str){ const g = G[ch] || G[" "];
+    for (let i = 0; i < 15; i++) if (g[i] === "1"){ const gx = cx + (i % 3)*s, gy = y + Math.floor(i/3)*s; if (shadow) P(gx + s, gy + s, s, s, shadow); P(gx, gy, s, s, col); }
+    cx += 4*s; }
+}
+const textW = (str, s = 1) => String(str).length*4*s - s;
+
+/* sprites: drawn once into small canvases, outlined, then blitted (with rotation if needed) */
+const cache = {};
+function makeSprite(name, w, h, fn, outline = true){
+  if (cache[name]) return cache[name];
+  const cv = document.createElement("canvas"); cv.width = w + 2; cv.height = h + 2;
+  const saved = c; c = cv.getContext("2d"); c.translate(1, 1); fn(); c = saved;
+  if (outline){
+    const g = cv.getContext("2d"), id = g.getImageData(0, 0, cv.width, cv.height), d = id.data, W = cv.width, H = cv.height, mark = [];
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){ const i = (y*W + x)*4; if (d[i+3] > 0) continue;
+      const nb = [[1,0],[-1,0],[0,1],[0,-1]].some(([dx, dy]) => { const X = x + dx, Y = y + dy; return X >= 0 && Y >= 0 && X < W && Y < H && d[(Y*W + X)*4 + 3] > 0; });
+      if (nb) mark.push(i); }
+    for (const i of mark){ d[i] = 20; d[i+1] = 15; d[i+2] = 36; d[i+3] = 255; }
+    g.putImageData(id, 0, 0);
+  }
+  return cache[name] = cv;
+}
+function blit(cv, x, y, ang = 0, flip = false, sc = 1){
+  c.save(); c.imageSmoothingEnabled = false; c.translate(Math.round(x), Math.round(y));
+  if (ang) c.rotate(ang); if (flip) c.scale(-1, 1); if (sc !== 1) c.scale(sc, sc);
+  c.drawImage(cv, -Math.floor(cv.width/2), -Math.floor(cv.height/2)); c.restore();
+}
+const LOOKS = [
+  {skin:"#f2c39b", hair:"#3a2418", shirt:"#2f6fe4", pants:"#2b2d52", tie:"#e8452c"},
+  {skin:"#c68650", hair:"#1c1c1c", shirt:"#f4f1e8", pants:"#3a3f6b", tie:"#ffd23f"},
+  {skin:"#8d5524", hair:"#111111", shirt:"#e8452c", pants:"#2b2d52", tie:"#2f6fe4"},
+  {skin:"#ffdbac", hair:"#c9a227", shirt:"#5a6fd6", pants:"#1f2238", tie:"#ff8fb1"},
+  {skin:"#e0a878", hair:"#b5562e", shirt:"#3fa05a", pants:"#2b2d52", tie:"#ffd23f"},
+];
+function guy(lk, pose, key){
+  return makeSprite(`guy_${key}_${pose}`, 12, 20, () => {
+    const sh = "rgba(0,0,0,.22)";
+    if (pose === "run"){ P(3,14,2,4,lk.pants); P(7,13,2,4,lk.pants); P(1,18,4,2,"#1b1b2b"); P(8,16,3,2,"#1b1b2b"); }
+    else { P(3,14,2,5,lk.pants); P(7,14,2,5,lk.pants); P(2,18,3,2,"#1b1b2b"); P(7,18,3,2,"#1b1b2b"); }
+    P(2,8,8,7,lk.shirt); P(2,13,8,2,sh); P(5,8,2,5,lk.tie); P(5,8,2,1,"#fff");
+    if (pose === "panic"){ P(0,2,2,7,lk.shirt); P(10,2,2,7,lk.shirt); P(0,0,2,2,lk.skin); P(10,0,2,2,lk.skin); }
+    else if (pose === "run"){ P(0,9,2,4,lk.shirt); P(10,7,2,4,lk.shirt); P(0,13,2,1,lk.skin); P(10,6,2,1,lk.skin); }
+    else { P(1,9,1,5,lk.shirt); P(10,9,1,5,lk.shirt); P(1,14,1,1,lk.skin); P(10,14,1,1,lk.skin); }
+    P(2,1,8,7,lk.skin); P(2,6,8,1,sh);
+    P(2,0,8,2,lk.hair); P(2,2,1,2,lk.hair); P(9,2,1,1,lk.hair);
+    P(3,3,2,2,"#fff"); P(7,3,2,2,"#fff"); px(4,4,"#111"); px(8,4,"#111");
+    if (pose === "panic" || pose === "run"){ P(5,5,2,2,"#5a1a1a"); } else P(5,6,2,1,"#7a3a2a");
+    P(3,1,2,1,"rgba(255,255,255,.35)");
+  });
+}
+const cow = () => makeSprite("cow", 20, 13, () => {
+  P(2,3,14,7,"#f4f1e8"); P(5,3,4,3,"#1b1b2b"); P(11,6,3,3,"#1b1b2b"); P(2,8,14,2,"rgba(0,0,0,.15)");
+  P(15,1,5,6,"#f4f1e8"); P(16,0,1,2,"#d8d0b8"); P(19,0,1,2,"#d8d0b8"); P(17,5,3,2,"#ff9cb0"); px(16,2,"#111");
+  P(3,10,2,3,"#f4f1e8"); P(13,10,2,3,"#f4f1e8"); P(7,10,2,2,"#f4f1e8"); P(0,4,2,1,"#1b1b2b");
+});
+const umbrella = () => makeSprite("umb", 16, 12, () => {
+  for (let i = 0; i < 8; i++) P(i, 7 - Math.floor(i*0.6), 16 - i*2, 1, i % 2 ? "#ff5a5f" : "#e8452c");
+  P(0,8,16,1,"#b8352a"); P(7,0,2,1,"#1b1b2b"); P(7.5,8,1,4,"#3a3a4a");
+});
+const cone = () => makeSprite("cone", 7, 9, () => { tri(3.5,0,0,8,7,8,"#ff7a1a"); P(1,4,5,1,"#fff"); P(0,8,7,1,"#e05a10"); });
+const brief = () => makeSprite("brief", 10, 8, () => { P(0,2,10,6,"#6b4a2b"); P(3,0,4,2,"#3a2a1e"); P(0,4,10,1,"#4e3520"); P(4,4,2,2,"#ffd23f"); });
+const paper = () => makeSprite("paper", 6, 7, () => { P(0,0,6,7,"#f4f1e8"); P(1,1,4,1,"#9aa3b5"); P(1,3,4,1,"#9aa3b5"); P(1,5,3,1,"#9aa3b5"); }, false);
+const cab = () => makeSprite("cab", 26, 12, () => {
+  P(0,4,26,6,"#1b1b2b"); P(4,0,16,5,"#1b1b2b"); P(6,1,6,3,"#7fa7c4"); P(13,1,6,3,"#7fa7c4"); P(6,1,6,1,"#cfe3f2");
+  P(10,-1,4,1,"#ffd23f"); P(3,9,5,3,"#2b2b3a"); P(18,9,5,3,"#2b2b3a"); P(4,10,3,1,"#9a9aa8"); P(19,10,3,1,"#9a9aa8"); P(24,5,2,2,"#ffe88a"); P(0,5,2,2,"#e8452c");
+});
+const bus = () => makeSprite("bus", 42, 24, () => {
+  P(0,0,42,20,"#d7262e"); P(0,0,42,2,"#ff5a5f"); P(0,9,42,2,"#a51c22");
+  for (let k = 0; k < 6; k++){ P(3 + k*6.5,3,5,4,"#bfd9ea"); P(3 + k*6.5,12,5,4,"#bfd9ea"); P(3 + k*6.5,3,5,1,"#eef6fb"); }
+  P(4,19,7,5,"#1b1b2b"); P(30,19,7,5,"#1b1b2b"); P(6,21,3,1,"#9a9aa8"); P(32,21,3,1,"#9a9aa8"); P(40,14,2,3,"#ffe88a");
+});
+const car = col => makeSprite("car_" + col, 20, 10, () => { P(0,3,20,5,col); P(4,0,11,4,col); P(5,1,4,2,"#bfd9ea"); P(10,1,4,2,"#bfd9ea"); P(2,7,4,3,"#1b1b2b"); P(14,7,4,3,"#1b1b2b"); P(0,3,20,1,"rgba(255,255,255,.3)"); });
+const desk = () => makeSprite("desk", 16, 12, () => { P(0,0,16,3,"#8a5a32"); P(0,0,16,1,"#b07848"); P(1,3,2,9,"#5e3a20"); P(13,3,2,9,"#5e3a20"); P(9,-5,6,5,"#1e2240"); P(10,-4,4,3,"#7fd3f7"); });
+const cabinet = () => makeSprite("cab2", 9, 14, () => { P(0,0,9,14,"#7b8da6"); for (let k = 0; k < 3; k++){ P(0,4 + k*4,9,1,"#5d6e86"); P(3,1.5 + k*4,3,1,"#e6ecf4"); } });
+const duck = () => makeSprite("duck", 7, 6, () => { oval(3,3,3,2,"#ffd23f"); disc(5,1,1.5,"#ffd23f"); P(6,1,2,1,"#ff9f1c"); px(5,1,"#111"); });
+
+/* ---------- shared pieces ---------- */
+function hq(x, base, h, night, lit = 0.6){
+  // our Walkie Talkie HQ: wider at the top
+  for (let y = 0; y < h; y++){ const t = y/h, w = 16 + 10*Math.pow(t, 1.5); const col = night ? "#1d2a44" : "#4c6683"; P(x - w/2, base - y, w, 1, col); }
+  for (let y = 4; y < h - 6; y += 4){ const w = 16 + 10*Math.pow(y/h, 1.5); for (let xx = -w/2 + 2; xx < w/2 - 2; xx += 3) if (hs(xx + x, y) < lit) px(x + xx, base - y, night ? "#ffe18a" : "#bcd3e6"); }
+  P(x - 13, base - h - 3, 26, 3, "#2e3b55"); for (let k = 0; k < 6; k++) disc(x - 10 + k*4, base - h - 4, 1, "#3fa05a");
+}
+function skyline(base, col, night, seed = 0){
+  for (let x = 0, k = 0; x < SW; k++){ const w = 8 + Math.floor(hs(k + seed, 2)*14), h = 10 + Math.floor(hs(k + seed, 3)*30); P(x, base - h, w, h, col);
+    if (night) for (let yy = base - h + 3; yy < base - 2; yy += 4) for (let xx = x + 2; xx < x + w - 1; xx += 3) if (hs(xx, yy + seed) > .6) px(xx, yy, "#ffd98a");
+    x += w + 1; }
+}
+function shard(x, base, h, col){ for (let y = 0; y < h; y++){ const w = Math.max(1, 14*(1 - y/h)); P(x - w/2, base - y, w, 1, col); } }
+function rain(t, count, col, dx, dy, len){
+  for (let i = 0; i < count; i++){ const x = fr(hs(i, 1) + t*dx)*(SW + 60) - 30, y = fr(hs(i, 2) + t*dy)*SH;
+    for (let k = 0; k < len; k++) px(x - k*(dx/dy)*0.6, y - k, col); }
+}
+function lightning(x0, y0, y1, seed, col){
+  let x = x0; for (let y = y0; y < y1; y += 3){ const nx = x + (hs(y, seed) - 0.5)*8; line(x, y, nx, y + 3, col); line(x + 1, y, nx + 1, y + 3, "#fff"); x = nx; if (hs(y, seed + 1) > .85) line(nx, y + 3, nx + 6*(hs(y, seed + 2) - .5)*2, y + 9, col); }
+}
+
+/* ---------- the scenes ---------- */
+const SCENES = {
+storm(t){
+  const flash = fr(t*2.7) < 0.07 || fr(t*2.7 + 0.37) < 0.04;
+  bands(0, 92, flash ? ["#6b7aa8","#8090bb","#99a8cf","#b0bde0"] : ["#0f1428","#17203a","#1f2c4a","#2a3a5a","#34465f"]);
+  for (let k = 0; k < 7; k++){ const cx = fr(hs(k, 5) - t*0.25)*(SW + 80) - 40, cy = 10 + hs(k, 6)*30, r = 14 + hs(k, 7)*14;
+    oval(cx, cy, r*1.6, r*0.7, flash ? "#5a6890" : "#232c48"); oval(cx + 3, cy + 2, r*1.3, r*0.45, flash ? "#7080a8" : "#2c3758"); P(cx - r, cy + r*0.55, r*2, 1, flash ? "#b8c4e8" : "#3c4a6c"); }
+  if (flash) lightning(150 + hs(Math.floor(t*2.7), 1)*40, 0, 64, Math.floor(t*2.7), "#fff6b0");
+  shard(28, 92, 50, "#141c30"); skyline(92, "#18213a", true, 3); hq(168, 92, 58, true, 0.55);
+  P(0, 92, SW, 43, "#1f2333"); P(0, 92, SW, 3, "#3a4157"); P(0, 104, SW, 1, "#2c3044");
+  for (let x = 6; x < SW; x += 22) P(x, 116, 10, 1, "#c8cfdc");
+  for (let k = 0; k < 6; k++){ const x = 20 + k*40; oval(x, 124 + (k%2)*4, 10, 1.5, "#2e3a58"); P(x - 6, 124 + (k%2)*4, 6, 1, flash ? "#d8e2ff" : "#4a5a80"); }
+  // bending lamp post with a man clinging on, flapping like a flag
+  const bend = Math.sin(t*20)*0.08 + 0.35;
+  for (let i = 0; i < 34; i++){ const a = bend*(i/34)*(i/34); px(40 + Math.sin(a)*i, 102 - Math.cos(a)*i, "#3a3f55"); px(41 + Math.sin(a)*i, 102 - Math.cos(a)*i, "#5a6078"); }
+  const tipX = 40 + Math.sin(bend)*34, tipY = 102 - Math.cos(bend)*34;
+  P(tipX - 3, tipY - 2, 7, 3, "#2a2d3a"); P(tipX - 2, tipY + 1, 5, 1, "#ffe88a");
+  for (let k = 0; k < 20; k++) if (hs(k, 9) > .45) px(tipX - 6 + hs(k, 3)*12, tipY + 2 + hs(k, 4)*12, "rgba(255,232,138,.35)");
+  blit(guy(LOOKS[0], "panic", 0), tipX + 10, tipY + 6, Math.PI/2 + Math.sin(t*30)*0.12);
+  // the bus wobbling on two wheels
+  blit(bus(), 120, 96, -0.1 - Math.abs(Math.sin(t*9))*0.08);
+  // debris flying right to left
+  const items = [cow(), umbrella(), cone(), brief(), paper(), paper(), umbrella(), guy(LOOKS[2], "panic", 2), paper()];
+  items.forEach((im, k) => { const x = SW + 30 - fr(t*(0.9 + hs(k, 1)*0.6) + hs(k, 2))*(SW + 70), y = 20 + hs(k, 3)*70 + Math.sin(t*12 + k)*6; blit(im, x, y, t*(8 + k*2) + k); });
+  rain(t, 160, flash ? "#ffffff" : "#8fa8cc", 1.6, 2.4, 4);
+  for (let k = 0; k < 10; k++){ const y = 15 + hs(k, 8)*100, x = SW - fr(t*3 + hs(k, 9))*(SW + 60); P(x, y, 14 + hs(k, 7)*20, 1, "rgba(220,230,255,.35)"); }
+  if (flash){ c.fillStyle = "rgba(255,255,255,.18)"; c.fillRect(0, 0, SW, SH); }
+},
+tornado(t){
+  bands(0, 100, ["#1c2418","#2a3622","#3d4a2c","#5a6838","#82894a","#a8a462"]);
+  for (let k = 0; k < 9; k++){ const cx = k*30 + Math.sin(t*2 + k)*4, cy = 8 + (k%3)*3; oval(cx, cy, 26, 9, "#20281c"); oval(cx + 4, cy + 4, 20, 5, "#2b3524"); }
+  skyline(100, "#2c3826", false, 8); shard(210, 100, 44, "#26301f"); hq(40, 100, 50, false, 0.3);
+  P(0, 100, SW, 35, "#4a4a3a"); P(0, 100, SW, 2, "#6a6a52"); for (let x = 0; x < SW; x += 20) P(x, 116, 9, 1, "#d8d0a8");
+  const cx = 128 + Math.sin(t*5)*22, top = 16, base = 104;
+  const wAt = y => 4 + Math.pow((base - y)/(base - top), 1.7)*52;
+  const behind = [], front = [];
+  const items = [car("#e8452c"), cow(), desk(), cabinet(), guy(LOOKS[1], "panic", 1), car("#2f6fe4"), paper(), guy(LOOKS[3], "panic", 3), cow(), paper(), brief(), desk()];
+  items.forEach((im, k) => { const ph = fr(t*0.55 + hs(k, 4)), y = base - 6 - ph*(base - top - 14), ang = t*9 + k*1.7, w = wAt(y)*0.95;
+    (Math.sin(ang) < 0 ? behind : front).push(() => blit(im, cx + Math.cos(ang)*w, y + Math.sin(ang)*3, t*6 + k, false, 0.65 + ph*0.15)); });
+  behind.forEach(f => f());
+  for (let y = top; y <= base; y++){ const w = wAt(y), sway = Math.sin(y*0.12 + t*10)*2*(1 - (y - top)/(base - top) + 0.2);
+    const b = Math.floor(fr(y*0.06 - t*3.5)*4), cols = ["#4b5058","#5d636c","#727881","#878d96"];
+    P(cx - w + sway, y, w*2, 1, cols[b]); px(cx - w + sway, y, "#2f333a"); px(cx + w + sway - 1, y, "#a6acb4"); }
+  front.forEach(f => f());
+  for (let k = 0; k < 40; k++){ const a = hs(k, 6)*6.28 + t*4, r = 10 + hs(k, 7)*40; oval(cx + Math.cos(a)*r, base + Math.sin(a)*4, 6 + hs(k, 8)*6, 3, k % 2 ? "#8a7a58" : "#a08e68"); }
+  for (let k = 0; k < 30; k++) px(cx + (hs(k, 1) - .5)*120, base - hs(k, 2)*20 - fr(t + hs(k, 3))*30, "#c8b88a");
+},
+cyber(t){
+  P(0, 0, SW, SH, "#0b0e1c"); P(0, 92, SW, 43, "#0f1326"); P(0, 92, SW, 1, "#2a3050");
+  const glitch = fr(t*3.1) < 0.12;
+  // big wall screen
+  P(60, 8, 120, 58, "#05060c"); P(62, 10, 116, 54, "#1a0610");
+  for (let y = 10; y < 64; y += 2) P(62, y, 116, 1, "rgba(255,40,80,.07)");
+  oval(120, 44, 18, 20, "#08080c"); oval(120, 32, 12, 13, "#08080c"); oval(120, 34, 8, 9, "#000");
+  const eyeOn = fr(t*2) < 0.85; if (eyeOn){ P(115, 33, 3, 2, "#ff2850"); P(123, 33, 3, 2, "#ff2850"); P(114, 33, 1, 2, "#ff8aa0"); P(126, 33, 1, 2, "#ff8aa0"); }
+  text("PAY 4000 BTC", 120 - textW("PAY 4000 BTC")/2, 54, fr(t*4) < 0.5 ? "#ff2850" : "#ff7a90");
+  // side screens with falling digits
+  for (const sx of [8, 186]){ P(sx, 14, 46, 44, "#05060c");
+    for (let col = 0; col < 11; col++){ const head = fr(t*1.5 + hs(col, sx))*60; for (let k = 0; k < 9; k++){ const y = 16 + ((head + k*5) % 42); text(hs(col, k + Math.floor(t*20)) > .5 ? "1" : "0", sx + 2 + col*4, y, k === 0 ? "#c8ffd8" : `rgba(75,227,154,${1 - k*0.1})`); } } }
+  // spinning alarm light
+  const a = t*14; P(118, 0, 5, 3, "#4a0a10"); P(119, 3, 3, 2, eyeOn ? "#ff3040" : "#801820");
+  for (let r = 4; r < 120; r += 1){ for (const s of [-1, 1]){ const ang = a + s*0.18*(r/120); const x = 120 + Math.cos(ang)*r, y = 4 + Math.abs(Math.sin(ang))*r*0.7; if ((r + Math.round(x)) % 3 === 0) px(x, y, "rgba(255,40,60,.35)"); } }
+  // desks and panicking staff
+  for (let k = 0; k < 4; k++){ const x = 20 + k*58; blit(guy(LOOKS[k % 5], k % 2 ? "panic" : "stand", k), x + 6, 100 + (k % 2 ? Math.round(Math.sin(t*30 + k)) : 0));
+    P(x - 6, 104, 28, 4, "#3a2a1e"); P(x - 6, 104, 28, 1, "#5a4030"); P(x - 4, 108, 2, 14, "#2a1e14"); P(x + 18, 108, 2, 14, "#2a1e14");
+    P(x + 4, 94, 12, 9, "#111"); P(x + 5, 95, 10, 7, fr(t*6 + k*0.3) < 0.5 ? "#ff2850" : "#5a0a18"); text("!", x + 9, 96, "#fff"); }
+  // server rack throwing sparks
+  P(212, 60, 20, 44, "#1a1e2e"); for (let y = 63; y < 102; y += 4){ P(214, y, 16, 3, "#262c42"); px(216 + (Math.floor(t*30 + y) % 10), y + 1, hs(y, Math.floor(t*30)) > .5 ? "#ff3040" : "#ffd23f"); }
+  for (let k = 0; k < 12; k++){ const tt = fr(t*2 + hs(k, 1)); px(222 + Math.cos(k)*tt*24, 64 - tt*18 + tt*tt*30, tt < .7 ? "#ffe066" : "#ff7a1a"); }
+  if (glitch){ const y = Math.floor(hs(Math.floor(t*30), 2)*100); const img = c.getImageData(0, y, SW, 10); c.putImageData(img, 6, y); P(0, y + 4, SW, 1, "rgba(75,227,154,.6)"); }
+},
+bridge(t){
+  bands(0, 82, ["#1e1638","#3a2050","#6a2c5a","#a84a5a","#e07a54","#ffb070"]);
+  disc(200, 70, 12, "#ffcf8a"); disc(200, 70, 10, "#ffe2a8");
+  skyline(82, "#3a2040", false, 14); hq(60, 82, 40, false, 0.2); shard(30, 82, 46, "#341c3a");
+  bands(82, 135, ["#5a2c4a","#4a2442","#3a1c3a","#2a1430"]);
+  for (let k = 0; k < 40; k++){ const y = 84 + hs(k, 1)*50, x = fr(hs(k, 2) + t*0.2*(hs(k, 3) + .5))*SW; P(x, y, 4 + hs(k, 4)*8, 1, k % 3 ? "rgba(255,180,120,.35)" : "rgba(255,230,190,.5)"); }
+  const hit = 0.42, broke = t > hit, bt = broke ? ease((t - hit)/0.4) : 0;
+  // stone towers
+  for (const tx of [110, 190]){ P(tx - 7, 40, 14, 56, "#4a3a4a"); P(tx - 7, 40, 14, 2, "#7a5a6a"); tri(tx - 8, 40, tx + 8, 40, tx, 26, "#3a2a3a"); P(tx - 2, 50, 4, 8, "#ffcf8a"); P(tx - 9, 94, 18, 3, "#2a1e2a"); }
+  // the deck, breaking after impact
+  if (!broke){ P(117, 62, 66, 5, "#6a5a6a"); P(117, 62, 66, 1, "#9a8a9a"); for (let x = 120; x < 182; x += 8) P(x, 60, 1, 2, "#ffcf8a"); }
+  else { c.save(); c.translate(117, 64); c.rotate(bt*0.7); P(0, -2, 33, 5, "#6a5a6a"); c.restore(); c.save(); c.translate(183, 64); c.rotate(-bt*0.55); P(-33, -2, 33, 5, "#6a5a6a"); c.restore();
+    for (let k = 0; k < 10; k++) P(150 + (hs(k, 1) - .5)*30, 64 + bt*40*hs(k, 2), 2 + hs(k, 3)*3, 2, "#5a4a5a"); }
+  // the ship
+  const sx = broke ? 30 + Math.sin((t - hit)*30)*1.5*(1 - bt) : -130 + ease(t/hit)*160, sy = 92;
+  P(sx, sy, 92, 12, "#2a1a24"); tri(sx + 92, sy, sx + 104, sy, sx + 92, sy + 12, "#2a1a24"); P(sx, sy + 7, 96, 2, "#e8e0d0"); P(sx, sy, 100, 1, "#5a3a4a");
+  const cols = ["#e8452c","#2bb3b1","#f2a93b","#5a6fd6","#3fa05a","#c04acb"];
+  for (let r = 0; r < 3; r++) for (let k = 0; k < 9; k++){ if (broke && r === 2 && k > 5) continue; P(sx + 14 + k*9, sy - 7 - r*7, 8, 6, cols[(r*4 + k) % 6]); P(sx + 14 + k*9, sy - 7 - r*7, 8, 1, "rgba(255,255,255,.3)"); }
+  P(sx + 2, sy - 20, 10, 20, "#f0ebe0"); P(sx + 3, sy - 17, 8, 2, "#ffd98a"); P(sx + 3, sy - 12, 8, 2, "#ffd98a"); P(sx + 5, sy - 28, 4, 8, "#3a2a2a");
+  for (let k = 0; k < 6; k++){ const tt = fr(t*0.8 + k/6); oval(sx + 7 - tt*20, sy - 30 - tt*16, 2 + tt*4, 1 + tt*3, `rgba(80,70,90,${0.7 - tt*0.6})`); }
+  if (broke){
+    for (let k = 0; k < 3; k++){ const tt = ease(bt*1.3 - k*0.15); blit(makeSprite("box" + k, 8, 6, () => P(0,0,8,6,cols[k + 2])), sx + 70 + k*9 + tt*20, sy - 21 + tt*36, tt*2.4); }
+    for (let k = 0; k < 50; k++){ const tt = fr(bt + hs(k, 1)*0.5), a = hs(k, 2)*Math.PI; px(sx + 100 + Math.cos(a)*tt*26*(k%2 ? 1 : -1), sy - Math.sin(a)*tt*30 + tt*tt*34, tt < .6 ? "#ffffff" : "#bfe6ff"); }
+    for (let k = 0; k < 14; k++) blit(duck(), sx + 60 + hs(k, 3)*90 + bt*hs(k, 4)*20, 100 + hs(k, 5)*28 + Math.sin(t*8 + k)*1);
+    if (fr(t*6) < .5) for (let k = 0; k < 8; k++) px(sx + 100 + hs(k, Math.floor(t*12))*8, sy - 4 - hs(k, 9)*10, "#ffe066");
+  }
+},
+ash(t){
+  const dim = ease(t);
+  bands(0, 95, [`#2a2638`,`#3a3346`,`#52465a`,`#7a5c62`,`#b07060`].map((col, i) => dim > 0.6 && i < 2 ? "#1c1a24" : col));
+  // volcano with lava
+  tri(150, 95, 240, 95, 196, 28, "#2a1c1c"); tri(196, 28, 240, 95, 214, 95, "#1c1414");
+  for (let k = 0; k < 5; k++){ const x0 = 192 + k*2; for (let y = 30; y < 92; y += 2) px(x0 + Math.sin(y*0.3 + k)*3 + (y - 30)*(k - 2)*0.12, y, k % 2 ? "#ff7a1a" : "#ffb02e"); }
+  P(188, 26, 16, 4, "#ff5a1a");
+  for (let k = 0; k < 40; k++){ const tt = fr(t*1.6 + hs(k, 1)), a = -Math.PI/2 + (hs(k, 2) - .5)*1.6, v = 30 + hs(k, 3)*30; P(196 + Math.cos(a)*v*tt, 26 + Math.sin(a)*v*tt + tt*tt*40, 2, 2, tt < .5 ? "#ffd23f" : "#ff5a1a"); }
+  // the ash plume grows and spreads
+  for (let k = 0; k < 26; k++){ const tt = fr(t*0.5 + hs(k, 4)*0.9), r = 6 + tt*22 + hs(k, 5)*6; const x = 196 - tt*(60 + hs(k, 6)*120), y = 20 - tt*12 + Math.sin(k)*6;
+    oval(x, y, r, r*0.6, k % 2 ? "#3a3640" : "#4a4550"); oval(x - 2, y - 2, r*0.6, r*0.35, "#5c5664"); }
+  if (fr(t*3.3) < 0.08) lightning(120 + hs(Math.floor(t*3.3), 4)*40, 4, 40, Math.floor(t*3.3), "#d8c8ff");
+  // airport: runway, grounded planes, departure board
+  P(0, 95, SW, 40, "#3a3a46"); P(0, 95, SW, 2, "#55556a"); for (let x = 4; x < 150; x += 16) P(x, 112, 9, 1, "#e8e8f0");
+  const plane = makeSprite("plane", 34, 12, () => { P(2,4,30,5,"#e8ecf2"); P(30,5,4,3,"#e8ecf2"); P(0,0,5,6,"#e8452c"); P(12,8,10,3,"#c8ccd8"); P(14,2,8,2,"#c8ccd8"); for (let k = 0; k < 7; k++) px(8 + k*3, 6, "#5a6f8a"); });
+  blit(plane, 110, 104); blit(plane, 60, 118, 0, true);
+  P(4, 52, 64, 44, "#0e0e14"); P(4, 52, 64, 6, "#2a2a3a"); text("DEPARTURES", 8, 53, "#ffd23f");
+  ["ROME","OSLO","NICE","LIMA","BALI"].forEach((d, k) => { const y = 61 + k*7; text(d, 8, y, "#ffd23f"); text("CANCELLED", 28, y, fr(t*3 + k*0.2) < 0.7 ? "#ff5a3a" : "#7a2a1a"); });
+  blit(guy(LOOKS[4], "panic", 4), 84, 122); blit(guy(LOOKS[3], "stand", 3), 96, 122); P(100, 116, 6, 7, "#5a6fd6");
+  for (let k = 0; k < 90; k++){ const x = fr(hs(k, 7) + t*0.05)*SW, y = fr(hs(k, 8) + t*0.4)*SH; px(x, y, dim > 0.3 ? "#9a9aa8" : "#7a7a88"); }
+  c.fillStyle = `rgba(40,36,50,${dim*0.35})`; c.fillRect(0, 0, SW, SH);
+},
+scandal(t){
+  bands(0, 90, ["#090b1c","#10142a","#171c38","#1e2444"]);
+  for (let k = 0; k < 40; k++) px(hs(k, 1)*SW, hs(k, 2)*50, hs(k, 3) > .7 ? "#ffffff" : "#8a90c0");
+  skyline(90, "#151a32", true, 21);
+  // HQ entrance glowing
+  P(70, 30, 100, 64, "#25304a"); for (let y = 34; y < 70; y += 6) for (let x = 74; x < 166; x += 6) if (hs(x, y) > .4) P(x, y, 3, 3, "#ffe18a");
+  P(102, 70, 36, 24, "#ffe9b0"); P(104, 72, 15, 22, "#cfe0ee"); P(121, 72, 15, 22, "#cfe0ee"); text("FINE PRINT", 120 - textW("FINE PRINT")/2, 64, "#ffd23f");
+  P(0, 94, SW, 41, "#1a1c28"); P(96, 94, 48, 41, "#7a1a24"); P(96, 94, 48, 1, "#a8303c");
+  // the rogue underwriter legging it to a cab, napkin aloft
+  const run = ease(t*1.2), rx = 120 + run*70, ry = 112 - Math.abs(Math.sin(t*26))*2;
+  blit(cab(), 214, 108);
+  blit(guy({skin:"#f2c39b", hair:"#6a6a78", shirt:"#2b2b3a", pants:"#1b1b26", tie:"#ffd23f"}, "run", "rogue"), rx, ry);
+  P(rx - 4, ry - 14, 8, 6, "#ffffff"); P(rx - 3, ry - 13, 6, 1, "#c8ccd8"); P(rx - 3, ry - 11, 4, 1, "#c8ccd8");
+  blit(brief(), rx + 8, ry + 2);
+  for (let k = 0; k < 8; k++){ const tt = fr(t*2 + k/8); P(rx - tt*40, ry + 4 + tt*12 - Math.sin(tt*6)*4, 4, 2, "#6fc27a"); }
+  // the press pack and their flashes
+  for (let k = 0; k < 7; k++){ const x = 14 + k*12 + (k > 3 ? 120 : 0), y = 122 + (k % 2)*4;
+    blit(guy(LOOKS[k % 5], "stand", "p" + k), x, y); P(x - 3, y - 12, 7, 5, "#1b1b2b"); disc(x + 1, y - 10, 1.5, "#5a6f8a");
+    if (fr(t*5 + hs(k, 4)) < 0.15){ disc(x + 1, y - 10, 6, "rgba(255,255,255,.5)"); for (let r = 0; r < 14; r++){ px(x + 1 + r, y - 10, "#fff"); px(x + 1 - r, y - 10, "#fff"); px(x + 1, y - 10 + r*0.6, "#fff"); px(x + 1, y - 10 - r*0.6, "#fff"); } } }
+  // tabloid poster
+  P(198, 62, 34, 30, "#f4f1e8"); P(198, 62, 34, 7, "#e8452c"); text("SCANDAL!", 200, 63, "#fff"); text("NAPKIN", 203, 73, "#1b1b2f"); text("OF SHAME", 199, 80, "#1b1b2f");
+},
+crash(t){
+  P(0, 0, SW, SH, "#140d18"); P(0, 0, SW, 70, "#1c1222");
+  // wall of screens with a collapsing chart
+  P(10, 6, 220, 58, "#06040a");
+  for (let s = 0; s < 4; s++){ const x0 = 14 + s*54; P(x0, 10, 50, 50, "#120a10"); for (let gy = 14; gy < 58; gy += 8) P(x0 + 1, gy, 48, 1, "#2a1420"); }
+  let py = 18, pts = [];
+  for (let x = 16; x < 226; x += 3){ const tt = (x - 16)/210; py = tt < 0.3 ? 18 + Math.sin(x*0.3)*3 : py + (hs(x, 1)*3 - 0.3) + tt*1.6; pts.push([x, Math.min(56, py)]); }
+  const n = Math.floor(pts.length*Math.min(1, t*1.4));
+  for (let k = 1; k < n; k++){ line(pts[k-1][0], pts[k-1][1], pts[k][0], pts[k][1], "#ff3050"); line(pts[k-1][0], pts[k-1][1] + 1, pts[k][0], pts[k][1] + 1, "#a01830"); }
+  if (t > 0.35){ const s = 2; text("-30%", 120 - textW("-30%", s)/2, 30, fr(t*4) < .5 ? "#ff3050" : "#ffffff", s, "#400010"); }
+  P(10, 64, 220, 6, "#06040a"); text("FTSE -30%   DOW -28%   GILTS ?!?   LUNCH -100%   ", 10 - fr(t*0.6)*200, 65, "#ff5a6a"); text("FTSE -30%   DOW -28%   GILTS ?!?   LUNCH -100%   ", 210 - fr(t*0.6)*200, 65, "#ff5a6a");
+  P(0, 98, SW, 37, "#2a1a20"); P(0, 98, SW, 1, "#4a2a34");
+  // traders losing it
+  for (let k = 0; k < 5; k++){ const x = 24 + k*46, onDesk = k === 2;
+    P(x - 14, 98, 32, 4, "#4a3020"); P(x - 14, 98, 32, 1, "#6a4a30"); P(x - 12, 102, 2, 16, "#2a1e14"); P(x + 14, 102, 2, 16, "#2a1e14");
+    P(x + 4, 88, 10, 8, "#111"); P(x + 5, 89, 8, 6, "#3a0a14"); line(x + 5, 90, x + 12, 94, "#ff3050");
+    blit(guy(LOOKS[k % 5], k % 2 === 0 ? "panic" : "stand", "t" + k), x - 2 + (onDesk ? 0 : 0), onDesk ? 86 + Math.abs(Math.sin(t*20))*-2 : 96 + Math.round(Math.sin(t*40 + k)));
+    if (fr(t*3 + k*0.3) < .5){ P(x - 12, 94, 5, 3, "#1b1b2b"); text("!", x - 11, 88, "#ffd23f"); } }
+  for (let k = 0; k < 18; k++){ const tt = fr(t*0.7 + hs(k, 1)); blit(paper(), 10 + hs(k, 2)*220 + Math.sin(tt*8 + k)*8, -10 + tt*150, tt*8 + k); }
+  c.fillStyle = `rgba(255,30,60,${0.06 + 0.06*Math.sin(t*20)})`; c.fillRect(0, 0, SW, SH);
+},
+};
+
+/* ---------- portraits (48x48) ---------- */
+function face(o){
+  // o: skin, hair, style, eyes, mouth, extras
+  const t = o.t || 0, blink = fr(t*1.7) < 0.06;
+  P(0, 0, 48, 48, o.bg || "#24264f"); for (let y = 0; y < 48; y += 3) P(0, y, 48, 1, "rgba(255,255,255,.03)");
+  // shoulders
+  P(6, 38, 36, 10, o.shirt); P(20, 38, 8, 10, o.collar || "#f4f1e8"); if (o.tie) P(22, 40, 4, 8, o.tie);
+  P(19, 32, 10, 7, o.skin);
+  // head
+  oval(24, 22, 13, 15, o.skin); P(12, 26, 24, 2, "rgba(0,0,0,.08)");
+  P(10, 20, 2, 6, o.skin); P(36, 20, 2, 6, o.skin);
+  // hair
+  if (o.hairStyle === "windswept"){ for (let k = 0; k < 9; k++) P(8 + k*3, 6 + (k%2)*2 - Math.sin(t*30 + k)*2, 8, 4, o.hair); P(10, 9, 30, 5, o.hair); P(34, 10, 10, 3, o.hair); }
+  else if (o.hairStyle === "cap"){ P(10, 8, 28, 7, o.hair); P(8, 13, 32, 3, "#14142a"); P(20, 9, 8, 3, "#ffd23f"); }
+  else if (o.hairStyle === "bob"){ P(10, 6, 28, 8, o.hair); P(9, 10, 4, 16, o.hair); P(35, 10, 4, 16, o.hair); }
+  else if (o.hairStyle === "hood"){ oval(24, 20, 17, 19, o.hair); oval(24, 24, 12, 13, o.skin); }
+  else { P(11, 7, 26, 7, o.hair); P(10, 10, 4, 8, o.hair); }
+  // eyes
+  const ey = 22, wide = o.eyes === "wide";
+  if (blink){ P(15, ey + 1, 6, 1, "#1b1b2f"); P(27, ey + 1, 6, 1, "#1b1b2f"); }
+  else { P(15, ey - (wide ? 1 : 0), 6, wide ? 5 : 4, "#ffffff"); P(27, ey - (wide ? 1 : 0), 6, wide ? 5 : 4, "#ffffff");
+    const lx = o.look || 0; P(17 + lx, ey + (wide ? 0 : 1), wide ? 2 : 3, wide ? 2 : 3, "#1b1b2f"); P(29 + lx, ey + (wide ? 0 : 1), wide ? 2 : 3, wide ? 2 : 3, "#1b1b2f"); px(17 + lx, ey + 1, "#fff"); }
+  if (o.brows === "worried"){ line(14, ey - 3, 20, ey - 5, "#1b1b2f"); line(28, ey - 5, 34, ey - 3, "#1b1b2f"); }
+  else if (o.brows === "angry"){ line(14, ey - 5, 20, ey - 3, "#1b1b2f"); line(28, ey - 3, 34, ey - 5, "#1b1b2f"); }
+  else { P(15, ey - 4, 6, 1, "#1b1b2f"); P(27, ey - 4, 6, 1, "#1b1b2f"); }
+  if (o.glasses){ P(13, ey - 2, 10, 1, "#1b1b2f"); P(25, ey - 2, 10, 1, "#1b1b2f"); P(13, ey + 4, 10, 1, "#1b1b2f"); P(25, ey + 4, 10, 1, "#1b1b2f"); P(13, ey - 2, 1, 7, "#1b1b2f"); P(22, ey - 2, 1, 7, "#1b1b2f"); P(25, ey - 2, 1, 7, "#1b1b2f"); P(34, ey - 2, 1, 7, "#1b1b2f"); P(23, ey, 2, 1, "#1b1b2f"); }
+  // mouth
+  const talk = fr(t*7) < 0.5;
+  if (o.mouth === "scream"){ oval(24, 32, 5, talk ? 4 : 3, "#5a1a1a"); P(21, 29, 6, 1, "#fff"); }
+  else if (o.mouth === "grit"){ P(18, 31, 12, 3, "#fff"); for (let x = 19; x < 30; x += 2) P(x, 31, 1, 3, "#c8c8d0"); P(18, 31, 12, 1, "#1b1b2f"); P(18, 34, 12, 1, "#1b1b2f"); }
+  else { P(20, 31, 8, talk ? 3 : 1, "#5a1a1a"); }
+  P(22, 25, 3, 4, "rgba(0,0,0,.12)");
+  if (o.beard){ P(14, 28, 20, 9, o.beard); P(18, 30, 12, 3, o.skin); P(20, 31, 8, talk ? 2 : 1, "#5a1a1a"); }
+  if (o.sweat){ const sy = fr(t*1.2)*10; P(37, 14 + sy, 2, 3, "#9fd8ff"); px(37, 14 + sy, "#ffffff"); P(9, 18 + fr(t*1.2 + .5)*8, 2, 3, "#9fd8ff"); }
+  if (o.headset){ P(8, 14, 3, 12, "#2a2a3a"); P(37, 14, 3, 12, "#2a2a3a"); P(10, 5, 28, 3, "#2a2a3a"); P(36, 26, 2, 6, "#2a2a3a"); P(30, 31, 7, 2, "#2a2a3a"); }
+  // rim light
+  for (let y = 10; y < 34; y++) px(24 + Math.floor(13*Math.sqrt(Math.max(0, 1 - ((y - 22)*(y - 22))/225))) - 1, y, "rgba(255,255,255,.25)");
+  if (o.extra) o.extra(t);
+}
+const PORTRAITS = {
+  storm: t => face({t, skin:"#f2c39b", hair:"#3a2418", hairStyle:"windswept", shirt:"#2f6fe4", tie:"#e8452c", eyes:"wide", brows:"worried", mouth:"scream", sweat:true, bg:"#1f2c4a",
+    extra: t => { const s = Math.sin(t*30)*3; P(30, 40 + s, 14, 3, "#e8452c"); } }),
+  tornado: t => { P(0, 0, 48, 48, "#3d4a2c"); for (let y = 0; y < 48; y += 3) P(0, y, 48, 1, "rgba(255,255,255,.03)");
+    const b = Math.sin(t*20)*1.5; oval(24, 36 + b, 15, 12, "#9aa3b5"); oval(24, 38 + b, 9, 8, "#c3cad8"); P(16, 28 + b, 16, 3, "#5bb38a");
+    oval(24, 20 + b, 11, 11, "#9aa3b5"); P(13, 9 + b, 22, 5, "#ffd23f"); P(11, 13 + b, 26, 2, "#ffd23f"); P(15, 10 + b, 18, 1, "#fff6b0");
+    tri(33, 19 + b, 44, 21 + b, 33, 24 + b, "#ff9f1c"); P(33, 21 + b, 9, 1, "#d97a10");
+    const blink = fr(t*1.7) < .06; if (blink) P(25, 18 + b, 5, 1, "#111"); else { P(24, 15 + b, 7, 7, "#fff"); P(27, 16 + b, 3, 4, "#111"); px(27, 16 + b, "#fff"); }
+    line(22, 12 + b, 30, 14 + b, "#1b1b2f");
+    for (let k = 0; k < 4; k++) P(2 + k*2 + Math.sin(t*25 + k)*2, 30 - k*5, 6, 2, "rgba(220,230,200,.6)"); },
+  cyber: t => face({t, skin:"#c68650", hair:"#1c1c1c", shirt:"#4bb7a8", collar:"#4bb7a8", eyes:"normal", brows:"worried", mouth:"grit", glasses:true, headset:true, sweat:true, bg:"#0b0e1c",
+    extra: t => { if (fr(t*3) < .5){ P(13, 20, 10, 6, "rgba(255,40,80,.35)"); P(25, 20, 10, 6, "rgba(255,40,80,.35)"); } } }),
+  bridge: t => face({t, skin:"#e0a878", hair:"#1f2a44", hairStyle:"cap", shirt:"#1f2a44", collar:"#f4f1e8", eyes:"normal", brows:"flat", mouth:"talk", beard:"#8a8a98", bg:"#3a2050", look:-1}),
+  ash: t => face({t, skin:"#8d5524", hair:"#2b1b10", hairStyle:"bob", shirt:"#e8452c", collar:"#ffd23f", eyes:"wide", brows:"worried", mouth:"scream", bg:"#3a3346",
+    extra: t => { for (let k = 0; k < 10; k++) px(fr(hs(k, 1) + t*0.1)*48, fr(hs(k, 2) + t*0.5)*48, "#9a9aa8"); } }),
+  scandal: t => face({t, skin:"#ffdbac", hair:"#e86a92", hairStyle:"bob", shirt:"#2b2b3a", collar:"#f4f1e8", eyes:"wide", brows:"worried", mouth:"grit", sweat:true, bg:"#10142a",
+    extra: t => { if (fr(t*5) < .15){ c.fillStyle = "rgba(255,255,255,.55)"; c.fillRect(0, 0, 48, 48); } } }),
+  crash: t => face({t, skin:"#f2c39b", hair:"#9a9aa8", shirt:"#2b2d52", tie:"#ffd23f", eyes:"wide", brows:"angry", mouth:"scream", glasses:true, sweat:true, bg:"#2a0a14", look: Math.round(Math.sin(t*12)*1.5)}),
+};
+const LINES = {
+  storm:{name:"Gary, Underwriting", line:"Quick! Check the policy wording for the word “wind”!"},
+  tornado:{name:"Percy the Pigeon", line:"Coo. Coo! COO!! (Percy would like to report that the car park is now airborne.)"},
+  cyber:{name:"Dev, IT", line:"Have you tried turning the internet off and on again?"},
+  bridge:{name:"Captain Brent", line:"In my defence, the bridge was in a very silly place."},
+  ash:{name:"Brenda, Travel Claims", line:"That’s 40,000 cancelled holidays. And one volcano tour, which feels pointed."},
+  scandal:{name:"Pippa, PR", line:"No comment! And, for the avoidance of doubt: no comment!"},
+  crash:{name:"The CFO", line:"Sell! No, buy! No, SELL! Somebody get me a lunch!"},
+};
+return {
+  SW, SH, LINES,
+  drawScene(g, kind, t){ c = g; c.imageSmoothingEnabled = false; c.setTransform(1,0,0,1,0,0); c.clearRect(0, 0, SW, SH); (SCENES[kind] || SCENES.storm)(t);
+    const vg = c.createRadialGradient(SW/2, SH*0.52, SH*0.38, SW/2, SH*0.52, SW*0.62); vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(6,4,18,.55)"); c.fillStyle = vg; c.fillRect(0, 0, SW, SH); },
+  drawPortrait(g, kind, t){ c = g; c.imageSmoothingEnabled = false; c.setTransform(1,0,0,1,0,0); c.clearRect(0, 0, 48, 48); (PORTRAITS[kind] || PORTRAITS.storm)(t); },
+};
+})();
+
+let cutsceneOn = false;
+function playCutscene(kind, done){
+  if (!scene){ done(); return; }
+  cutsceneOn = true;
+  const sc = scene, cam = sc.cameras.main, W = LW + 2*padX, H = viewH(), parts = [], timers = [];
+  const add = o => { o.setScrollFactor(0).setDepth(200); parts.push(o); return o; };
+  const txt = (x, y, str, size, color, extra) => add(sc.add.text(x, y, str, Object.assign({fontFamily:FONT, fontSize:pxL(size)+"px", fontStyle:"700", color, align:"center", resolution:Math.ceil(cz)}, extra || {})).setOrigin(0.5));
+  const sw = SWANS[kind], L = CUT.LINES[kind] || {name:"", line:""};
+  const mk = (key, w, h) => { if (!sc.textures.exists(key)){ const tx = sc.textures.createCanvas(key, w, h); tx.setFilter(Phaser.Textures.FilterMode.NEAREST); } return sc.textures.get(key); };
+  const ftex = mk("cs_frame", CUT.SW, CUT.SH), ptex = mk("cs_face", 48, 48);
+  const DUR = 5600, t0 = performance.now();
+  const paintAll = () => { const tt = Math.min(1, (performance.now() - t0)/DUR); CUT.drawScene(ftex.getContext(), kind, tt); ftex.refresh(); CUT.drawPortrait(ptex.getContext(), kind, tt); ptex.refresh(); };
+  paintAll();
+  const k = Math.max(1, Math.min(W*0.96, (H*0.6)*CUT.SW/CUT.SH)/(pxL(360)));
+  const bannerH = pxL(56)*Math.min(k, 1.6), gapY = pxL(8), dialogH = Math.max(pxL(100)*Math.min(k, 1.8), 30);
+  let fw = W*0.96, fh = fw*CUT.SH/CUT.SW;
+  const maxH = H - bannerH - dialogH - gapY*3 - pxL(26);
+  if (fh > maxH){ fh = maxH; fw = fh*CUT.SW/CUT.SH; }
+  const ts = Math.min(k, 1.8);
+  const fx = (W - fw)/2, fy = bannerH + gapY;
+  add(sc.add.rectangle(0, 0, W, H, 0x05050c, 0.95).setOrigin(0));
+  add(sc.add.rectangle(0, 0, W, bannerH, 0xE8452C, 1).setOrigin(0));
+  txt(W/2, bannerH*0.3, "Breaking news", 12*Math.min(k, 1.6), "#FFFFFF");
+  txt(W/2, bannerH*0.68, sw.title, 15*Math.min(k, 1.6), "#FFD23F", {wordWrap:{width:W*0.94}});
+  const frame = add(sc.add.image(fx, fy, "cs_frame").setOrigin(0).setDisplaySize(fw, fh));
+  add(sc.add.rectangle(fx, fy, fw, fh).setOrigin(0).setStrokeStyle(pxL(3), 0xFFD23F));
+  const dw = Math.min(fw, W*0.96), dx = (W - dw)/2, dy = fy + fh + gapY, ps = dialogH - pxL(14);
+  add(sc.add.rectangle(dx, dy, dw, dialogH, 0x12133A, 1).setOrigin(0).setStrokeStyle(pxL(3), 0xFFD23F));
+  add(sc.add.image(dx + pxL(7), dy + pxL(7), "cs_face").setOrigin(0).setDisplaySize(ps, ps));
+  const tx0 = dx + ps + pxL(16), twid = dw - ps - pxL(26);
+  add(sc.add.text(tx0, dy + pxL(8)*ts, L.name, {fontFamily:FONT, fontSize:pxL(14*ts)+"px", fontStyle:"700", color:"#FFD23F", resolution:Math.ceil(cz)}));
+  const lineT = add(sc.add.text(tx0, dy + pxL(30)*ts, "", {fontFamily:FONT, fontSize:pxL(13*ts)+"px", color:"#FFFFFF", wordWrap:{width:twid}, lineSpacing:pxL(2)*ts, resolution:Math.ceil(cz)}));
+  const skip = txt(W/2, Math.min(H - pxL(14), dy + dialogH + pxL(16)), "Tap to skip", 11, "#FFFFFF"); skip.setAlpha(.7);
+  frame.setScale(frame.scaleX*0.92, frame.scaleY*0.92).setAlpha(0);
+  sc.tweens.add({targets:frame, scaleX:fw/CUT.SW, scaleY:fh/CUT.SH, alpha:1, duration:260, ease:"Back.easeOut"});
+  sfx("swan"); cam.shake(500, 0.006);
+  let finished = false, lastBolt = 0;
+  const end = () => { if (finished) return; finished = true; cutsceneOn = false; timers.forEach(t => t.remove(false)); parts.forEach(o => { sc.tweens.killTweensOf(o); o.destroy(); }); sc.input.off("pointerdown", onTap); done(); };
+  timers.push(sc.time.addEvent({delay:70, loop:true, callback:() => {
+    const el = performance.now() - t0; paintAll();
+    const n = Math.min(L.line.length, Math.floor((el - 450)/30)); if (n > 0 && lineT.text.length !== n){ lineT.setText(L.line.slice(0, n)); if (n % 3 === 0) sfx("tick"); }
+    if ((kind === "storm" || kind === "ash") && el - lastBolt > 700 && Math.random() < 0.08){ lastBolt = el; cam.shake(180, 0.004); }
+    if (el > DUR + 700) end();
+  }}));
+  const onTap = () => { if (performance.now() - t0 > 600) end(); };
+  sc.input.on("pointerdown", onTap);
+}
 const PERKS = [
   {id:"espresso", name:"Espresso machine", cost:2, desc:"Every floor works 5% faster."},
   {id:"dinners", name:"Analyst dinners", cost:3, desc:"The City expects 3% less growth each quarter."},
@@ -1998,7 +2800,8 @@ const PERKS = [
 const ACH = [
   {id:"floor5", name:"Five-floor walk-up", desc:"Build 5 floors.", test:() => S.floors.length >= 5},
   {id:"floor10", name:"Skyline material", desc:"Build 10 floors.", test:() => S.floors.length >= 10},
-  {id:"full", name:"Zoning limit", desc:"Build all 14 floors.", test:() => S.floors.length >= 14},
+  {id:"full", name:"Skyscraper", desc:"Build 20 floors.", test:() => S.floors.length >= 20},
+  {id:"sky30", name:"Cloud dweller", desc:"Build 30 floors.", test:() => S.floors.length >= 30},
   {id:"beat", name:"Beat the City", desc:"Beat expectations once.", test:() => S.bestStreak >= 1},
   {id:"streak3", name:"On a roll", desc:"Beat expectations 3 quarters running.", test:() => S.bestStreak >= 3},
   {id:"streak6", name:"Unstoppable", desc:"Beat expectations 6 quarters running.", test:() => S.bestStreak >= 6},
@@ -2207,12 +3010,59 @@ function fireEvent(){
 $("#sheet").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
   const [a, p, q] = b.dataset.act.split(":");
+  if (S.idleMode && ["build","up","mode","lim","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
+  if (a === "idle"){
+    openModal(`<h2>Hand over the keys?</h2><p>The board will make every decision from now on: claims, pricing, insurance, compliance, building, upgrades and events. You can keep watching.</p>
+      <p class="dim">Be warned: the board is not you. It makes mistakes, blunders on vanity projects, is slow to buy insurance, and idle companies attract more black swans. It may not last forever.</p>
+      <p class="note">This can’t be undone. You won’t be able to switch back to normal play, and this run won’t be recorded on the leaderboard or as a personal best.</p>
+      <div class="seg"><button class="btn ghost" data-act="board">Keep control</button><button class="btn red" data-act="idle-yes">Turn on idle mode</button></div>`, {view:"idleconfirm"});
+    return;
+  }
+  if (a === "idle-yes"){ S.idleMode = true; S.idleSpeed = 0.5; for (const x of EXECS) S.execs[x.id] = true; save(); closeModal(); toast("Idle mode is on. Sit back. The board has it from here.", "good"); return; }
   if (a === "close") closeModal();
   else if (a === "build") build(p);
   else if (a === "up") upgrade(+p, q);
   else if (a === "floor") openFloor(+p);
+  else if (a === "mv"){
+    const i = +p, j = i + (+q); if (j < 0 || j >= S.floors.length) return;
+    [S.floors[i], S.floors[j]] = [S.floors[j], S.floors[i]]; [W[i], W[j]] = [W[j], W[i]]; [popT[i], popT[j]] = [popT[j], popT[i]];
+    prevLevels = S.floors.map(f => f.level); prevCount = S.floors.length;
+    sfx("tick"); save(); openFloor(j);
+  }
+  else if (a === "demo"){
+    const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1) return;
+    openModal(`<h2>Demolish ${TYPES[f.type].name}?</h2><p>This floor (level ${f.level}) and everyone in it will be gone for good. The builders will salvage about ${fmt(demoRefund(f))} of fixtures and fittings.</p>
+      ${f.type === "compliance" ? `<p class="note">Removing Compliance may leave the regulator uncovered.</p>` : ""}
+      <div class="seg"><button class="btn ghost" data-act="floor:${i}">Keep it</button><button class="btn red" data-act="demo-yes:${i}">Demolish</button></div>`, {view:"demo" + i});
+  }
+  else if (a === "demo-yes"){
+    const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1) return;
+    const refund = demoRefund(f); S.cash += refund;
+    S.floors.splice(i, 1); W.splice(i, 1); popT.splice(i, 1);
+    prevLevels = S.floors.map(x => x.level); prevCount = S.floors.length;
+    if (scene) scene.cameras.main.shake(250, 0.004); sfx("stamp");
+    toast(`${TYPES[f.type].name} demolished. You salvaged ${fmt(refund)}${f.type === "compliance" ? ". Check your Compliance cover." : "."}`, f.type === "compliance" ? "bad" : "good");
+    save(); closeModal();
+  }
   else if (a === "exec"){ const x = EXECS.find(x => x.id === p); if (!x || S.rankIdx < x.rank) return; S.execs[p] = q === "on"; toast(q === "on" ? `You hired a ${x.name}. ${x.joke}` : `Your ${x.name} has left to “spend more time with their yacht.”`, q === "on" ? "good" : ""); save(); openBoard(); }
-  else if (a === "price"){ S.price = +p; save(); openBoard(); }
+  else if (a === "inv"){ S.invRisk = +p; save(); openFloor(+q); }
+  else if (a === "prcamp"){
+    const c = prCost(); if (S.prQ === S.quarter || S.cash < c) return;
+    spend(c, "other"); S.prQ = S.quarter; mood(15); S.conf = clamp(S.conf + 6, 0, 100); sfx("chime");
+    toast(pick(["PR released a heartfelt video of the CEO adopting a three-legged dog. Mood +15.","PR sponsored a puppy calendar. Customers are moved. Mood +15.","PR held a press conference with a choir. Nobody remembers what went wrong. Mood +15."]), "good");
+    save(); const k = S.floors.findIndex(f => f.type === "pr"); if (k >= 0) openFloor(k); else closeModal();
+  }
+  else if (a === "lb") openLeaderboard();
+  else if (a === "lbname"){
+    const inp = $("#lbName"); const name = (inp ? inp.value : "").replace(/[<>]/g, "").trim().slice(0, 24) || "Fine Print Syndicate";
+    try { localStorage.setItem(NAME_KEY, name); } catch(e){}
+    const runs = loadRuns(); const r = runs.find(x => String(x.id) === p); if (r){ r.name = name; saveRuns(runs); }
+    const area = $("#lbArea"); if (area) area.innerHTML = lbTable(+p);
+    toast("Saved. Your syndicate is on the board.", "good");
+  }
+  else if (a === "ispeed"){ S.idleSpeed = +p || 0.5; save(); openBoard(); }
+  else if (a === "rival"){ resolveRival(+p, false); }
+  else if (a === "price"){ S.price = +p; save(); toast(`Pricing set to ${PRICES[+p].name.toLowerCase()}.`, "good"); openBoard(); }
   else if (a === "dividend"){
     const amt = divAmt(); if (S.divQ === S.quarter || S.cash < amt) return;
     S.cash -= amt; discSpent += amt; S.divQ = S.quarter; S.conf = clamp(S.conf + 8, 0, 100); S.stock *= 1.03;
@@ -2281,9 +3131,9 @@ function hud(){
   let rate = `${net>=0?"+":"−"}${fmtR(Math.abs(net)).replace("−","")}/s`;
   if (S.buffs.sales > 0) rate += " ×2";
   if (S.outage > 0) rate += " (IT outage)";
-  const run = runway();
-  $("#rate").textContent = run != null && run < 90 ? `⚠ Broke in ${Math.max(1, Math.round(run))}s` : rate + " income";
-  $("#rate").classList.toggle("warn", run != null && run < 90);
+  const run = runway(), cq = capReq(), capLow = cq > 0 && S.cash < cq;
+  $("#rate").textContent = run != null && run < 90 ? `⚠ Broke in ${Math.max(1, Math.round(run))}s` : capLow ? `⚠ Capital ${Math.round(capRatio()*100)}% of required` : rate + " income";
+  $("#rate").classList.toggle("warn", (run != null && run < 90) || capLow);
   $("#confBar").parentElement.classList.toggle("danger", S.conf < 25);
   const lb = $("#lawBtn");
   if (S.lawsuits.length){ lb.hidden = false; lb.textContent = `⚖ ${S.lawsuits.length}`; lb.setAttribute("aria-label", `${S.lawsuits.length} pending lawsuits, worth up to ${fmt(S.lawsuits.reduce((a, l) => a + l.amt, 0))}`); }
@@ -2291,10 +3141,11 @@ function hud(){
   $("#stock").textContent = fmt2(S.stock);
   const nx = RANKS[S.rankIdx+1];
   $("#rank").textContent = nx ? `${RANKS[S.rankIdx].name} (${nx.goals.filter(goalMet).length}/${nx.goals.length})` : RANKS[S.rankIdx].name;
+  if (S.idleMode) $("#rank").textContent = "🛋️ Idle mode";
   $("#happyBar").style.width = S.happy + "%";
   $("#happyTxt").textContent = MOODS.find(m => S.happy >= m[0])[1];
   const qn = S.quarter;
-  $("#qLabel").textContent = `Q${((qn-1)%4)+1} earnings call in ${Math.ceil(Q_LEN - S.qt)}s`;
+  $("#qLabel").textContent = `Q${((qn-1)%4)+1} earnings call in ${Math.ceil((Q_LEN - S.qt)/(S.idleMode ? (S.idleSpeed || 0.5) : 1))}s`;
   $("#qBar").style.width = (S.qt/Q_LEN*100) + "%";
   $("#confBar").style.width = S.conf + "%";
   $("#confBar").style.background = S.conf < 25 ? "var(--danger)" : S.conf < 50 ? "var(--gold)" : "var(--money)";
@@ -2312,7 +3163,8 @@ let gSky = null, gStars = null, sunImg = null, imgSlot = null, imgLobby = null, 
 let rainEm = null, confettiEm = null, dustEm = null;
 let lastKey = "", prevLevels = [], prevCount = 0, lastNight = null, bellRinging = false, rainOn = null, scrollHint = false;
 let tick8 = 0, tick2 = 0, hudT = 0, saveT = 0, vel = 0, drag = null, pendingBottom = true;
-const pxL = css => css*LW/cssW;
+let padX = 0;
+const pxL = css => css*dpr/cz;
 const SK = n => n + "@" + RS;
 const col = s => Phaser.Display.Color.ValueToColor(s).color;
 
@@ -2328,17 +3180,32 @@ function paint(key, w, h, fn, tx, ty){
   tex.refresh();
   return key;
 }
-function framesTex(key, fw, fh, frames){
+function framesTex(key, fw, fh, frames, opt){
   if (scene.textures.exists(key)) return key;
   const tex = scene.textures.createCanvas(key, fw*frames.length*RS, fh*RS);
-  const c = tex.getContext(), saved = ctx; ctx = c; c.imageSmoothingEnabled = false;
-  frames.forEach(([name, fn], k) => { c.setTransform(RS,0,0,RS,k*fw*RS,0); fn(); tex.add(name, 0, k*fw*RS, 0, fw*RS, fh*RS); });
-  ctx = saved; c.setTransform(1,0,0,1,0,0); tex.refresh();
+  const c = tex.getContext(), saved = ctx;
+  const oc = document.createElement("canvas"); oc.width = fw*RS; oc.height = fh*RS; const ox = oc.getContext("2d");
+  const tc = document.createElement("canvas"); tc.width = oc.width; tc.height = oc.height; const tx = tc.getContext("2d");
+  frames.forEach(([name, fn, shadow], k) => {
+    ox.setTransform(1,0,0,1,0,0); ox.clearRect(0, 0, oc.width, oc.height); ox.imageSmoothingEnabled = false; ox.setTransform(RS,0,0,RS,0,0);
+    ctx = ox; fn(); ctx = saved;
+    const X = k*fw*RS; c.setTransform(1,0,0,1,0,0);
+    if (opt && opt.shadow && shadow !== false){ const [sx, sy, rx] = opt.shadow; c.fillStyle = "rgba(0,0,0,.28)"; c.beginPath(); c.ellipse(X + sx*RS, sy*RS, rx*RS, Math.max(1, rx*RS*0.32), 0, 0, Math.PI*2); c.fill(); }
+    if (opt && opt.outline){
+      tx.setTransform(1,0,0,1,0,0); tx.globalCompositeOperation = "source-over"; tx.clearRect(0, 0, tc.width, tc.height); tx.drawImage(oc, 0, 0);
+      tx.globalCompositeOperation = "source-in"; tx.fillStyle = "rgba(22,20,48,.88)"; tx.fillRect(0, 0, tc.width, tc.height); tx.globalCompositeOperation = "source-over";
+      const o = Math.max(1, Math.round(RS*0.5));
+      for (const [dx, dy] of [[-o,0],[o,0],[0,-o],[0,o]]) c.drawImage(tc, X + dx, dy);
+    }
+    c.drawImage(oc, X, 0);
+    tex.add(name, 0, X, 0, fw*RS, fh*RS);
+  });
+  tex.refresh();
   return key;
 }
 function personTexture(lk){
-  const key = "p_" + [lk.skin, lk.hair, lk.shirt, lk.pants, lk.style, lk.tie || "-", lk.glasses ? 1 : 0, lk.hat ? 1 : 0].join("_") + "@" + RS;
-  return framesTex(key, 9, 18, [["f0", () => person(4,17,lk,0,1)], ["f1", () => person(4,17,lk,1,1)], ["sit", () => person(4,17,lk,-1,1,0)], ["sitb", () => person(4,17,lk,-1,1,1)]]);
+  const key = "p2_" + [lk.skin, lk.hair, lk.shirt, lk.pants, lk.style, lk.tie || "-", lk.glasses ? 1 : 0, lk.hat ? 1 : 0].join("_") + "@" + RS;
+  return framesTex(key, 11, 20, [["f0", () => person(5,18,lk,0,1)], ["f1", () => person(5,18,lk,1,1)], ["sit", () => person(5,18,lk,-1,1,0), false], ["sitb", () => person(5,18,lk,-1,1,1), false]], {outline:true, shadow:[5,18.1,3]});
 }
 function drawBub(kind){
   const bx = 0, by = 1;
@@ -2355,12 +3222,14 @@ function ensureStatic(){
   if (scene.textures.exists(SK("drop"))) return;
   paint(SK("drop"), 1, 3, () => R(0,0,1,3,"#FFFFFF"), 0, 0);
   paint(SK("px"), 2, 2, () => R(0,0,2,2,"#FFFFFF"), 0, 0);
-  [14,20,26].forEach((w,i) => paint(SK("cloud"+i), w, 7, () => { R(0,3,w,4,"#FFFFFF"); R(3,0,Math.round(w*0.45),4,"#FFFFFF"); R(Math.round(w*0.45),1,Math.round(w*0.35),3,"#FFFFFF"); }, 0, 0));
-  paint(SK("sun"), 10, 10, () => { R(2,0,6,10,"#FFFFFF"); R(0,2,10,6,"#FFFFFF"); R(1,1,8,8,"#FFFFFF"); }, 0, 0);
+  [14,20,26].forEach((w,i) => paint(SK("cloud"+i), w, 8, () => { const h = 8; ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(w*0.28, h*0.62, h*0.34, 0, Math.PI*2); ctx.arc(w*0.52, h*0.46, h*0.44, 0, Math.PI*2); ctx.arc(w*0.76, h*0.62, h*0.32, 0, Math.PI*2); ctx.fill(); ctx.fillRect(w*0.26, h*0.62, w*0.5, h*0.33);
+    ctx.globalCompositeOperation = "source-atop"; const g = ctx.createLinearGradient(0, h*0.45, 0, h); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(110,120,150,.28)"); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h); ctx.globalCompositeOperation = "source-over"; }, 0, 0));
+  paint(SK("sun"), 18, 18, () => { const g = ctx.createRadialGradient(9,9,0,9,9,9); g.addColorStop(0,"rgba(255,255,255,1)"); g.addColorStop(0.5,"rgba(255,255,255,1)"); g.addColorStop(0.56,"rgba(255,255,255,.35)"); g.addColorStop(1,"rgba(255,255,255,0)"); ctx.fillStyle = g; ctx.fillRect(0,0,18,18); }, 0, 0);
   paint(SK("moon"), 8, 8, () => { R(1,0,6,8,"#F4F1FF"); R(0,1,8,6,"#F4F1FF"); ctx.clearRect(4,1,3,5); }, 0, 0);
   paint(SK("bell"), 14, 8, () => { R(62,7,5,1,"#E0B43A"); R(61,8,7,3,"#FFD23F"); R(60,11,9,1,"#E0B43A"); R(64,12,1,1,"#6B4A2B"); }, -58, -5);
   paint(SK("elev"), 14, 22, () => { R(0,0,14,22,"#FFD23F"); R(1,1,12,20,"#FFE27A"); R(6,1,2,20,"#D9A800"); R(0,21,14,1,"#B38900"); }, 0, 0);
   paint(SK("bus"), 32, 17, () => {
+    ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.beginPath(); ctx.ellipse(16, 16, 16, 1, 0, 0, Math.PI*2); ctx.fill();
     R(0,0,32,14,"#D7262E"); R(0,6,32,1,"#A51C22"); R(0,0,32,1,"#E8545A");
     for (let k = 0; k < 5; k++){ R(2+k*6,2,4,3,"#BFD9EA"); R(2+k*6,8,4,3,"#BFD9EA"); }
     R(4,13,4,3,"#1B1B2F"); R(23,13,4,3,"#1B1B2F"); R(31,10,1,2,"#FFE88A");
@@ -2369,22 +3238,43 @@ function ensureStatic(){
     const y = 1; R(0,y+3,19,5,"#1B1B2F"); R(4,y,11,4,"#1B1B2F"); R(5,y+1,4,2,"#9DB8CC"); R(10,y+1,4,2,"#9DB8CC");
     R(8,y-1,3,1,"#FFD23F"); R(2,y+7,3,2,"#555"); R(14,y+7,3,2,"#555"); R(18,y+4,1,1,"#FFE88A");
   }, 0, 0);
-  framesTex(SK("percy"), 11, 18, [["p0", () => percy(5,17,0,1)], ["p1", () => percy(5,17,1,1)]]);
+  framesTex(SK("percy2"), 13, 20, [["p0", () => percy(6,18,0,1)], ["p1", () => percy(6,18,1,1)]], {outline:true, shadow:[6,18.1,4]});
   ["wait","low","happy","angry","confused"].forEach(k => paint(SK("bub_"+k), 9, 11, () => drawBub(k), 0, 0));
 }
 
 function drawRoomBG(f, ws, y){
   const v = variantOf(f); R(28,y,146,38,v.wall); if (v.pattern) v.pattern(y);
-  R(28,y,146,2,"rgba(0,0,0,.15)");
-  for (const lx of [55,101,147]){ R(lx-4,y+2,8,1,"#FFF5C0"); ctx.globalAlpha = .08; R(lx-10,y+3,20,12,"#FFF5C0"); ctx.globalAlpha = 1; }
-  R(28,y+35,146,3,v.trim);
   v.decor(y);
+  roomLighting(y, v.trim);
   for (const w of ws) if (w.mode === "sit"){ const sx = 34 + w.slot*28; R(sx-1,y+25,1,9,"#3A3550"); R(sx-1,y+32,6,1,"#3A3550"); R(sx+1,y+33,1,2,"#3A3550"); }
+}
+function shade(hex, amt){ const n = parseInt(hex.slice(1), 16); const f = v => Math.round(clamp(amt < 0 ? v*(1 + amt) : v + (255 - v)*amt, 0, 255)); return `rgb(${f(n >> 16)},${f((n >> 8) & 255)},${f(n & 255)})`; }
+function roomLighting(y, trim, h){
+  h = h || 35;
+  const g = ctx.createLinearGradient(0, y, 0, y + h);
+  g.addColorStop(0, "rgba(0,0,0,.2)"); g.addColorStop(0.1, "rgba(255,255,255,.06)"); g.addColorStop(0.65, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.14)");
+  ctx.fillStyle = g; ctx.fillRect(28, y, 146, h);
+  for (const lx of [55,101,147]){
+    const rg = ctx.createRadialGradient(lx, y + 3, 0, lx, y + 3, 26);
+    rg.addColorStop(0, "rgba(255,244,205,.32)"); rg.addColorStop(1, "rgba(255,244,205,0)");
+    ctx.fillStyle = rg; ctx.fillRect(lx - 26, y, 52, h);
+    R(lx - 5, y + 1.2, 10, 1.3, "#2E2552"); R(lx - 4, y + 2.4, 8, 0.8, "#FFF8D6");
+  }
+  for (const [x0, dir] of [[28, 1], [174, -1]]){ const sg = ctx.createLinearGradient(x0, 0, x0 + dir*10, 0); sg.addColorStop(0, "rgba(0,0,0,.22)"); sg.addColorStop(1, "rgba(0,0,0,0)"); ctx.fillStyle = sg; ctx.fillRect(Math.min(x0, x0 + dir*10), y, 10, h); }
+  if (trim){ const fg = ctx.createLinearGradient(0, y + h, 0, y + h + 3); fg.addColorStop(0, shade(trim, 0.12)); fg.addColorStop(1, shade(trim, -0.3)); ctx.fillStyle = fg; ctx.fillRect(28, y + h, 146, 3); R(28, y + h, 146, 0.6, "rgba(255,255,255,.3)"); }
 }
 function drawRoomFG(f, ws, y){ for (const w of ws) if (w.mode === "sit") drawDesk(34 + w.slot*28, y, f.type, w.slot); }
 function isAnimated(f){
   const d = DESIGNS[f.type][f.skin || 0];
   return d && d.decor ? /time/.test(String(d.decor)) : f.type === "breakroom";
+}
+const CHUNK = 300;
+function paintTall(prefix, w, yTop, yBot, fn, tx, imgX, depth, create){
+  for (let y = yTop, k = 0; y < yBot; y += CHUNK, k++){
+    const h = Math.min(CHUNK, yBot - y), key = prefix + k;
+    paint(key, w, h, fn, tx, -y);
+    if (create) addImg(key, imgX, y, depth);
+  }
 }
 function addImg(key, x, y, depth){ const im = scene.add.image(x, y, key).setOrigin(0,0).setScale(1/RS).setDepth(depth); objs.push(im); return im; }
 function towerKey(){ return `${RS}|${cssW}|${cssH}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}${f.lim || 0}`).join(","); }
@@ -2398,11 +3288,11 @@ function buildFloorObjs(L, i){
   o.fg = addImg(paint("rfg"+i, 146, 38, () => drawRoomFG(f, ws, 0), -28, 0), OX+28, fy, 12);
   o.animated = isAnimated(f);
   o.workers = ws.map(w => {
-    const key = w.percy ? SK("percy") : personTexture(w.look);
-    const im = scene.add.image(0, 0, key, w.percy ? "p0" : (w.mode === "sit" ? "sit" : "f0")).setScale(1/RS).setDepth(w.mode === "sit" ? 11 : 12.5).setOrigin(w.percy ? 5/11 : 4/9, 17/18);
+    const key = w.percy ? SK("percy2") : personTexture(w.look);
+    const im = scene.add.image(0, 0, key, w.percy ? "p0" : (w.mode === "sit" ? "sit" : "f0")).setScale(1/RS).setDepth(w.mode === "sit" ? 11 : 12.5).setOrigin(w.percy ? 6/13 : 5/11, 18/20);
     objs.push(im); return {w, im};
   });
-  const fs = pxL(cssW < 480 ? 11.5 : 13), pad = pxL(5), ps = pxL(cssW < 480 ? 5 : 6), gap = pxL(2);
+  const fs = Math.max(pxL(11.5), 6.6), pad = Math.max(pxL(5), 2.6), ps = Math.max(pxL(5), 2.8), gap = Math.max(pxL(2), 1);
   o.lt = scene.add.text(0, 0, TYPES[f.type].name, {fontFamily:FONT, fontSize:fs+"px", fontStyle:"600", color:"#FFFFFF", resolution:Math.ceil(cz)}).setDepth(20.2);
   objs.push(o.lt);
   let tagW = 0;
@@ -2442,7 +3332,7 @@ function placeFloor(o){
 }
 
 function rebuildAll(){
-  const cam = scene.cameras.main;
+  const cam = scene.cameras.main; cam.scrollX = -padX;
   const oldLH = LH, fromBottom = oldLH ? oldLH - (cam.scrollY + viewH()) : 0;
   for (const o of objs){ scene.tweens.killTweensOf(o); o.destroy(); }
   for (const o of floorObjs) if (o) scene.tweens.killTweensOf(o.anim);
@@ -2455,29 +3345,33 @@ function rebuildAll(){
   gSky = scene.add.graphics().setDepth(0); objs.push(gSky);
   gStars = scene.add.graphics().setDepth(0.5); objs.push(gStars);
   sunImg = scene.add.image(0, 0, SK("sun")).setScale(1/RS).setDepth(0.6); objs.push(sunImg);
-  for (let k = 0; k < 9; k++){
-    const im = scene.add.image(rand(-20, LW), rand(4, 62), SK("cloud"+(k%3))).setOrigin(0,0).setScale(1/RS).setDepth(0.8);
+  for (let k = 0; k < 9 + Math.round(padX/28); k++){
+    const im = scene.add.image(rand(-padX - 20, LW + padX), rand(4, 62), SK("cloud"+(k%3))).setOrigin(0,0).setScale(1/RS).setDepth(0.8);
     im._s = rand(1.5, 4); objs.push(im); cloudObjs.push(im);
   }
-  imgSkyline = addImg(paint("skyline", LW, 164, () => drawSkyline(L), 0, -(L.groundY-162)), 0, L.groundY-162, 1);
+  imgSkyline = addImg(paint("skyline", LW, 164, () => { ctx.save(); ctx.transform(LW/256,0,0,1,0,0); drawSkyline(L); ctx.restore(); }, 0, -(L.groundY-162)), 0, L.groundY-162, 1);
+  const needCopy = k => k < 0 ? (k + 1)*LW > -padX : k*LW < LW + padX;
+  if (padX > 0) paint("skylineF", LW, 164, () => { ctx.save(); ctx.transform(LW/256,0,0,1,0,0); drawSkylineFiller(L); ctx.restore(); }, 0, -(L.groundY-162));
+  for (const k of [-4,-3,-2,-1,1,2,3,4]) if (needCopy(k)) addImg("skylineF", k*LW, L.groundY-162, 1).setFlipX(k % 2 !== 0);
   rainEm = scene.add.particles(0, 0, SK("drop"), {
-    x:{min:-20, max:LW+40}, y:skyTop, speedY:{min:90, max:130}, speedX:{min:-18, max:-12},
+    x:{min:-padX - 20, max:LW + padX + 40}, y:skyTop, speedY:{min:90, max:130}, speedX:{min:-18, max:-12},
     lifespan:(LH - skyTop + 10)/90*1000, frequency:28, quantity:1, scale:1/RS, alpha:.5, tint:0xE8EEF6, emitting:false
   }).setDepth(1.5);
   objs.push(rainEm); rainOn = null;
   imgGround = addImg(paint("ground", LW, GROUND+34, () => drawGround(L), 0, -(L.groundY-34)), 0, L.groundY-34, 2);
+  for (const k of [-4,-3,-2,-1,1,2,3,4]) if (needCopy(k)) addImg("ground", k*LW, L.groundY-34, 2).setFlipX(k % 2 !== 0);
   const bus = scene.add.image(-40, L.groundY+6, SK("bus")).setOrigin(0,0).setScale(1/RS).setDepth(3); objs.push(bus);
   const cab = scene.add.image(-40, L.groundY+10, SK("cab")).setOrigin(0,0).setScale(1/RS).setDepth(3.1); objs.push(cab);
-  const drive = (im, sp, d0) => { im.x = -40; scene.tweens.add({targets:im, x:LW+10, duration:(LW+50)/sp*1000, delay:d0 != null ? d0 : rand(4000, 16000), onComplete:() => drive(im, sp)}); };
+  const drive = (im, sp, d0) => { im.x = -padX - 40; scene.tweens.add({targets:im, x:LW + padX + 10, duration:(LW + 2*padX + 50)/sp*1000, delay:d0 != null ? d0 : rand(4000, 16000), onComplete:() => drive(im, sp)}); };
   drive(bus, 20, 1500); drive(cab, 34, 7000);
-  imgFacade = addImg(paint("facade", LW, L.groundY - L.floorsTop, () => facadeRows(L), OX, -L.floorsTop), 0, L.floorsTop, 4);
+  paintTall("facade", LW, TOP, L.groundY, () => facadeRows(L), OX, 0, 4, true);
   lastNight = isNight();
   imgRoof = addImg(paint("roof", LW, 44, () => drawRoof(L), OX, -(TOP-42)), 0, TOP-42, 5);
   imgSlot = L.can ? addImg(paint("slot", 172, FH, () => drawSlot(L), -24, -TOP), OX+24, TOP, 6) : null;
   for (let i = 0; i < L.n; i++) buildFloorObjs(L, i);
   imgLobby = addImg(paint("lobby", 146, 44, () => drawLobby(L), -28, -L.lobbyY), OX+28, L.lobbyY, 13);
   bellImg = scene.add.image(OX+64.5, L.lobbyY+5, SK("bell")).setOrigin(6.5/14, 0).setScale(1/RS).setDepth(13.5); objs.push(bellImg); bellRinging = false;
-  addImg(paint("shaft", 172, L.groundY - L.floorsTop, () => drawShaftStatic(L), -24, -L.floorsTop), OX+24, L.floorsTop, 16);
+  paintTall("shaft", 172, L.floorsTop, L.groundY, () => drawShaftStatic(L), -24, OX+24, 16, true);
   elevImg = scene.add.image(OX+176, elev.y || L.lobbyY+18, SK("elev")).setOrigin(0,0).setScale(1/RS).setDepth(17); objs.push(elevImg);
   confettiEm = scene.add.particles(0, 0, SK("px"), {
     speed:{min:40, max:120}, angle:{min:200, max:340}, gravityY:170, lifespan:1200,
@@ -2510,14 +3404,14 @@ function redrawSky(force){
   const vh = viewH(), skyTop = Math.min(0, LH - vh) - 40;
   gSky.clear();
   gSky.fillGradientStyle(col(top), col(top), col(bot), col(bot), 1);
-  gSky.fillRect(0, skyTop, LW, 160 - skyTop);
-  gSky.fillStyle(col(bot), 1); gSky.fillRect(0, 160, LW, LH - 160);
+  gSky.fillRect(-padX - 8, skyTop, LW + 2*padX + 16, 160 - skyTop);
+  gSky.fillStyle(col(bot), 1); gSky.fillRect(-padX - 8, 160, LW + 2*padX + 16, LH - 160);
   scene.cameras.main.setBackgroundColor(top);
 }
 function redrawStars(){
   const p = phase(), na = clamp((p-0.8)/0.08, 0, 1);
   gStars.clear();
-  if (na > 0) for (const s of stars){ gStars.fillStyle(0xFFFFFF, na*(0.5 + 0.5*Math.sin(time*2 + s.b*9))); gStars.fillRect(s.x, s.y, 1, 1); }
+  if (na > 0) for (const s of stars){ gStars.fillStyle(0xFFFFFF, na*(0.5 + 0.5*Math.sin(time*2 + s.b*9))); for (let ox = -768; ox <= 768; ox += 256) if (s.x + ox > -padX - 2 && s.x + ox < LW + padX + 2) gStars.fillRect(s.x + ox, s.y, 1, 1); }
   if (p < 0.82){
     const t = p/0.82; sunImg.setTexture(SK("sun")).setPosition(12 + t*(LW-24), 58 - Math.sin(Math.PI*t)*44).setTint(p > 0.6 ? 0xFFB347 : 0xFFE066);
   } else sunImg.setTexture(SK("moon")).setPosition(30, 20).clearTint();
@@ -2528,7 +3422,7 @@ function frameSync(dt){
   if (rainOn !== weather.rain){ rainOn = weather.rain; if (rainOn) rainEm.start(); else rainEm.stop(); setRainSound(rainOn); }
   const p = phase();
   const tint = p > 0.72 ? (p > 0.86 ? 0x7878BE : 0xFFC9B0) : (weather.rain ? 0xBCC5D0 : 0xFFFFFF);
-  for (const c of cloudObjs){ c.x += c._s*dt; if (c.x > LW + 10){ c.x = -30; c.y = rand(4, 62); } c.setTint(tint).setAlpha(p > 0.86 ? .5 : 1); }
+  for (const c of cloudObjs){ c.x += c._s*dt; if (c.x > LW + padX + 10){ c.x = -padX - 30; c.y = rand(4, 62); } c.setTint(tint).setAlpha(p > 0.86 ? .5 : 1); }
   for (const o of floorObjs) if (o) placeFloor(o);
   elevImg.y = elev.y;
   if (bell.t > 0 && !bellRinging){
@@ -2540,7 +3434,7 @@ function frameSync(dt){
     alive.add(u);
     let s = custSpr.get(u);
     if (!s){
-      s = {spr:scene.add.image(0, 0, personTexture(u.look), "f0").setOrigin(4/9, 17/18).setScale(1/RS).setDepth(14),
+      s = {spr:scene.add.image(0, 0, personTexture(u.look), "f0").setOrigin(5/11, 18/20).setScale(1/RS).setDepth(14),
            bub:scene.add.image(0, 0, SK("bub_wait")).setOrigin(0,0).setScale(1/RS).setDepth(15)};
       custSpr.set(u, s);
     }
@@ -2558,7 +3452,8 @@ function frameSync(dt){
 }
 function redrawDynamic(){
   const L = layout();
-  for (const o of floorObjs) if (o && o.animated) paint("rbg"+o.i, 146, 38, () => drawRoomBG(o.f, W[o.i] || [], 0), -28, 0);
+  const cmv = scene.cameras.main, vTop = cmv.scrollY - 45, vBot = cmv.scrollY + viewH() + 5;
+  for (const o of floorObjs) if (o && o.animated && o.fy + 40 > vTop && o.fy < vBot) paint("rbg"+o.i, 146, 38, () => drawRoomBG(o.f, W[o.i] || [], 0), -28, 0);
   paint("lobby", 146, 44, () => drawLobby(L), -28, -L.lobbyY);
   paint("roof", LW, 44, () => drawRoof(L), OX, -(TOP-42));
   if (imgSlot) paint("slot", 172, FH, () => drawSlot(L), -24, -TOP);
@@ -2566,20 +3461,21 @@ function redrawDynamic(){
 }
 function redrawSlow(){
   const L = layout();
-  paint("skyline", LW, 164, () => drawSkyline(L), 0, -(L.groundY-162));
+  paint("skyline", LW, 164, () => { ctx.save(); ctx.transform(LW/256,0,0,1,0,0); drawSkyline(L); ctx.restore(); }, 0, -(L.groundY-162));
   if (lastNight !== isNight()){
     lastNight = isNight();
-    paint("facade", LW, L.groundY - L.floorsTop, () => facadeRows(L), OX, -L.floorsTop);
+    paintTall("facade", LW, TOP, L.groundY, () => facadeRows(L), OX, 0, 4, false);
     paint("ground", LW, GROUND+34, () => drawGround(L), 0, -(L.groundY-34));
+    if (padX > 0) paint("skylineF", LW, 164, () => { ctx.save(); ctx.transform(LW/256,0,0,1,0,0); drawSkylineFiller(L); ctx.restore(); }, 0, -(L.groundY-162));
   }
   redrawSky();
 }
 
 function tapAt(wx, wy){
-  if (modalOpen) return;
+  if (modalOpen || cutsceneOn) return;
   const lx = wx - OX, ly = wy;
   const L = layout(), fy = L.lobbyY + 40;
-  for (const u of CUST){ if (u.state === "wait" && Math.abs(lx - u.x) <= 6 && ly >= fy - 26 && ly <= fy + 2){ openClaims(u.id); return; } }
+  for (const u of CUST){ if (u.state === "wait" && Math.abs(lx - u.x) <= 8 && ly >= fy - 26 && ly <= fy + 2){ openClaims(u.id); return; } }
   if (L.can && ly >= TOP && ly < TOP + FH){ openFloors(); return; }
   if (ly >= L.floorsTop && ly < L.lobbyY){ const k = Math.floor((ly - L.floorsTop)/FH); openFloor(L.n - 1 - k); return; }
   if (ly >= L.lobbyY && ly < L.groundY && lx >= 24 && lx <= 196){ openClaims(); return; }
@@ -2590,7 +3486,7 @@ class TowerScene extends Phaser.Scene {
   constructor(){ super("tower"); }
   create(){
     scene = this;
-    const cam = this.cameras.main; cam.setOrigin(0, 0); cam.setZoom(cz);
+    const cam = this.cameras.main; cam.setOrigin(0, 0); cam.setZoom(cz); cam.scrollX = -padX;
     this.input.on("pointerdown", p => { drag = {y:p.y, sy:cam.scrollY, moved:false, lastY:p.y, lastT:performance.now()}; vel = 0; });
     this.input.on("pointermove", p => {
       if (!drag || !p.isDown) return;
@@ -2608,7 +3504,7 @@ class TowerScene extends Phaser.Scene {
   }
   update(_, dms){
     const dt = paused ? 0 : Math.min(0.1, dms/1000); time += dt;
-    if (!modalOpen && !S.over && !paused && !tutorialOn) update(dt);
+    if (!modalOpen && !S.over && !paused && !tutorialOn && !cutsceneOn) update(S.idleMode ? dt*(S.idleSpeed || 0.5) : dt);
     if (!paused) animate(dt);
     if (towerKey() !== lastKey) rebuildAll();
     const cam = this.cameras.main;
@@ -2637,15 +3533,17 @@ document.addEventListener("keydown", e => { if ((e.key === "p" || e.key === "P")
 function measure(){
   const el = $("#game");
   cssW = Math.max(200, el.clientWidth); cssH = Math.max(200, el.clientHeight);
-  dpr = Math.min(3, window.devicePixelRatio || 1);
-  cz = cssW*dpr/LW; RS = Math.max(1, Math.ceil(cz));
+  dpr = Math.min(window.matchMedia && matchMedia("(pointer: coarse)").matches ? 2 : 3, window.devicePixelRatio || 1);
+  const zW = cssW*dpr/LW, zH = cssH*dpr/(8.5*FH + 24);
+  cz = cssW < 600 ? zW : Math.min(zW, zH); RS = Math.max(1, Math.ceil(cz));
+  padX = Math.max(0, (cssW*dpr/cz - LW)/2);
 }
 function onResize(){
   if (!game) return;
   measure();
   game.scale.resize(Math.round(cssW*dpr), Math.round(cssH*dpr));
   game.scale.setZoom(1/dpr);
-  if (scene){ scene.cameras.main.setZoom(cz); }
+  if (scene){ scene.cameras.main.setZoom(cz); scene.cameras.main.scrollX = -padX; }
 }
 function boot(){
   if (!window.Phaser){ $("#game").innerHTML = `<p style="padding:20px;color:#fff">Phaser couldn’t load. Check your connection and reload.</p>`; return; }
