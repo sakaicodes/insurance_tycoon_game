@@ -1,0 +1,16 @@
+/* Dock */
+.dock{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 8px 10px;background:var(--panel);border-top:3px solid var(--edge)}
+.btn{font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif;font-weight:600;font-size:17px;line-height:1.1;color:#2A1E00;background:var(--gold);border:3px solid var(--edge);border-radius:7px;padding:10px 12px;box-shadow:0 4px 0 var(--edge),inset 0 -3px 0 rgba(0,0,0,.15),inset 0 2px 0 rgba(255,255,255,.45);cursor:pointer;position:relative;transition:transform .06s,box-shadow .06s}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--edge),inset 0 -3px 0 rgba(0,0,0,.15)}
+.btn:disabled{filter:grayscale(.85) brightness(.75);cursor:not-allowed}
+.btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.btn.green{background:#4BE39A}
+.btn.red{background:#FF7A7A}
+.btn.ghost{background:#C9CCF5}
+.btn.blue{background:#7FD3F7}
+.btn small{display:block;font-size:13px;font-weight:400;opacity:.85;margin-top:2px}
+.badge{display:inline-block;min-width:22px;padding:1px 6px;margin-left:4px;border-radius:999px;background:var(--edge);color:#fff;font-size:14px}
+.btn.hot .badge{background:var(--danger);animation:thump 1s steps(2) infinite}
+@keyframes thump{50%{transform:scale(1.15)}}
+
+

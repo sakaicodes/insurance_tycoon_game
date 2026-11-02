@@ -1,0 +1,38 @@
+@media (max-width:480px){
+  .hud{gap:5px;padding:6px 6px 4px}
+  .stat{padding:4px 6px}
+  .stat .k{font-size:12px}
+  .stat b{font-size:18px}
+  .stat small{font-size:12px}
+  .qrow{font-size:13px;gap:6px}
+  .pbtn{padding:4px 8px;min-height:30px}
+  .dock{gap:6px;padding:6px 6px 8px}
+  .dock .btn{min-height:48px;font-size:16px;padding:8px 6px}
+  #modal{padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+  .sheet{padding:14px 14px 16px;max-height:88vh;max-height:88dvh}
+  .sheet h2{font-size:24px}
+  .row3 .btn,.seg .btn,.choices .btn,.action .btn{min-height:44px}
+}
+@media (max-width:360px){ .stat b{font-size:16px} .stat .k{font-size:11px} .btn{font-size:15px} }
+button,.type{touch-action:manipulation}
+body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input{-webkit-user-select:text;user-select:text}
+.lb{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0 4px}
+.lb th{text-align:left;font-size:12px;color:var(--ink-dim);font-weight:500;padding:4px 6px;border-bottom:2px solid var(--line)}
+.lb td{padding:7px 6px;border-bottom:1px dashed var(--line);vertical-align:top}
+.lb td:nth-child(3),.lb td:nth-child(5){font-family:"Chakra Petch","Pixelify Sans",sans-serif;text-align:right}
+.lb td small{display:block;font-size:12px;color:var(--ink-dim)}
+.lb tr.me td{background:rgba(255,210,63,.14)}
+.lbname{display:flex;gap:8px;margin:6px 0 10px}
+.lbname input{flex:1;min-width:0;font:inherit;font-size:16px;color:var(--ink);background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:9px 10px}
+.lbname input:focus-visible{outline:3px solid var(--gold)}
+@media (min-width:700px){
+  #app{max-width:none;box-shadow:none}
+  .hud{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(270px,1.4fr);grid-template-rows:auto auto;column-gap:10px;row-gap:6px;padding:10px max(14px, calc((100% - 1240px)/2)) 8px}
+  .hud .stat{grid-row:1 / span 2;display:flex;flex-direction:column;justify-content:center}
+  .hud .qrow{grid-column:4;padding:0}
+  .stat b{font-size:24px}
+  .dock{padding:10px max(14px, calc((100% - 1240px)/2)) 12px;gap:12px}
+  .dock .btn{min-height:54px;font-size:19px}
+}
+

@@ -1,0 +1,23 @@
+.pbtn{flex:none;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:14px;font-weight:600;color:#2A1E00;background:var(--gold);border:2px solid var(--edge);border-radius:6px;padding:3px 9px;box-shadow:0 2px 0 var(--edge);cursor:pointer}
+.pbtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.pbtn.on{background:var(--money)}
+.qbar.conf i{background:var(--money);transition:width .4s,background .4s}
+#mktTxt{flex:none;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-weight:600}
+#pauseOv{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:rgba(18,19,58,.55);backdrop-filter:blur(2px);cursor:pointer}
+#pauseOv[hidden]{display:none}
+#pauseOv div{background:var(--panel);border:3px solid var(--edge);border-radius:10px;padding:16px 26px;text-align:center;box-shadow:0 5px 0 var(--edge)}
+#pauseOv b{display:block;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:30px;color:var(--gold)}
+#pauseOv span{font-size:15px;color:var(--ink-dim)}
+.sheet.intro h2{font-size:23px}
+.sheet.intro p{font-size:15px;line-height:1.45}
+.intro-scroll{max-height:min(42vh,320px);overflow-y:auto;background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:10px 12px;margin:0 0 12px}
+.intro-scroll p{display:flex;gap:9px;align-items:flex-start;margin:0 0 10px;font-size:14px!important;line-height:1.4}
+.intro-scroll p:last-child{margin-bottom:0}
+.intro-scroll .intro-h{font-size:17px;color:var(--gold);margin:14px 0 8px;padding-top:10px;border-top:2px dashed var(--line)}
+.intro-scroll .isw{flex:none;width:14px;height:14px;margin-top:3px;border:2px solid var(--edge);border-radius:3px}
+.intro-scroll .intro-room em{display:block;font-style:normal;margin-top:2px}
+.intro-scroll .intro-room em.pro{color:var(--money)}
+.intro-scroll .intro-room em.con{color:#FF9B9B}
+.intro-scroll .intro-tip{background:rgba(255,210,63,.1);border-radius:6px;padding:6px 8px}
+.intro-scroll p span:first-child{flex:none;font-size:18px;line-height:1.2}
+

@@ -1,0 +1,13 @@
+#coach{position:fixed;inset:0;z-index:60}
+#coach[hidden]{display:none}
+.coach-hole{position:fixed;border:3px solid var(--gold);border-radius:10px;box-shadow:0 0 0 9999px rgba(8,9,32,.74);transition:all .3s ease;pointer-events:none}
+.coach-card{position:fixed;background:var(--panel);border:3px solid var(--edge);border-radius:10px;box-shadow:0 6px 0 var(--edge),inset 0 0 0 2px var(--line);padding:14px 16px;transition:top .3s ease,left .3s ease}
+.coach-card h3{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:21px;font-weight:700;color:var(--gold);margin:0 0 6px}
+.coach-card p{margin:0 0 12px;font-size:15px;line-height:1.45}
+.coach-card .coach-step{font-size:13px;color:var(--ink-dim);margin:0 0 2px}
+.coach-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.coach-btns .btn{font-size:15px;padding:8px 12px}
+.coach-dots{display:flex;gap:4px;margin:0 0 10px}
+.coach-dots i{width:8px;height:8px;border-radius:2px;background:rgba(255,255,255,.2)}
+.coach-dots i.on{background:var(--gold)}
+

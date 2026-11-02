@@ -1,0 +1,4 @@
+/* Modal */
+#modal{position:fixed;inset:0;background:rgba(10,10,40,.6);display:flex;align-items:flex-end;justify-content:center;z-index:40;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+#modal[hidden]{display:none}
+

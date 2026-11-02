@@ -1,0 +1,9 @@
+{
+  "name": "fine-print-syndicate",
+  "version": "0.3.1",
+  "description": "A satirical London-market insurance tower game, built from modular source into a single HTML file.",
+  "private": true,
+  "scripts": {
+    "build": "node build.js --check"
+  }
+}

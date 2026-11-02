@@ -1,0 +1,16 @@
+/* Tower */
+#towerWrap{flex:1;position:relative;overflow:hidden;background:#9FB0C2;touch-action:none;min-height:0}
+#game{position:absolute;inset:0}
+#game canvas{display:block;touch-action:none}
+#towerInner{min-height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+#stage{position:relative}
+canvas{display:block;width:100%;cursor:pointer;image-rendering:pixelated;touch-action:manipulation}
+#fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.pop{position:absolute;transform:translate(-50%,-100%);font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif;font-weight:700;font-size:16px;color:var(--money);white-space:nowrap;
+  text-shadow:0 2px 0 var(--edge),2px 0 0 var(--edge),-2px 0 0 var(--edge),0 -2px 0 var(--edge);animation:rise 1.4s ease-out forwards}
+.pop.bad{color:var(--danger)}
+.pop.stamp{color:#fff;background:var(--danger);padding:0 6px;border:2px solid var(--edge);text-shadow:none;rotate:-8deg;font-size:14px}
+.pop.stamp.ok{background:#2FB879}
+@keyframes rise{from{opacity:1;transform:translate(-50%,-100%)}to{opacity:0;transform:translate(-50%,-280%)}}
+
+

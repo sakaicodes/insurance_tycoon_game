@@ -1,0 +1,39 @@
+.type .pro,.pc .pro{color:var(--money)} .type .con,.pc .con{color:#FF9B9B}
+.pc{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:8px 10px;margin:0 0 12px}
+.pc p{margin:0 0 4px!important;font-size:15px!important} .pc p:last-child{margin:0!important}
+.stars{font-size:30px;letter-spacing:4px;color:var(--gold);text-align:center;margin:0 0 6px;font-family:"Chakra Petch","Pixelify Sans",sans-serif}
+.reward{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:0 0 12px}
+.reward div{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:6px 8px}
+.reward span{display:block;font-size:13px;color:var(--ink-dim)} .reward b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:17px}
+.achs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 12px}
+.ach{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:7px 9px;font-size:14px;opacity:.55}
+.ach.on{opacity:1;border-color:var(--gold)} .ach b{display:block;font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:15px}
+.swan h2{color:var(--danger)!important}
+.status{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 12px}
+.status div{background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:6px 8px}
+.status span{display:block;font-size:13px;color:var(--ink-dim)} .status b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-size:17px}
+.goals{list-style:none;margin:6px 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.goals li{display:flex;align-items:center;gap:10px;background:var(--panel-2);border:2px solid var(--edge);border-radius:8px;padding:8px 10px;font-size:16px;line-height:1.3}
+.goals li i{flex:none;width:20px;height:20px;border:2px solid var(--edge);border-radius:4px;background:rgba(255,255,255,.1);display:grid;place-items:center;font-style:normal;font-weight:700;color:#12133A}
+.goals li.ok i{background:var(--money)}
+.goals li span{flex:1}
+.goals li b{font-family:"Chakra Petch","Pixelify Sans",sans-serif;color:var(--ink-dim);white-space:nowrap}
+.goals li.ok b{color:var(--money)}
+.ledger small{font-size:13px;color:var(--ink-dim)}
+.howto p{display:flex;gap:10px;align-items:flex-start}
+.howto p span{flex:none;font-size:22px;line-height:1.2}
+@media (prefers-reduced-motion: reduce){
+  .pop{animation:fade 1.2s linear forwards}
+  @keyframes fade{to{opacity:0}}
+  .btn.hot .badge,.sheet,.toast{animation:none}
+}
+#labels{position:absolute;inset:0;pointer-events:none}
+.flabel{position:absolute;display:flex;align-items:center;gap:5px;padding:0 5px 1px;background:rgba(18,19,58,.88);border-radius:3px;font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif;font-weight:600;font-size:11.5px;line-height:1.2;color:#fff;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.35);-webkit-font-smoothing:antialiased}
+.flabel .pp{display:inline-flex;gap:2px}
+.flabel .pp i{width:5px;height:5px;background:rgba(255,255,255,.28)}
+.flabel .pp i.on{background:#FFD23F}
+.flabel .tg{font-size:10.5px}
+@media (min-width:480px){ .flabel{font-size:13px} .flabel .tg{font-size:12px} .flabel .pp i{width:6px;height:6px} }
+@media (prefers-reduced-motion: reduce){
+}
+

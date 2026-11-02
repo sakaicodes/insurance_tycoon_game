@@ -1,0 +1,31 @@
+/* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
+/* Newest first. Add an entry here whenever you bump "version" in package.json. */
+const CHANGELOG = [
+  {v:"0.3.1", notes:[
+    "More ways to create your CEO: 10 hairstyles (including pixie, bob, long, ponytail, bun, curly and braids), 4 outfit styles (suit and tie, blazer and blouse, skirt suit, dress) and extras (lashes, lipstick, earrings, glasses). Every option is open to every CEO.",
+    "Your staff and customers now show the same variety of hairstyles, skirts, dresses and earrings.",
+  ]},
+  {v:"0.3.0", notes:[
+    "Eight new black swans based on real reinsurance events, with a satirical twist: a hurricane, a ship wedged in a canal, a global IT meltdown, an unpronounceable volcano, mass event cancellations, a megabank collapse, a rocket failure and a solar superstorm.",
+    "All-new cutscenes in the game’s art style, with a new character for each disaster.",
+    "Black swans now strike with no warning. Your Risk Dept trims every black swan loss instead.",
+    "New cover in the Boardroom: event cancellation.",
+    "The tutorial now explains black swans and why buying reinsurance matters.",
+  ]},
+  {v:"0.2.1", notes:[
+    "A new City look: navy and brass instead of brown wood, with cream paper menus, slate-blue carpets, stone desks, a marble lobby and a brass lift.",
+  ]},
+  {v:"0.2.0", notes:[
+    "Create your CEO at the start of every run: your name, your company’s name, skin tone, hairstyle, hair colour and outfit.",
+    "Your CEO walks around The Room. Tap them to open the Boardroom.",
+    "A cozy new look: warm wood and parchment menus, plank floors, wallpaper, brass lamps, chunkier characters with rosy cheeks, and a sunnier London.",
+    "Names are now locked for the whole run. You choose new ones when you start a new company.",
+  ]},
+  {v:"0.1.0", notes:[
+    "Rename your company: open the Boardroom and use Company name at the top.",
+    "The game version now shows in the corner of the screen and on the How to play screen.",
+    "New black swans: a great white in the Thames, and a rocket launch that goes boom.",
+    "Behind the scenes: the game is now built from separate files for data, art and systems.",
+  ]},
+];
+function changesFor(v){ return (CHANGELOG.find(c => c.v === v) || CHANGELOG[0]).notes; }

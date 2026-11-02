@@ -1,0 +1,60 @@
+/* City theme: navy frames, brass trim, cream paper */
+:root{
+  --page:#161B2E; --panel:#1F2A44; --panel-2:#F7F2E6; --edge:#1F2A44; --line:#C9C3B0;
+  --ink:#1B2238; --ink-dim:#5A6380; --gold:#8A6A16; --money:#2E7D4F; --danger:#B23A3A; --pink:#C8507A;
+  --brass:#C9A54A;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --page:#161B2E; color-scheme:light; } }
+:root[data-theme="dark"]{ --page:#161B2E; color-scheme:light; }
+body::before{background:#1F2A44}
+#app{background:#1F2A44;box-shadow:0 0 0 3px #161B2E}
+.hud{background:linear-gradient(#2B3A62,#1F2A44);border-bottom:3px solid var(--brass);box-shadow:inset 0 2px 0 #3B4C7A}
+.dock{background:linear-gradient(#1F2A44,#2B3A62);border-top:3px solid var(--brass)}
+.stat{background:var(--panel-2);border:3px solid #161B2E;border-radius:6px;box-shadow:inset 0 0 0 2px #FFFFFF,0 0 0 1px var(--brass)}
+.stat .k,.stat small{color:var(--ink-dim)}
+.bar,.qbar{background:#141A2C;box-shadow:inset 0 1px 0 rgba(0,0,0,.3)}
+.qbar i{background:#E3C064}
+.qrow{color:#F2EDE0;text-shadow:0 1px 0 #141A2C}
+.btn{color:#161B2E;background:#E3C064;border:3px solid #161B2E;box-shadow:0 4px 0 #161B2E,inset 0 -3px 0 rgba(120,90,10,.3),inset 0 2px 0 rgba(255,250,225,.65)}
+.btn.green{background:#7CC88A} .btn.red{background:#E8705F;color:#161B2E} .btn.ghost{background:#E9E4D6} .btn.blue{background:#9CC9E6}
+.btn:focus-visible,.pbtn:focus-visible,#lawBtn:focus-visible,.x:focus-visible,.type:focus-visible{outline:3px solid #F2EDE0}
+.pbtn{color:#161B2E;background:#E3C064;border:2px solid #161B2E}
+.badge{background:#161B2E;color:#F2EDE0}
+#modal{background:rgba(14,18,34,.6)}
+.sheet{background:var(--panel-2);color:var(--ink);border:4px solid #1F2A44;box-shadow:0 0 0 3px var(--brass),0 0 0 6px #1F2A44,0 10px 30px rgba(10,14,28,.5)}
+.sheet h2,.sheet h3{color:#23305A}
+.type,.pc{background:#FFFDF7;border-color:var(--line);color:var(--ink)}
+.type .con,.pc .con,.intro-scroll .intro-room em.con{color:#A33A3A}
+.seg .btn[aria-pressed="false"],.designs .btn[aria-pressed="false"]{background:#DCD6C8;color:#1F2A44}
+.pips i{background:rgba(31,42,68,.16)}
+.goals li i{background:rgba(31,42,68,.06);color:#1B2238}
+blockquote{background:rgba(201,165,74,.12)}
+.note{background:rgba(201,165,74,.16);border-color:var(--brass);color:var(--ink)}
+.toast{background:#FFFDF7;color:var(--ink);border:3px solid #1F2A44}
+.toast.good{background:#E3F1E6} .toast.bad{background:#F6DCD8}
+#pauseOv{background:rgba(14,18,34,.5)}
+.coach-hole{box-shadow:0 0 0 9999px rgba(14,18,34,.72);border-color:#E3C064}
+.coach-card{background:var(--panel-2);color:var(--ink);border:4px solid #1F2A44;box-shadow:0 0 0 3px var(--brass),0 0 0 6px #1F2A44}
+.coach-card h3{color:#23305A}
+.coach-dots i{background:rgba(31,42,68,.2)}
+.score-total{color:#1B2238}
+.pop.stamp{color:#FFFDF7}
+.pop.stamp.ok{background:#2E7D4F}
+#verTag{color:#F2EDE0;background:rgba(31,42,68,.7)}
+/* create your CEO */
+.ceo-setup{display:flex;gap:14px;align-items:center;margin:4px 0 6px}
+.ceo-setup canvas,.ceo-card canvas{flex:none;width:112px;height:112px;image-rendering:pixelated;border:4px solid #1F2A44;border-radius:8px;background:#E9E2CF;box-shadow:0 0 0 2px var(--brass)}
+.ceo-fields{flex:1;min-width:0;display:grid;gap:8px}
+.ceo-fields label{display:grid;gap:3px;font-weight:600;font-size:14px;color:var(--ink-dim)}
+.ceo-fields input{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#FFFFFF;border:3px solid #1F2A44;border-radius:6px;padding:8px 9px}
+.ceo-fields input:focus-visible{outline:3px solid #E3C064}
+.swatches{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 6px}
+.sw{width:40px;height:40px;border:3px solid #1F2A44;border-radius:8px;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.sw[aria-pressed="true"]{outline:3px solid var(--brass);outline-offset:2px}
+.sw:focus-visible{outline:3px solid #E3C064;outline-offset:2px}
+.ceo-card{display:flex;gap:12px;align-items:center;margin:4px 0 12px}
+.ceo-card canvas{width:72px;height:72px}
+.ceo-card b{display:block;font-size:19px;font-family:"Chakra Petch","Pixelify Sans",sans-serif}
+.ceo-card span{display:block}
+.ceo-card small{display:block;color:var(--ink-dim);font-size:13px}
+@media (max-width:400px){ .ceo-setup canvas{width:88px;height:88px} }

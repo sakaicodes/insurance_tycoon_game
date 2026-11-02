@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fine Print Syndicate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&text=0123456789&display=swap" rel="stylesheet">
+<style>
+<!-- @styles -->
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="hud" aria-live="off">
+    <div class="stat cash" id="cashBox"><span class="k">Cash</span><b id="cash">£0</b><small id="rate">+£0/s</small></div>
+    <div class="stat stock"><span class="k">Share price</span><b id="stock">£10.00</b><small id="rank">Interim CEO</small></div>
+    <div class="stat"><span class="k">Customer mood</span><div class="bar"><i id="happyBar"></i></div><small id="happyTxt">Fine</small></div>
+    <div class="qrow"><span id="qLabel">Q1 earnings call in 60s</span><div class="qbar"><i id="qBar"></i></div><button class="pbtn" id="btnPause">Pause</button><button class="pbtn" id="btnHelp" aria-label="How to play and tutorial">?</button><button class="pbtn" id="btnSound" aria-label="Mute sound">🔊</button></div>
+    <div class="qrow"><span>Board confidence</span><div class="qbar conf"><i id="confBar"></i></div><span id="mktTxt">Steady market</span><button id="lawBtn" hidden></button></div>
+  </header>
+  <main id="towerWrap">
+    <div id="pauseOv" hidden><div><b>Paused</b><span>Tap to resume</span></div></div>
+    <div id="game" role="img" aria-label="Your insurance tower. Tap a floor to manage it, tap a broker in The Room to handle their claim, and drag to scroll."></div>
+    <div id="verTag" aria-hidden="true"></div>
+  </main>
+  <nav class="dock">
+    <button class="btn blue" id="btnFloors">Floors</button>
+    <button class="btn" id="btnClaims">Claims<span class="badge" id="badge">0</span></button>
+    <button class="btn ghost" id="btnBoard">Boardroom</button>
+  </nav>
+</div>
+<div id="toasts" aria-live="polite"></div>
+<div id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div id="coach" hidden><div class="coach-hole" id="coachHole"></div><div class="coach-card" id="coachCard" role="dialog" aria-modal="true" aria-live="polite"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<script>
+(() => {
+<!-- @scripts -->
+})();
+</script>
+</body>
+</html>

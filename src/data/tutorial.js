@@ -1,0 +1,18 @@
+/* data/tutorial.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
+/* ---------- Tutorial ---------- */
+const TUT = [
+  {el:null, get title(){ return `Welcome, ${ceoN()}`; }, text:"You’re the new CEO of a syndicate in the London insurance market. This quick tour shows you how everything works. The game is paused while it runs."},
+  {el:"#cashBox", title:"Cash", text:"Your money, and what you earn each second before claims. If cash falls too far below zero, the bank takes the building."},
+  {el:".hud .stock", title:"Share price and title", text:"Earnings calls move your share price. The numbers in brackets show how many of the board’s targets you’ve hit toward your next promotion."},
+  {el:() => $("#happyBar").closest(".stat"), title:"Customer mood", text:"Paying claims keeps customers happy, and happy customers buy more. Very unhappy customers bring regulator warnings. Mood is also your reputation in the final score."},
+  {el:() => $("#qLabel").closest(".qrow"), title:"Earnings calls", text:"Every 60 seconds the City checks your profit against its target. Beat it to earn up to 3 stars, a cash bonus and board confidence. The better you do, the higher the target goes."},
+  {el:() => $("#confBar").closest(".qrow"), title:"Board confidence and the market", text:"If board confidence reaches zero, you’re fired. The label on the right shows the insurance cycle: hard markets mean high prices, soft markets mean price wars. Set your pricing to match in the Boardroom."},
+  {el:"#btnHelp", title:"Pause and help", text:"Pause the game any time with the Pause button or the P key. This ? button reopens the tutorial and the full room guide whenever you need them."},
+  {el:"#game", title:"Your tower", text:"Drag to scroll. Tap a floor to upgrade it or change its design. Brokers with a “!” in The Room at the bottom are claims waiting for you. Tap them."},
+  {el:"#btnFloors", title:"Build floors", text:"Every room has an upside and a downside, and each new floor raises all salaries by 6%. After your first 3 floors, Compliance must cover the rest or the regulator will warn you. New kinds of floor unlock as you grow."},
+  {el:"#btnClaims", title:"Handle claims", text:"Pay, deny or stall with paperwork. Serious claims that look genuine are the most likely to sue, and to win. A Risk Dept shows you the odds."},
+  {el:"#btnBoard", title:"The Boardroom", text:"Your strategy room. Check promotion targets, buy your own insurance against black swans, hire executives, pay dividends, spend stars on perks and see the leaderboard. It opens for you as soon as this tour ends."},
+  {el:"#btnBoard", title:"Pricing strategy", text:"Your first Boardroom decision. Undercut wins customers but thins margins. Market rate is the safe middle. Premium earns more per policy but loses customers in a soft market. Gouge makes a fortune until the regulator notices. Match it to the market cycle shown in the top bar."},
+  {el:"#btnBoard", title:"Black swans", text:"Every so often a huge disaster hits: a hurricane, a global IT meltdown, a bank collapse. There’s no warning. Without your own insurance you pay the whole loss, and it can sink you. Buy reinsurance and other cover in the Boardroom under Your own insurance. It renews at each earnings call and pays 90% when disaster strikes."},
+  {el:null, title:"How it ends", text:"You lose if you go bankrupt, get fired, or lose your licence after three warnings. Your final score combines the money you generate, the days you survive and your reputation. Prefer to just watch? Idle mode in the Boardroom lets the board run everything, but that run’s score won’t count."},
+];

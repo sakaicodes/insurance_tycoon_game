@@ -1,0 +1,10 @@
+@media (min-width:700px){#modal{align-items:center}}
+.sheet{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;overflow-anchor:none;width:min(520px,100%);max-height:min(86vh,740px);overflow-y:auto;background:var(--panel);border:3px solid var(--edge);border-radius:10px;box-shadow:0 6px 0 var(--edge),inset 0 0 0 2px var(--line);padding:18px 18px 20px;animation:pop .2s ease-out}
+@keyframes pop{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.sheet h2{font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif;font-size:27px;margin:0 0 8px;color:var(--gold);font-weight:700;line-height:1.12}
+.sheet h3{font-family:"Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif;font-size:19px;margin:0 0 4px;font-weight:600}
+.sheet p{margin:0 0 12px;line-height:1.5;font-size:16px;max-width:62ch}
+.sheet .dim{color:var(--ink-dim);font-size:15px}
+.sheet .joke{color:var(--ink-dim);font-style:italic;font-size:15px}
+.closeRow{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:14px}
+
