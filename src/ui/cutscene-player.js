@@ -1,16 +1,17 @@
 /* ui/cutscene-player.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 let cutsceneOn = false;
-function playCutscene(kind, done){
+function playCutscene(kind, done, opts){
+  opts = opts || {};
   if (!scene){ done(); return; }
   cutsceneOn = true;
   const sc = scene, cam = sc.cameras.main, W = LW + 2*padX, H = viewH(), parts = [], timers = [];
   const add = o => { o.setScrollFactor(0).setDepth(200); parts.push(o); return o; };
   const txt = (x, y, str, size, color, extra) => add(sc.add.text(x, y, str, Object.assign({fontFamily:FONT, fontSize:pxL(size)+"px", fontStyle:"700", color, align:"center", resolution:Math.ceil(cz)}, extra || {})).setOrigin(0.5));
-  const sw = SWANS[kind], L = CUT.LINES[kind] || {name:"", line:""};
+  const sw = Object.assign({}, SWANS[kind] || {}, opts.title ? {title:opts.title} : {}), L = opts.line ? {name:opts.name || ceoName(), line:opts.line} : (CUT.LINES[kind] || {name:"", line:""});
   const mk = (key, w, h) => { if (!sc.textures.exists(key)){ const tx = sc.textures.createCanvas(key, w, h); tx.setFilter(Phaser.Textures.FilterMode.NEAREST); } return sc.textures.get(key); };
   const ftex = mk("cs_frame", CUT.SW, CUT.SH), ptex = mk("cs_face", 48, 48);
   const DUR = 5600, t0 = performance.now();
-  const paintAll = () => { const tt = Math.min(1, (performance.now() - t0)/DUR); CUT.drawScene(ftex.getContext(), kind, tt); ftex.refresh(); CUT.drawPortrait(ptex.getContext(), kind, tt); ptex.refresh(); };
+  const paintAll = () => { const tt = Math.min(1, (performance.now() - t0)/DUR); CUT.drawScene(ftex.getContext(), kind, tt); ftex.refresh(); if (opts.ceo) CUT.drawCEO(ptex.getContext(), S.ceo || {}, 0.3 + tt*0.6); else CUT.drawPortrait(ptex.getContext(), kind, tt); ptex.refresh(); };
   paintAll();
   const k = Math.max(1, Math.min(W*0.96, (H*0.6)*CUT.SW/CUT.SH)/(pxL(360)));
   const bannerH = pxL(56)*Math.min(k, 1.6), gapY = pxL(8), dialogH = Math.max(pxL(100)*Math.min(k, 1.8), 30);
@@ -23,8 +24,9 @@ function playCutscene(kind, done){
   add(sc.add.rectangle(0, 0, W, bannerH, 0x1F2A44, 1).setOrigin(0));
   add(sc.add.rectangle(0, bannerH - pxL(3), W, pxL(3), 0xC9A54A, 1).setOrigin(0));
   const tagW = pxL(84)*Math.min(k, 1.6), tagH = bannerH*0.32;
-  add(sc.add.rectangle(W/2 - tagW/2, bannerH*0.12, tagW, tagH, 0xB23A3A, 1).setOrigin(0));
-  txt(W/2, bannerH*0.12 + tagH/2, "BREAKING", 11*Math.min(k, 1.6), "#FFF6E2");
+  const tagLabel = opts.tag || "BREAKING", tagW2 = Math.max(tagW, pxL(8*tagLabel.length + 16)*Math.min(k, 1.6));
+  add(sc.add.rectangle(W/2 - tagW2/2, bannerH*0.12, tagW2, tagH, opts.tagColor || 0xB23A3A, 1).setOrigin(0));
+  txt(W/2, bannerH*0.12 + tagH/2, tagLabel, 11*Math.min(k, 1.6), opts.tagText || "#FFF6E2");
   txt(W/2, bannerH*0.7, sw.title, 15*Math.min(k, 1.6), "#E3C064", {wordWrap:{width:W*0.94}});
   const frame = add(sc.add.image(fx, fy, "cs_frame").setOrigin(0).setDisplaySize(fw, fh));
   add(sc.add.rectangle(fx, fy, fw, fh).setOrigin(0).setStrokeStyle(pxL(3), 0xC9A54A));

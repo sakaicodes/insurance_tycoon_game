@@ -3,33 +3,33 @@
 $("#sheet").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
   const [a, p, q] = b.dataset.act.split(":");
-  if (S.idleMode && ["build","up","mode","lim","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
+  if (S.idleMode && ["build","up","mode","lim","exit","exit-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
   if (a === "idle"){
     openModal(`<h2>Hand over the keys?</h2><p>The board will make every decision from now on: claims, pricing, insurance, compliance, building, upgrades and events. You can keep watching.</p>
       <p class="dim">Be warned: the board is not you. It makes mistakes, blunders on vanity projects, is slow to buy insurance, and idle companies attract more black swans. It may not last forever.</p>
-      <p class="note">This can’t be undone. You won’t be able to switch back to normal play, and this run won’t be recorded on the leaderboard or as a personal best.</p>
+      <p class="note">You can take back control at any time, but once the board has run things, this run won’t be recorded on the leaderboard or as a personal best.</p>
       <div class="seg"><button class="btn ghost" data-act="board">Keep control</button><button class="btn red" data-act="idle-yes">Turn on idle mode</button></div>`, {view:"idleconfirm"});
     return;
   }
-  if (a === "idle-yes"){ S.idleMode = true; S.idleSpeed = 0.5; for (const x of EXECS) S.execs[x.id] = true; save(); closeModal(); toast("Idle mode is on. Sit back. The board has it from here.", "good"); return; }
+  if (a === "idle-yes"){ S.preIdleExecs = Object.assign({}, S.execs); S.idleTainted = true; S.idleMode = true; S.idleSpeed = 0.5; for (const x of EXECS) S.execs[x.id] = true; save(); closeModal(); toast("Idle mode is on. Sit back. The board has it from here.", "good"); return; }
   if (a === "close") closeModal();
   else if (a === "build") build(p);
   else if (a === "up") upgrade(+p, q);
   else if (a === "floor") openFloor(+p);
   else if (a === "mv"){
-    const i = +p, j = i + (+q); if (j < 0 || j >= S.floors.length) return;
+    const i = +p, j = i + (+q); if (j < 0 || j >= S.floors.length || S.floors[i].type === "penthouse" || S.floors[j].type === "penthouse") return;
     [S.floors[i], S.floors[j]] = [S.floors[j], S.floors[i]]; [W[i], W[j]] = [W[j], W[i]]; [popT[i], popT[j]] = [popT[j], popT[i]];
     prevLevels = S.floors.map(f => f.level); prevCount = S.floors.length;
     sfx("tick"); save(); openFloor(j);
   }
   else if (a === "demo"){
-    const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1) return;
+    const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1 || f.type === "penthouse") return;
     openModal(`<h2>Demolish ${TYPES[f.type].name}?</h2><p>This floor (level ${f.level}) and everyone in it will be gone for good. The builders will salvage about ${fmt(demoRefund(f))} of fixtures and fittings.</p>
       ${f.type === "compliance" ? `<p class="note">Removing Compliance may leave the regulator uncovered.</p>` : ""}
       <div class="seg"><button class="btn ghost" data-act="floor:${i}">Keep it</button><button class="btn red" data-act="demo-yes:${i}">Demolish</button></div>`, {view:"demo" + i});
   }
   else if (a === "demo-yes"){
-    const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1) return;
+    const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1 || f.type === "penthouse") return;
     const refund = demoRefund(f); S.cash += refund;
     S.floors.splice(i, 1); W.splice(i, 1); popT.splice(i, 1);
     prevLevels = S.floors.map(x => x.level); prevCount = S.floors.length;
@@ -55,9 +55,30 @@ $("#sheet").addEventListener("click", e => {
   }
   else if (a === "ispeed"){ S.idleSpeed = +p || 0.5; save(); openBoard(); }
   else if (a === "rival"){ resolveRival(+p, false); }
-  else if (a === "look"){ readSetupInputs(); if (setupDraft){ const list = {skin:SKINS, hair:HAIRS, outfit:OUTFITS}[p]; setupDraft[p] = list ? list[+q] : q; } sfx("tick"); openSetup(); }
+  else if (a === "look"){ readSetupInputs(); if (setupDraft){ if (p === "set") applySet(setupDraft, q); else { const list = {skin:SKINS, hair:HAIRS, outfit:OUTFITS}[p]; setupDraft[p] = list ? list[+q] : q; } } sfx("tick"); openSetup(); }
   else if (a === "look-t"){ readSetupInputs(); if (setupDraft) setupDraft[p] = !setupDraft[p]; sfx("tick"); openSetup(); }
   else if (a === "setup-go") finishSetup();
+  else if (a === "idle-off"){
+    S.idleMode = false; if (S.preIdleExecs) S.execs = Object.assign({}, S.preIdleExecs);
+    save(); toast("You’re back in control. Your executives are as you left them. This run still won’t be scored.", "good"); openBoard();
+  }
+  else if (a === "exit"){
+    if (!exitReady(p === "ipo" ? "ipo" : "pe")) return;
+    const v = exitValue();
+    openModal(`<h2>${p === "ipo" ? "Float on the stock exchange?" : "Sell to private equity?"}</h2>
+      <p>${p === "ipo" ? `The IPO could value ${coName()} at anywhere from ${fmt(v*0.8)} to ${fmt(v*1.6)}.` : `Rupert’s fund will pay ${fmt(v)} for ${coName()}.`} This ends your run, and you’ll start your next company with a golden ticket.</p>
+      <div class="seg"><button class="btn ghost" data-act="board">Not yet</button><button class="btn" data-act="exit-go:${p}">${p === "ipo" ? "Ring the bell" : "Shake hands"}</button></div>`, {view:"exitconfirm"});
+  }
+  else if (a === "exit-go"){ sellCompany(p === "ipo" ? "ipo" : "pe"); }
+  else if (a === "penthouse"){
+    if (hasPenthouse() || S.penthouseBought || S.favour < PENTHOUSE_COST) return;
+    S.favour -= PENTHOUSE_COST; S.penthouseBought = true; S.floors.push({type:"penthouse", level:1, mode:"pay", skin:0}); rebuildWorkers(S.floors.length - 1); lastAddedFloor = S.floors.length - 1;
+    sfx("chime"); fxConfetti(); toast(`The penthouse is ready. ${ceoName()} has already put their feet up.`, "good"); save(); closeModal();
+  }
+  else if (a === "starshop"){
+    const it = STAR_SHOP.find(x => x.id === p); if (!it || S.favour < it.cost || (it.can && !it.can())) return;
+    S.favour -= it.cost; S.shopBuys = (S.shopBuys || 0) + 1; const msg = it.run(); sfx("chime"); toast(msg, "good"); save(); openBoard();
+  }
   else if (a === "price"){ S.price = +p; save(); toast(`Pricing set to ${PRICES[+p].name.toLowerCase()}.`, "good"); openBoard(); }
   else if (a === "dividend"){
     const amt = divAmt(); if (S.divQ === S.quarter || S.cash < amt) return;

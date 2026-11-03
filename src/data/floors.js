@@ -1,6 +1,9 @@
 /* data/floors.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* ---------- Game data ---------- */
 const TYPES = {
+  penthouse:{name:"Penthouse", wall:"#F2EDE2", trim:"#C9A54A", shirt:"#2B3352", pants:"#1F2238", up:0, sal:0, screen:"#fff",
+    desc:"Your CEO’s private top floor, with the best view in the city. No business happens here, which is rather the point.",
+    pro:"Somewhere for your CEO to roam. Upgrade it with stars.", con:"No practical benefit whatsoever."},
   sales:{name:"Underwriting Box", wall:"#FFB84D", trim:"#D9822B", shirt:"#2F6FE4", pants:"#2B2D52", up:80, screen:"#7FD3F7",
     desc:"Underwriters sign brokers’ slips to take on risk. Every slip brings in premium, which is the money part.",
     joke:"Motto: “If it moves, we’ll write it. If it doesn’t, we’ll write it twice.”", sal:1.0,
@@ -56,14 +59,14 @@ const TYPES = {
 };
 const ORDER = ["sales","claims","risk","actuary","marketing","legal","compliance","it","pr","hr","invest","breakroom","ir"];
 const UNLOCKS = {
-  compliance:{test:() => S.floors.length >= 3 || compNeed() > 0, text:"Unlocks when the regulator first needs it (at 3 floors)", why:"From your 4th floor on, the regulator wants Compliance cover."},
+  compliance:{test:() => workFloors() >= 3 || compNeed() > 0, text:"Unlocks when the regulator first needs it (at 3 floors)", why:"From your 4th floor on, the regulator wants Compliance cover."},
   marketing:{test:() => S.floors.filter(f => f.type === "sales").length >= 2, text:"Unlocks with 2 Underwriting Boxes", why:"Brokers have noticed you. Time for long lunches."},
   risk:{test:() => S.quarter >= 3, text:"Unlocks after 2 earnings calls", why:"You’ve seen enough claims to start asking who’s lying."},
   legal:{test:() => (S.sued || 0) > 0 || S.lawsuits.length > 0 || S.quarter >= 4, text:"Unlocks after your first lawsuit, or after 3 earnings calls", why:"Someone has threatened to sue. You need lawyers."},
   it:{test:() => S.quarter >= 4, text:"Unlocks after 3 earnings calls", why:"The spreadsheets are getting out of hand."},
-  breakroom:{test:() => S.floors.length >= 4, text:"Unlocks with 4 floors", why:"Your staff would like somewhere to sit that isn’t their desk."},
+  breakroom:{test:() => workFloors() >= 4, text:"Unlocks with 4 floors", why:"Your staff would like somewhere to sit that isn’t their desk."},
   pr:{test:() => S.quarter >= 5 || S.strikes > 0 || S.happy < 35, text:"Unlocks after 4 earnings calls, or sooner if things go badly", why:"Things are getting awkward in public. You need spin."},
-  invest:{test:() => S.floors.length >= 5, text:"Unlocks with 5 floors", why:"You have spare cash, and the markets would love to have it."},
-  hr:{test:() => S.floors.length >= 6, text:"Unlocks with 6 floors", why:"You now have enough people to need a department about people."},
+  invest:{test:() => workFloors() >= 5, text:"Unlocks with 5 floors", why:"You have spare cash, and the markets would love to have it."},
+  hr:{test:() => workFloors() >= 6, text:"Unlocks with 6 floors", why:"You now have enough people to need a department about people."},
   ir:{test:() => S.quarter >= 7, text:"Unlocks after 6 earnings calls", why:"Investors want someone to talk to who isn’t you."},
 };

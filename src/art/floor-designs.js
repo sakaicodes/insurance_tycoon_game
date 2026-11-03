@@ -1,5 +1,6 @@
 /* art/floor-designs.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 const DESIGNS = {
+  penthouse:[{name:"Sky Lounge", wall:"#F2EDE2", trim:"#C9A54A", decor:y => drawPenthouse(y)}],
   sales:[
     {name:"Classic Box"},
     {name:"Heritage Box", wall:"#2F5D4A", trim:"#1E3D30",

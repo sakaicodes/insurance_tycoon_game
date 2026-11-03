@@ -40,7 +40,10 @@ function person(x, y, lk, walkF, face, bob = 0){
   R(L-1,y-7,1,3,sh); R(L+7,y-7,1,3,sh); R(L-1,y-4,1,1,lk.skin); R(L+7,y-4,1,1,lk.skin);
   R(L+1,y-15,5,7,lk.skin); R(L,y-14,7,5,lk.skin); R(L+1,y-9,5,1,skD);
   const hD = shade(lk.hair, -0.25);
-  if (lk.style === 1){ R(L+1,y-17,5,1,lk.hair); R(L,y-16,7,3,lk.hair); R(L-1,y-15,1,6,lk.hair); R(L+7,y-15,1,6,lk.hair); R(fr ? L : L+6, y-13, 1, 4, lk.hair); }
+  if (lk.style === 6){ R(L+2,y-16,2,1,"rgba(255,255,255,.35)"); }
+  else if (lk.style === 7){ const sc = lk.scarf || "#3E2E6A"; R(L-1,y-17,9,9,sc); R(L-1,y-8,9,1,shade(sc, -0.2)); R(L+1,y-14,5,5,lk.skin); R(L+1,y-15,5,1,shade(sc, 0.2)); }
+  else if (lk.style === 8){ R(L+1,y-17,5,1,lk.hair); R(L,y-16,7,2,lk.hair); R(L+1,y-18,3,1,lk.hair); R(fr ? L : L+6, y-14, 1, 2, lk.hair); }
+  else if (lk.style === 1){ R(L+1,y-17,5,1,lk.hair); R(L,y-16,7,3,lk.hair); R(L-1,y-15,1,6,lk.hair); R(L+7,y-15,1,6,lk.hair); R(fr ? L : L+6, y-13, 1, 4, lk.hair); }
   else if (lk.style === 4){ R(L-1,y-17,9,3,lk.hair); R(L-1,y-14,1,4,lk.hair); R(L+7,y-14,1,4,lk.hair); R(L,y-18,7,1,lk.hair); R(L+1,y-17,1,1,shade(lk.hair, 0.3)); R(L+5,y-16,1,1,shade(lk.hair, 0.3)); }
   else if (lk.style === 5){ R(L+1,y-17,5,1,lk.hair); R(L,y-16,7,2,lk.hair); R(L-1,y-15,1,9,lk.hair); R(L+7,y-15,1,9,lk.hair); for (let k = 0; k < 4; k++){ R(L-1,y-13+k*2,1,1,hD); R(L+7,y-13+k*2,1,1,hD); } }
   else { R(L+1,y-17,5,1,lk.hair); R(L,y-16,7,2,lk.hair); R(fr ? L : L+6, y-14, 1, 3, lk.hair); R(fr ? L+1 : L+5, y-14, 1, 1, lk.hair);
@@ -50,7 +53,9 @@ function person(x, y, lk, walkF, face, bob = 0){
   const e1 = fr ? L+3 : L+1, e2 = fr ? L+5 : L+3;
   R(e1, y-13, 1, 2, "#2B1A12"); R(e2, y-13, 1, 2, "#2B1A12");
   R(fr ? L+2 : L, y-10, 1, 1, "rgba(235,110,110,.6)"); R(fr ? L+6 : L+4, y-10, 1, 1, "rgba(235,110,110,.6)");
-  if (lk.earrings) R(fr ? L : L+6, y-11, 1, 1, "#E3C064");
+  if (lk.beard){ R(L,y-11,7,2,lk.beard); R(L+1,y-9,5,1,lk.beard); R(fr ? L+3 : L+2, y-10, 2, 1, lk.skin); }
+  else if (lk.mo) R(fr ? L+3 : L+1, y-11, 3, 1, lk.mo);
+  if (lk.earrings && lk.style !== 7) R(fr ? L : L+6, y-11, 1, 1, "#E3C064");
   if (lk.glasses){ R(e1-1, y-13, 3, 1, "rgba(70,40,25,.65)"); R(e2-1, y-13, 3, 1, "rgba(70,40,25,.65)"); }
   if (lk.hat){ R(L-1,y-16,9,1,"#3A2618"); R(L+1,y-18,5,2,"#4A3020"); R(L+1,y-17,5,1,"#8A5A2A"); }
 }
@@ -97,6 +102,7 @@ function drawSky(L){
   }
 }
 function drawSkyline(L){
+  if (cityId() === "nyc") return skylineNYC(L); if (cityId() === "bermuda") return skylineBermuda(L);
   const gy = L.groundY, night = isNight();
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#161B38" : "#73849B";
   const lit = "#FFE88A";
@@ -128,6 +134,7 @@ function drawSkyline(L){
 }
 function drawSkylineFiller(L){
   const gy = L.groundY, night = isNight();
+  if (cityId() === "bermuda"){ skylineBermuda(L); return; }
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#181D3B" : "#7C8DA4", lit = "#FFE88A";
   for (let x = 0, k = 0; x < 256; k++){ const w = 6 + Math.floor(hash(k + 40, 11)*10), h = 12 + Math.floor(hash(k + 40, 12)*30); R(x, gy-h, w, h, far); if (night && hash(k + 40, 13) > .5) R(x+2, gy-h+3, 1, 1, lit); x += w; }
   for (let x = 2, k = 0; x < 250; k++){
@@ -158,6 +165,7 @@ function drawGround(L){
   for (let x = 2; x < LW; x += 12) R(x, gy+14, 6, 1, "#F2E6C8");
   R(12,gy-26,1,26,"#1F2A44"); R(9,gy-28,7,2,"#1F2A44"); R(10,gy-26,5,1, night ? "#FFE88A" : "#E6D2AE");
   if (night){ ctx.globalAlpha = .22; R(4,gy-25,17,25,"#FFE88A"); ctx.globalAlpha = 1; }
+  if (cityId() === "bermuda") bermudaPalms(gy); else if (cityId() === "nyc") nycStreet(gy, night);
   for (const c of cars){
     if (c.wait > 0) continue; const x = Math.round(c.x);
     if (c.kind === "bus"){ const y = gy+6;
@@ -170,6 +178,7 @@ function drawGround(L){
   }
 }
 function flareF(L, y){
+  if (cityId() !== "london") return 14;
   const body = 14, base = 5, crown = 30, sm = t => t*t*(3 - 2*t);
   if (y < L.floorsTop){ const t = clamp((L.floorsTop - y)/Math.max(1, L.floorsTop - TOP), 0, 1); return body + (crown - body)*sm(t); }
   const baseTop = L.lobbyY - FH*0.6;
@@ -178,6 +187,7 @@ function flareF(L, y){
 }
 function flareAt(L, y){ return Math.round(flareF(L, y)); }
 function facadeRows(L){
+  if (cityId() !== "london") return facadeAlt(L);
   const night = isNight(), top = TOP, bot = L.groundY;
   const fl = y => flareF(L, y);
   for (const side of [-1, 1]){
@@ -202,6 +212,7 @@ function facadeRows(L){
   }
 }
 function drawRoof(L){
+  if (cityId() === "nyc") return roofNYC(L); if (cityId() === "bermuda") return roofBermuda(L);
   const base = TOP, night = isNight();
   const tf = flareAt(L, TOP) + 2, x0 = 24 - tf, x1 = 196 + tf, w = x1 - x0;
   for (let x = x0; x < x1; x++){
@@ -340,3 +351,107 @@ function drawShaftStatic(L){
   R(26,top,1,L.groundY-top,"#8FB3CC"); R(194,top,1,L.groundY-top,"#8FB3CC");
   R(24,top,172,1,"#2E3B55");
 }
+
+/* The penthouse: more luxuries appear at each level. */
+function drawPenthouse(y){
+  const f = S.floors.find(x => x.type === "penthouse"), lvl = f ? f.level : 1;
+  for (const wx of [34, 76]){ R(wx, y+5, 36, 20, "#1F2A44"); R(wx+1, y+6, 34, 18, "#9CC9E6"); R(wx+1, y+6, 34, 6, "#BFE0F2");
+    for (let k = 0; k < 6; k++){ const h = 4 + hash(k, wx)*9; R(wx + 2 + k*5.5, y + 24 - h, 4.5, h, "#7FA3C0"); }
+    R(wx + 17, y+6, 1, 18, "#1F2A44"); R(wx+1, y+15, 34, 0.6, "rgba(31,42,68,.4)"); }
+  R(118, y+31, 36, 2, "#8E2A3A"); R(118, y+31, 36, 0.6, "#E3C064");
+  R(124, y+22, 26, 6, "#24305A"); R(122, y+20, 4, 10, "#24305A"); R(148, y+20, 4, 10, "#24305A"); R(124, y+22, 26, 1, "#3A4A7A"); R(126, y+28, 2, 3, "#1F2238"); R(146, y+28, 2, 3, "#1F2238");
+  R(130, y+29, 14, 1.2, "#C9A54A"); R(134, y+26.6, 2, 2.4, "#F7F2E6"); R(138, y+27, 2, 2, "#3E9B4F");
+  if (lvl >= 2){ R(157, y+22, 14, 5, "#141418"); R(157, y+20, 6, 2, "#141418"); R(158, y+27, 1, 8, "#141418"); R(169, y+27, 1, 8, "#141418"); for (let k = 0; k < 6; k++) R(158 + k*2, y+26, 1, 1, "#F7F2E6"); }
+  if (lvl >= 3){ R(100, y+14, 14, 12, "#1F2A44"); R(101, y+15, 12, 10, "#3E8FBF"); const fx = 102 + (Math.sin(time*1.5)*0.5 + 0.5)*8; R(fx, y+19, 2, 1, "#E39A2C"); R(fx + 2, y+19, 1, 1, "#E39A2C"); R(108 - (Math.sin(time*1.1)*0.5 + 0.5)*5, y+22, 2, 1, "#F2C14E"); R(101, y+23, 12, 2, "#C9B07A"); R(103, y+21, 1, 2, "#3E9B4F"); R(101, y+26, 12, 8, "#2B3352"); }
+  if (lvl >= 4){ R(120, y+6, 10, 8, "#C9A54A"); R(121, y+7, 8, 6, "#B23A3A"); R(123, y+9, 4, 2, "#F2C14E"); R(134, y+6, 12, 9, "#C9A54A"); R(135, y+7, 10, 7, "#2F6FE4"); R(137, y+10, 6, 3, "#F7F2E6"); R(150, y+7, 8, 8, "#C9A54A"); R(151, y+8, 6, 6, "#3E9B4F"); }
+  if (lvl >= 5){ R(100, y+1, 1, 4, "#C9A54A"); R(96, y+5, 9, 2, "#E3C064"); for (let k = 0; k < 4; k++) R(96 + k*2.5, y+7, 1, 2, "#FFF6D0"); R(72, y+18, 1.5, 12, "#2B3352"); R(70, y+16, 6, 3, "#C9A54A"); R(75, y+15, 3, 1.4, "#C9A54A"); }
+  T("PENTHOUSE", 103, y+35.4, 3.6, "rgba(31,42,68,.45)", "center", 700);
+}
+
+/* ---------- cities: New York and Hamilton, Bermuda (London uses the original art) ---------- */
+function cityId(){ return (typeof S !== "undefined" && S && S.city) || "london"; }
+function roofSign(base, x0, w, night){
+  R(x0, base-9, w, 9, "#1F2A44"); R(x0, base-8, w, 7, "#2E3B5E"); R(x0, base-8, w, 0.6, "#C9A54A"); R(x0, base-9, w, 1, "#F2C14E");
+  for (let i = 0; i < Math.floor(w/6); i++) R(x0 + 2 + i*6, base-1, 2, 1, (Math.floor(time*3) + i) % 2 ? "#FFE9A8" : "#7A5A28");
+  const nm = companyName(); let fs = 7.2; ctx.font = `700 ${fs*1.08}px "Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif`;
+  while (fs > 4.5 && ctx.measureText(nm).width > w - 14){ fs -= 0.2; ctx.font = `700 ${fs*1.08}px "Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif`; }
+  T(nm, x0 + w/2, base-2, fs, "#FFE9A8", "center", 700);
+}
+/* the Metropolitan Life Insurance Company Tower: white marble campanile, four clock faces, pyramid roof, gold lantern */
+function roofNYC(L){
+  const base = TOP, night = isNight(), x0 = 10, x1 = 210, w = x1 - x0, marble = night ? "#B8B4AC" : "#EEEAE0", sh = night ? "#8E8A82" : "#D2CDC0";
+  R(x0, base-31, w, 22, marble); for (let x = x0 + 4; x < x1; x += 10) R(x, base-31, 2, 22, sh); R(x0, base-31, w, 1.4, "#C9A54A");
+  const cx = 110, cy = base-20, now = new Date(), hr = (now.getHours() % 12 + now.getMinutes()/60)/12*Math.PI*2, mn = now.getMinutes()/60*Math.PI*2;
+  ctx.fillStyle = "#C9A54A"; ctx.beginPath(); ctx.arc(cx, cy, 9.5, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = night ? "#FFF2C8" : "#FBF8F0"; ctx.beginPath(); ctx.arc(cx, cy, 8.3, 0, Math.PI*2); ctx.fill();
+  for (let k = 0; k < 12; k++){ const a = k/12*Math.PI*2; R(cx + Math.sin(a)*7 - 0.4, cy - Math.cos(a)*7 - 0.4, 0.8, 0.8, "#1F2A44"); }
+  ctx.strokeStyle = "#1F2A44"; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.sin(hr)*4.5, cy - Math.cos(hr)*4.5); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.sin(mn)*6.5, cy - Math.cos(mn)*6.5); ctx.stroke();
+  for (const ox of [40, 180]){ R(ox - 4, base-27, 8, 12, sh); R(ox - 3, base-26, 6, 10, night ? "#FFE18A" : "#9CC9E6"); ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(ox, base-26, 3, Math.PI, 0); ctx.fill(); }
+  ctx.fillStyle = night ? "#6E7A6E" : "#8FA89A"; ctx.beginPath(); ctx.moveTo(x0 + 6, base-31); ctx.lineTo(cx, base-40); ctx.lineTo(x1 - 6, base-31); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,.18)"; ctx.beginPath(); ctx.moveTo(x0 + 6, base-31); ctx.lineTo(cx, base-40); ctx.lineTo(cx, base-31); ctx.closePath(); ctx.fill();
+  R(cx - 3, base-42, 6, 3, "#E3C064"); R(cx - 1, base-44, 2, 2, night ? "#FFF2A8" : "#F2DC8E");
+  if (night){ const g = ctx.createRadialGradient(cx, base-43, 0, cx, base-43, 10); g.addColorStop(0, "rgba(255,236,160,.6)"); g.addColorStop(1, "rgba(255,236,160,0)"); ctx.fillStyle = g; ctx.fillRect(cx - 10, base-44, 20, 12); }
+  roofSign(base, x0, w, night);
+}
+/* a Front Street office in Hamilton: pastel stucco and the white stepped roof Bermuda is known for */
+function roofBermuda(L){
+  const base = TOP, night = isNight(), x0 = 10, x1 = 210, w = x1 - x0, white = night ? "#D8D8E0" : "#FBFBF6", step = night ? "#B8B8C4" : "#E2E2DA";
+  for (let k = 0; k < 6; k++){ const inset = 6 + k*12, y = base - 12 - k*4.5; R(x0 + inset, y, w - inset*2, 4.5, white); R(x0 + inset, y + 3.6, w - inset*2, 0.9, step); }
+  R(x0 + 84, base - 41, 32, 3, white);
+  R(38, base - 34, 7, 14, white); R(37, base - 35, 9, 2, step); R(175, base - 34, 7, 14, white); R(174, base - 35, 9, 2, step);
+  R(x0 + 2, base - 13, w - 4, 1.2, step);
+  roofSign(base, x0, w, night);
+}
+function facadeAlt(L){
+  const night = isNight(), top = TOP, bot = L.groundY, ny = cityId() === "nyc";
+  const wall = ny ? (night ? "#B4B0A8" : "#ECE8DE") : (night ? "#C68C9C" : "#F4B8C4"), wallD = ny ? (night ? "#8E8A82" : "#CFC9BB") : (night ? "#A87080" : "#E49AAA");
+  for (const [x0, x1] of [[10, 24], [196, 210]]){
+    R(x0, top, x1 - x0, bot - top, wall);
+    if (ny){ R(x0 + 2, top, 1.5, bot - top, wallD); R(x1 - 3.5, top, 1.5, bot - top, wallD); }
+    else { for (let y = top; y < bot; y += 6){ R(x0, y, 3, 3, "#FBFBF6"); R(x1 - 3, y + 3, 3, 3, "#FBFBF6"); } }
+    for (let i = 0; i < L.n; i++){ const y = floorY(L, i); const lit = night && hash(i, x0) > 0.35;
+      if (ny){ R(x0 + 5, y + 10, 4, 12, wallD); R(x0 + 5.5, y + 11, 3, 10.5, lit ? "#FFE18A" : "#7FA3C0"); ctx.fillStyle = wallD; ctx.beginPath(); ctx.arc(x0 + 7, y + 11, 2, Math.PI, 0); ctx.fill(); if (i % 4 === 3) R(x0, y + 1, x1 - x0, 1.2, "#C9A54A"); }
+      else { R(x0 + 4, y + 12, 6, 12, "#FBFBF6"); R(x0 + 5, y + 13, 4, 10, lit ? "#FFE18A" : "#7FB8D0"); R(x0 + 2.5, y + 12, 1.5, 12, "#3E9B6A"); R(x0 + 10, y + 12, 1.5, 12, "#3E9B6A"); } }
+    R(x0, L.lobbyY, x1 - x0, bot - L.lobbyY, ny ? wallD : "#FBFBF6");
+    if (ny) for (let y = L.lobbyY + 3; y < bot; y += 5) R(x0, y, x1 - x0, 0.6, "rgba(0,0,0,.12)");
+  }
+  for (let i = 0; i < L.n; i++){ const y = floorY(L, i); R(24, y + 38, 172, 2, ny ? "#D2CDC0" : "#FBFBF6"); }
+}
+function skylineNYC(L){
+  const gy = L.groundY, night = isNight(), far = night ? "#272D52" : "#A9B6C8", mid = night ? "#1E2446" : "#8A9AB2", near = night ? "#161B38" : "#6E809A", lit = "#FFE88A";
+  for (let x = 0, k = 0; x < 256; k++){ const w = 6 + Math.floor(hash(k, 41)*10), h = 18 + Math.floor(hash(k, 42)*44); R(x, gy - h, w, h, far); if (night && hash(k, 43) > .4) R(x + 2, gy - h + 4, 1, 1, lit); x += w; }
+  // the Empire State Building
+  const ex = 52; R(ex - 10, gy - 70, 20, 70, mid); R(ex - 7, gy - 86, 14, 16, mid); R(ex - 4, gy - 98, 8, 12, mid); R(ex - 2, gy - 106, 4, 8, mid); R(ex - 0.5, gy - 122, 1, 16, mid);
+  for (let y = gy - 66; y < gy - 4; y += 4) for (let x = ex - 8; x < ex + 8; x += 3) if (night ? hash(x, y) > .5 : hash(x, y) > .85) R(x, y, 1, 2, night ? lit : "#C8D6E4");
+  // the Chrysler Building's crown
+  const cx = 196; R(cx - 8, gy - 74, 16, 74, mid); for (let k = 0; k < 5; k++){ const w = 7 - k*1.3, y = gy - 76 - k*5; ctx.fillStyle = night ? "#3A4470" : "#B8C4D4"; ctx.beginPath(); ctx.arc(cx, y, w, Math.PI, 0); ctx.fill(); for (let a = 0; a < 5; a++) R(cx - w + 1 + a*(w*2 - 2)/4, y - 1, 0.7, 1.6, night ? "#FFE88A" : "#E8EEF4"); }
+  R(cx - 0.5, gy - 110, 1, 12, night ? "#B8C4D4" : "#D8E0EA");
+  // One World Trade Center
+  ctx.fillStyle = near; ctx.beginPath(); ctx.moveTo(228, gy); ctx.lineTo(232, gy - 96); ctx.lineTo(240, gy - 96); ctx.lineTo(244, gy); ctx.closePath(); ctx.fill(); R(235.5, gy - 116, 1, 20, near);
+  // water towers on the low roofs
+  for (const [wx, wh] of [[96, 34], [128, 30], [160, 38]]){ R(wx - 9, gy - wh, 18, wh, near); R(wx - 3, gy - wh - 7, 6, 6, night ? "#3A2E2A" : "#8A6A4A"); ctx.fillStyle = night ? "#3A2E2A" : "#8A6A4A"; ctx.beginPath(); ctx.moveTo(wx - 3.5, gy - wh - 7); ctx.lineTo(wx, gy - wh - 10); ctx.lineTo(wx + 3.5, gy - wh - 7); ctx.fill(); R(wx - 2, gy - wh - 1, 0.6, 1, near); R(wx + 1.4, gy - wh - 1, 0.6, 1, near); }
+  // the Statue of Liberty, far off
+  R(10, gy - 14, 8, 14, mid); R(12.5, gy - 26, 3, 12, night ? "#3E6A60" : "#7FB8A8"); R(13, gy - 29, 2, 3, night ? "#3E6A60" : "#7FB8A8"); R(15, gy - 33, 1, 6, night ? "#3E6A60" : "#7FB8A8"); R(14.5, gy - 35, 2, 2, night ? "#FFE88A" : "#F2C14E");
+  ctx.globalCompositeOperation = "source-atop"; const hz = ctx.createLinearGradient(0, gy - 160, 0, gy); hz.addColorStop(0, "rgba(255,255,255,0)"); hz.addColorStop(1, night ? "rgba(30,36,80,.3)" : "rgba(226,233,241,.4)"); ctx.fillStyle = hz; ctx.fillRect(0, gy - 160, 256, 160); ctx.globalCompositeOperation = "source-over";
+}
+function skylineBermuda(L){
+  const gy = L.groundY, night = isNight();
+  // the harbour and the islands across it
+  R(0, gy - 26, 256, 26, night ? "#1E3A5A" : "#3EC0C8"); R(0, gy - 26, 256, 1, night ? "#3A5A7A" : "#9FE8EC");
+  for (let k = 0; k < 14; k++) R(hash(k, 3)*256, gy - 24 + hash(k, 4)*20, 6, 0.6, "rgba(255,255,255,.45)");
+  ctx.fillStyle = night ? "#1E3A2E" : "#5DA85A"; ctx.beginPath(); ctx.moveTo(0, gy - 26); for (let x = 0; x <= 256; x += 4) ctx.lineTo(x, gy - 30 - Math.sin(x*0.035)*10 - Math.sin(x*0.09)*4); ctx.lineTo(256, gy - 26); ctx.closePath(); ctx.fill();
+  const pastel = ["#F4B8C4","#F2D98A","#9CCFE6","#B8E0B0","#F7F2E6","#D8B8E8"];
+  for (let k = 0; k < 22; k++){ const x = 4 + k*11.5, base = gy - 28 - Math.sin(x*0.035)*10 - Math.sin(x*0.09)*4;
+    R(x, base - 6, 8, 6, night ? "#4A4A62" : pastel[k % 6]); for (let s = 0; s < 3; s++) R(x - 0.5 + s, base - 7.5 - s*1.2, 9 - s*2, 1.4, night ? "#9A9AB0" : "#FBFBF6");
+    if (night && hash(k, 7) > .4) R(x + 3, base - 4, 1.5, 1.5, "#FFE18A"); }
+  // Gibbs Hill lighthouse
+  R(28, gy - 66, 6, 30, night ? "#C8C8D0" : "#F7F2E6"); R(27, gy - 70, 8, 4, "#1F2A44"); R(29, gy - 73, 4, 3, night ? "#FFF2A8" : "#E3C064");
+  if (night){ ctx.fillStyle = "rgba(255,240,170,.18)"; ctx.beginPath(); ctx.moveTo(31, gy - 71); const a = time*1.2; ctx.lineTo(31 + Math.cos(a)*60, gy - 71 + Math.sin(a)*8 - 6); ctx.lineTo(31 + Math.cos(a)*60, gy - 71 + Math.sin(a)*8 + 6); ctx.fill(); }
+  // the cathedral tower
+  R(122, gy - 62, 12, 36, night ? "#6A6A7A" : "#C8C0AE"); for (let k = 0; k < 4; k++) R(121 + k*4, gy - 66, 2, 4, night ? "#6A6A7A" : "#C8C0AE"); R(126, gy - 54, 4, 8, night ? "#2A2A3A" : "#5A6E8A");
+  // a cruise ship in the harbour
+  R(170, gy - 18, 56, 8, "#FBFBF6"); R(174, gy - 24, 44, 6, "#FBFBF6"); R(180, gy - 28, 30, 4, "#FBFBF6"); R(170, gy - 11, 56, 1.4, "#1F2A44"); R(204, gy - 33, 4, 5, "#2F6FE4");
+  for (let x = 176; x < 216; x += 4) R(x, gy - 21, 2, 1.4, night ? "#FFE18A" : "#7FA3C0");
+}
+function bermudaPalms(gy){ for (const x of [6, 54, 214]){ for (let i = 0; i < 22; i++) R(x + Math.sin(i*0.08)*3, gy - i, 1.6, 1, i % 3 ? "#A8824E" : "#8E6A3E"); for (let f = 0; f < 6; f++){ const a = f/6*Math.PI*2 + Math.sin(time*1.4 + x)*0.08; for (let k = 0; k < 9; k++) R(x + 2 + Math.cos(a)*k, gy - 22 + Math.sin(a)*k*0.5 + k*k*0.04, 1.4, 1.2, k < 5 ? "#3E8A3A" : "#5DB04A"); } } }
+function nycStreet(gy, night){ R(30, gy - 6, 3, 6, "#B23A3A"); R(29.5, gy - 7, 4, 1.5, "#B23A3A"); R(204, gy - 10, 14, 7, "#C0C4CC"); R(203, gy - 13, 16, 3, "#E39A2C"); R(205, gy - 3, 2, 3, "#2B2D3A"); R(214, gy - 3, 2, 3, "#2B2D3A"); for (let k = 0; k < 3; k++) R(120 + k*0.6, gy + 6 - ((time*0.6 + k*0.3) % 1)*12, 4, 3, "rgba(240,240,245,.35)"); }

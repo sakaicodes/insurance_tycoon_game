@@ -13,12 +13,14 @@ function makeLook(type){
   const t = TYPES[type];
   const alt = Math.random() < 0.5, skirt = alt && Math.random() < 0.55 ? t.pants : null;
   const tie = !alt && (type==="legal"||type==="ir"||type==="sales"||type==="compliance") ? pick(["#FF5A5F","#FFD23F","#4BE39A","#FF8FB1"]) : null;
-  return {skin:pick(SKINS), hair:pick(HAIRS), shirt:t.shirt, pants:skirt ? "#3A3048" : t.pants, skirt, style:alt ? pick([1,1,2,3,4,5]) : pick([0,0,0,4,1]),
-    tie, blouse:alt && !tie, earrings:alt && Math.random() < 0.5,
+  const hair = pick(HAIRS), style = alt ? pick([1,1,2,3,4,5,7]) : pick([0,0,0,4,1,6,8]), facial = !alt && style !== 6 || (!alt && Math.random() < 0.5) ? Math.random() : 1;
+  return {skin:pick(SKINS), hair, shirt:t.shirt, pants:skirt ? "#3A3048" : t.pants, skirt, style, scarf:style === 7 ? pick(["#3E2E6A","#2B3352","#B23A3A","#3E9B4F","#2BB3B1"]) : null,
+    beard:facial < 0.2 ? hair : null, mo:facial >= 0.2 && facial < 0.3 ? hair : null,
+    tie, blouse:alt && !tie, earrings:alt && style !== 7 && Math.random() < 0.5,
     glasses: type==="actuary" || Math.random()<.15, hat: !alt && type==="sales" && Math.random()<.35};
 }
 function rebuildWorkers(i){
-  const f = S.floors[i]; const n = Math.min(5, f.level + 1); const arr = [];
+  const f = S.floors[i]; const n = f.type === "penthouse" ? 0 : Math.min(5, f.level + 1); const arr = [];
   const walk = f.type === "breakroom" || f.type === "ir";
   for (let k = 0; k < n; k++){
     const look = makeLook(f.type);
@@ -35,7 +37,7 @@ S.floors.forEach((f,i) => rebuildWorkers(i));
 /* ---------- Layout ---------- */
 const LW = 232, OX = 6, FH = 40, TOP = 82, LOBBY_H = 44, GROUND = 24;
 function layout(){
-  const n = S.floors.length, can = n < MAXF;
+  const n = S.floors.length, can = workFloors() < MAXF;
   const floorsTop = TOP + (can ? FH : 0);
   const lobbyY = floorsTop + n*FH;
   const groundY = lobbyY + LOBBY_H;

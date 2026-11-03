@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /*
-  Fine Print Syndicate build script.
+  Insurance Tycoon build script.
   Bundles every file listed in src/manifest.json into one self-contained HTML file.
   Usage:
-    node build.js            build dist/fine-print-syndicate.html
+    node build.js            build dist/insurance-tycoon.html
     node build.js --check    build, then check the bundled script parses
 */
 const fs = require("fs"), path = require("path");
@@ -22,7 +22,7 @@ let html = read("index.html")
 html = stamp(html);
 
 fs.mkdirSync(path.join(root, "dist"), {recursive:true});
-const out = path.join(root, "dist", "fine-print-syndicate.html");
+const out = path.join(root, "dist", "insurance-tycoon.html");
 fs.writeFileSync(out, html);
 console.log(`Built v${pkg.version}: ${path.relative(root, out)} (${(html.length/1024).toFixed(0)} KB, ${manifest.scripts.length} scripts, ${manifest.styles.length} stylesheets)`);
 

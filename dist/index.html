@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Fine Print Syndicate</title>
+<title>Insurance Tycoon</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
@@ -381,6 +381,21 @@ blockquote{background:rgba(201,165,74,.12)}
 .ceo-card span{display:block}
 .ceo-card small{display:block;color:var(--ink-dim);font-size:13px}
 @media (max-width:400px){ .ceo-setup canvas{width:88px;height:88px} }
+.ceo-set{margin:12px 0 4px}
+.ceo-set .btn{font-size:16px}
+.cities{display:grid;gap:8px;margin:4px 0 12px}
+.type.city{display:grid;gap:2px;text-align:left;padding:10px 12px}
+.type.city[aria-pressed="true"]{outline:3px solid var(--brass);outline-offset:1px;background:#FFF6DC}
+.type.city b{font-size:16px}
+.type.city span{font-size:13px}
+.achcat{border:2px solid var(--line);border-radius:8px;margin:6px 0;background:#FFFDF7}
+.achcat summary{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;cursor:pointer;list-style:none;font-family:"Chakra Petch","Pixelify Sans",sans-serif}
+.achcat summary::-webkit-details-marker{display:none}
+.achcat summary::after{content:"▾";margin-left:8px;color:var(--ink-dim)}
+.achcat[open] summary::after{content:"▴"}
+.achcat summary span{margin-left:auto;color:var(--ink-dim);font-size:14px}
+.achcat .achs{padding:0 10px 10px}
+
 
 </style>
 </head>
@@ -417,19 +432,23 @@ const $ = s => document.querySelector(s);
 const rand = (a,b) => a + Math.random()*(b-a);
 const pick = a => a[Math.floor(Math.random()*a.length)];
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+let CUR = "£";
 function fmt(n){
   const s = n < 0 ? "−" : ""; n = Math.abs(n);
-  if (n >= 1e9) return s+"£"+(n/1e9).toFixed(2)+"B";
-  if (n >= 1e6) return s+"£"+(n/1e6).toFixed(2)+"M";
-  if (n >= 1e4) return s+"£"+(n/1e3).toFixed(1)+"K";
-  return s+"£"+Math.round(n).toLocaleString("en-US");
+  if (n >= 1e9) return s+CUR+(n/1e9).toFixed(2)+"B";
+  if (n >= 1e6) return s+CUR+(n/1e6).toFixed(2)+"M";
+  if (n >= 1e4) return s+CUR+(n/1e3).toFixed(1)+"K";
+  return s+CUR+Math.round(n).toLocaleString("en-US");
 }
-const fmtR = n => n < 10 ? (n<0?"−":"")+"£"+Math.abs(n).toFixed(1) : fmt(n);
-const fmt2 = n => "£"+n.toFixed(2);
+const fmtR = n => n < 10 ? (n<0?"−":"")+CUR+Math.abs(n).toFixed(1) : fmt(n);
+const fmt2 = n => CUR+n.toFixed(2);
 
 /* data/floors.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* ---------- Game data ---------- */
 const TYPES = {
+  penthouse:{name:"Penthouse", wall:"#F2EDE2", trim:"#C9A54A", shirt:"#2B3352", pants:"#1F2238", up:0, sal:0, screen:"#fff",
+    desc:"Your CEO’s private top floor, with the best view in the city. No business happens here, which is rather the point.",
+    pro:"Somewhere for your CEO to roam. Upgrade it with stars.", con:"No practical benefit whatsoever."},
   sales:{name:"Underwriting Box", wall:"#FFB84D", trim:"#D9822B", shirt:"#2F6FE4", pants:"#2B2D52", up:80, screen:"#7FD3F7",
     desc:"Underwriters sign brokers’ slips to take on risk. Every slip brings in premium, which is the money part.",
     joke:"Motto: “If it moves, we’ll write it. If it doesn’t, we’ll write it twice.”", sal:1.0,
@@ -485,15 +504,15 @@ const TYPES = {
 };
 const ORDER = ["sales","claims","risk","actuary","marketing","legal","compliance","it","pr","hr","invest","breakroom","ir"];
 const UNLOCKS = {
-  compliance:{test:() => S.floors.length >= 3 || compNeed() > 0, text:"Unlocks when the regulator first needs it (at 3 floors)", why:"From your 4th floor on, the regulator wants Compliance cover."},
+  compliance:{test:() => workFloors() >= 3 || compNeed() > 0, text:"Unlocks when the regulator first needs it (at 3 floors)", why:"From your 4th floor on, the regulator wants Compliance cover."},
   marketing:{test:() => S.floors.filter(f => f.type === "sales").length >= 2, text:"Unlocks with 2 Underwriting Boxes", why:"Brokers have noticed you. Time for long lunches."},
   risk:{test:() => S.quarter >= 3, text:"Unlocks after 2 earnings calls", why:"You’ve seen enough claims to start asking who’s lying."},
   legal:{test:() => (S.sued || 0) > 0 || S.lawsuits.length > 0 || S.quarter >= 4, text:"Unlocks after your first lawsuit, or after 3 earnings calls", why:"Someone has threatened to sue. You need lawyers."},
   it:{test:() => S.quarter >= 4, text:"Unlocks after 3 earnings calls", why:"The spreadsheets are getting out of hand."},
-  breakroom:{test:() => S.floors.length >= 4, text:"Unlocks with 4 floors", why:"Your staff would like somewhere to sit that isn’t their desk."},
+  breakroom:{test:() => workFloors() >= 4, text:"Unlocks with 4 floors", why:"Your staff would like somewhere to sit that isn’t their desk."},
   pr:{test:() => S.quarter >= 5 || S.strikes > 0 || S.happy < 35, text:"Unlocks after 4 earnings calls, or sooner if things go badly", why:"Things are getting awkward in public. You need spin."},
-  invest:{test:() => S.floors.length >= 5, text:"Unlocks with 5 floors", why:"You have spare cash, and the markets would love to have it."},
-  hr:{test:() => S.floors.length >= 6, text:"Unlocks with 6 floors", why:"You now have enough people to need a department about people."},
+  invest:{test:() => workFloors() >= 5, text:"Unlocks with 5 floors", why:"You have spare cash, and the markets would love to have it."},
+  hr:{test:() => workFloors() >= 6, text:"Unlocks with 6 floors", why:"You now have enough people to need a department about people."},
   ir:{test:() => S.quarter >= 7, text:"Unlocks after 6 earnings calls", why:"Investors want someone to talk to who isn’t you."},
 };
 
@@ -671,7 +690,7 @@ const GOAL = {
   profit:{label:v => `A quarter with ${fmt(v)} profit`, cur:() => S.bestProfit || 0, show:fmt},
   mood:{label:v => `Customer mood at ${v}% or better`, cur:() => S.happy, show:v => Math.round(v)+"%"},
   streak:{label:v => `Beat the City ${v} quarters in a row`, cur:() => S.bestStreak || 0, show:v => v},
-  floors:{label:v => `${v} floors in the tower`, cur:() => S.floors.length, show:v => v},
+  floors:{label:v => `${v} floors in the tower`, cur:() => workFloors(), show:v => v},
   sued:{label:v => v === 1 ? "Lose a lawsuit and survive" : `Lose ${v} lawsuits without anyone blinking`, cur:() => S.sued || 0, show:v => v},
   paid:{label:v => `Pay ${v} claims in full`, cur:() => S.served, show:v => v},
   yachts:{label:v => `Own ${v} yachts`, cur:() => S.yachts, show:v => v},
@@ -702,6 +721,7 @@ const BLUNDERS = [
 const ENDINGS = {
   bankrupt:{title:"Bankrupt", text:"The bank has taken the building. The board replaced you with a golden retriever named Biscuit. The share price rose 4% on the news."},
   fired:{title:"Fired", text:"The board has lost all confidence in you. Security walked you out holding a box with one sad plant. Percy kept your parking space."},
+  exit:{title:"Sold!", get text(){ const x = S.exit || {value:0, kind:"pe"}; return `${x.kind === "ipo" ? `${coName()} floated on the stock exchange${x.mult >= 1.2 ? " and the shares flew" : x.mult < 1 ? ", though the shares wobbled a bit" : ""}` : `You sold ${coName()} to private equity`}, valuing it at ${fmt(x.value)}. You walk away with a golden ticket for your next company.`; }},
   licence:{title:"Licence revoked", get text(){ return `After three warnings, the regulator has pulled your licence. ${coName()} is now a very tall coffee shop.`; }},
 };
 const PERKS = [
@@ -712,22 +732,89 @@ const PERKS = [
   {id:"loyalty", name:"Broker loyalty scheme", cost:5, desc:"+10% premium income."},
   {id:"parachute", name:"Golden parachute", cost:6, desc:"Saves you from one game-ending disaster, then it’s gone."},
 ];
+const SWAN_ACH = {hurricane:["Weathered the storm","hurricane"], canal:["Unstuck","ship wedged in the canal"], outage:["Off and on again","global IT meltdown"], ash:["Clear skies","volcanic ash cloud"],
+  cancel:["The show goes on","mass cancellation"], bank:["Too big to care","megabank collapse"], rocket:["Back to the launch pad","rocket failure"], solar:["Northern lights","solar superstorm"]};
+const survived = k => !!(S.swanKinds && S.swanKinds[k]);
 const ACH = [
-  {id:"floor5", name:"Five-floor walk-up", desc:"Build 5 floors.", test:() => S.floors.length >= 5},
-  {id:"floor10", name:"Skyline material", desc:"Build 10 floors.", test:() => S.floors.length >= 10},
-  {id:"full", name:"Skyscraper", desc:"Build 20 floors.", test:() => S.floors.length >= 20},
-  {id:"sky30", name:"Cloud dweller", desc:"Build 30 floors.", test:() => S.floors.length >= 30},
-  {id:"beat", name:"Beat the City", desc:"Beat expectations once.", test:() => S.bestStreak >= 1},
-  {id:"streak3", name:"On a roll", desc:"Beat expectations 3 quarters running.", test:() => S.bestStreak >= 3},
-  {id:"streak6", name:"Unstoppable", desc:"Beat expectations 6 quarters running.", test:() => S.bestStreak >= 6},
-  {id:"three", name:"Three stars", desc:"Earn 3 stars in one quarter.", test:() => S.best3},
-  {id:"fraud10", name:"Fraud buster", desc:"Catch 10 fraudulent claims.", test:() => (S.fraudCaught || 0) >= 10},
-  {id:"happy90", name:"Beloved", desc:"Get customer mood to 90%.", test:() => S.happy >= 90},
-  {id:"swan", name:"Black swan survivor", desc:"Survive a black swan with cover.", test:() => (S.swansSurvived || 0) >= 1},
-  {id:"clean", name:"Spotless record", desc:"6 quarters without a warning.", test:() => (S.cleanRun || 0) >= 6},
-  {id:"brutal", name:"Brutal market", desc:"Push the market to Brutal.", test:() => S.diff >= 3.1},
-  {id:"stock100", name:"Triple digits", desc:"Reach a £100 share price.", test:() => S.stock >= 100},
-  {id:"yacht3", name:"Yacht club", desc:"Own 3 yachts.", test:() => S.yachts >= 3},
+  // the tower
+  {cat:"Tower", id:"floor5", name:"Five-floor walk-up", desc:"Build 5 floors.", test:() => workFloors() >= 5},
+  {cat:"Tower", id:"floor10", name:"Skyline material", desc:"Build 10 floors.", test:() => workFloors() >= 10},
+  {cat:"Tower", id:"full", name:"Skyscraper", desc:"Build 20 floors.", test:() => workFloors() >= 20},
+  {cat:"Tower", id:"sky30", name:"Cloud dweller", desc:"Build 30 floors.", test:() => workFloors() >= 30},
+  {cat:"Tower", id:"maxed", name:"Fully loaded", desc:"Upgrade any floor to level 5.", test:() => S.floors.some(f => f.type !== "penthouse" && f.level >= MAXL)},
+  {cat:"Tower", id:"maxed10", name:"No expense spared", desc:"Have 10 floors at level 5.", test:() => S.floors.filter(f => f.type !== "penthouse" && f.level >= MAXL).length >= 10},
+  {cat:"Tower", id:"alldepts", name:"Every department", desc:"Own at least one of every kind of floor.", test:() => ORDER.every(t => S.floors.some(f => f.type === t))},
+  {cat:"Tower", id:"penthouse", name:"Room with a view", desc:"Build the penthouse.", test:() => hasPenthouse()},
+  {cat:"Tower", id:"pent5", name:"Interior designer", desc:"Fully furnish the penthouse.", test:() => S.floors.some(f => f.type === "penthouse" && f.level >= MAXL)},
+  // career
+  {cat:"Career", id:"rank1", name:"No longer interim", desc:"Be promoted to Regional Disruptor.", test:() => S.rankIdx >= 1},
+  {cat:"Career", id:"rank2", name:"Buzzword bingo", desc:"Become a Synergy Whisperer.", test:() => S.rankIdx >= 2},
+  {cat:"Career", id:"rank3", name:"TED talk", desc:"Become a Thought Leader.", test:() => S.rankIdx >= 3},
+  {cat:"Career", id:"rank4", name:"Cover star", desc:"Become a Fortune 500 Contender.", test:() => S.rankIdx >= 4},
+  {cat:"Career", id:"rank5", name:"Systemically important", desc:"Become Too Big To Fail.", test:() => S.rankIdx >= 5},
+  {cat:"Career", id:"rank6", name:"Rainmaker", desc:"Own the weather.", test:() => S.rankIdx >= 6},
+  {cat:"Career", id:"beat", name:"Beat the City", desc:"Beat expectations once.", test:() => S.bestStreak >= 1},
+  {cat:"Career", id:"streak3", name:"On a roll", desc:"Beat expectations 3 quarters running.", test:() => S.bestStreak >= 3},
+  {cat:"Career", id:"streak6", name:"Unstoppable", desc:"Beat expectations 6 quarters running.", test:() => S.bestStreak >= 6},
+  {cat:"Career", id:"streak12", name:"The City’s darling", desc:"Beat expectations 12 quarters running.", test:() => S.bestStreak >= 12},
+  {cat:"Career", id:"three", name:"Three stars", desc:"Earn 3 stars in one quarter.", test:() => S.best3},
+  {cat:"Career", id:"q40", name:"Veteran", desc:"Survive 40 quarters.", test:() => S.quarter > 40},
+  {cat:"Career", id:"q100", name:"Lifer", desc:"Survive 100 quarters.", test:() => S.quarter > 100},
+  {cat:"Career", id:"execs", name:"Full house", desc:"Have all six executives hired at once.", test:() => !S.idleMode && EXECS.every(x => S.execs && S.execs[x.id])},
+  // money
+  {cat:"Money", id:"stock100", name:"Triple digits", desc:"Reach a share price of 100.", test:() => S.stock >= 100},
+  {cat:"Money", id:"stock250", name:"Blue chip", desc:"Reach a share price of 250.", test:() => S.stock >= 250},
+  {cat:"Money", id:"stock500", name:"Stratospheric", desc:"Reach a share price of 500.", test:() => S.stock >= 500},
+  {cat:"Money", id:"q10k", name:"Five-figure quarter", desc:"Make a quarterly profit of 10,000.", test:() => (S.bestProfit || 0) >= 1e4},
+  {cat:"Money", id:"q100k", name:"Six-figure quarter", desc:"Make a quarterly profit of 100,000.", test:() => (S.bestProfit || 0) >= 1e5},
+  {cat:"Money", id:"cash1m", name:"Liquid", desc:"Hold 1,000,000 in cash.", test:() => S.cash >= 1e6},
+  {cat:"Money", id:"earn1m", name:"Premium millionaire", desc:"Write 1,000,000 in premiums in one run.", test:() => (S.earned || 0) >= 1e6},
+  {cat:"Money", id:"earn100m", name:"Nine figures", desc:"Write 100,000,000 in premiums in one run.", test:() => (S.earned || 0) >= 1e8},
+  {cat:"Money", id:"yacht3", name:"Yacht club", desc:"Own 3 yachts.", test:() => S.yachts >= 3},
+  {cat:"Money", id:"yacht10", name:"Admiral", desc:"Own 10 yachts.", test:() => S.yachts >= 10},
+  {cat:"Money", id:"shop10", name:"Shopaholic", desc:"Make 10 purchases in the star shop.", test:() => (S.shopBuys || 0) >= 10},
+  {cat:"Money", id:"perks", name:"Perk collector", desc:"Own every perk.", test:() => PERKS.every(pk => perk(pk.id))},
+  // claims and the courts
+  {cat:"Claims", id:"fraud10", name:"Fraud buster", desc:"Catch 10 fraudulent claims.", test:() => (S.fraudCaught || 0) >= 10},
+  {cat:"Claims", id:"fraud50", name:"Fraud squad", desc:"Catch 50 fraudulent claims.", test:() => (S.fraudCaught || 0) >= 50},
+  {cat:"Claims", id:"paid200", name:"Claims machine", desc:"Pay 200 claims in full.", test:() => (S.served || 0) >= 200},
+  {cat:"Claims", id:"suitwin", name:"Objection sustained", desc:"Win a lawsuit.", test:() => (S.suits || 0) - (S.sued || 0) >= 1},
+  {cat:"Claims", id:"suit10", name:"Legal eagle", desc:"Win 10 lawsuits.", test:() => (S.suits || 0) - (S.sued || 0) >= 10},
+  {cat:"Claims", id:"happy90", name:"Beloved", desc:"Get customer mood to 90%.", test:() => S.happy >= 90},
+  {cat:"Claims", id:"hated", name:"Public enemy", desc:"Let customer mood fall to 5% and survive.", test:() => S.happy <= 5},
+  // black swans and insurance
+  {cat:"Black swans", id:"swan", name:"Black swan survivor", desc:"Survive a black swan with cover.", test:() => (S.swansSurvived || 0) >= 1},
+  ...Object.entries(SWAN_ACH).map(([k, [name, what]]) => ({cat:"Black swans", id:"sw_" + k, name, desc:`Survive the ${what}.`, test:() => survived(k)})),
+  {cat:"Black swans", id:"swanall", name:"Seen it all", desc:"Survive every kind of black swan in one run.", test:() => Object.keys(SWAN_ACH).every(survived)},
+  {cat:"Black swans", id:"naked", name:"Living without a net", desc:"Survive a black swan with no cover for it.", test:() => (S.swanNaked || 0) >= 1},
+  {cat:"Black swans", id:"covers", name:"Belt and braces", desc:"Hold all four of your own covers at once.", test:() => Object.keys(COVERS).every(k => S.cover && S.cover[k])},
+  {cat:"Black swans", id:"awayswan", name:"While you were out", desc:"Have a black swan strike while you were away.", test:() => !!S.awaySwan},
+  // strategy and risk
+  {cat:"Strategy", id:"clean", name:"Spotless record", desc:"6 quarters without a warning.", test:() => (S.cleanRun || 0) >= 6},
+  {cat:"Strategy", id:"brutal", name:"Brutal market", desc:"Push the market to Brutal.", test:() => S.diff >= 3.1},
+  {cat:"Strategy", id:"frenzy", name:"Feeding frenzy", desc:"Push the market to a feeding frenzy.", test:() => S.diff >= 5},
+  {cat:"Strategy", id:"edge", name:"Living dangerously", desc:"Be one regulator warning from losing your licence.", test:() => S.strikes >= maxStrikes() - 1},
+  {cat:"Strategy", id:"rivals5", name:"Loyalty bonus", desc:"Fend off 5 poaching attempts by rival syndicates.", test:() => (S.rivalsKept || 0) >= 5},
+  {cat:"Strategy", id:"away", name:"Absentee landlord", desc:"Come back to a profit after 3 hours or more away.", test:() => !!S.awayRich},
+  {cat:"Strategy", id:"idle", name:"Hands off", desc:"Let the board run things in idle mode.", test:() => !!S.idleTainted},
+  // cities
+  {cat:"Cities", id:"city_london", name:"Square Mile", desc:"Become a Thought Leader in London.", test:() => cityId() === "london" && S.rankIdx >= 3},
+  {cat:"Cities", id:"city_nyc", name:"Empire State of mind", desc:"Become a Thought Leader in New York.", test:() => cityId() === "nyc" && S.rankIdx >= 3},
+  {cat:"Cities", id:"city_bermuda", name:"Island time", desc:"Become a Thought Leader in Bermuda.", test:() => cityId() === "bermuda" && S.rankIdx >= 3},
+  {cat:"Cities", id:"globe", name:"Globetrotter", desc:"Found companies in all three cities.", test:() => { const c = loadLegacy().cities || {}; return !!(c.london && c.nyc && c.bermuda); }},
+  // exits
+  {cat:"Exits", id:"pe", name:"Cashing out", desc:"Sell a company to private equity.", test:() => S.exitKind === "pe"},
+  {cat:"Exits", id:"ipo", name:"Ring the bell", desc:"Float a company on the stock exchange.", test:() => S.exitKind === "ipo"},
+  {cat:"Exits", id:"tix2", name:"Serial founder", desc:"Hold 2 golden tickets.", test:() => (loadLegacy().tickets || 0) >= 2},
+  {cat:"Exits", id:"tix4", name:"Golden handshake", desc:"Hold the maximum of 4 golden tickets.", test:() => (loadLegacy().tickets || 0) >= 4},
+];
+
+/* Repeatable star purchases, so stars stay useful after every perk is owned. */
+const STAR_SHOP = [
+  {id:"charm", name:"Charm offensive", cost:3, desc:"Wine and dine the board. +10 board confidence.", can:() => S.conf < 100, run:() => { S.conf = Math.min(100, S.conf + 10); return "The board enjoyed the claret. +10 board confidence."; }},
+  {id:"goodwill", name:"Customer goodwill campaign", cost:2, desc:"Free umbrellas for everyone. +15 customer mood.", can:() => S.happy < 100, run:() => { S.happy = Math.min(100, S.happy + 15); return "Umbrellas handed out. Customers are charmed. +15 mood."; }},
+  {id:"analyst", name:"Analyst upgrade", cost:4, desc:"A friendly analyst upgrades your stock to Buy. Share price +8%.", run:() => { S.stock *= 1.08; return "Upgraded to Buy. Share price +8%."; }},
+  {id:"regulator", name:"Lunch with the regulator", cost:6, desc:"A long, friendly lunch. Removes one regulator warning.", can:() => S.strikes > 0, run:() => { S.strikes = Math.max(0, S.strikes - 1); return "The regulator had the fish. One warning has been withdrawn."; }},
 ];
 
 /* data/events.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
@@ -935,6 +1022,30 @@ const TUT = [
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.4.3", notes:[
+    "55 new achievements (70 in all), covering promotions, every black swan, the penthouse, the star shop, lawsuits, rivals, the three cities, selling your company and golden tickets.",
+    "Achievements are now grouped into categories in the Boardroom, each with its own progress count.",
+    "Fixed: the exit strategy now opens at Thought Leader, as described (it was opening one rank early).",
+  ]},
+  {v:"0.4.2", notes:[
+    "Selling your company is now a true endgame goal: private equity needs £1M cash and a £150 share price, and an IPO needs £2.5M, a £250 share price and 70% board confidence.",
+  ]},
+  {v:"0.4.1", notes:[
+    "The penthouse is now one per company and costs 20 ★, with upgrades at 6 ★. Once built it stays.",
+    "Selling your company now takes real scale: private equity needs £150K cash and a £50 share price, and an IPO needs £250K, a £70 share price and 60% board confidence. The Boardroom shows your progress.",
+    "Bermuda’s buses now wear the classic pink and blue.",
+  ]},
+  {v:"0.4.0", notes:[
+    "Choose your headquarters: London (the Walkie Talkie), New York (the MetLife Tower) or Hamilton, Bermuda (a Front Street office with a white stepped roof), each with its own skyline, street and currency.",
+    "Cutscenes for every promotion, for being fired, going bankrupt or losing your licence, and for selling your company. Your own CEO stars in them.",
+    "Sell your company to private equity or float it on the stock exchange. You’ll start your next company with a golden ticket.",
+    "Build a penthouse with stars and furnish it. Your CEO splits their time between it and The Room.",
+    "A star shop for spending stars once your perks are bought, and unspent stars boost your sale price.",
+    "Women’s and men’s style sets on the CEO screen, each with 9 hairstyles, 4 outfits and makeup or facial hair.",
+    "Floor numbers on every floor.",
+    "You can switch idle mode off again (the run still won’t be scored).",
+    "Time away is now simulated properly: premiums, genuine and fraudulent claims, salaries, insurance and black swans.",
+  ]},
   {v:"0.3.1", notes:[
     "More ways to create your CEO: 10 hairstyles (including pixie, bob, long, ponytail, bun, curly and braids), 4 outfit styles (suit and tie, blazer and blouse, skirt suit, dress) and extras (lashes, lipstick, earrings, glasses). Every option is open to every CEO.",
     "Your staff and customers now show the same variety of hairstyles, skirts, dresses and earrings.",
@@ -964,6 +1075,18 @@ const CHANGELOG = [
 ];
 function changesFor(v){ return (CHANGELOG.find(c => c.v === v) || CHANGELOG[0]).notes; }
 
+/* data/cities.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
+/* Where your company is based. Chosen when a run starts. */
+const CITIES = {
+  london:{name:"London", country:"United Kingdom", flag:"🇬🇧", cur:"£", market:"the London market",
+    building:"20 Fenchurch Street, “the Walkie Talkie”", blurb:"The heart of the world’s specialist insurance market, a short walk from Lloyd’s."},
+  nyc:{name:"New York", country:"United States", flag:"🇺🇸", cur:"$", market:"New York’s insurance district",
+    building:"The Metropolitan Life Insurance Company Tower", blurb:"Built by an insurer in 1909 on Madison Square, and briefly the tallest building in the world."},
+  bermuda:{name:"Hamilton", country:"Bermuda", flag:"🇧🇲", cur:"$", market:"Bermuda’s reinsurance market",
+    building:"A Front Street office with a white stepped roof", blurb:"The world’s reinsurance capital: pastel offices, hurricane-proof roofs and a lot of very large cheques."},
+};
+function setCity(id){ CUR = (CITIES[id] || CITIES.london).cur; }
+
 /* art/palette.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 const SKINS = ["#FFDBAC","#F2C9A0","#E0A878","#C68650","#8D5524","#5C3A21"];
 const HAIRS = ["#2B1B10","#5A3825","#C9A227","#B5562E","#1C1C1C","#9A9AA8","#E86A92","#3E5CC4"];
@@ -975,6 +1098,7 @@ const WOOD = {lt:"#C98A52", md:"#A86F42", dk:"#7A4A28", xd:"#5B3A1E", hi:"#E2AC6
 
 /* art/floor-designs.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 const DESIGNS = {
+  penthouse:[{name:"Sky Lounge", wall:"#F2EDE2", trim:"#C9A54A", decor:y => drawPenthouse(y)}],
   sales:[
     {name:"Classic Box"},
     {name:"Heritage Box", wall:"#2F5D4A", trim:"#1E3D30",
@@ -1265,7 +1389,7 @@ function dither(x, y, w, h, col, density = 0.5, seed = 0){ for (let yy = 0; yy <
 
 /* 3x5 pixel font */
 const G = {A:"010101111101101",B:"110101110101110",C:"011100100100011",D:"110101101101110",E:"111100110100111",F:"111100110100100",G:"011100101101011",H:"101101111101101",I:"111010010010111",J:"001001001101010",K:"101101110101101",L:"100100100100111",M:"101111111101101",N:"110101101101101",O:"010101101101010",P:"110101110100100",Q:"010101101110011",R:"110101110101101",S:"011100010001110",T:"111010010010010",U:"101101101101111",V:"101101101101010",W:"101101111111101",X:"101101010101101",Y:"101101010010010",Z:"111001010100111",
-  "0":"111101101101111","1":"010110010010111","2":"110001010100111","3":"110001010001110","4":"101101111001001","5":"111100110001110","6":"011100110101010","7":"111001010010010","8":"010101010101010","9":"010101011001110","!":"010010010000010","?":"110001010000010","%":"101001010100101","£":"011010111010111","-":"000000111000000",".":"000000000000010",":":"000010000010000","'":"010010000000000","(":"010100100100010",")":"010001001001010"," ":"000000000000000"};
+  "0":"111101101101111","1":"010110010010111","2":"110001010100111","3":"110001010001110","4":"101101111001001","5":"111100110001110","6":"011100110101010","7":"111001010010010","8":"010101010101010","9":"010101011001110","!":"010010010000010","?":"110001010000010","%":"101001010100101","£":"011010111010111","-":"000000111000000",".":"000000000000010",":":"000010000010000","'":"010010000000000","(":"010100100100010","+":"000010111010000",")":"010001001001010"," ":"000000000000000"};
 function text(str, x, y, col, s = 1, shadow){
   str = String(str).toUpperCase(); let cx = x;
   for (const ch of str){ const g = G[ch] || G[" "];
@@ -1355,9 +1479,15 @@ function face(o){
   else if (hs2 === "braids"){ oval(24, 19, 15, 13, o.hair); for (let y = 24; y < 47; y += 3){ P(8, y, 5, 2, o.hair); P(35, y, 5, 2, o.hair); P(9, y + 2, 3, 1, hD); P(36, y + 2, 3, 1, hD); } P(9, 45, 3, 2, "#E3C064"); P(36, 45, 3, 2, "#E3C064"); }
   else if (hs2 === "ponytail"){ P(35, 11, 7, 18, o.hair); P(37, 27, 5, 8, o.hair); P(38, 14, 1, 18, hD); }
   else if (hs2 === "bun"){ disc(24, 6, 6, o.hair); P(21, 3, 3, 1, hL); }
+  else if (hs2 === "manbun"){ disc(24, 5, 4, o.hair); P(22, 3, 2, 1, hL); }
+  else if (hs2 === "scarf"){ const sc = o.scarf || "#3E2E6A"; oval(24, 22, 18, 19, sc); P(6, 34, 36, 14, sc); P(9, 24, 2, 14, shadeC(sc, -0.2)); P(37, 24, 2, 14, shadeC(sc, -0.2)); }
   // shoulders and outfit
   const at = o.attire || "tie";
-  if (at === "dress"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); oval(24, 39, 7, 4, o.skin); P(6, 38, 36, 1, shadeC(o.shirt, 0.2)); }
+  if (at === "open"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); tri(18, 38, 30, 38, 24, 46, "#F7F2E6"); tri(21, 38, 27, 38, 24, 42, o.skin); line(18, 38, 24, 47, shadeC(o.shirt, -0.3)); line(30, 38, 24, 47, shadeC(o.shirt, -0.3)); }
+  else if (at === "three"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); P(17, 38, 14, 10, shadeC(o.shirt, -0.28)); P(20, 38, 8, 3, "#F7F2E6"); P(22, 40, 4, 8, "#E3C064"); for (let k = 0; k < 3; k++) px(24, 42 + k*2, "#E3C064"); line(17, 38, 22, 47, "#F7F2E6"); line(31, 38, 26, 47, "#F7F2E6"); }
+  else if (at === "casual"){ P(6, 39, 36, 9, o.shirt); P(19, 32, 10, 8, o.skin); P(17, 38, 14, 2, "#F7F2E6"); P(22, 40, 4, 3, o.shirt); px(24, 41, "#F7F2E6"); for (let x = 8; x < 40; x += 3) px(x, 44, shadeC(o.shirt, -0.15)); }
+  else if (at === "trouser"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); tri(18, 38, 30, 38, 24, 46, "#F7F2E6"); line(16, 38, 22, 47, shadeC(o.shirt, 0.25)); line(32, 38, 26, 47, shadeC(o.shirt, 0.25)); }
+  else if (at === "dress"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); oval(24, 39, 7, 4, o.skin); P(6, 38, 36, 1, shadeC(o.shirt, 0.2)); }
   else if (at === "blouse" || at === "skirt"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); tri(17, 38, 31, 38, 24, 48, "#F7F2E6"); line(17, 38, 24, 47, shadeC(o.shirt, -0.3)); line(31, 38, 24, 47, shadeC(o.shirt, -0.3)); if (at === "skirt") disc(13, 43, 1.5, "#E3C064"); }
   else { P(6, 38, 36, 10, o.shirt); P(20, 38, 8, 10, o.collar || "#f4f1e8"); if (o.tie) P(22, 40, 4, 8, o.tie); P(19, 32, 10, 7, o.skin); }
   // head
@@ -1373,8 +1503,14 @@ function face(o){
   else if (o.hairStyle === "ponytail"){ P(11, 7, 26, 6, o.hair); P(10, 10, 3, 6, o.hair); P(35, 10, 3, 5, o.hair); P(36, 13, 3, 2, "#E3C064"); }
   else if (o.hairStyle === "bun"){ P(11, 7, 26, 6, o.hair); P(10, 10, 3, 6, o.hair); P(35, 10, 3, 6, o.hair); P(20, 7, 8, 1, "#E3C064"); }
   else if (o.hairStyle === "curly"){ for (let k = 0; k < 8; k++) disc(12 + k*3.4, 8 + (k % 2)*2, 3, o.hair); disc(10, 16, 3, o.hair); disc(38, 16, 3, o.hair); }
+  else if (o.hairStyle === "crew"){ P(12, 8, 24, 3, o.hair); P(11, 10, 2, 5, o.hair); P(35, 10, 2, 5, o.hair); for (let x = 12; x < 36; x += 2) px(x, 11, hD); }
+  else if (o.hairStyle === "sidepart"){ P(11, 7, 26, 6, o.hair); P(10, 10, 3, 7, o.hair); P(35, 10, 2, 5, o.hair); P(18, 7, 1, 5, hD); tri(19, 8, 36, 8, 36, 13, hL); }
+  else if (o.hairStyle === "quiff"){ P(11, 8, 26, 5, o.hair); oval(19, 6, 8, 3, o.hair); P(14, 4, 8, 1, hL); P(10, 10, 3, 6, o.hair); P(35, 10, 3, 6, o.hair); }
+  else if (o.hairStyle === "manbun"){ P(11, 8, 26, 4, o.hair); P(10, 10, 3, 6, o.hair); P(35, 10, 3, 6, o.hair); P(22, 7, 4, 2, o.hair); }
+  else if (o.hairStyle === "bald"){ P(15, 9, 5, 2, "rgba(255,255,255,.35)"); P(10, 16, 2, 5, shadeC(o.skin, -0.12)); P(36, 16, 2, 5, shadeC(o.skin, -0.12)); }
+  else if (o.hairStyle === "scarf"){ const sc = o.scarf || "#3E2E6A"; P(12, 8, 24, 3, sc); P(11, 9, 3, 18, sc); P(34, 9, 3, 18, sc); P(16, 8, 10, 1, shadeC(sc, 0.25)); }
   else { P(11, 7, 26, 7, o.hair); P(10, 10, 4, 8, o.hair); }
-  if (o.hair && o.hairStyle !== "cap") P(15, 8, 6, 1, "rgba(255,255,255,.22)");
+  if (o.hair && !["cap","bald","scarf","crew"].includes(o.hairStyle)) P(15, 8, 6, 1, "rgba(255,255,255,.22)");
   // eyes
   const ey = 22, wide = o.eyes === "wide";
   if (blink){ P(15, ey + 1, 6, 1, "#1F2238"); P(27, ey + 1, 6, 1, "#1F2238"); }
@@ -1394,6 +1530,10 @@ function face(o){
   P(22, 25, 3, 4, "rgba(0,0,0,.12)");
   if (o.beard){ P(14, 28, 20, 9, o.beard); P(18, 30, 12, 3, o.skin); P(20, 31, 8, talk ? 2 : 1, "#5a1a1a"); }
   if (o.sweat){ const sy = fr(t*1.2)*10; P(37, 14 + sy, 2, 3, "#9fd8ff"); px(37, 14 + sy, "#ffffff"); P(9, 18 + fr(t*1.2 + .5)*8, 2, 3, "#9fd8ff"); }
+  if (o.freckles) for (const [fx, fy] of [[15,27],[17,28],[16,29],[31,27],[33,28],[32,29],[23,26]]) px(fx, fy, "rgba(150,80,40,.55)");
+  if (o.facial === "stubble"){ for (let y = 29; y < 37; y += 2) for (let x = 14 + (y % 4 === 1 ? 1 : 0); x < 34; x += 2) if (Math.abs(x - 24) > 3 || y > 33) px(x, y, "rgba(40,30,30,.28)"); }
+  else if (o.facial === "moustache"){ P(19, 29, 10, 2, o.hair); px(18, 30, o.hair); px(29, 30, o.hair); }
+  else if (o.facial === "beard"){ P(14, 28, 20, 9, o.hair); P(18, 30, 12, 3, o.skin); P(19, 29, 10, 1, o.hair); P(20, 31, 8, 1, o.lip || "#5a1a1a"); P(15, 36, 18, 1, hD); }
   if (o.earrings){ disc(10, 28, 1.5, "#E3C064"); disc(37, 28, 1.5, "#E3C064"); px(10, 27, "#FFF6D0"); px(37, 27, "#FFF6D0"); }
   if (o.headset){ P(8, 14, 3, 12, "#2a2a3a"); P(37, 14, 3, 12, "#2a2a3a"); P(10, 5, 28, 3, "#2a2a3a"); P(36, 26, 2, 6, "#2a2a3a"); P(30, 31, 7, 2, "#2a2a3a"); }
   // rim light
@@ -1686,20 +1826,171 @@ const LINES2 = {
   solar:{name:"Professor Iris, Space Weather", line:"In 1859 it set telegraph offices on fire. Today it has so much more to work with."},
 };
 
+/* ---------- career cutscenes: promotions, endings and exits. They star the player's own CEO. ---------- */
+function ceoSpr(frame){
+  const lk = (typeof ceoLook === "function") ? ceoLook() : {skin:"#F2C9A0", hair:"#2B1B10", shirt:"#2F6FE4", pants:"#2B3352", style:0};
+  return makeSprite("ceo_" + JSON.stringify(lk) + "_" + frame, 11, 20, () => { const sv = ctx; ctx = c; person(5, 18, lk, frame, 1); ctx = sv; });
+}
+function confetti(t, n, top){ const cols = ["#E3C064","#B23A3A","#2F6FE4","#3E9B4F","#F7F2E6","#C8507A"]; for (let k = 0; k < n; k++){ const tt = fr(t*0.8 + hs(k, 1)); P(hs(k, 2)*SW + Math.sin(tt*9 + k)*6, (top || 0) + tt*140 - 10, 2, 1.5, cols[k % 6]); } }
+function hallBackdrop(){
+  bands(0, 100, ["#141A2C","#1A2236","#1F2A44","#24305A"]);
+  for (let x = 0; x < SW; x += 10){ P(x, 0, 5, 100, "rgba(255,255,255,.04)"); P(x + 5, 0, 1, 100, "rgba(0,0,0,.18)"); }
+  P(0, 0, SW, 4, "#C9A54A"); P(0, 4, SW, 1, "#8E7228");
+  P(0, 100, SW, 35, "#2B3352"); P(0, 100, SW, 2, "#C9A54A"); for (let x = 0; x < SW; x += 8) P(x, 104, 4, 1, "rgba(255,255,255,.06)");
+}
+function spotlight(x, w){ for (let y = 0; y < 100; y++){ const half = 4 + (w - 4)*(y/100); for (let xx = -half; xx < half; xx += 2) if ((xx + y) % 4 === 0) px(x + xx, y, "rgba(255,240,190,.10)"); } oval(x, 100, w, 4, "rgba(255,240,190,.25)"); }
+function crowd(y, n, t, cheer){ for (let k = 0; k < n; k++){ const x = 8 + k*(224/n), bob = cheer ? Math.round(Math.abs(Math.sin(t*14 + k))*2) : 0; disc(x, y - bob, 5, ["#1F2238","#2B2238","#22283A"][k % 3]); P(x - 6, y + 3 - bob, 12, 10, ["#2B3352","#3A2A3E","#24305A"][k % 3]); if (cheer && k % 2) { P(x - 7, y - 9 - bob, 2, 7, "#2B3352"); P(x + 5, y - 9 - bob, 2, 7, "#2B3352"); } } }
+function bigText(str, cx, y, col, shadow){ const s = textW(str, 2) <= 200 ? 2 : 1; text(str, cx - textW(str, s)/2, y, col, s, shadow); }
+const RANK_LINES = [
+  "Regional disruption complete. Next: disrupting the region again, but harder.",
+  "Synergy isn’t a word. It’s a lifestyle. And a consultancy fee.",
+  "My new book is called Thinking. Chapter one: think. Chapter two: invoice.",
+  "Fortune 500? I prefer to think of it as Fortune 499 and climbing.",
+  "We’re now too big to fail. It’s like success, but with a government guarantee.",
+  "I now own the weather. Tomorrow: sunny, with a 100% chance of premiums.",
+];
+SCENES2.promo = function(t){
+  const r = clamp(S.rankIdx - 1, 0, 5), name = RANKS[clamp(S.rankIdx, 1, RANKS.length - 1)].name.toUpperCase();
+  hallBackdrop(); spotlight(98, 34);
+  P(28, 10, 184, 20, "#C9A54A"); P(30, 12, 180, 16, "#1F2A44"); bigText(name, 120, name.length > 12 ? 18 : 15, "#E3C064", "#0E1222");
+  // rank prop on the right
+  const px0 = 176;
+  if (r === 0){ P(px0 - 8, 70, 16, 30, "#2B3352"); P(px0 - 8, 70, 16, 2, "#C9A54A"); tri(px0 - 9, 52, px0 + 9, 52, px0, 68, "#E3C064"); P(px0 - 2, 66, 4, 4, "#E3C064"); P(px0 - 11, 54, 3, 6, "#E3C064"); P(px0 + 8, 54, 3, 6, "#E3C064"); text("REGIONAL", px0 - 15, 82, "#E3C064"); }
+  else if (r === 1){ P(px0 - 30, 40, 60, 38, "#F7F2E6"); P(px0 - 30, 40, 60, 3, "#B23A3A"); text("SYNERGY", px0 - 14, 50, "#1F2A44"); for (let k = 0; k < 3; k++){ line(px0 - 20 + k*14, 70, px0 - 12 + k*14, 60, "#3E9B4F"); } disc(px0, 100, 10, "#B23A3A"); }
+  else if (r === 2){ P(px0 - 26, 84, 52, 16, "#8E5A30"); for (let k = 0; k < 5; k++){ P(px0 - 20 + (k % 2)*2, 78 - k*5, 22, 5, ["#2F6FE4","#B23A3A","#3E9B4F","#E39A2C","#7A4FBF"][k]); } text("THINKING", px0 - 16, 50, "#E3C064"); }
+  else if (r === 3){ P(px0 - 22, 34, 44, 60, "#F7F2E6"); P(px0 - 22, 34, 44, 10, "#B23A3A"); text("FORTUNE", px0 - 14, 36, "#FFFFFF"); blit(ceoSpr(0), px0, 78, 0, false, 1.6); text("500", px0 - 6, 86, "#1F2A44"); }
+  else if (r === 4){ blit(chibi({skin:"#F2C9A0", hair:"#9A9AA8", shirt:"#2B2D52", tie:"#B23A3A"}, "stand", "minister"), px0 + 14, 98); P(px0 - 34, 60, 50, 22, "#F7F2E6"); P(px0 - 34, 60, 50, 22, "rgba(201,165,74,.0)"); P(px0 - 34, 60, 50, 1, "#C9A54A"); text("BAILOUT", px0 - 30, 64, "#1F2A44"); text("£999BN", px0 - 30, 72, "#3E9B4F"); }
+  else { const rainy = fr(t*1.6) < 0.5; cloudPuff(px0, 44, 14, rainy ? "#8A96AA" : "#F7F2E6", rainy ? "#6A768A" : "#D8E0EA"); if (rainy) for (let k = 0; k < 14; k++) P(px0 - 14 + k*2, 56 + fr(t*3 + k*0.3)*30, 1, 3, "#9CC9E6"); else { disc(px0 + 16, 34, 7, "#F2C14E"); for (let k = 0; k < 8; k++){ const a = k*Math.PI/4 + t*2; P(px0 + 16 + Math.cos(a)*11, 34 + Math.sin(a)*11, 2, 2, "#F2C14E"); } }
+    for (let k = 0; k < 5; k++) for (let x = -24; x < 24; x++) px(px0 + x, 78 - Math.sqrt(Math.max(0, 576 - x*x))*0.5 + k*1.5, ["#E8452C","#E39A2C","#F2C14E","#3E9B4F","#2F6FE4"][k]); }
+  // podium and the CEO walking on stage
+  const walk = Math.min(1, t/0.35), cx = 24 + ease(walk)*68;
+  blit(ceoSpr(walk < 1 ? (Math.floor(t*12) % 2) : 0), cx, 96 - (walk >= 1 ? Math.round(Math.abs(Math.sin(t*8))) : 0));
+  P(102, 80, 22, 20, "#C9A54A"); P(104, 82, 18, 16, "#1F2A44"); P(102, 80, 22, 1, "#E8D08A"); P(110, 74, 1, 7, "#1F2238"); disc(110, 73, 2, "#1F2238");
+  crowd(124, 14, t, t > 0.35);
+  if (t > 0.35) confetti(t, 60, 0);
+};
+SCENES2.fired = function(t){
+  P(0, 0, SW, SH, "#EDE8DC"); for (let x = 0; x < SW; x += 24){ P(x, 8, 22, 70, "#E2DCCF"); P(x, 8, 22, 1, "#F7F2E6"); }
+  P(0, 0, SW, 8, "#1F2A44"); P(0, 8, SW, 2, "#C9A54A");
+  // the boardroom through the glass: the board toasting, Biscuit in your chair
+  P(120, 18, 110, 56, "#1F2A44"); P(122, 20, 106, 52, "#9CC9E6"); P(122, 20, 106, 1, "#FFFFFF"); text("BOARDROOM", 150, 12, "#E3C064");
+  P(130, 52, 90, 6, "#5A3825"); P(130, 52, 90, 1, "#8E5A30");
+  const clink = fr(t*2) < 0.3 ? -2 : 0;
+  for (let k = 0; k < 4; k++){ const bx = 140 + k*18; disc(bx, 44, 4, "#2B3352"); P(bx - 5, 47, 10, 6, "#2B3352"); P(bx + 3, 38 + (k % 2 ? clink : 0), 2, 5, "#F7F2E6"); px(bx + 3, 38 + (k % 2 ? clink : 0), "#E3C064"); }
+  P(206, 30, 14, 22, "#3A2618"); disc(213, 40, 5, "#D9A55A"); P(209, 36, 3, 4, "#C08A48"); P(214, 36, 3, 4, "#C08A48"); px(211, 40, "#1F2238"); px(215, 40, "#1F2238"); P(212, 43, 3, 1, "#1F2238"); P(208, 45, 10, 4, "#B23A3A");
+  // the corridor floor and an exit sign
+  P(0, 100, SW, 35, "#C9C3B0"); for (let x = 0; x < SW; x += 12) P(x, 100, 6, 35, "#D3CDBF");
+  P(8, 26, 22, 9, "#3E9B4F"); text("EXIT", 11, 28, "#FFFFFF");
+  // the long walk: you and your box, security close behind
+  const cx = 110 - t*80;
+  blit(ceoSpr(Math.floor(t*10) % 2), cx, 112, 0, true);
+  P(cx - 7, 98, 12, 7, "#C9A877"); P(cx - 7, 98, 12, 1, "#E2C79A"); P(cx - 3, 92, 3, 6, "#6E8A3A"); P(cx - 5, 90, 3, 3, "#8AA04A"); px(cx - 2, 89, "#A8A04A");
+  blit(chibi({skin:"#8D5524", hair:"#1C1C1C", shirt:"#1F2238", cap:"#1F2238"}, "walk", "security"), cx + 20, 112, 0, true);
+  // Percy has claimed your parking space
+  P(40, 112, 30, 14, "#4A4A52"); P(40, 112, 30, 1, "#F7F2E6"); text("CEO", 48, 116, "#E3C064");
+  const percy = makeSprite("percy2", 10, 10, () => { oval(5, 6, 4, 3, "#9AA3B5"); disc(7, 3, 2.5, "#9AA3B5"); P(9, 3, 2, 1, "#E39A2C"); px(7, 2, "#1F2238"); P(3, 8, 1, 2, "#E39A2C"); P(6, 8, 1, 2, "#E39A2C"); P(3, 0, 6, 2, "#E3C064"); });
+  blit(percy, 56, 106 - Math.round(Math.abs(Math.sin(t*6))));
+};
+SCENES2.bankrupt = function(t){
+  bands(0, 90, ["#8AA6C4","#A2BAD2","#BACCE0","#D2DEEA"]);
+  for (let k = 0; k < 3; k++) cloudPuff(fr(hs(k, 3) + t*0.03)*SW, 14 + k*8, 10, "#F7F2E6", "#D8E0EA");
+  P(60, 10, 120, 92, "#C9C3B0"); for (let r = 0; r < 7; r++) for (let k = 0; k < 6; k++) P(66 + k*19, 16 + r*11, 14, 7, "#5A6E8A");
+  P(96, 66, 48, 36, "#1F2A44"); P(100, 70, 18, 32, "#9CC9E6"); P(122, 70, 18, 32, "#9CC9E6");
+  P(70, 40, 100, 18, "#B23A3A"); P(72, 42, 96, 14, "#F7F2E6"); bigText("FOR SALE", 120, 44, "#B23A3A");
+  P(0, 102, SW, 33, "#C4C2BC"); P(0, 102, SW, 2, "#E2E0DA");
+  // bailiffs carrying the furniture away
+  const bx = 150 + t*60;
+  blit(chibi({skin:"#E0A878", hair:"#2B1B10", shirt:"#4A4A52"}, "walk", "bailiff1"), bx, 120); blit(chibi({skin:"#C68650", hair:"#1C1C1C", shirt:"#4A4A52"}, "walk", "bailiff2"), bx + 22, 120);
+  P(bx - 4, 100, 30, 3, "#8E5A30"); P(bx - 2, 103, 2, 6, "#5A3825"); P(bx + 22, 103, 2, 6, "#5A3825");
+  const umb = makeSprite("umb2", 14, 10, () => { for (let i = 0; i < 6; i++) P(i, 6 - Math.floor(i*0.8), 14 - i*2, 1, i % 2 ? "#E8452C" : "#B23A3A"); P(6, 6, 1, 4, "#4A4A52"); });
+  blit(umb, bx + 30, 96 - Math.abs(Math.sin(t*10))*2, 0.3);
+  // Biscuit, your replacement, arrives in a suit
+  const dog = makeSprite("biscuit", 18, 14, () => { oval(9, 9, 7, 4, "#D9A55A"); disc(15, 5, 3.5, "#D9A55A"); P(16, 6, 3, 2, "#C08A48"); px(15, 4, "#1F2238"); P(18, 6, 1, 1, "#1F2238"); P(4, 12, 2, 2, "#C08A48"); P(12, 12, 2, 2, "#C08A48"); P(6, 6, 7, 3, "#1F2A44"); P(8, 6, 2, 3, "#F7F2E6"); P(9, 6, 1, 3, "#B23A3A"); });
+  blit(dog, 120 - (1 - ease(Math.min(1, t*1.5)))*60, 122);
+  P(104, 112, 30, 6, "#E3C064"); text("NEW CEO", 105, 113, "#1F2A44");
+  // and you, on the kerb, holding your box
+  blit(ceoSpr(0), 30, 124); P(24, 116, 12, 7, "#C9A877"); P(24, 116, 12, 1, "#E2C79A");
+};
+SCENES2.licence = function(t){
+  bands(0, 95, ["#7CB4E4","#98C6EC","#B4D8F2"]);
+  P(70, 14, 100, 88, "#F2EDE2"); P(70, 14, 100, 2, "#C9A54A"); for (let r = 0; r < 6; r++) for (let k = 0; k < 5; k++) P(76 + k*19, 30 + r*10, 13, 6, "#9CC9E6");
+  P(84, 4, 72, 16, "#3E2A1E"); P(86, 6, 68, 12, "#5A3825"); text("COFFEE", 108, 9, "#F7F2E6"); P(146, 8, 6, 7, "#F7F2E6"); P(152, 10, 2, 3, "#F7F2E6");
+  P(0, 98, SW, 37, "#C4C2BC"); P(0, 98, SW, 2, "#E2E0DA");
+  // the coffee counter, with you behind it in an apron
+  P(14, 90, 60, 20, "#5A3825"); P(14, 90, 60, 2, "#8E5A30"); blit(ceoSpr(0), 44, 88);
+  P(40, 80, 9, 8, "#F7F2E6"); P(40, 78, 9, 2, "#3E9B4F");
+  P(28, 84, 6, 6, "#F7F2E6"); P(29, 82, 4, 2, "#8E5A30"); for (let k = 0; k < 3; k++) px(30 + k, 78 - fr(t*2 + k*0.3)*6, "rgba(255,255,255,.7)");
+  // the regulator brings down the stamp
+  const sx = 178, down = fr(t*1.4) > 0.55 ? 1 : 0;
+  P(150, 102, 70, 24, "#F7F2E6"); P(150, 102, 70, 1, "#C9C3B0"); for (let k = 0; k < 4; k++) P(156, 108 + k*4, 50, 1, "#C9C3B0");
+  if (t > 0.3) { P(158, 106, 48, 14, "rgba(178,58,58,.0)"); text("REVOKED", 164, 110, "#B23A3A", 1); P(160, 107, 44, 1, "#B23A3A"); P(160, 117, 44, 1, "#B23A3A"); }
+  P(sx - 6, 70 + down*20, 12, 8, "#B23A3A"); P(sx - 2, 60 + down*20, 4, 10, "#4A3020");
+  blit(chibi({skin:"#F2C9A0", hair:"#9A9AA8", shirt:"#6A6A72", long:true, glasses:true}, "stand", "regulator"), 210, 100);
+};
+SCENES2.ipo = function(t){
+  P(0, 0, SW, SH, "#1A2236"); P(0, 0, SW, 60, "#141A2C");
+  P(10, 8, 220, 40, "#06080E");
+  const nm = ((typeof companyName === "function" ? companyName() : "FINE PRINT").toUpperCase().replace(/[^A-Z0-9 ]/g, "").slice(0, 18) || "FINE PRINT") + "  +38%   ";
+  text(nm.repeat(3), 14 - fr(t*0.6)*nm.length*4, 14, "#5BEFA6"); bigText("+38%", 120, 28, "#5BEFA6", "#0E3020");
+  P(0, 48, SW, 3, "#C9A54A");
+  // the balcony and the bell
+  P(80, 62, 80, 10, "#C9A54A"); P(80, 72, 80, 4, "#8E7228");
+  const swing = Math.sin(t*18)*0.4;
+  c.save(); c.translate(150, 54); c.rotate(swing); tri(-6, 0, 6, 0, 0, -10, "#E3C064"); P(-7, -1, 14, 4, "#E3C064"); disc(0, 4, 1.5, "#8E7228"); c.restore();
+  for (let k = 0; k < 3; k++){ const r = 8 + fr(t*3 + k/3)*14; for (let a = -0.8; a < 0.8; a += 0.15) px(150 + Math.cos(a - Math.PI/2)*r*1.3, 50 + Math.sin(a - Math.PI/2)*r, "rgba(227,192,100,.6)"); }
+  blit(ceoSpr(0), 128, 62 - Math.round(Math.abs(Math.sin(t*16))));
+  P(132, 50, 2, 6, "#4A3020");
+  // traders cheering on the floor
+  P(0, 100, SW, 35, "#2B3352");
+  for (let k = 0; k < 9; k++) blit(chibi(PEOPLE[k % 6], "cheer", "trader" + k), 16 + k*26, 124 - Math.round(Math.abs(Math.sin(t*14 + k))*3));
+  confetti(t, 70, 40);
+};
+SCENES2.pe = function(t){
+  bands(0, 80, ["#3A4A7A","#6A5A8A","#C8708A","#F2A07A","#FFD09A"]);
+  disc(180, 74, 12, "#FFE2A8"); disc(180, 74, 9, "#FFF2D0");
+  bands(78, 135, ["#3E5A88","#34507C","#2A4670","#203A60"]);
+  for (let k = 0; k < 20; k++) P(hs(k, 1)*SW, 82 + hs(k, 2)*50, 6, 1, "rgba(255,210,160,.35)");
+  // the superyacht deck
+  P(10, 92, 220, 16, "#F7F2E6"); tri(220, 92, 238, 92, 220, 108, "#F7F2E6"); P(10, 104, 228, 4, "#1F2A44"); P(10, 92, 228, 1, "#FFFFFF");
+  P(40, 70, 80, 22, "#F7F2E6"); P(44, 74, 72, 8, "#5A6E8A"); P(30, 66, 100, 4, "#E8E4DA");
+  for (let x = 14; x < 230; x += 8) P(x, 86, 1, 6, "#C9C3B0"); P(14, 86, 216, 1, "#C9C3B0");
+  // the handshake over a giant cheque
+  blit(ceoSpr(0), 140, 90);
+  blit(chibi({skin:"#F2C9A0", hair:"#C9A227", shirt:"#1F2A44", tie:null, glasses:true}, "stand", "rupert"), 166, 90);
+  P(144, 79, 18, 2, "#F2C9A0");
+  P(128, 58, 60, 20, "#F7F2E6"); P(128, 58, 60, 2, "#3E9B4F"); text("PAY", 131, 62, "#1F2A44"); text("£££££", 131, 70, "#3E9B4F"); P(176, 70, 10, 1, "#1F2238");
+  // champagne
+  const pop = fr(t*1.2);
+  P(200, 82, 4, 10, "#2E5A3E"); P(201, 78, 2, 4, "#2E5A3E"); P(200, 84, 4, 2, "#E3C064");
+  P(201 + pop*20, 76 - pop*30 + pop*pop*20, 2, 2, "#C8A060");
+  for (let k = 0; k < 10; k++){ const tt = fr(t*2 + k/10); px(202 + (hs(k, 1) - .5)*10*tt, 76 - tt*14, "rgba(255,250,220,.8)"); }
+  const gull = makeSprite("gull", 10, 5, () => { line(0, 2, 4, 0, "#F7F2E6"); line(4, 0, 5, 2, "#F7F2E6"); line(5, 2, 9, 0, "#F7F2E6"); });
+  blit(gull, fr(t*0.3)*SW, 24 + Math.sin(t*6)*3);
+};
+PORTRAITS2.fired = t => portrait2({t, skin:"#F2C9A0", hair:"#E9E2CF", hairStyle:"windswept", shirt:"#1F2A44", tie:"#B23A3A", eyes:"normal", brows:"angry", mouth:"talk", glasses:true, bg:"#9CC9E6"});
+PORTRAITS2.bankrupt = t => portrait2({t, skin:"#E0A878", hair:"#2B1B10", hairStyle:"cap", shirt:"#4A4A52", collar:"#6A6A72", eyes:"normal", brows:"flat", mouth:"talk", beard:"#3A2618", bg:"#C4C2BC"});
+PORTRAITS2.licence = t => portrait2({t, skin:"#F2C9A0", hair:"#9A9AA8", hairStyle:"bob", shirt:"#6A6A72", collar:"#F7F2E6", eyes:"normal", brows:"flat", mouth:"talk", glasses:true, bg:"#B4D8F2"});
+PORTRAITS2.pe = t => portrait2({t, skin:"#F2C9A0", hair:"#C9A227", hairStyle:"windswept", shirt:"#1F2A44", collar:"#F7F2E6", eyes:"normal", brows:"flat", mouth:"smile", glasses:true, bg:"#F2A07A"});
+LINES2.fired = {name:"Sir Clive, Chair of the Board", line:"Clear your desk. Percy is having your parking space. He’s very good with stakeholders."};
+LINES2.bankrupt = {name:"Barry, Bailiff", line:"Sign here, here and here. The umbrella’s ours as well, I’m afraid."};
+LINES2.licence = {name:"The Regulator", line:"Your licence is revoked. Your flat white, however, is excellent."};
+LINES2.pe = {name:"Rupert, Private Equity", line:"We’ll add some debt, cut some costs and sell it on in three years. Welcome to the family."};
+
 return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.keys(SCENES2),
   drawScene(g, kind, t){ c = g; c.imageSmoothingEnabled = false; c.setTransform(1,0,0,1,0,0); c.clearRect(0, 0, SW, SH); (SCENES2[kind] || SCENES2.hurricane)(t);
     const vg = c.createRadialGradient(SW/2, SH*0.52, SH*0.4, SW/2, SH*0.52, SW*0.64); vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(14,18,34,.45)"); c.fillStyle = vg; c.fillRect(0, 0, SW, SH); },
   drawPortrait(g, kind, t){ c = g; c.imageSmoothingEnabled = false; c.setTransform(1,0,0,1,0,0); c.clearRect(0, 0, 48, 48); (PORTRAITS2[kind] || PORTRAITS2.hurricane)(t); },
   drawCEO(g, look, t){ t = t || 0.3; c = g; c.imageSmoothingEnabled = false; c.setTransform(1,0,0,1,0,0); c.clearRect(0, 0, 48, 48);
-    face({t, skin:look.skin, hair:look.hair, hairStyle:look.hairStyle === "short" ? undefined : look.hairStyle, shirt:look.outfit, tie:(look.attire || "tie") === "tie" ? "#E3C064" : null,
-      attire:look.attire || "tie", lashes:look.lashes, lip:look.lipstick ? "#C0395A" : null, earrings:look.earrings, glasses:look.glasses, eyes:"normal", brows:"flat", mouth:"smile", bg:"#E9E2CF"});
+    face({t, skin:look.skin, hair:look.hair, hairStyle:look.hairStyle === "short" ? undefined : look.hairStyle, shirt:look.outfit, tie:["tie","three"].includes(look.attire || "tie") ? "#E3C064" : null,
+      attire:look.attire || "tie", lashes:look.lashes, lip:look.lipstick ? "#C0395A" : null, earrings:look.earrings, glasses:look.glasses, freckles:look.freckles, facial:look.facial, scarf:look.outfit && look.hairStyle === "scarf" ? shadeC(look.outfit, -0.15) : null,
+      eyes:"normal", brows:"flat", mouth:"smile", bg:"#E9E2CF"});
     P(13, 27, 3, 2, "rgba(235,110,110,.45)"); P(32, 27, 3, 2, "rgba(235,110,110,.45)"); },
 };
 })();
 
 /* core/constants.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* VERSION and BUILD_DATE are filled in by build.js from package.json. */
-const VERSION = "0.3.1", BUILD_DATE = "2026-11-02";
+const VERSION = "0.4.3", BUILD_DATE = "2026-11-03";
 function intelSpread(n){ return Math.max(0, 36 - 6*n); }
 function intelText(n){
   if (n <= 0) return "No claim intel yet";
@@ -1724,6 +2015,9 @@ function newState(){
     cover:{cat:false, cyber:false, dno:false, event:false}, swan:null, swansSurvived:0, best3:false};
 }
 function ensureState(){
+  if (S.floors && S.floors.filter(f => f.type === "penthouse").length){
+    const ph = S.floors.find(f => f.type === "penthouse"); S.floors = S.floors.filter(f => f.type !== "penthouse"); S.floors.push(ph); S.penthouseBought = true;
+  }
   const d = newState();
   for (const k of ["diff","conf","strikes","cleanQ","cleanRun","stars","favour","perks","ach","cover","swansSurvived","best3","earned","repSum","repT","profHist","lastCall","tipAuto","price","cyc","divQ","execs","invRisk","invLast","prQ","unlocked"]) if (S[k] == null) S[k] = d[k];
   if (S.swan === undefined) S.swan = null;
@@ -1731,16 +2025,24 @@ function ensureState(){
   for (const f of S.floors) S.unlocked[f.type] = true;
 }
 function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === 1) return s; }catch(e){} return null; }
+const PENTHOUSE_COST = 20, PENTHOUSE_UP = 6;
+function hasPenthouse(){ return S.floors.some(f => f.type === "penthouse"); }
+function workFloors(){ return S.floors.length - (hasPenthouse() ? 1 : 0); }
+let lastAddedFloor = -1;
+function addFloor(f){ const ph = S.floors.findIndex(x => x.type === "penthouse"); const i = ph >= 0 ? ph : S.floors.length; S.floors.splice(i, 0, f);
+  if (ph >= 0){ W.splice(i, 0, []); popT.splice(i, 0, 0); } lastAddedFloor = i; return i; }
+function cityName(){ return (CITIES[cityId()] || CITIES.london).name; }
 function companyName(){ return (S && S.companyName) || "Fine Print Syndicate"; }
 function coName(){ return esc(companyName()); }
 function ceoName(){ return (S && S.ceo && S.ceo.name) || "the CEO"; }
 function ceoN(){ return esc(ceoName()); }
-const HAIR_SPRITE = {short:0, pixie:0, cap:0, windswept:0, bob:1, long:1, ponytail:2, bun:3, curly:4, braids:5};
+const HAIR_SPRITE = {short:0, pixie:0, cap:0, windswept:0, crew:0, sidepart:0, bob:1, long:1, ponytail:2, bun:3, manbun:3, curly:4, braids:5, bald:6, scarf:7, quiff:8};
 function ceoLook(c){
   c = c || (S && S.ceo) || {}; const at = c.attire || "tie", outfit = c.outfit || OUTFITS[0];
   const skirt = at === "skirt" ? "#2B3352" : at === "dress" ? outfit : null;
   return {skin:c.skin || SKINS[2], hair:c.hair || HAIRS[0], shirt:outfit, pants:skirt ? "#3A3048" : "#2B3352", skirt, style:HAIR_SPRITE[c.hairStyle] || 0,
-    tie:at === "tie" ? "#F2C14E" : null, blouse:at === "blouse" || at === "skirt", earrings:!!c.earrings, glasses:!!c.glasses, hat:c.hairStyle === "cap"};
+    tie:at === "tie" || at === "three" ? "#F2C14E" : null, blouse:["blouse","skirt","trouser","open"].includes(at), earrings:!!c.earrings, glasses:!!c.glasses, hat:c.hairStyle === "cap",
+    scarf:c.hairStyle === "scarf" ? shade(outfit, -0.15) : null, beard:c.facial === "beard" ? (c.hair || HAIRS[0]) : null, mo:c.facial === "moustache" ? (c.hair || HAIRS[0]) : null};
 }
 function save(){ try{ S.savedAt = Date.now(); localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 let S = load() || newState();
@@ -1754,22 +2056,22 @@ function happyMult(){ return 0.4 + S.happy/100*0.9; }
 function salesFloorRate(level){ return 5.5*Math.pow(level,1.38); }
 function exposureRate(level){ return 5.5*Math.pow(level,1.27); }
 function exposure(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += exposureRate(f.level); return s*salesMult()*volume(); }
-function salesMult(){ return (1 + 0.35*lv("marketing") + 0.10*lv("it") + 0.05*lv("hr") + (perk("loyalty") ? 0.1 : 0)) * happyMult() * morale() * Math.max(0.5, 1 - 0.03*lv("risk") - 0.04*lv("compliance")); }
+function salesMult(){ return (1 + 0.05*Math.min(4, S.tickets || 0)) * (1 + 0.35*lv("marketing") + 0.10*lv("it") + 0.05*lv("hr") + (perk("loyalty") ? 0.1 : 0)) * happyMult() * morale() * Math.max(0.5, 1 - 0.03*lv("risk") - 0.04*lv("compliance")); }
 function cycleVal(){ return Math.sin(S.cyc || 0); }
 function cycleName(){ const c = cycleVal(); return c > 0.35 ? "Hard market" : c < -0.35 ? "Soft market" : "Steady market"; }
 function priceIdx(){ return S.price == null ? 1 : S.price; }
 function marketRate(){ return PRICES[priceIdx()].p*(1 + 0.25*cycleVal()); }
 function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1)); }
-function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + f.level, 0)/70); }
+function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + (f.type === "penthouse" ? 0 : f.level), 0)/70); }
 function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level); return s*salesMult()*marketRate()*volume(); }
 function income(){ return baseIncome() * (S.buffs.sales > 0 ? 2 : 1) * (S.outage > 0 ? 0.5 : 1); }
-function salFactor(){ return 1 + 0.06*S.floors.length; }
+function salFactor(){ return 1 + 0.06*workFloors(); }
 function upkeep(){ let s = 0; for (const f of S.floors) s += (TYPES[f.type].sal || 0.6)*f.level; return s*salFactor() + execCost(); }
 function perk(id){ return !!(S.perks && S.perks[id]); }
 function claimSizeMult(){ return (1 + 0.10*lv("marketing"))*(0.9 + 0.1*S.diff); }
 function claimSpeed(){ return morale()*(1 + 0.15*lv("it")); }
 function regCreep(){ return Math.floor((S.quarter - 1)/8); }
-function compNeed(){ return Math.max(0, S.floors.length - 3 + Math.max(0, lv("breakroom") - lv("hr")) + regCreep() + (lv("invest") && S.invRisk === 2 ? 1 : 0)); }
+function compNeed(){ return Math.max(0, workFloors() - 3 + Math.max(0, lv("breakroom") - lv("hr")) + regCreep() + (lv("invest") && S.invRisk === 2 ? 1 : 0)); }
 function isUnlocked(t){ return !UNLOCKS[t] || !!(S.unlocked && S.unlocked[t]) || S.floors.some(f => f.type === t) || UNLOCKS[t].test(); }
 function checkUnlocks(){
   if (!S.unlocked) S.unlocked = {};
@@ -1812,6 +2114,7 @@ function resolveRival(k, auto){
   else if (k === 1){ kept = Math.random() < lunchOdds(); msg = kept ? `Four hours, three courses and a cheese trolley later, nobody remembers ${r.name}’s offer.` : `The lunch was lovely. They still left for ${r.name}.`; }
   else if (k === 2){ spend(Math.round(r.cost/2), "other"); kept = Math.random() < hrOdds(); msg = kept ? "HR found a retention bonus and a nicer chair. They’re staying." : `HR’s retention plan was a branded mug. They left for ${r.name}.`; }
   else msg = `They left for ${r.name}.`;
+  if (kept) S.rivalsKept = (S.rivalsKept || 0) + 1;
   if (!kept){ f.level = Math.max(1, f.level - 1); rebuildWorkers(r.i); msg += ` Your ${TYPES[f.type].name} drops to level ${f.level}.`; }
   if (auto){ toast(`${r.name} tried to poach your staff. ${msg}`, kept ? "good" : "bad"); save(); return; }
   openModal(`<h2>🦈 ${r.name}</h2><p>${msg}</p><div class="closeRow"><button class="btn" data-act="close">Back to work</button></div>`, {locked:true, onClose:() => save()});
@@ -1828,7 +2131,7 @@ function maxStrikes(){ return perk("lobbyist") ? 4 : 3; }
 function growthRate(){ return Math.max(0.01, (0.06 + 0.04*S.diff + 0.02*lv("ir") - (perk("dinners") ? 0.03 : 0))*(1 - 0.85*maturity())); }
 function mktName(){ return S.diff < 1.6 ? "Calm market" : S.diff < 2.3 ? "Choppy market" : S.diff < 3.1 ? "Stormy market" : S.diff < 4 ? "Brutal market" : S.diff < 5 ? "Cutthroat market" : "Feeding frenzy"; }
 function actRed(){ return Math.min(0.55, 0.07*lv("actuary")); }
-function buildCost(){ const n = S.floors.length - 1; return Math.round(100*Math.pow(1.6, Math.min(n, 13))*Math.pow(1.25, Math.max(0, n - 13))); }
+function buildCost(){ const n = workFloors() - 1; return Math.round(100*Math.pow(1.6, Math.min(n, 13))*Math.pow(1.25, Math.max(0, n - 13))); }
 function upCost(f){ return Math.round(TYPES[f.type].up*Math.pow(1.9, f.level)); }
 function claimInterval(){ return Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))/volume() * (S.buffs.surge > 0 ? 0.35 : 1); }
 function B(){ return Math.max(120, Math.round(baseIncome()*25/10)*10); }
@@ -1964,12 +2267,14 @@ function makeLook(type){
   const t = TYPES[type];
   const alt = Math.random() < 0.5, skirt = alt && Math.random() < 0.55 ? t.pants : null;
   const tie = !alt && (type==="legal"||type==="ir"||type==="sales"||type==="compliance") ? pick(["#FF5A5F","#FFD23F","#4BE39A","#FF8FB1"]) : null;
-  return {skin:pick(SKINS), hair:pick(HAIRS), shirt:t.shirt, pants:skirt ? "#3A3048" : t.pants, skirt, style:alt ? pick([1,1,2,3,4,5]) : pick([0,0,0,4,1]),
-    tie, blouse:alt && !tie, earrings:alt && Math.random() < 0.5,
+  const hair = pick(HAIRS), style = alt ? pick([1,1,2,3,4,5,7]) : pick([0,0,0,4,1,6,8]), facial = !alt && style !== 6 || (!alt && Math.random() < 0.5) ? Math.random() : 1;
+  return {skin:pick(SKINS), hair, shirt:t.shirt, pants:skirt ? "#3A3048" : t.pants, skirt, style, scarf:style === 7 ? pick(["#3E2E6A","#2B3352","#B23A3A","#3E9B4F","#2BB3B1"]) : null,
+    beard:facial < 0.2 ? hair : null, mo:facial >= 0.2 && facial < 0.3 ? hair : null,
+    tie, blouse:alt && !tie, earrings:alt && style !== 7 && Math.random() < 0.5,
     glasses: type==="actuary" || Math.random()<.15, hat: !alt && type==="sales" && Math.random()<.35};
 }
 function rebuildWorkers(i){
-  const f = S.floors[i]; const n = Math.min(5, f.level + 1); const arr = [];
+  const f = S.floors[i]; const n = f.type === "penthouse" ? 0 : Math.min(5, f.level + 1); const arr = [];
   const walk = f.type === "breakroom" || f.type === "ir";
   for (let k = 0; k < n; k++){
     const look = makeLook(f.type);
@@ -1986,7 +2291,7 @@ S.floors.forEach((f,i) => rebuildWorkers(i));
 /* ---------- Layout ---------- */
 const LW = 232, OX = 6, FH = 40, TOP = 82, LOBBY_H = 44, GROUND = 24;
 function layout(){
-  const n = S.floors.length, can = n < MAXF;
+  const n = S.floors.length, can = workFloors() < MAXF;
   const floorsTop = TOP + (can ? FH : 0);
   const lobbyY = floorsTop + n*FH;
   const groundY = lobbyY + LOBBY_H;
@@ -2036,7 +2341,10 @@ function person(x, y, lk, walkF, face, bob = 0){
   R(L-1,y-7,1,3,sh); R(L+7,y-7,1,3,sh); R(L-1,y-4,1,1,lk.skin); R(L+7,y-4,1,1,lk.skin);
   R(L+1,y-15,5,7,lk.skin); R(L,y-14,7,5,lk.skin); R(L+1,y-9,5,1,skD);
   const hD = shade(lk.hair, -0.25);
-  if (lk.style === 1){ R(L+1,y-17,5,1,lk.hair); R(L,y-16,7,3,lk.hair); R(L-1,y-15,1,6,lk.hair); R(L+7,y-15,1,6,lk.hair); R(fr ? L : L+6, y-13, 1, 4, lk.hair); }
+  if (lk.style === 6){ R(L+2,y-16,2,1,"rgba(255,255,255,.35)"); }
+  else if (lk.style === 7){ const sc = lk.scarf || "#3E2E6A"; R(L-1,y-17,9,9,sc); R(L-1,y-8,9,1,shade(sc, -0.2)); R(L+1,y-14,5,5,lk.skin); R(L+1,y-15,5,1,shade(sc, 0.2)); }
+  else if (lk.style === 8){ R(L+1,y-17,5,1,lk.hair); R(L,y-16,7,2,lk.hair); R(L+1,y-18,3,1,lk.hair); R(fr ? L : L+6, y-14, 1, 2, lk.hair); }
+  else if (lk.style === 1){ R(L+1,y-17,5,1,lk.hair); R(L,y-16,7,3,lk.hair); R(L-1,y-15,1,6,lk.hair); R(L+7,y-15,1,6,lk.hair); R(fr ? L : L+6, y-13, 1, 4, lk.hair); }
   else if (lk.style === 4){ R(L-1,y-17,9,3,lk.hair); R(L-1,y-14,1,4,lk.hair); R(L+7,y-14,1,4,lk.hair); R(L,y-18,7,1,lk.hair); R(L+1,y-17,1,1,shade(lk.hair, 0.3)); R(L+5,y-16,1,1,shade(lk.hair, 0.3)); }
   else if (lk.style === 5){ R(L+1,y-17,5,1,lk.hair); R(L,y-16,7,2,lk.hair); R(L-1,y-15,1,9,lk.hair); R(L+7,y-15,1,9,lk.hair); for (let k = 0; k < 4; k++){ R(L-1,y-13+k*2,1,1,hD); R(L+7,y-13+k*2,1,1,hD); } }
   else { R(L+1,y-17,5,1,lk.hair); R(L,y-16,7,2,lk.hair); R(fr ? L : L+6, y-14, 1, 3, lk.hair); R(fr ? L+1 : L+5, y-14, 1, 1, lk.hair);
@@ -2046,7 +2354,9 @@ function person(x, y, lk, walkF, face, bob = 0){
   const e1 = fr ? L+3 : L+1, e2 = fr ? L+5 : L+3;
   R(e1, y-13, 1, 2, "#2B1A12"); R(e2, y-13, 1, 2, "#2B1A12");
   R(fr ? L+2 : L, y-10, 1, 1, "rgba(235,110,110,.6)"); R(fr ? L+6 : L+4, y-10, 1, 1, "rgba(235,110,110,.6)");
-  if (lk.earrings) R(fr ? L : L+6, y-11, 1, 1, "#E3C064");
+  if (lk.beard){ R(L,y-11,7,2,lk.beard); R(L+1,y-9,5,1,lk.beard); R(fr ? L+3 : L+2, y-10, 2, 1, lk.skin); }
+  else if (lk.mo) R(fr ? L+3 : L+1, y-11, 3, 1, lk.mo);
+  if (lk.earrings && lk.style !== 7) R(fr ? L : L+6, y-11, 1, 1, "#E3C064");
   if (lk.glasses){ R(e1-1, y-13, 3, 1, "rgba(70,40,25,.65)"); R(e2-1, y-13, 3, 1, "rgba(70,40,25,.65)"); }
   if (lk.hat){ R(L-1,y-16,9,1,"#3A2618"); R(L+1,y-18,5,2,"#4A3020"); R(L+1,y-17,5,1,"#8A5A2A"); }
 }
@@ -2093,6 +2403,7 @@ function drawSky(L){
   }
 }
 function drawSkyline(L){
+  if (cityId() === "nyc") return skylineNYC(L); if (cityId() === "bermuda") return skylineBermuda(L);
   const gy = L.groundY, night = isNight();
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#161B38" : "#73849B";
   const lit = "#FFE88A";
@@ -2124,6 +2435,7 @@ function drawSkyline(L){
 }
 function drawSkylineFiller(L){
   const gy = L.groundY, night = isNight();
+  if (cityId() === "bermuda"){ skylineBermuda(L); return; }
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#181D3B" : "#7C8DA4", lit = "#FFE88A";
   for (let x = 0, k = 0; x < 256; k++){ const w = 6 + Math.floor(hash(k + 40, 11)*10), h = 12 + Math.floor(hash(k + 40, 12)*30); R(x, gy-h, w, h, far); if (night && hash(k + 40, 13) > .5) R(x+2, gy-h+3, 1, 1, lit); x += w; }
   for (let x = 2, k = 0; x < 250; k++){
@@ -2154,6 +2466,7 @@ function drawGround(L){
   for (let x = 2; x < LW; x += 12) R(x, gy+14, 6, 1, "#F2E6C8");
   R(12,gy-26,1,26,"#1F2A44"); R(9,gy-28,7,2,"#1F2A44"); R(10,gy-26,5,1, night ? "#FFE88A" : "#E6D2AE");
   if (night){ ctx.globalAlpha = .22; R(4,gy-25,17,25,"#FFE88A"); ctx.globalAlpha = 1; }
+  if (cityId() === "bermuda") bermudaPalms(gy); else if (cityId() === "nyc") nycStreet(gy, night);
   for (const c of cars){
     if (c.wait > 0) continue; const x = Math.round(c.x);
     if (c.kind === "bus"){ const y = gy+6;
@@ -2166,6 +2479,7 @@ function drawGround(L){
   }
 }
 function flareF(L, y){
+  if (cityId() !== "london") return 14;
   const body = 14, base = 5, crown = 30, sm = t => t*t*(3 - 2*t);
   if (y < L.floorsTop){ const t = clamp((L.floorsTop - y)/Math.max(1, L.floorsTop - TOP), 0, 1); return body + (crown - body)*sm(t); }
   const baseTop = L.lobbyY - FH*0.6;
@@ -2174,6 +2488,7 @@ function flareF(L, y){
 }
 function flareAt(L, y){ return Math.round(flareF(L, y)); }
 function facadeRows(L){
+  if (cityId() !== "london") return facadeAlt(L);
   const night = isNight(), top = TOP, bot = L.groundY;
   const fl = y => flareF(L, y);
   for (const side of [-1, 1]){
@@ -2198,6 +2513,7 @@ function facadeRows(L){
   }
 }
 function drawRoof(L){
+  if (cityId() === "nyc") return roofNYC(L); if (cityId() === "bermuda") return roofBermuda(L);
   const base = TOP, night = isNight();
   const tf = flareAt(L, TOP) + 2, x0 = 24 - tf, x1 = 196 + tf, w = x1 - x0;
   for (let x = x0; x < x1; x++){
@@ -2337,6 +2653,110 @@ function drawShaftStatic(L){
   R(24,top,172,1,"#2E3B55");
 }
 
+/* The penthouse: more luxuries appear at each level. */
+function drawPenthouse(y){
+  const f = S.floors.find(x => x.type === "penthouse"), lvl = f ? f.level : 1;
+  for (const wx of [34, 76]){ R(wx, y+5, 36, 20, "#1F2A44"); R(wx+1, y+6, 34, 18, "#9CC9E6"); R(wx+1, y+6, 34, 6, "#BFE0F2");
+    for (let k = 0; k < 6; k++){ const h = 4 + hash(k, wx)*9; R(wx + 2 + k*5.5, y + 24 - h, 4.5, h, "#7FA3C0"); }
+    R(wx + 17, y+6, 1, 18, "#1F2A44"); R(wx+1, y+15, 34, 0.6, "rgba(31,42,68,.4)"); }
+  R(118, y+31, 36, 2, "#8E2A3A"); R(118, y+31, 36, 0.6, "#E3C064");
+  R(124, y+22, 26, 6, "#24305A"); R(122, y+20, 4, 10, "#24305A"); R(148, y+20, 4, 10, "#24305A"); R(124, y+22, 26, 1, "#3A4A7A"); R(126, y+28, 2, 3, "#1F2238"); R(146, y+28, 2, 3, "#1F2238");
+  R(130, y+29, 14, 1.2, "#C9A54A"); R(134, y+26.6, 2, 2.4, "#F7F2E6"); R(138, y+27, 2, 2, "#3E9B4F");
+  if (lvl >= 2){ R(157, y+22, 14, 5, "#141418"); R(157, y+20, 6, 2, "#141418"); R(158, y+27, 1, 8, "#141418"); R(169, y+27, 1, 8, "#141418"); for (let k = 0; k < 6; k++) R(158 + k*2, y+26, 1, 1, "#F7F2E6"); }
+  if (lvl >= 3){ R(100, y+14, 14, 12, "#1F2A44"); R(101, y+15, 12, 10, "#3E8FBF"); const fx = 102 + (Math.sin(time*1.5)*0.5 + 0.5)*8; R(fx, y+19, 2, 1, "#E39A2C"); R(fx + 2, y+19, 1, 1, "#E39A2C"); R(108 - (Math.sin(time*1.1)*0.5 + 0.5)*5, y+22, 2, 1, "#F2C14E"); R(101, y+23, 12, 2, "#C9B07A"); R(103, y+21, 1, 2, "#3E9B4F"); R(101, y+26, 12, 8, "#2B3352"); }
+  if (lvl >= 4){ R(120, y+6, 10, 8, "#C9A54A"); R(121, y+7, 8, 6, "#B23A3A"); R(123, y+9, 4, 2, "#F2C14E"); R(134, y+6, 12, 9, "#C9A54A"); R(135, y+7, 10, 7, "#2F6FE4"); R(137, y+10, 6, 3, "#F7F2E6"); R(150, y+7, 8, 8, "#C9A54A"); R(151, y+8, 6, 6, "#3E9B4F"); }
+  if (lvl >= 5){ R(100, y+1, 1, 4, "#C9A54A"); R(96, y+5, 9, 2, "#E3C064"); for (let k = 0; k < 4; k++) R(96 + k*2.5, y+7, 1, 2, "#FFF6D0"); R(72, y+18, 1.5, 12, "#2B3352"); R(70, y+16, 6, 3, "#C9A54A"); R(75, y+15, 3, 1.4, "#C9A54A"); }
+  T("PENTHOUSE", 103, y+35.4, 3.6, "rgba(31,42,68,.45)", "center", 700);
+}
+
+/* ---------- cities: New York and Hamilton, Bermuda (London uses the original art) ---------- */
+function cityId(){ return (typeof S !== "undefined" && S && S.city) || "london"; }
+function roofSign(base, x0, w, night){
+  R(x0, base-9, w, 9, "#1F2A44"); R(x0, base-8, w, 7, "#2E3B5E"); R(x0, base-8, w, 0.6, "#C9A54A"); R(x0, base-9, w, 1, "#F2C14E");
+  for (let i = 0; i < Math.floor(w/6); i++) R(x0 + 2 + i*6, base-1, 2, 1, (Math.floor(time*3) + i) % 2 ? "#FFE9A8" : "#7A5A28");
+  const nm = companyName(); let fs = 7.2; ctx.font = `700 ${fs*1.08}px "Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif`;
+  while (fs > 4.5 && ctx.measureText(nm).width > w - 14){ fs -= 0.2; ctx.font = `700 ${fs*1.08}px "Chakra Petch","Pixelify Sans","Trebuchet MS",sans-serif`; }
+  T(nm, x0 + w/2, base-2, fs, "#FFE9A8", "center", 700);
+}
+/* the Metropolitan Life Insurance Company Tower: white marble campanile, four clock faces, pyramid roof, gold lantern */
+function roofNYC(L){
+  const base = TOP, night = isNight(), x0 = 10, x1 = 210, w = x1 - x0, marble = night ? "#B8B4AC" : "#EEEAE0", sh = night ? "#8E8A82" : "#D2CDC0";
+  R(x0, base-31, w, 22, marble); for (let x = x0 + 4; x < x1; x += 10) R(x, base-31, 2, 22, sh); R(x0, base-31, w, 1.4, "#C9A54A");
+  const cx = 110, cy = base-20, now = new Date(), hr = (now.getHours() % 12 + now.getMinutes()/60)/12*Math.PI*2, mn = now.getMinutes()/60*Math.PI*2;
+  ctx.fillStyle = "#C9A54A"; ctx.beginPath(); ctx.arc(cx, cy, 9.5, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = night ? "#FFF2C8" : "#FBF8F0"; ctx.beginPath(); ctx.arc(cx, cy, 8.3, 0, Math.PI*2); ctx.fill();
+  for (let k = 0; k < 12; k++){ const a = k/12*Math.PI*2; R(cx + Math.sin(a)*7 - 0.4, cy - Math.cos(a)*7 - 0.4, 0.8, 0.8, "#1F2A44"); }
+  ctx.strokeStyle = "#1F2A44"; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.sin(hr)*4.5, cy - Math.cos(hr)*4.5); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.sin(mn)*6.5, cy - Math.cos(mn)*6.5); ctx.stroke();
+  for (const ox of [40, 180]){ R(ox - 4, base-27, 8, 12, sh); R(ox - 3, base-26, 6, 10, night ? "#FFE18A" : "#9CC9E6"); ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(ox, base-26, 3, Math.PI, 0); ctx.fill(); }
+  ctx.fillStyle = night ? "#6E7A6E" : "#8FA89A"; ctx.beginPath(); ctx.moveTo(x0 + 6, base-31); ctx.lineTo(cx, base-40); ctx.lineTo(x1 - 6, base-31); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,.18)"; ctx.beginPath(); ctx.moveTo(x0 + 6, base-31); ctx.lineTo(cx, base-40); ctx.lineTo(cx, base-31); ctx.closePath(); ctx.fill();
+  R(cx - 3, base-42, 6, 3, "#E3C064"); R(cx - 1, base-44, 2, 2, night ? "#FFF2A8" : "#F2DC8E");
+  if (night){ const g = ctx.createRadialGradient(cx, base-43, 0, cx, base-43, 10); g.addColorStop(0, "rgba(255,236,160,.6)"); g.addColorStop(1, "rgba(255,236,160,0)"); ctx.fillStyle = g; ctx.fillRect(cx - 10, base-44, 20, 12); }
+  roofSign(base, x0, w, night);
+}
+/* a Front Street office in Hamilton: pastel stucco and the white stepped roof Bermuda is known for */
+function roofBermuda(L){
+  const base = TOP, night = isNight(), x0 = 10, x1 = 210, w = x1 - x0, white = night ? "#D8D8E0" : "#FBFBF6", step = night ? "#B8B8C4" : "#E2E2DA";
+  for (let k = 0; k < 6; k++){ const inset = 6 + k*12, y = base - 12 - k*4.5; R(x0 + inset, y, w - inset*2, 4.5, white); R(x0 + inset, y + 3.6, w - inset*2, 0.9, step); }
+  R(x0 + 84, base - 41, 32, 3, white);
+  R(38, base - 34, 7, 14, white); R(37, base - 35, 9, 2, step); R(175, base - 34, 7, 14, white); R(174, base - 35, 9, 2, step);
+  R(x0 + 2, base - 13, w - 4, 1.2, step);
+  roofSign(base, x0, w, night);
+}
+function facadeAlt(L){
+  const night = isNight(), top = TOP, bot = L.groundY, ny = cityId() === "nyc";
+  const wall = ny ? (night ? "#B4B0A8" : "#ECE8DE") : (night ? "#C68C9C" : "#F4B8C4"), wallD = ny ? (night ? "#8E8A82" : "#CFC9BB") : (night ? "#A87080" : "#E49AAA");
+  for (const [x0, x1] of [[10, 24], [196, 210]]){
+    R(x0, top, x1 - x0, bot - top, wall);
+    if (ny){ R(x0 + 2, top, 1.5, bot - top, wallD); R(x1 - 3.5, top, 1.5, bot - top, wallD); }
+    else { for (let y = top; y < bot; y += 6){ R(x0, y, 3, 3, "#FBFBF6"); R(x1 - 3, y + 3, 3, 3, "#FBFBF6"); } }
+    for (let i = 0; i < L.n; i++){ const y = floorY(L, i); const lit = night && hash(i, x0) > 0.35;
+      if (ny){ R(x0 + 5, y + 10, 4, 12, wallD); R(x0 + 5.5, y + 11, 3, 10.5, lit ? "#FFE18A" : "#7FA3C0"); ctx.fillStyle = wallD; ctx.beginPath(); ctx.arc(x0 + 7, y + 11, 2, Math.PI, 0); ctx.fill(); if (i % 4 === 3) R(x0, y + 1, x1 - x0, 1.2, "#C9A54A"); }
+      else { R(x0 + 4, y + 12, 6, 12, "#FBFBF6"); R(x0 + 5, y + 13, 4, 10, lit ? "#FFE18A" : "#7FB8D0"); R(x0 + 2.5, y + 12, 1.5, 12, "#3E9B6A"); R(x0 + 10, y + 12, 1.5, 12, "#3E9B6A"); } }
+    R(x0, L.lobbyY, x1 - x0, bot - L.lobbyY, ny ? wallD : "#FBFBF6");
+    if (ny) for (let y = L.lobbyY + 3; y < bot; y += 5) R(x0, y, x1 - x0, 0.6, "rgba(0,0,0,.12)");
+  }
+  for (let i = 0; i < L.n; i++){ const y = floorY(L, i); R(24, y + 38, 172, 2, ny ? "#D2CDC0" : "#FBFBF6"); }
+}
+function skylineNYC(L){
+  const gy = L.groundY, night = isNight(), far = night ? "#272D52" : "#A9B6C8", mid = night ? "#1E2446" : "#8A9AB2", near = night ? "#161B38" : "#6E809A", lit = "#FFE88A";
+  for (let x = 0, k = 0; x < 256; k++){ const w = 6 + Math.floor(hash(k, 41)*10), h = 18 + Math.floor(hash(k, 42)*44); R(x, gy - h, w, h, far); if (night && hash(k, 43) > .4) R(x + 2, gy - h + 4, 1, 1, lit); x += w; }
+  // the Empire State Building
+  const ex = 52; R(ex - 10, gy - 70, 20, 70, mid); R(ex - 7, gy - 86, 14, 16, mid); R(ex - 4, gy - 98, 8, 12, mid); R(ex - 2, gy - 106, 4, 8, mid); R(ex - 0.5, gy - 122, 1, 16, mid);
+  for (let y = gy - 66; y < gy - 4; y += 4) for (let x = ex - 8; x < ex + 8; x += 3) if (night ? hash(x, y) > .5 : hash(x, y) > .85) R(x, y, 1, 2, night ? lit : "#C8D6E4");
+  // the Chrysler Building's crown
+  const cx = 196; R(cx - 8, gy - 74, 16, 74, mid); for (let k = 0; k < 5; k++){ const w = 7 - k*1.3, y = gy - 76 - k*5; ctx.fillStyle = night ? "#3A4470" : "#B8C4D4"; ctx.beginPath(); ctx.arc(cx, y, w, Math.PI, 0); ctx.fill(); for (let a = 0; a < 5; a++) R(cx - w + 1 + a*(w*2 - 2)/4, y - 1, 0.7, 1.6, night ? "#FFE88A" : "#E8EEF4"); }
+  R(cx - 0.5, gy - 110, 1, 12, night ? "#B8C4D4" : "#D8E0EA");
+  // One World Trade Center
+  ctx.fillStyle = near; ctx.beginPath(); ctx.moveTo(228, gy); ctx.lineTo(232, gy - 96); ctx.lineTo(240, gy - 96); ctx.lineTo(244, gy); ctx.closePath(); ctx.fill(); R(235.5, gy - 116, 1, 20, near);
+  // water towers on the low roofs
+  for (const [wx, wh] of [[96, 34], [128, 30], [160, 38]]){ R(wx - 9, gy - wh, 18, wh, near); R(wx - 3, gy - wh - 7, 6, 6, night ? "#3A2E2A" : "#8A6A4A"); ctx.fillStyle = night ? "#3A2E2A" : "#8A6A4A"; ctx.beginPath(); ctx.moveTo(wx - 3.5, gy - wh - 7); ctx.lineTo(wx, gy - wh - 10); ctx.lineTo(wx + 3.5, gy - wh - 7); ctx.fill(); R(wx - 2, gy - wh - 1, 0.6, 1, near); R(wx + 1.4, gy - wh - 1, 0.6, 1, near); }
+  // the Statue of Liberty, far off
+  R(10, gy - 14, 8, 14, mid); R(12.5, gy - 26, 3, 12, night ? "#3E6A60" : "#7FB8A8"); R(13, gy - 29, 2, 3, night ? "#3E6A60" : "#7FB8A8"); R(15, gy - 33, 1, 6, night ? "#3E6A60" : "#7FB8A8"); R(14.5, gy - 35, 2, 2, night ? "#FFE88A" : "#F2C14E");
+  ctx.globalCompositeOperation = "source-atop"; const hz = ctx.createLinearGradient(0, gy - 160, 0, gy); hz.addColorStop(0, "rgba(255,255,255,0)"); hz.addColorStop(1, night ? "rgba(30,36,80,.3)" : "rgba(226,233,241,.4)"); ctx.fillStyle = hz; ctx.fillRect(0, gy - 160, 256, 160); ctx.globalCompositeOperation = "source-over";
+}
+function skylineBermuda(L){
+  const gy = L.groundY, night = isNight();
+  // the harbour and the islands across it
+  R(0, gy - 26, 256, 26, night ? "#1E3A5A" : "#3EC0C8"); R(0, gy - 26, 256, 1, night ? "#3A5A7A" : "#9FE8EC");
+  for (let k = 0; k < 14; k++) R(hash(k, 3)*256, gy - 24 + hash(k, 4)*20, 6, 0.6, "rgba(255,255,255,.45)");
+  ctx.fillStyle = night ? "#1E3A2E" : "#5DA85A"; ctx.beginPath(); ctx.moveTo(0, gy - 26); for (let x = 0; x <= 256; x += 4) ctx.lineTo(x, gy - 30 - Math.sin(x*0.035)*10 - Math.sin(x*0.09)*4); ctx.lineTo(256, gy - 26); ctx.closePath(); ctx.fill();
+  const pastel = ["#F4B8C4","#F2D98A","#9CCFE6","#B8E0B0","#F7F2E6","#D8B8E8"];
+  for (let k = 0; k < 22; k++){ const x = 4 + k*11.5, base = gy - 28 - Math.sin(x*0.035)*10 - Math.sin(x*0.09)*4;
+    R(x, base - 6, 8, 6, night ? "#4A4A62" : pastel[k % 6]); for (let s = 0; s < 3; s++) R(x - 0.5 + s, base - 7.5 - s*1.2, 9 - s*2, 1.4, night ? "#9A9AB0" : "#FBFBF6");
+    if (night && hash(k, 7) > .4) R(x + 3, base - 4, 1.5, 1.5, "#FFE18A"); }
+  // Gibbs Hill lighthouse
+  R(28, gy - 66, 6, 30, night ? "#C8C8D0" : "#F7F2E6"); R(27, gy - 70, 8, 4, "#1F2A44"); R(29, gy - 73, 4, 3, night ? "#FFF2A8" : "#E3C064");
+  if (night){ ctx.fillStyle = "rgba(255,240,170,.18)"; ctx.beginPath(); ctx.moveTo(31, gy - 71); const a = time*1.2; ctx.lineTo(31 + Math.cos(a)*60, gy - 71 + Math.sin(a)*8 - 6); ctx.lineTo(31 + Math.cos(a)*60, gy - 71 + Math.sin(a)*8 + 6); ctx.fill(); }
+  // the cathedral tower
+  R(122, gy - 62, 12, 36, night ? "#6A6A7A" : "#C8C0AE"); for (let k = 0; k < 4; k++) R(121 + k*4, gy - 66, 2, 4, night ? "#6A6A7A" : "#C8C0AE"); R(126, gy - 54, 4, 8, night ? "#2A2A3A" : "#5A6E8A");
+  // a cruise ship in the harbour
+  R(170, gy - 18, 56, 8, "#FBFBF6"); R(174, gy - 24, 44, 6, "#FBFBF6"); R(180, gy - 28, 30, 4, "#FBFBF6"); R(170, gy - 11, 56, 1.4, "#1F2A44"); R(204, gy - 33, 4, 5, "#2F6FE4");
+  for (let x = 176; x < 216; x += 4) R(x, gy - 21, 2, 1.4, night ? "#FFE18A" : "#7FA3C0");
+}
+function bermudaPalms(gy){ for (const x of [6, 54, 214]){ for (let i = 0; i < 22; i++) R(x + Math.sin(i*0.08)*3, gy - i, 1.6, 1, i % 3 ? "#A8824E" : "#8E6A3E"); for (let f = 0; f < 6; f++){ const a = f/6*Math.PI*2 + Math.sin(time*1.4 + x)*0.08; for (let k = 0; k < 9; k++) R(x + 2 + Math.cos(a)*k, gy - 22 + Math.sin(a)*k*0.5 + k*k*0.04, 1.4, 1.2, k < 5 ? "#3E8A3A" : "#5DB04A"); } } }
+function nycStreet(gy, night){ R(30, gy - 6, 3, 6, "#B23A3A"); R(29.5, gy - 7, 4, 1.5, "#B23A3A"); R(204, gy - 10, 14, 7, "#C0C4CC"); R(203, gy - 13, 16, 3, "#E39A2C"); R(205, gy - 3, 2, 3, "#2B2D3A"); R(214, gy - 3, 2, 3, "#2B2D3A"); for (let k = 0; k < 3; k++) R(120 + k*0.6, gy + 6 - ((time*0.6 + k*0.3) % 1)*12, 4, 3, "rgba(240,240,245,.35)"); }
+
 /* game/simulation.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* ---------- Animation (runs even when paused) ---------- */
 function animate(dt){
@@ -2363,7 +2783,7 @@ function animate(dt){
     let u = CUST.find(u => u.id === c.id && u.state !== "out");
     if (!u){ u = {id:c.id, x:34, state:"wait", face:1, moving:false, mood:null,
       look:(() => { const alt = Math.random() < 0.5, skirt = alt && Math.random() < 0.4 ? pick(["#2B2D52","#4A6FA5","#B23A3A","#3E9B4F"]) : null;
-        return {skin:pick(SKINS), hair:pick(HAIRS), shirt:pick(CUST_SHIRTS), pants:skirt ? "#3A3048" : pick(["#2B2D52","#4A6FA5","#6B4A2B","#3A3F6B"]), skirt, style:alt ? pick([1,2,3,4,5]) : pick([0,0,4,1]), earrings:alt && Math.random() < 0.4, hat:!alt && Math.random() < 0.6}; })()};
+        return {skin:pick(SKINS), hair:pick(HAIRS), shirt:pick(CUST_SHIRTS), pants:skirt ? "#3A3048" : pick(["#2B2D52","#4A6FA5","#6B4A2B","#3A3F6B"]), skirt, style:alt ? pick([1,2,3,4,5,7]) : pick([0,0,4,1,6,8]), scarf:pick(["#3E2E6A","#B23A3A","#2BB3B1"]), beard:!alt && Math.random() < 0.25 ? "#3A2618" : null, earrings:alt && Math.random() < 0.4, hat:!alt && Math.random() < 0.5}; })()};
       CUST.push(u); }
     u.tx = 140 - k*15;
   });
@@ -2379,7 +2799,10 @@ function animate(dt){
 }
 
 /* ---------- Simulation (paused while a panel is open) ---------- */
+let pendingCut = null;
+function queueCut(kind, opts, done){ if (!scene || window.__bot){ if (done) done(); return; } pendingCut = {kind, opts, done}; }
 function update(dt){
+  if (pendingCut && !modalOpen && !cutsceneOn && scene){ const pc = pendingCut; pendingCut = null; playCutscene(pc.kind, pc.done || (() => {}), pc.opts); return; }
   if (S.over) return;
   const inc = income(), up = upkeep();
   S.cash += (inc - up)*dt; S.q.prem += inc*dt; S.q.sal += up*dt; S.insured += inc*dt*0.04;
@@ -2409,7 +2832,7 @@ function update(dt){
     l.t -= dt;
     if (l.t <= 0){
       S.lawsuits.splice(S.lawsuits.indexOf(l),1);
-      if (Math.random() < (l.win != null ? l.win : 0.85)){ spend(l.amt, "other"); S.sued = (S.sued || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); fxShake(); sfx("gavel"); toast(`Lawsuit lost${l.name ? " to " + l.name : ""}: ${fmt(l.amt)}. ${pick(LAWSUIT_QUIPS)}`, "bad"); }
+      S.suits = (S.suits || 0) + 1; if (Math.random() < (l.win != null ? l.win : 0.85)){ spend(l.amt, "other"); S.sued = (S.sued || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); fxShake(); sfx("gavel"); toast(`Lawsuit lost${l.name ? " to " + l.name : ""}: ${fmt(l.amt)}. ${pick(LAWSUIT_QUIPS)}`, "bad"); }
       else { const fee = Math.round(l.amt*0.15); spend(fee, "other"); sfx("chime"); toast(`You won in court${l.name ? " against " + l.name : ""}. The claim really was dodgy. Legal fees: ${fmt(fee)}.`, "good"); }
     }
   }
@@ -2514,7 +2937,7 @@ const pips = l => `<span class="pips" aria-label="Level ${l} of ${MAXL}">${Array
 /* Intro */
 function intro(){
   openModal(`<div class="top"><h2>How to play</h2>${xBtn}</div>
-  <p>You’re ${ceoN()}, CEO of ${coName()} in the London market. Grow the tower, keep the City happy, and don’t get wiped out.</p>
+  <p>You’re ${ceoN()}, CEO of ${coName()} in ${(CITIES[cityId()] || CITIES.london).market}. Grow the tower, keep the City happy, and don’t get wiped out.</p>
   <div class="intro-scroll">
     <h3 class="intro-h" style="border:0;padding:0;margin-top:0">What’s new in v${VERSION}</h3>
     ${changesFor(VERSION).map(n => `<p><span>✨</span><span>${n}</span></p>`).join("")}
@@ -2527,7 +2950,7 @@ function intro(){
     <p><span>🤖</span><span><b>Autopilot.</b> Promotions unlock executives who run parts of the business for a salary: claims, insurance, compliance, pricing, even expansion. Your syndicate also earns while you’re away.</span></p>
     <p><span>🏦</span><span><b>Capital rules.</b> From quarter 6 the regulator requires you to hold cash in proportion to the premiums you write. Fall short at an earnings call and you get a warning. Catastrophe reinsurance and Cat Modelling lower the requirement.</span></p>
     <p><span>🦈</span><span><b>Rivals.</b> Later on, rival syndicates try to poach your underwriters and brokers. Match their offer, take them to lunch, ask HR, or let them go.</span></p>
-    <p><span>🛋️</span><span><b>Idle mode.</b> Prefer to watch? Turn on idle mode in the Boardroom and the board makes every decision. It can’t be undone, and the run won’t be scored.</span></p>
+    <p><span>🛋️</span><span><b>Idle mode.</b> Prefer to watch? Turn on idle mode in the Boardroom and the board makes every decision. You can take back control any time, but a run that used idle mode isn’t scored.</span></p>
     <p><span>♾️</span><span><b>Play forever, if you can.</b> As your tower matures, the City expects less growth and “in line” results are fine. But regulation keeps piling up, and dividends keep the board sweet.</span></p>
     <p><span>⚖️</span><span><b>Compliance</b> must cover your floors. Fall short and the regulator issues warnings. Three warnings and you lose your licence.</span></p>
     <p><span>🦢</span><span><b>Black swans</b> are huge disasters based on real ones: hurricanes, a ship blocking a canal, a global IT meltdown, a bank collapse and more. They strike with no warning, roughly every 8 to 12 quarters from quarter 5. Without cover you pay the whole loss, which can sink you. Buy reinsurance and your other covers in the Boardroom: they pay 90%.</span></p>
@@ -2560,11 +2983,13 @@ function effectText(type, l, d){
   }
 }
 function openFloors(){
-  const cost = buildCost(), can = S.floors.length < MAXF, afford = S.cash >= cost;
+  const cost = buildCost(), can = workFloors() < MAXF, afford = S.cash >= cost;
   const types = [...ORDER].sort((a, b) => isUnlocked(b) - isUnlocked(a)).map(t => `<button class="type" data-act="build:${t}" ${(!can||!afford||!isUnlocked(t))?"disabled":""}>
       <div class="sw" style="background:${TYPES[t].wall}"></div><b>${TYPES[t].name}</b><span class="pro">＋ ${TYPES[t].pro}</span><span class="con">− ${TYPES[t].con}</span>${!isUnlocked(t) ? `<span class="dim">🔒 ${UNLOCKS[t].text}</span>` : ""}</button>`).join("");
   const list = S.floors.map((f,i) => ({f,i})).reverse().map(({f,i}) => {
-    const max = f.level >= MAXL, c = upCost(f);
+    const max = f.level >= MAXL, c = upCost(f), ph = f.type === "penthouse";
+    if (ph) return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div><div class="nm">${TYPES[f.type].name}${pips(f.level)}</div>
+      <button class="btn ghost" data-act="floor:${i}">Manage</button><button class="btn" data-act="up:${i}:floors" ${max || S.favour < PENTHOUSE_UP ? "disabled" : ""}>${max ? "Maxed" : `Upgrade ${PENTHOUSE_UP} ★`}</button></div>`;
     return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div>
       <div class="nm">${TYPES[f.type].name}${pips(f.level)}</div>
       <button class="btn ghost" data-act="floor:${i}">Manage</button>
@@ -2575,8 +3000,18 @@ function openFloors(){
           : `<p>The tower is as tall as zoning allows. The zoning board has been offered several yachts.</p>`}
     <h3>Your floors</h3><div class="flist">${list}</div>`, {view:"floors", focus:false});
 }
+function openPenthouse(i){
+  const f = S.floors[i], max = f.level >= MAXL, cost = PENTHOUSE_UP;
+  const feats = ["A sofa, a city view and a well-stocked bar", "A grand piano nobody can play", "An aquarium with two very calm fish", "An art collection, bought by the square metre", "A chandelier and a telescope for watching rivals"];
+  openModal(`<div class="top"><h2>Penthouse</h2><button class="x" data-act="close" aria-label="Close">✕</button></div>
+    <p>${TYPES.penthouse.desc}</p>
+    <div class="goals"><ul>${feats.map((t, k) => `<li class="${k < f.level ? "ok" : ""}"><i>${k < f.level ? "✓" : k + 1}</i>${t}</li>`).join("")}</ul></div>
+    <p class="dim">${ceoN()} pops up here between visits to The Room. Tap them to open the Boardroom.</p>
+    <button class="btn" style="width:100%" data-act="up:${i}:floor" ${max || S.favour < cost ? "disabled" : ""}>${max ? "Fully furnished" : `Upgrade for ${cost} ★`}${!max && S.favour < cost ? `<small>You have ${S.favour} ★</small>` : ""}</button>
+    <p class="dim">The penthouse is yours for the rest of this company’s life.</p>`, {view:"floor" + i});
+}
 function openFloor(i){
-  const f = S.floors[i]; if (!f) return; variantOf(f);
+  const f = S.floors[i]; if (!f) return; if (f.type === "penthouse") return openPenthouse(i); variantOf(f);
   const t = TYPES[f.type], max = f.level >= MAXL, c = upCost(f);
   const up = (TYPES[f.type].sal || 0.6)*salFactor();
   let extra = "";
@@ -2624,17 +3059,18 @@ function openFloor(i){
 }
 function build(type){
   const cost = buildCost();
-  if (S.cash < cost || S.floors.length >= MAXF) return;
+  if (S.cash < cost || workFloors() >= MAXF) return;
   if (!isUnlocked(type)) return;
   S.cash -= cost; discSpent += cost;
-  S.floors.push({type, level:1, mode:"pay"});
-  rebuildWorkers(S.floors.length-1);
+  rebuildWorkers(addFloor({type, level:1, mode:"pay"}));
   closeModal();
   toast(`Built: ${TYPES[type].name}. ${TYPES[type].joke}`, "good");
   save();
 }
 function upgrade(i, back){
-  const f = S.floors[i]; const c = upCost(f);
+  const f = S.floors[i];
+  if (f && f.type === "penthouse"){ if (f.level >= MAXL || S.favour < PENTHOUSE_UP) return; S.favour -= PENTHOUSE_UP; f.level++; sfx("chime"); fxConfetti(); save(); return back === "floors" ? openFloors() : openPenthouse(i); }
+  const c = upCost(f);
   if (f.level >= MAXL || S.cash < c) return;
   S.cash -= c; discSpent += c; f.level++; rebuildWorkers(i);
   const L = layout(); pop("Level "+f.level+"!", 100, floorY(L,i)+16, "");
@@ -2704,7 +3140,7 @@ function openBoard(confirmRestart, intro){
     </div>
     ${execsHtml()}
     <div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb">🏆 Leaderboard</button></div>
-    <p class="dim" style="margin-top:12px">Score so far: <b>${scoreParts().total.toLocaleString("en-GB")}</b> (grade ${grade(scoreParts().total)})${S.idleMode ? ", not recorded in idle mode" : ""}. Personal best: ${bestScore().toLocaleString("en-GB")}.</p>
+    <p class="dim" style="margin-top:12px">Score so far: <b>${scoreParts().total.toLocaleString("en-GB")}</b> (grade ${grade(scoreParts().total)})${S.idleMode || S.idleTainted ? ", not recorded because idle mode was used" : ""}. Personal best: ${bestScore().toLocaleString("en-GB")}.</p>
     ${goalsHtml(next)}
     <h3 style="margin-top:14px">Pricing</h3>
     <p class="dim"><b style="color:var(--ink)">${cycleName()}.</b> ${CYCLE_MSG[cycleName()].replace(/^The market has (hardened|softened|steadied)\. /, "")}</p>
@@ -2725,8 +3161,15 @@ function openBoard(confirmRestart, intro){
     ${PERKS.map(pk => { const own = perk(pk.id);
       return `<div class="action"><div><h3>${own ? "✓ " : ""}${pk.name}</h3><p>${pk.desc}</p></div>
         ${own ? `<button class="btn ghost" disabled>Owned</button>` : `<button class="btn" data-act="perk:${pk.id}" ${S.favour < pk.cost ? "disabled" : ""}>${pk.cost} ★</button>`}</div>`; }).join("")}
+    <h3 style="margin-top:14px">Star shop <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">Buy as often as you like</span></h3>
+    ${STAR_SHOP.map(it => { const ok = S.favour >= it.cost && (!it.can || it.can());
+      return `<div class="action"><div><h3>${it.name}</h3><p>${it.desc}</p></div><button class="btn" data-act="starshop:${it.id}" ${ok ? "" : "disabled"}>${it.cost} ★</button></div>`; }).join("")}
+    ${hasPenthouse() ? `<p class="dim">You own the penthouse. Tap it at the top of the tower to furnish it.</p>`
+      : `<div class="action"><div><h3>Build a penthouse</h3><p>A private top floor for ${ceoN()} to roam, with the best view in the city. One per company, and no business benefit whatsoever.</p></div><button class="btn" data-act="penthouse" ${S.favour < PENTHOUSE_COST ? "disabled" : ""}>${PENTHOUSE_COST} ★</button></div>`}
     <h3 style="margin-top:14px">Achievements (${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length})</h3>
-    <div class="achs">${ACH.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div>
+    <p class="dim">Each one earns a ★. Tap a category to see what’s left.</p>
+    ${[...new Set(ACH.map(a => a.cat))].map(c => { const list = ACH.filter(a => a.cat === c), got = list.filter(a => S.ach[a.id]).length;
+      return `<details class="achcat"><summary><b>${c}</b><span>${got} of ${list.length}</span></summary><div class="achs">${list.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div></details>`; }).join("")}
     <div class="big" style="margin-top:14px">${fmt2(S.stock)}</div>
     ${sparkline()}
     <p class="dim">Share price after each earnings call</p>
@@ -2750,9 +3193,18 @@ function openBoard(confirmRestart, intro){
     <p class="dim" style="margin-top:12px">How the money works: premiums come in every second, salaries go out every second, and claims cost money when you pay them. Profit is whatever survives.</p>
     <h3 style="margin-top:14px">Idle mode</h3>
     ${S.idleMode ? `<p class="note">Idle mode is on. The board is making every decision, and this run’s score won’t be recorded.</p>
+      <button class="btn ghost" style="width:100%;margin-bottom:10px" data-act="idle-off">Take back control</button>
       <h3>Watching speed</h3>
       <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
       <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
+    <h3 style="margin-top:14px">Exit strategy</h3>
+    ${exitUnlocked() ? (() => { const v = exitValue(), tk = ticketFor(v);
+      const req = (k, r) => { const row = (ok, txt) => `<li class="${ok ? "ok" : ""}"><i>${ok ? "✓" : "·"}</i>${txt}</li>`;
+        return `<div class="goals"><ul>${row(S.cash >= r.cash, `Cash of at least ${fmt(r.cash)} (you have ${fmt(Math.max(0, S.cash))})`)}${row(S.stock >= r.stock, `Share price of at least ${fmt2(r.stock)} (now ${fmt2(S.stock)})`)}${r.conf ? row(S.conf >= r.conf, `Board confidence of at least ${r.conf}% (now ${Math.round(S.conf)}%)`) : ""}</ul></div>`; };
+      return `<p>Your company is valued at about <b class="pos">${fmt(v)}</b>, including ${Math.round(Math.min(40, 2*S.favour))}% for your unspent stars. Selling ends this run with a big score bonus and a <b>golden ticket</b>: your next company starts with about ${fmt(tk.seed)} and ${tk.stars} ★, and earns 5% more income for each ticket you hold (up to 4).</p>
+      <div class="action"><div><h3>Sell to private equity</h3><p>A guaranteed price: ${fmt(v)}. Buyers only look at companies with serious cash and a strong share price.</p>${req("pe", EXIT_REQ.pe)}</div><button class="btn" data-act="exit:pe" ${exitReady("pe") && !S.idleMode ? "" : "disabled"}>Sell</button></div>
+      <div class="action"><div><h3>Float on the stock exchange</h3><p>Anywhere from 0.8 to 1.6 times the valuation, depending on the market. The bar is higher than for a private sale.</p>${req("ipo", EXIT_REQ.ipo)}</div><button class="btn" data-act="exit:ipo" ${exitReady("ipo") && !S.idleMode ? "" : "disabled"}>IPO</button></div>`; })()
+      : `<p class="dim">Reach Thought Leader and quarter 8 to sell your company to private equity (needs ${fmt(EXIT_REQ.pe.cash)} cash and a ${fmt2(EXIT_REQ.pe.stock)} share price) or float it on the stock exchange (needs ${fmt(EXIT_REQ.ipo.cash)} and ${fmt2(EXIT_REQ.ipo.stock)}).</p>`}
     <button class="btn red" style="width:100%" data-act="restart">Start a new company</button>
     <p class="ver-line">${coName()}, version ${VERSION}</p>`, {view:"board", focus:false});
   drawCeoFace("#ceoFace");
@@ -2820,7 +3272,7 @@ function earnings(){
   S.conf = clamp(S.conf + dc, 0, 100);
   const oldDiff = S.diff;
   { let dd = 0.02 + (stars ? 0.05 + 0.04*stars : -0.1); if (dd > 0 && S.diff > 3) dd /= (S.diff - 2); S.diff = Math.max(1, 1 + 0.035*qn, S.diff + dd); }
-  if (qn >= 9 && S.rivalT == null && Math.random() < Math.min(0.6, 0.15 + 0.08*Math.max(0, S.diff - 2) + 0.01*Math.max(0, S.floors.length - 10))) S.rivalT = rand(10, 50);
+  if (qn >= 9 && S.rivalT == null && Math.random() < Math.min(0.6, 0.15 + 0.08*Math.max(0, S.diff - 2) + 0.01*Math.max(0, workFloors() - 10))) S.rivalT = rand(10, 50);
   if (S.idleMode && qn > 4 && Math.random() < 0.22*Math.min(1, (qn - 4)/8)){
     const bl = pick(BLUNDERS), cost = Math.round(Math.max(150, Math.abs(profit)*bl.k)/10)*10;
     S.cash -= cost; if (bl.conf) S.conf = clamp(S.conf - bl.conf, 0, 100); if (bl.mood) mood(-bl.mood);
@@ -2881,9 +3333,13 @@ function checkRank(){
     S.rankIdx++; S.conf = clamp(S.conf + 10, 0, 100); S.favour += 2;
     const unl = EXECS.filter(x => x.rank === S.rankIdx).map(x => x.name);
     toast(`${ceoName()} has been promoted: ${next.name}! +10 board confidence and +2 ★.${unl.length ? ` You can now hire: ${unl.join(" and ")}.` : ""}`, "good"); fxConfetti();
-    if (S.rankIdx === RANKS.length-1 && !S.won){ S.won = true; setTimeout(victory, 300); }
+    const finalRank = S.rankIdx === RANKS.length-1 && !S.won; if (finalRank) S.won = true;
+    queueCut("promo", {title:`${ceoName()} is now ${next.name}`, tag:"PROMOTED", tagColor:0xC9A54A, tagText:"#1F2238", ceo:true, line:RANK_LINES_UI[S.rankIdx] || "Onwards and upwards."}, finalRank ? () => setTimeout(victory, 200) : null);
   }
 }
+const RANK_LINES_UI = ["", "Regional disruption complete. Next: disrupting the region again, but harder.", "Synergy isn’t a word. It’s a lifestyle. And a consultancy fee.",
+  "My new book is called Thinking. Chapter one: think. Chapter two: invoice.", "Fortune 500? I prefer to think of it as Fortune 499 and climbing.",
+  "We’re now too big to fail. It’s like success, but with a government guarantee.", "I now own the weather. Tomorrow: sunny, with a 100% chance of premiums."];
 function victory(){
   openModal(`<h2>You own the weather</h2>
     <p>You hit every target the board set. Legal found a loophole that technically makes you the owner of the weather, so you can now deny claims for storms you caused.</p>
@@ -2892,33 +3348,45 @@ function victory(){
 }
 
 /* ---------- Create your CEO (start of every run) ---------- */
-const HAIRSTYLES = [["short","Short"],["pixie","Pixie"],["bob","Bob"],["long","Long"],["ponytail","Ponytail"],["bun","Bun"],["curly","Curly"],["braids","Braids"],["windswept","Messy"],["cap","Cap"]];
-const ATTIRES = [["tie","Suit & tie"],["blouse","Blazer & blouse"],["skirt","Skirt suit"],["dress","Dress"]];
-const EXTRAS = [["lashes","Lashes"],["lipstick","Lipstick"],["earrings","Earrings"],["glasses","Glasses"]];
-const CEO_DEFAULTS = () => ({name:"", company:"", skin:SKINS[2], hair:HAIRS[0], hairStyle:"short", outfit:OUTFITS[0], attire:"tie", lashes:false, lipstick:false, earrings:false, glasses:false});
+const STYLE_SETS = {
+  f:{label:"♀ Women’s styles", hair:[["pixie","Pixie"],["bob","Bob"],["long","Long"],["ponytail","Ponytail"],["bun","Bun"],["curly","Curly"],["braids","Braids"],["scarf","Headscarf"],["cap","Cap"]],
+     attire:[["blouse","Blazer & blouse"],["trouser","Trouser suit"],["skirt","Skirt suit"],["dress","Dress"]],
+     face:{title:"Makeup", field:"makeup", opts:[["none","None"],["lashes","Lashes"],["lipstick","Lipstick"],["both","Both"]]}},
+  m:{label:"♂ Men’s styles", hair:[["short","Short"],["crew","Crew cut"],["sidepart","Side part"],["quiff","Quiff"],["curly","Curly"],["long","Long"],["manbun","Man bun"],["bald","Bald"],["cap","Cap"]],
+     attire:[["tie","Suit & tie"],["open","Open collar"],["three","Three-piece"],["casual","Smart casual"]],
+     face:{title:"Facial hair", field:"facial", opts:[["none","None"],["stubble","Stubble"],["moustache","Moustache"],["beard","Beard"]]}},
+};
+const EXTRAS = [["glasses","Glasses"],["earrings","Earrings"],["freckles","Freckles"]];
+function guessSet(c){ return c && (c.set || (["blouse","skirt","dress","trouser"].includes(c.attire) || ["pixie","bob","ponytail","bun","braids","scarf"].includes(c.hairStyle) ? "f" : "m")); }
+const CEO_DEFAULTS = () => ({name:"", company:"", city:"london", set:"m", skin:SKINS[2], hair:HAIRS[0], hairStyle:"short", outfit:OUTFITS[0], attire:"tie", facial:"none", makeup:"none", lashes:false, lipstick:false, earrings:false, glasses:false, freckles:false});
+function applySet(d, set){ const st = STYLE_SETS[set]; d.set = set; if (!st.hair.some(([k]) => k === d.hairStyle)) d.hairStyle = st.hair[0][0]; if (!st.attire.some(([k]) => k === d.attire)) d.attire = st.attire[0][0]; if (set === "f") d.facial = "none"; else { d.makeup = "none"; d.lashes = false; d.lipstick = false; } }
 let setupDraft = null;
 function drawCeoFace(sel, look){ const cv = $(sel); if (!cv) return; CUT.drawCEO(cv.getContext("2d"), look || S.ceo || {}, 0); }
 function openSetup(){
-  if (!setupDraft) setupDraft = Object.assign(CEO_DEFAULTS(), S.ceo || {}, {name:(S.ceo && S.ceo.name) || "", company:S.companyName || ""});
+  if (!setupDraft){ setupDraft = Object.assign(CEO_DEFAULTS(), S.ceo || {}, {name:(S.ceo && S.ceo.name) || "", company:S.companyName || "", city:S.city || "london"}); applySet(setupDraft, guessSet(setupDraft)); }
   const d = setupDraft, sw = (field, list, label) => `<div class="swatches">${list.map((col, i) => `<button class="sw" data-act="look:${field}:${i}" aria-pressed="${d[field] === col}" aria-label="${label} ${i + 1}" style="background:${col}"></button>`).join("")}</div>`;
   const midRun = S.seen && S.quarter > 1;
   openModal(`<h2>Create your CEO</h2>
     <p>${midRun ? "Your company is already up and running, so this is a one-time chance to name yourself and the business." : "Every tycoon starts somewhere. Who are you, and what’s on the sign?"}</p>
+    ${(() => { const l = loadLegacy(); return l.tickets ? `<p class="note">🎫 <b>Golden ticket${l.tickets > 1 ? "s" : ""} x${l.tickets}.</b> ${l.seed || l.stars ? `This company starts with an extra ${fmt(l.seed)} and ${l.stars} ★, and ` : ""}every company you found earns ${5*Math.min(4, l.tickets)}% more income.</p>` : ""; })()}
+    <h3>Where is your headquarters?</h3>
+    <div class="cities">${Object.entries(CITIES).map(([k, c]) => `<button class="type city" data-act="look:city:${k}" aria-pressed="${d.city === k}"><b>${c.flag} ${c.name}, ${c.country}</b><span>${c.building}</span><span class="dim">${c.blurb}</span></button>`).join("")}</div>
     <div class="ceo-setup"><canvas id="ceoPrev" width="48" height="48" aria-label="Your portrait"></canvas>
       <div class="ceo-fields">
         <label>Your name<input id="ceoName" maxlength="20" value="${esc(d.name)}" placeholder="Alex" autocomplete="off"></label>
         <label>Company name<input id="coNameIn" maxlength="28" value="${esc(d.company)}" placeholder="Fine Print Syndicate" autocomplete="off"></label>
       </div></div>
     <h3>Skin tone</h3>${sw("skin", SKINS, "Skin tone")}
-    <h3>Hairstyle</h3><div class="seg four">${HAIRSTYLES.map(([k, l]) => `<button class="btn" data-act="look:hairStyle:${k}" aria-pressed="${d.hairStyle === k}">${l}</button>`).join("")}</div>
+    <div class="seg two ceo-set">${["f","m"].map(k => `<button class="btn" data-act="look:set:${k}" aria-pressed="${d.set === k}">${STYLE_SETS[k].label}</button>`).join("")}</div>
+    <h3>Hairstyle</h3><div class="seg three">${STYLE_SETS[d.set].hair.map(([k, l]) => `<button class="btn" data-act="look:hairStyle:${k}" aria-pressed="${d.hairStyle === k}">${l}</button>`).join("")}</div>
     <h3>Hair colour</h3>${sw("hair", HAIRS, "Hair colour")}
-    <h3>Outfit style</h3><div class="seg four">${ATTIRES.map(([k, l]) => `<button class="btn" data-act="look:attire:${k}" aria-pressed="${d.attire === k}">${l}</button>`).join("")}</div>
+    <h3>Outfit</h3><div class="seg two">${STYLE_SETS[d.set].attire.map(([k, l]) => `<button class="btn" data-act="look:attire:${k}" aria-pressed="${d.attire === k}">${l}</button>`).join("")}</div>
     <h3>Outfit colour</h3>${sw("outfit", OUTFITS, "Outfit colour")}
-    <h3>Extras</h3><div class="seg four">${EXTRAS.map(([k, l]) => `<button class="btn" data-act="look-t:${k}" aria-pressed="${!!d[k]}">${l}</button>`).join("")}</div>
-    <p class="dim">Mix and match anything. Every option is open to every CEO.</p>
-    <p class="note">Choose carefully: your name and your company’s name are set for the whole run. You can pick new ones when you start a new company.</p>
+    <h3>${STYLE_SETS[d.set].face.title}</h3><div class="seg four">${STYLE_SETS[d.set].face.opts.map(([k, l]) => `<button class="btn" data-act="look:${STYLE_SETS[d.set].face.field}:${k}" aria-pressed="${d[STYLE_SETS[d.set].face.field] === k}">${l}</button>`).join("")}</div>
+    <h3>Extras</h3><div class="seg three">${EXTRAS.map(([k, l]) => `<button class="btn" data-act="look-t:${k}" aria-pressed="${!!d[k]}">${l}</button>`).join("")}</div>
+    <p class="note">Choose carefully: your city, your name and your company’s name are set for the whole run. You can pick new ones when you start a new company.</p>
     <button class="btn" style="width:100%" data-act="setup-go">Start my syndicate</button>`, {locked:true, view:"setup", focus:false});
-  drawCeoFace("#ceoPrev", d);
+  drawCeoFace("#ceoPrev", Object.assign({}, d, {lashes:d.set === "f" && (d.makeup === "lashes" || d.makeup === "both"), lipstick:d.set === "f" && (d.makeup === "lipstick" || d.makeup === "both"), facial:d.set === "m" ? d.facial : "none"}));
 }
 function readSetupInputs(){ if (!setupDraft) return; const n = $("#ceoName"), c = $("#coNameIn"); if (n) setupDraft.name = n.value; if (c) setupDraft.company = c.value; }
 function finishSetup(){
@@ -2926,9 +3394,13 @@ function finishSetup(){
   const clean = (v, max) => String(v || "").replace(/[<>]/g, "").replace(/\s+/g, " ").trim().slice(0, max);
   const d = setupDraft, name = clean(d.name, 20), company = clean(d.company, 28) || "Fine Print Syndicate";
   if (!name){ toast("Your CEO needs a name. Even just initials will do.", "bad"); const n = $("#ceoName"); if (n) n.focus(); return; }
-  S.ceo = {name, skin:d.skin, hair:d.hair, hairStyle:d.hairStyle, outfit:d.outfit, attire:d.attire, lashes:!!d.lashes, lipstick:!!d.lipstick, earrings:!!d.earrings, glasses:!!d.glasses}; S.companyName = company; S.setupDone = true; setupDraft = null;
+  const mk = d.set === "f" ? d.makeup : "none";
+  const leg = loadLegacy();
+  if (leg.tickets && !S.tickets){ S.tickets = leg.tickets; if (leg.seed || leg.stars){ S.cash += leg.seed || 0; S.favour = (S.favour || 0) + (leg.stars || 0); leg.seed = 0; leg.stars = 0; saveLegacy(leg); } }
+  S.ceo = {name, set:d.set, skin:d.skin, hair:d.hair, hairStyle:d.hairStyle, outfit:d.outfit, attire:d.attire, facial:d.set === "m" ? d.facial : "none", makeup:mk, lashes:mk === "lashes" || mk === "both", lipstick:mk === "lipstick" || mk === "both", earrings:!!d.earrings, glasses:!!d.glasses, freckles:!!d.freckles}; S.companyName = company; S.city = d.city || "london"; setCity(S.city); S.setupDone = true; setupDraft = null;
   document.title = company; save(); closeModal(); sfx("chime");
   toast(`Welcome aboard, ${name}. ${company} is open for business.`, "good");
+  const lg = loadLegacy(); lg.cities = Object.assign(lg.cities || {}, {[S.city]: true}); saveLegacy(lg);
   if (!S.seen) setTimeout(startTutorial, 400); else offlineCheck();
 }
 
@@ -2940,7 +3412,7 @@ function scoreParts(){
   const money = Math.round(Math.sqrt(Math.max(0, S.earned || 0))*8);
   const days = daysSurvived()*4;
   const achN = ACH.filter(a => S.ach[a.id]).length;
-  const bonus = (S.stars || 0)*40 + achN*150 + S.rankIdx*400;
+  const bonus = (S.stars || 0)*40 + achN*150 + S.rankIdx*400 + (S.exit ? Math.round(Math.sqrt(S.exit.value)*15) : 0);
   const rep = avgRep(), mult = 0.5 + rep/100;
   return {money, days, bonus, achN, rep, mult, total:Math.round((money + days + bonus)*mult)};
 }
@@ -3140,11 +3612,11 @@ function autopilot(dt){
     for (const k of Object.keys(COVERS)){ const cost = coverCost(k, income()*Q_LEN); if (!S.cover[k] && S.quarter >= (S.idleMode ? 4 : 3) && S.cash > cost*4 && (!S.idleMode || Math.random() < 0.015)){ S.cash -= cost; discSpent += cost; S.cover[k] = true; toast(`Your Chief Risk Officer bought ${COVERS[k].name.toLowerCase()}.`); } }
     for (let k = S.lawsuits.length - 1; k >= 0; k--){ const l = S.lawsuits[k], cost = settleCost(l); if ((l.win != null ? l.win : 0.85) >= 0.5 && S.cash > cost*2){ spend(cost, "other"); S.lawsuits.splice(k, 1); toast(`Your Chief Risk Officer settled with ${l.name || "a former customer"} for ${fmt(cost)}.`); } }
   }
-  if (hasExec("cco") && compGap() >= 0 && S.floors.length >= 3){
+  if (hasExec("cco") && compGap() >= 0 && workFloors() >= 3){
     const cf = S.floors.filter(f => f.type === "compliance" && f.level < MAXL).sort((a, b) => a.level - b.level)[0];
     if (compGap() > 0 || S.qt > 35){
       if (cf && S.cash - execBuffer() > upCost(cf)){ S.cash -= upCost(cf); discSpent += upCost(cf); cf.level++; rebuildWorkers(S.floors.indexOf(cf)); toast("Your Chief Compliance Officer upgraded Compliance."); }
-      else if (!cf && S.floors.length < MAXF && S.cash - execBuffer() > buildCost()){ const c = buildCost(); S.cash -= c; discSpent += c; S.floors.push({type:"compliance", level:1, mode:"pay"}); rebuildWorkers(S.floors.length-1); toast("Your Chief Compliance Officer built a Compliance floor."); }
+      else if (!cf && workFloors() < MAXF && S.cash - execBuffer() > buildCost()){ const c = buildCost(); S.cash -= c; discSpent += c; rebuildWorkers(addFloor({type:"compliance", level:1, mode:"pay"})); toast("Your Chief Compliance Officer built a Compliance floor."); }
     }
   }
   if (hasExec("cfo")){
@@ -3157,21 +3629,21 @@ function autopilot(dt){
   }
   if (S.idleMode) idleAutopilot();
   if (hasExec("coo") && (!S.idleMode || (S.cooCd = (S.cooCd || 0) - 0.5) <= 0)){
-    const buffer = S.floors.length < 5 ? typicalClaim()*2 + capReq() : execBuffer()*1.5;
+    const buffer = workFloors() < 5 ? typicalClaim()*2 + capReq() : execBuffer()*1.5;
     const want = {sales:5, claims:2, marketing:1, actuary:1, legal:1, risk:1, it:1, ir:1};
     const boxes = S.floors.filter(f => f.type === "sales"), boxAvg = boxes.length ? boxes.reduce((a, f) => a + f.level, 0)/boxes.length : 0;
-    const avgLvl = S.floors.reduce((a, f) => a + f.level, 0)/Math.max(1, S.floors.length);
-    if (S.floors.length < MAXF && (S.floors.length < 3 || (boxAvg >= 2 && avgLvl >= 2.2)) && S.cash - buffer > buildCost()*1.3){
-      const need = (isUnlocked("compliance") && S.floors.length >= 3 && compNeed() + 1 > compHave() && !S.floors.some(f => f.type === "compliance" && f.level < MAXL)) ? "compliance" : S.floors.filter(f => f.type === "sales").length < 3 ? "sales" : Object.keys(want).filter(t => isUnlocked(t)).map(t => [t, S.floors.filter(f => f.type === t).length/want[t]]).sort((a, b) => a[1] - b[1])[0][0];
-      if (S.floors.length >= 3 && compNeed() + 1 > compHave() && need !== "compliance") { /* a Compliance upgrade is cheaper: leave it to the Compliance Officer this time */ }
+    const avgLvl = S.floors.filter(f => f.type !== "penthouse").reduce((a, f) => a + f.level, 0)/Math.max(1, workFloors());
+    if (workFloors() < MAXF && (workFloors() < 3 || (boxAvg >= 2 && avgLvl >= 2.2)) && S.cash - buffer > buildCost()*1.3){
+      const need = (isUnlocked("compliance") && workFloors() >= 3 && compNeed() + 1 > compHave() && !S.floors.some(f => f.type === "compliance" && f.level < MAXL)) ? "compliance" : S.floors.filter(f => f.type === "sales").length < 3 ? "sales" : Object.keys(want).filter(t => isUnlocked(t)).map(t => [t, S.floors.filter(f => f.type === t).length/want[t]]).sort((a, b) => a[1] - b[1])[0][0];
+      if (workFloors() >= 3 && compNeed() + 1 > compHave() && need !== "compliance") { /* a Compliance upgrade is cheaper: leave it to the Compliance Officer this time */ }
       else {
       const odd = S.idleMode && S.quarter > 4 && need !== "compliance" && Math.random() < 0.12;
       const kind = odd ? pick(ORDER.filter(t => isUnlocked(t) && t !== need)) || need : need;
-      const c = buildCost(); S.cash -= c; discSpent += c; S.floors.push({type:kind, level:1, mode:"pay"}); rebuildWorkers(S.floors.length-1); if (S.idleMode) S.cooCd = 20;
+      const c = buildCost(); S.cash -= c; discSpent += c; rebuildWorkers(addFloor({type:kind, level:1, mode:"pay"})); if (S.idleMode) S.cooCd = 20;
       toast(odd ? `The board built a ${TYPES[kind].name} nobody asked for. Someone’s nephew runs it.` : `Your COO built a new ${TYPES[kind].name}.`, odd ? "bad" : "");
       }
     } else {
-      const f = S.floors.filter(f => f.level < MAXL && f.type !== "compliance").sort((a, b) => a.level - b.level || (a.type === "sales" ? 0 : 1) - (b.type === "sales" ? 0 : 1) || upCost(a) - upCost(b))[0];
+      const f = S.floors.filter(f => f.level < MAXL && f.type !== "compliance" && f.type !== "penthouse").sort((a, b) => a.level - b.level || (a.type === "sales" ? 0 : 1) - (b.type === "sales" ? 0 : 1) || upCost(a) - upCost(b))[0];
       if (f && S.cash - buffer > upCost(f)*1.5){ const c = upCost(f); S.cash -= c; discSpent += c; f.level++; rebuildWorkers(S.floors.indexOf(f)); if (S.idleMode){ S.cooCd = 8; toast(`The board upgraded ${TYPES[f.type].name} to level ${f.level}.`); } }
     }
   }
@@ -3190,21 +3662,54 @@ function execsHtml(){
         ${locked ? `<button class="btn ghost" disabled>🔒 ${RANKS[x.rank].name}</button>` : on ? `<button class="btn ghost" data-act="exec:${x.id}:off">Let go</button>` : `<button class="btn green" data-act="exec:${x.id}:on">Hire</button>`}</div>`; }).join("")}`;
 }
 function offlineCheck(){
-  if (!S.savedAt || S.over || !S.seen) return;
+  if (!S.savedAt || S.over || !S.seen || !S.setupDone) return;
   const away = (Date.now() - S.savedAt)/1000;
   if (away < 120) return;
-  const h = (S.profHist || []).filter(x => x > 0);
-  const qProfit = h.length ? h.reduce((a, b) => a + b, 0)/h.length : 0;
-  if (qProfit <= 0) return;
-  const eff = Math.min(0.75, 0.15 + 0.1*execCount() + (lv("claims") ? 0.05 : 0));
-  const quarters = Math.min(12, away/Q_LEN);
-  const amt = Math.round(qProfit*quarters*eff);
-  if (amt < 10) return;
-  S.cash += amt; S.earned = (S.earned || 0) + amt; save();
-  const hrs = Math.floor(away/3600), mins = Math.floor(away % 3600/60);
+  const quarters = Math.min(12, away/Q_LEN), whole = Math.floor(quarters);
+  // the business runs at a quieter pace without you; executives keep more of it going
+  const pace = Math.min(0.75, 0.15 + 0.1*execCount() + (lv("claims") ? 0.05 : 0));
+  const qPrem = baseIncome()*Q_LEN, prem = qPrem*quarters*pace;
+  const nClaims = Q_LEN*quarters/claimInterval()*pace, tc = typicalClaim();
+  const fraudShare = 1 - Math.max(0.45, 0.75 - 0.05*(S.diff - 1));
+  const caught = Math.min(0.8, 0.25 + 0.12*lv("risk") + (hasExec("claims") ? 0.2 : 0));
+  const fraudN = Math.round(nClaims*fraudShare*(1 - caught)), fraud = fraudN*tc;
+  const wages = upkeep()*Q_LEN*quarters*pace;
+  const covers = Object.keys(COVERS).filter(k => S.cover && S.cover[k]).reduce((t, k) => t + coverCost(k, qPrem), 0)*quarters*pace;
+  // anchor to how this company has actually been doing: genuine claims are whatever makes the ledger match your recent quarters
+  const hist = (S.profHist || []).slice(-4), realQ = hist.length ? hist.reduce((a, b) => a + b, 0)/hist.length : null;
+  const modelLegit = nClaims*(1 - fraudShare)*tc;
+  const legit = realQ == null ? modelLegit : clamp(prem - fraud - wages - covers - realQ*quarters*pace, modelLegit*0.3, modelLegit*1.5);
+  // black swans don't wait for you to come back: roll for each full quarter away
+  let swanNet = 0, swanCover = 0; const swans = [];
+  let lastQ = -3;
+  for (let q = 0; q < whole; q++){
+    if (S.quarter < 5 || q - lastQ < 3 || Math.random() >= 0.1) continue;
+    lastQ = q;
+    const kind = pick(SWAN_POOL), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
+    const covered = !!(S.cover && S.cover[sw.cover]), net = covered ? gross*0.1 : gross;
+    swanNet += net; swanCover += covered ? gross*0.9 : 0; swans.push({title:sw.title, covered, net});
+  }
+  const total = Math.round(prem - legit - fraud - wages - covers - swanNet);
+  const limit = -overdraft()*0.8, applied = Math.max(total, Math.min(0, limit - S.cash));
+  S.cash += applied; if (applied > 0) S.earned = (S.earned || 0) + applied;
+  if (away >= 3*3600 && total > 0) S.awayRich = true; if (swans.length) S.awaySwan = true;
+  S.happy = clamp(S.happy - fraudN*0.2 - swans.length*4, 0, 100);
+  save();
+  const hrs = Math.floor(away/3600), mins = Math.floor(away % 3600/60), row = (k, v, cls) => `<tr><td>${k}</td><td class="${cls}">${v}</td></tr>`;
   openModal(`<h2>While you were away</h2>
-    <p>You were gone for ${hrs ? hrs + "h " : ""}${mins}m. Your syndicate kept writing business and earned <b class="pos">${fmt(amt)}</b>.</p>
-    <p class="dim">Away earnings are ${Math.round(eff*100)}% of your normal quarterly profit, for up to 12 quarters. ${execCount() < 6 ? "Every executive you hire adds 10%, up to 75%." : "Your full executive team is running things at 75%."}</p>
+    <p>You were gone for ${hrs ? hrs + "h " : ""}${mins}m, about ${quarters.toFixed(1)} quarters${away/Q_LEN > 12 ? " (the most that’s simulated is 12)" : ""}. The business kept running at ${Math.round(pace*100)}% of its usual pace, good news and bad.</p>
+    <table class="ledger">
+      ${row("Premiums written", "+" + fmt(prem), "pos")}
+      ${row("Genuine claims paid", "−" + fmt(legit), "neg")}
+      ${row(`Fraudulent claims that slipped through (${fraudN})`, "−" + fmt(fraud), "neg")}
+      ${row("Salaries and executives", "−" + fmt(wages), "neg")}
+      ${covers ? row("Your own insurance", "−" + fmt(covers), "neg") : ""}
+      ${swans.map(x => row(`🦢 ${x.title}${x.covered ? " (your cover paid 90%)" : " (no cover)"}`, "−" + fmt(x.net), "neg")).join("")}
+      <tr class="total"><td>${total >= 0 ? "Profit while away" : "Loss while away"}</td><td class="${total >= 0 ? "pos" : "neg"}">${total >= 0 ? "+" : "−"}${fmt(Math.abs(total))}</td></tr>
+    </table>
+    ${applied !== total ? `<p class="note">The loss was bigger than that, but the bank froze your overdraft at 80% of the limit so you can recover.</p>` : ""}
+    ${swans.some(x => !x.covered) ? `<p class="note">A black swan hit while you were away and you had no cover for it. Your own insurance is in the Boardroom.</p>` : ""}
+    <p class="dim">${execCount() < 6 ? "Every executive you hire keeps more of the business running while you’re away, up to 75%." : "Your full executive team keeps the business at 75% pace while you’re away."} Your Risk Dept and Head of Claims catch more fraud.</p>
     <div class="closeRow"><button class="btn" data-act="close">Back to work</button></div>`);
 }
 
@@ -3229,7 +3734,7 @@ function openLeaderboard(){ openModal(`<div class="top"><h2>Leaderboard</h2>${xB
 /* game/endings.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 function gameOver(reason){
   reason = reason || "bankrupt";
-  if (perk("parachute")){
+  if (perk("parachute") && reason !== "exit"){
     delete S.perks.parachute;
     S.cash = Math.max(S.cash, 0); S.conf = Math.max(S.conf, 35); S.strikes = Math.min(S.strikes, maxStrikes() - 1);
     fxConfetti(); save();
@@ -3237,9 +3742,14 @@ function gameOver(reason){
       <div class="closeRow"><button class="btn" data-act="close">Never again</button></div>`, {locked:true});
     return;
   }
-  const e = ENDINGS[reason]; sfx("lose");
+  if (!S.overCut && scene && !window.__bot && CAREER_CUTS[reason]){
+    S.overCut = true; S.over = true; save(); if (modalOpen){ modalLocked = false; closeModal(); }
+    const cc = CAREER_CUTS[reason]; playCutscene(typeof cc.kind === "function" ? cc.kind() : cc.kind, () => gameOver(reason), Object.assign({}, cc.opts(), {}));
+    return;
+  }
+  const e = ENDINGS[reason]; if (reason !== "exit") sfx("lose");
   const spR = scoreParts(); let run = S.runId ? loadRuns().find(r => r.id === S.runId) : null;
-  if (!run && !S.idleMode){ run = recordRun(spR, reason); S.runId = run.id; }
+  if (!run && !S.idleMode && !S.idleTainted){ run = recordRun(spR, reason); S.runId = run.id; }
   const sp = scoreParts(), prevBest = bestScore(), isNew = !S.idleMode && sp.total > prevBest;
   if (isNew) saveBest(sp.total);
   S.over = true; save();
@@ -3269,12 +3779,12 @@ function swanResolve(kind){
     const il = lv("invest") ? Math.round(invCapital()*INV[S.invRisk || 0].crash) : 0; if (il){ S.cash -= il; S.q.other += il; }
     body = `<p>Your share price fell ${Math.round(drop*100)}%. ${lv("ir") ? "Capital Relations softened the blow." : "Capital Relations could have softened the blow."} Board confidence fell.${il ? ` Your ${INV[S.invRisk || 0].name.toLowerCase()} investments lost ${fmt(il)}.` : ""}</p>`;
   } else {
-    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, S.floors.length - 10))*(1 + 0.1*Math.max(0, S.diff - 2))));
+    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, workFloors() - 10))*(1 + 0.1*Math.max(0, S.diff - 2))));
     const mit = sw.mit(), afterMit = Math.round(gross*(1 - mit)), riskCut = Math.min(0.2, 0.04*lv("risk")), net = Math.round(afterMit*(1 - riskCut));
     const covered = S.cover[sw.cover];
     const loss = covered ? Math.round(net*0.1) : net;
     spend(loss, "other");
-    if (covered){ S.swansSurvived = (S.swansSurvived || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); }
+    if (covered){ S.swansSurvived = (S.swansSurvived || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); } S.swanKinds = Object.assign(S.swanKinds || {}, {[kind]: true}); if (!covered) S.swanNaked = (S.swanNaked || 0) + 1;
     else S.conf = clamp(S.conf - Math.round(25*prDamp()), 0, 100);
     body = `<table class="ledger">
       <tr><td>Total loss</td><td class="neg">−${fmt(gross)}</td></tr>
@@ -3292,19 +3802,52 @@ function swanResolve(kind){
       save(); }});
 }
 
+/* Cutscenes for the ways a run can end. */
+const CAREER_CUTS = {
+  fired:{kind:"fired", opts:() => ({title:`${ceoName()} has been fired`, tag:"FIRED"})},
+  bankrupt:{kind:"bankrupt", opts:() => ({title:`${companyName()} is bankrupt`, tag:"BANKRUPT"})},
+  licence:{kind:"licence", opts:() => ({title:"The regulator has had enough", tag:"LICENCE REVOKED"})},
+  exit:{kind:() => S.exit && S.exit.kind === "pe" ? "pe" : "ipo", opts:() => S.exit && S.exit.kind === "pe"
+    ? {title:`${companyName()} sold to private equity`, tag:"SOLD", tagColor:0x2E7D4F}
+    : {title:`${companyName()} goes public`, tag:"IPO", tagColor:0x2E7D4F, ceo:true, line:"Ding ding! I’m now a very liquid individual."}},
+};
+
+/* ---------- selling the company, and the golden ticket it earns ---------- */
+const LEGACY_KEY = "fineprint-legacy";
+function loadLegacy(){ try { return JSON.parse(localStorage.getItem(LEGACY_KEY)) || {tickets:0, seed:0, stars:0}; } catch(e){ return {tickets:0, seed:0, stars:0}; } }
+function saveLegacy(l){ try { localStorage.setItem(LEGACY_KEY, JSON.stringify(l)); } catch(e){} }
+const EXIT_REQ = {pe:{cash:1000000, stock:150}, ipo:{cash:2500000, stock:250, conf:70}};
+function exitUnlocked(){ return S.rankIdx >= 3 && S.quarter >= 8; }
+function exitReady(kind){ const r = EXIT_REQ[kind]; return exitUnlocked() && S.cash >= r.cash && S.stock >= r.stock && (!r.conf || S.conf >= r.conf); }
+function exitValue(){
+  const h = (S.profHist || []).slice(-4), q = h.length ? h.reduce((a, b) => a + b, 0)/h.length : 0;
+  const base = Math.max(0, q)*16 + Math.max(0, S.cash)*0.5 + S.floors.reduce((a, f) => a + f.level, 0)*600;
+  return Math.round(base*Math.sqrt(Math.max(1, S.stock)/10)*(1 + Math.min(0.4, 0.02*S.favour)));
+}
+function ticketFor(value){ return {seed:Math.min(50000, Math.round(value*0.03)), stars:3}; }
+function sellCompany(kind){
+  if (!exitReady(kind)) return;
+  const v = exitValue(), mult = kind === "ipo" ? rand(0.8, 1.6) : 1, value = Math.round(v*mult);
+  S.exit = {kind, value, mult}; S.exitKind = kind;
+  const leg = loadLegacy(), tk = ticketFor(value);
+  leg.tickets = Math.min(4, (leg.tickets || 0) + 1); leg.seed = tk.seed; leg.stars = tk.stars; leg.lastValue = value; saveLegacy(leg);
+  checkAch(); save(); closeModal(); gameOver("exit");
+}
+
 /* ui/cutscene-player.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 let cutsceneOn = false;
-function playCutscene(kind, done){
+function playCutscene(kind, done, opts){
+  opts = opts || {};
   if (!scene){ done(); return; }
   cutsceneOn = true;
   const sc = scene, cam = sc.cameras.main, W = LW + 2*padX, H = viewH(), parts = [], timers = [];
   const add = o => { o.setScrollFactor(0).setDepth(200); parts.push(o); return o; };
   const txt = (x, y, str, size, color, extra) => add(sc.add.text(x, y, str, Object.assign({fontFamily:FONT, fontSize:pxL(size)+"px", fontStyle:"700", color, align:"center", resolution:Math.ceil(cz)}, extra || {})).setOrigin(0.5));
-  const sw = SWANS[kind], L = CUT.LINES[kind] || {name:"", line:""};
+  const sw = Object.assign({}, SWANS[kind] || {}, opts.title ? {title:opts.title} : {}), L = opts.line ? {name:opts.name || ceoName(), line:opts.line} : (CUT.LINES[kind] || {name:"", line:""});
   const mk = (key, w, h) => { if (!sc.textures.exists(key)){ const tx = sc.textures.createCanvas(key, w, h); tx.setFilter(Phaser.Textures.FilterMode.NEAREST); } return sc.textures.get(key); };
   const ftex = mk("cs_frame", CUT.SW, CUT.SH), ptex = mk("cs_face", 48, 48);
   const DUR = 5600, t0 = performance.now();
-  const paintAll = () => { const tt = Math.min(1, (performance.now() - t0)/DUR); CUT.drawScene(ftex.getContext(), kind, tt); ftex.refresh(); CUT.drawPortrait(ptex.getContext(), kind, tt); ptex.refresh(); };
+  const paintAll = () => { const tt = Math.min(1, (performance.now() - t0)/DUR); CUT.drawScene(ftex.getContext(), kind, tt); ftex.refresh(); if (opts.ceo) CUT.drawCEO(ptex.getContext(), S.ceo || {}, 0.3 + tt*0.6); else CUT.drawPortrait(ptex.getContext(), kind, tt); ptex.refresh(); };
   paintAll();
   const k = Math.max(1, Math.min(W*0.96, (H*0.6)*CUT.SW/CUT.SH)/(pxL(360)));
   const bannerH = pxL(56)*Math.min(k, 1.6), gapY = pxL(8), dialogH = Math.max(pxL(100)*Math.min(k, 1.8), 30);
@@ -3317,8 +3860,9 @@ function playCutscene(kind, done){
   add(sc.add.rectangle(0, 0, W, bannerH, 0x1F2A44, 1).setOrigin(0));
   add(sc.add.rectangle(0, bannerH - pxL(3), W, pxL(3), 0xC9A54A, 1).setOrigin(0));
   const tagW = pxL(84)*Math.min(k, 1.6), tagH = bannerH*0.32;
-  add(sc.add.rectangle(W/2 - tagW/2, bannerH*0.12, tagW, tagH, 0xB23A3A, 1).setOrigin(0));
-  txt(W/2, bannerH*0.12 + tagH/2, "BREAKING", 11*Math.min(k, 1.6), "#FFF6E2");
+  const tagLabel = opts.tag || "BREAKING", tagW2 = Math.max(tagW, pxL(8*tagLabel.length + 16)*Math.min(k, 1.6));
+  add(sc.add.rectangle(W/2 - tagW2/2, bannerH*0.12, tagW2, tagH, opts.tagColor || 0xB23A3A, 1).setOrigin(0));
+  txt(W/2, bannerH*0.12 + tagH/2, tagLabel, 11*Math.min(k, 1.6), opts.tagText || "#FFF6E2");
   txt(W/2, bannerH*0.7, sw.title, 15*Math.min(k, 1.6), "#E3C064", {wordWrap:{width:W*0.94}});
   const frame = add(sc.add.image(fx, fy, "cs_frame").setOrigin(0).setDisplaySize(fw, fh));
   add(sc.add.rectangle(fx, fy, fw, fh).setOrigin(0).setStrokeStyle(pxL(3), 0xC9A54A));
@@ -3346,9 +3890,12 @@ function playCutscene(kind, done){
 
 /* game/progression.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 function checkAch(){
-  for (const a of ACH){
-    if (!S.ach[a.id] && a.test()){ S.ach[a.id] = true; S.favour++; toast(`Achievement: ${a.name}! +1 ★ to spend in the Boardroom.`, "good"); fxConfetti(); }
-  }
+  const got = [];
+  for (const a of ACH){ if (!S.ach[a.id]){ let ok = false; try { ok = a.test(); } catch(e){} if (ok){ S.ach[a.id] = true; S.favour++; got.push(a.name); } } }
+  if (!got.length) return;
+  if (got.length <= 2) got.forEach(n => toast(`Achievement: ${n}! +1 ★ to spend in the Boardroom.`, "good"));
+  else toast(`${got.length} achievements unlocked: ${got.slice(0, 3).join(", ")}${got.length > 3 ? " and more" : ""}. +${got.length} ★ to spend in the Boardroom.`, "good");
+  fxConfetti();
 }
 function compHtml(){
   const need = compNeed(), have = compHave(), gap = need - have;
@@ -3386,33 +3933,33 @@ function fireEvent(){
 $("#sheet").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
   const [a, p, q] = b.dataset.act.split(":");
-  if (S.idleMode && ["build","up","mode","lim","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
+  if (S.idleMode && ["build","up","mode","lim","exit","exit-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
   if (a === "idle"){
     openModal(`<h2>Hand over the keys?</h2><p>The board will make every decision from now on: claims, pricing, insurance, compliance, building, upgrades and events. You can keep watching.</p>
       <p class="dim">Be warned: the board is not you. It makes mistakes, blunders on vanity projects, is slow to buy insurance, and idle companies attract more black swans. It may not last forever.</p>
-      <p class="note">This can’t be undone. You won’t be able to switch back to normal play, and this run won’t be recorded on the leaderboard or as a personal best.</p>
+      <p class="note">You can take back control at any time, but once the board has run things, this run won’t be recorded on the leaderboard or as a personal best.</p>
       <div class="seg"><button class="btn ghost" data-act="board">Keep control</button><button class="btn red" data-act="idle-yes">Turn on idle mode</button></div>`, {view:"idleconfirm"});
     return;
   }
-  if (a === "idle-yes"){ S.idleMode = true; S.idleSpeed = 0.5; for (const x of EXECS) S.execs[x.id] = true; save(); closeModal(); toast("Idle mode is on. Sit back. The board has it from here.", "good"); return; }
+  if (a === "idle-yes"){ S.preIdleExecs = Object.assign({}, S.execs); S.idleTainted = true; S.idleMode = true; S.idleSpeed = 0.5; for (const x of EXECS) S.execs[x.id] = true; save(); closeModal(); toast("Idle mode is on. Sit back. The board has it from here.", "good"); return; }
   if (a === "close") closeModal();
   else if (a === "build") build(p);
   else if (a === "up") upgrade(+p, q);
   else if (a === "floor") openFloor(+p);
   else if (a === "mv"){
-    const i = +p, j = i + (+q); if (j < 0 || j >= S.floors.length) return;
+    const i = +p, j = i + (+q); if (j < 0 || j >= S.floors.length || S.floors[i].type === "penthouse" || S.floors[j].type === "penthouse") return;
     [S.floors[i], S.floors[j]] = [S.floors[j], S.floors[i]]; [W[i], W[j]] = [W[j], W[i]]; [popT[i], popT[j]] = [popT[j], popT[i]];
     prevLevels = S.floors.map(f => f.level); prevCount = S.floors.length;
     sfx("tick"); save(); openFloor(j);
   }
   else if (a === "demo"){
-    const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1) return;
+    const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1 || f.type === "penthouse") return;
     openModal(`<h2>Demolish ${TYPES[f.type].name}?</h2><p>This floor (level ${f.level}) and everyone in it will be gone for good. The builders will salvage about ${fmt(demoRefund(f))} of fixtures and fittings.</p>
       ${f.type === "compliance" ? `<p class="note">Removing Compliance may leave the regulator uncovered.</p>` : ""}
       <div class="seg"><button class="btn ghost" data-act="floor:${i}">Keep it</button><button class="btn red" data-act="demo-yes:${i}">Demolish</button></div>`, {view:"demo" + i});
   }
   else if (a === "demo-yes"){
-    const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1) return;
+    const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1 || f.type === "penthouse") return;
     const refund = demoRefund(f); S.cash += refund;
     S.floors.splice(i, 1); W.splice(i, 1); popT.splice(i, 1);
     prevLevels = S.floors.map(x => x.level); prevCount = S.floors.length;
@@ -3438,9 +3985,30 @@ $("#sheet").addEventListener("click", e => {
   }
   else if (a === "ispeed"){ S.idleSpeed = +p || 0.5; save(); openBoard(); }
   else if (a === "rival"){ resolveRival(+p, false); }
-  else if (a === "look"){ readSetupInputs(); if (setupDraft){ const list = {skin:SKINS, hair:HAIRS, outfit:OUTFITS}[p]; setupDraft[p] = list ? list[+q] : q; } sfx("tick"); openSetup(); }
+  else if (a === "look"){ readSetupInputs(); if (setupDraft){ if (p === "set") applySet(setupDraft, q); else { const list = {skin:SKINS, hair:HAIRS, outfit:OUTFITS}[p]; setupDraft[p] = list ? list[+q] : q; } } sfx("tick"); openSetup(); }
   else if (a === "look-t"){ readSetupInputs(); if (setupDraft) setupDraft[p] = !setupDraft[p]; sfx("tick"); openSetup(); }
   else if (a === "setup-go") finishSetup();
+  else if (a === "idle-off"){
+    S.idleMode = false; if (S.preIdleExecs) S.execs = Object.assign({}, S.preIdleExecs);
+    save(); toast("You’re back in control. Your executives are as you left them. This run still won’t be scored.", "good"); openBoard();
+  }
+  else if (a === "exit"){
+    if (!exitReady(p === "ipo" ? "ipo" : "pe")) return;
+    const v = exitValue();
+    openModal(`<h2>${p === "ipo" ? "Float on the stock exchange?" : "Sell to private equity?"}</h2>
+      <p>${p === "ipo" ? `The IPO could value ${coName()} at anywhere from ${fmt(v*0.8)} to ${fmt(v*1.6)}.` : `Rupert’s fund will pay ${fmt(v)} for ${coName()}.`} This ends your run, and you’ll start your next company with a golden ticket.</p>
+      <div class="seg"><button class="btn ghost" data-act="board">Not yet</button><button class="btn" data-act="exit-go:${p}">${p === "ipo" ? "Ring the bell" : "Shake hands"}</button></div>`, {view:"exitconfirm"});
+  }
+  else if (a === "exit-go"){ sellCompany(p === "ipo" ? "ipo" : "pe"); }
+  else if (a === "penthouse"){
+    if (hasPenthouse() || S.penthouseBought || S.favour < PENTHOUSE_COST) return;
+    S.favour -= PENTHOUSE_COST; S.penthouseBought = true; S.floors.push({type:"penthouse", level:1, mode:"pay", skin:0}); rebuildWorkers(S.floors.length - 1); lastAddedFloor = S.floors.length - 1;
+    sfx("chime"); fxConfetti(); toast(`The penthouse is ready. ${ceoName()} has already put their feet up.`, "good"); save(); closeModal();
+  }
+  else if (a === "starshop"){
+    const it = STAR_SHOP.find(x => x.id === p); if (!it || S.favour < it.cost || (it.can && !it.can())) return;
+    S.favour -= it.cost; S.shopBuys = (S.shopBuys || 0) + 1; const msg = it.run(); sfx("chime"); toast(msg, "good"); save(); openBoard();
+  }
   else if (a === "price"){ S.price = +p; save(); toast(`Pricing set to ${PRICES[+p].name.toLowerCase()}.`, "good"); openBoard(); }
   else if (a === "dividend"){
     const amt = divAmt(); if (S.divQ === S.quarter || S.cash < amt) return;
@@ -3525,7 +4093,7 @@ function hud(){
   $("#stock").textContent = fmt2(S.stock);
   const nx = RANKS[S.rankIdx+1];
   $("#rank").textContent = nx ? `${RANKS[S.rankIdx].name} (${nx.goals.filter(goalMet).length}/${nx.goals.length})` : RANKS[S.rankIdx].name;
-  if (S.idleMode) $("#rank").textContent = "🛋️ Idle mode";
+  if (S.idleMode) $("#rank").textContent = "🛋️ Idle mode"; else if (S.idleTainted) $("#rank").textContent += " (unranked)";
   $("#happyBar").style.width = S.happy + "%";
   $("#happyTxt").textContent = MOODS.find(m => S.happy >= m[0])[1];
   const qn = S.quarter;
@@ -3549,7 +4117,7 @@ let rainEm = null, confettiEm = null, dustEm = null;
 let lastKey = "", prevLevels = [], prevCount = 0, lastNight = null, bellRinging = false, rainOn = null, scrollHint = false;
 let tick8 = 0, tick2 = 0, hudT = 0, saveT = 0, vel = 0, drag = null, pendingBottom = true;
 let padX = 0;
-let ceoW = {x:58, dir:1, pause:1.5, ft:0}, ceoSpr = null, ceoTag = null, ceoKey = "";
+let ceoW = {x:58, dir:1, pause:1.5, ft:0, where:"lobby", stay:25}, ceoSpr = null, ceoTag = null, ceoKey = "";
 const pxL = css => css*dpr/cz;
 const SK = n => n + "@" + RS;
 const col = s => Phaser.Display.Color.ValueToColor(s).color;
@@ -3590,7 +4158,7 @@ function framesTex(key, fw, fh, frames, opt){
   return key;
 }
 function personTexture(lk){
-  const key = "p3_" + [lk.skin, lk.hair, lk.shirt, lk.pants, lk.style, lk.tie || "-", lk.glasses ? 1 : 0, lk.hat ? 1 : 0, lk.skirt || "-", lk.blouse ? 1 : 0, lk.earrings ? 1 : 0].join("_") + "@" + RS;
+  const key = "p3_" + [lk.skin, lk.hair, lk.shirt, lk.pants, lk.style, lk.tie || "-", lk.glasses ? 1 : 0, lk.hat ? 1 : 0, lk.skirt || "-", lk.blouse ? 1 : 0, lk.earrings ? 1 : 0, lk.beard || "-", lk.mo || "-", lk.scarf || "-"].join("_") + "@" + RS;
   return framesTex(key, 11, 20, [["f0", () => person(5,18,lk,0,1)], ["f1", () => person(5,18,lk,1,1)], ["sit", () => person(5,18,lk,-1,1,0), false], ["sitb", () => person(5,18,lk,-1,1,1), false]], {outline:true, shadow:[5,18.1,3]});
 }
 function drawBub(kind){
@@ -3616,12 +4184,14 @@ function ensureStatic(){
   paint(SK("elev"), 14, 22, () => { R(0,0,14,22,"#1F2A44"); R(1,1,12,20,"#C9A54A"); R(2,2,4,18,"#E8D08A"); R(8,2,4,18,"#E8D08A"); R(6,1,2,20,"#8E7228"); R(3,9,2,1,"#FFF6D0"); R(9,9,2,1,"#FFF6D0"); R(0,21,14,1,"#161B2E"); }, 0, 0);
   paint(SK("bus"), 32, 17, () => {
     ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.beginPath(); ctx.ellipse(16, 16, 16, 1, 0, 0, Math.PI*2); ctx.fill();
-    R(0,0,32,14,"#D7262E"); R(0,6,32,1,"#A51C22"); R(0,0,32,1,"#E8545A");
+    const bc = cityId() === "nyc" ? ["#F2F2EE","#2F6FE4","#FFFFFF"] : ["#D7262E","#A51C22","#E8545A"];
+    if (cityId() === "bermuda"){ R(0,0,32,7,"#F28AB0"); R(0,0,32,1,"#F7B6CE"); R(0,7,32,7,"#2F6FE4"); R(0,6.4,32,1.2,"#FFFFFF"); R(0,13,32,1,"#1F4FB4"); }
+    else { R(0,0,32,14,bc[0]); R(0,6,32,1,bc[1]); R(0,0,32,1,bc[2]); }
     for (let k = 0; k < 5; k++){ R(2+k*6,2,4,3,"#BFD9EA"); R(2+k*6,8,4,3,"#BFD9EA"); }
     R(4,13,4,3,"#1B1B2F"); R(23,13,4,3,"#1B1B2F"); R(31,10,1,2,"#FFE88A");
   }, 0, 0);
   paint(SK("cab"), 19, 10, () => {
-    const y = 1; R(0,y+3,19,5,"#1B1B2F"); R(4,y,11,4,"#1B1B2F"); R(5,y+1,4,2,"#9DB8CC"); R(10,y+1,4,2,"#9DB8CC");
+    const y = 1, cc = cityId() === "nyc" ? "#F2C11E" : cityId() === "bermuda" ? "#F7F2E6" : "#1B1B2F"; R(0,y+3,19,5,cc); R(4,y,11,4,cc); if (cityId() === "nyc") for (let k = 0; k < 4; k++) R(2 + k*4,y+5,2,1,"#1B1B2F"); if (cityId() === "bermuda") R(15,y-2,3,2,"#2F6FE4"); R(5,y+1,4,2,"#9DB8CC"); R(10,y+1,4,2,"#9DB8CC");
     R(8,y-1,3,1,"#FFD23F"); R(2,y+7,3,2,"#555"); R(14,y+7,3,2,"#555"); R(18,y+4,1,1,"#FFE88A");
   }, 0, 0);
   framesTex(SK("percy2"), 13, 20, [["p0", () => percy(6,18,0,1)], ["p1", () => percy(6,18,1,1)]], {outline:true, shadow:[6,18.1,4]});
@@ -3672,7 +4242,7 @@ function paintTall(prefix, w, yTop, yBot, fn, tx, imgX, depth, create){
   }
 }
 function addImg(key, x, y, depth){ const im = scene.add.image(x, y, key).setOrigin(0,0).setScale(1/RS).setDepth(depth); objs.push(im); return im; }
-function towerKey(){ return `${RS}|${cssW}|${cssH}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}${f.lim || 0}`).join(","); }
+function towerKey(){ return `${RS}|${cssW}|${cssH}|${cityId()}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}${f.lim || 0}`).join(","); }
 function viewH(){ return scene.cameras.main.height/scene.cameras.main.zoom; }
 function clampScroll(y){ const vh = viewH(); const mn = Math.min(0, LH - vh), mx = Math.max(mn, LH - vh); return clamp(y, mn, mx); }
 
@@ -3690,6 +4260,8 @@ function buildFloorObjs(L, i){
   const fs = Math.max(pxL(11.5), 6.6), pad = Math.max(pxL(5), 2.6), ps = Math.max(pxL(5), 2.8), gap = Math.max(pxL(2), 1);
   o.lt = scene.add.text(0, 0, TYPES[f.type].name, {fontFamily:FONT, fontSize:fs+"px", fontStyle:"600", color:"#FFF1D0", resolution:Math.ceil(cz)}).setDepth(20.2);
   objs.push(o.lt);
+  o.ln = scene.add.text(0, 0, f.type === "penthouse" ? "PH" : String(i + 1), {fontFamily:FONT, fontSize:fs+"px", fontStyle:"700", color:"#E3C064", resolution:Math.ceil(cz)}).setDepth(20.2); objs.push(o.ln);
+  o.numW = o.ln.width + pxL(6);
   let tagW = 0;
   if (f.type === "claims"){
     const [txt0, c] = f.mode === "deny" ? ["Deny all","#FF8A8A"] : f.mode === "smart" ? ["Intel","#8FDCFA"] : ["Pay all","#5BEFA6"];
@@ -3697,12 +4269,13 @@ function buildFloorObjs(L, i){
     o.tag = scene.add.text(0, 0, txt, {fontFamily:FONT, fontSize:(fs*0.9)+"px", fontStyle:"600", color:c, resolution:Math.ceil(cz)}).setDepth(20.2);
     objs.push(o.tag); tagW = o.tag.width + pxL(5);
   }
-  const tw = o.lt.width, ph = o.lt.height + pxL(1);
+  const tw = o.lt.width + o.numW, ph = o.lt.height + pxL(1);
   o.pipX = pad + tw + pxL(5);
   const pw = o.pipX + MAXL*(ps+gap) - gap + pxL(4) + tagW + pad - pxL(4);
   o.lg = scene.add.graphics().setDepth(20.1); objs.push(o.lg);
   o.lg.fillStyle(0x000000, .35); o.lg.fillRoundedRect(0, pxL(2), pw, ph, pxL(3));
   o.lg.fillStyle(0xC9A54A, 1); o.lg.fillRoundedRect(0, 0, pw, ph, pxL(3)); o.lg.fillStyle(0x1F2A44, 1); o.lg.fillRoundedRect(pxL(1.2), pxL(1.2), pw - pxL(2.4), ph - pxL(2.4), pxL(2));
+  o.lg.fillStyle(0xC9A54A, .8); o.lg.fillRect(pad + o.numW - pxL(3.5), pxL(2.5), Math.max(pxL(0.9), 0.6), ph - pxL(5));
   for (let k = 0; k < MAXL; k++){ o.lg.fillStyle(k < f.level ? 0xFFD23F : 0xFFFFFF, k < f.level ? 1 : .28); o.lg.fillRect(o.pipX + k*(ps+gap), (ph-ps)/2, ps, ps); }
   o.pad = pad; o.ph = ph; o.tagX = o.pipX + MAXL*(ps+gap) + pxL(3);
   floorObjs[i] = o;
@@ -3712,7 +4285,7 @@ function placeFloor(o){
   o.bg.setPosition(OX+28, y).setAlpha(a); o.fg.setPosition(OX+28, y).setAlpha(a);
   const lx = OX + 30, ly = y + 1;
   o.lg.setPosition(lx, ly).setAlpha(a);
-  o.lt.setPosition(lx + o.pad, ly + pxL(0.5)).setAlpha(a);
+  o.lt.setPosition(lx + o.pad + o.numW, ly + pxL(0.5)).setAlpha(a); o.ln.setPosition(lx + o.pad, ly + pxL(0.5)).setAlpha(a);
   if (o.tag) o.tag.setPosition(lx + o.tagX, ly + (o.ph - o.tag.height)/2).setAlpha(a);
   for (const {w, im} of o.workers){
     if (w.mode === "sit"){
@@ -3784,7 +4357,7 @@ function rebuildAll(){
 
   const L2 = layout();
   if (prevCount && S.floors.length > prevCount){
-    const o = floorObjs[S.floors.length-1];
+    const o = floorObjs[lastAddedFloor >= 0 ? lastAddedFloor : S.floors.length-1];
     o.anim.dy = -46; o.anim.a = 0; sfx("build");
     scene.tweens.add({targets:o.anim, dy:0, a:1, duration:800, ease:"Bounce.easeOut", onComplete:() => { [50,100,150].forEach(x => dustEm.explode(8, OX+x, o.fy+38)); }});
     scene.tweens.add({targets:cam, scrollY:clampScroll(o.fy - 50), duration:600, ease:"Cubic.easeOut"});
@@ -3870,7 +4443,8 @@ function tapAt(wx, wy){
   if (modalOpen || cutsceneOn) return;
   const lx = wx - OX, ly = wy;
   const L = layout(), fy = L.lobbyY + 40;
-  if (S.setupDone && Math.abs(lx - ceoW.x) <= 5 && ly >= fy - 22 && ly <= fy + 2){ openBoard(); return; }
+  { const ph = S.floors.findIndex(f => f.type === "penthouse"), cy = ceoW.where === "pent" && ph >= 0 ? floorY(L, ph) + 35 : fy;
+    if (S.setupDone && Math.abs(lx - ceoW.x) <= 5 && ly >= cy - 22 && ly <= cy + 2){ openBoard(); return; } }
   for (const u of CUST){ if (u.state === "wait" && Math.abs(lx - u.x) <= 8 && ly >= fy - 26 && ly <= fy + 2){ openClaims(u.id); return; } }
   if (L.can && ly >= TOP && ly < TOP + FH){ openFloors(); return; }
   if (ly >= L.floorsTop && ly < L.lobbyY){ const k = Math.floor((ly - L.floorsTop)/FH); openFloor(L.n - 1 - k); return; }
@@ -3880,7 +4454,10 @@ function tapAt(wx, wy){
 
 function ceoSync(dt){
   if (!scene || !S.setupDone){ if (ceoSpr && ceoSpr.active){ ceoSpr.setVisible(false); ceoTag.setVisible(false); } return; }
-  const L = layout(), fy = L.lobbyY + 40, key = personTexture(ceoLook());
+  const L = layout(), ph = S.floors.findIndex(f => f.type === "penthouse");
+  if (ph < 0) ceoW.where = "lobby";
+  else { ceoW.stay -= dt; if (ceoW.stay <= 0 && ceoW.pause > 0){ ceoW.where = ceoW.where === "pent" ? "lobby" : "pent"; ceoW.stay = 18 + Math.random()*22; ceoW.x = ceoW.where === "pent" ? 160 : 100; ceoW.dir = -1; } }
+  const inPent = ceoW.where === "pent" && ph >= 0, fy = inPent ? floorY(L, ph) + 35 : L.lobbyY + 40, lo = inPent ? 40 : 50, hi = inPent ? 162 : 104, key = personTexture(ceoLook());
   if (!ceoSpr || !ceoSpr.active || ceoKey !== key || ceoTag.text !== ceoName()){
     if (ceoSpr && ceoSpr.active){ ceoSpr.destroy(); ceoTag.destroy(); }
     ceoSpr = scene.add.image(0, 0, key, "f0").setOrigin(5/11, 18/20).setScale(1/RS).setDepth(14.5); objs.push(ceoSpr);
@@ -3888,7 +4465,7 @@ function ceoSync(dt){
     ceoKey = key;
   }
   if (ceoW.pause > 0) ceoW.pause -= dt;
-  else { ceoW.x += ceoW.dir*9*dt; ceoW.ft += dt; if (ceoW.x > 104 || ceoW.x < 50){ ceoW.x = clamp(ceoW.x, 50, 104); ceoW.dir *= -1; ceoW.pause = 1.5 + Math.random()*3; } }
+  else { ceoW.x += ceoW.dir*9*dt; ceoW.ft += dt; if (ceoW.x > hi || ceoW.x < lo){ ceoW.x = clamp(ceoW.x, lo, hi); ceoW.dir *= -1; ceoW.pause = 1.5 + Math.random()*3; } }
   const walking = ceoW.pause <= 0;
   ceoSpr.setVisible(true).setPosition(OX + ceoW.x, fy).setFrame(walking && Math.floor(ceoW.ft*6) % 2 ? "f1" : "f0").setFlipX(ceoW.dir < 0);
   ceoTag.setVisible(true).setPosition(OX + ceoW.x, fy - 18.5 + (walking ? 0 : Math.round(Math.sin(time*2))*0.3));
@@ -3973,6 +4550,7 @@ hud();
 const fontReady = document.fonts && document.fonts.load ? Promise.race([Promise.all([document.fonts.load('600 12px "Pixelify Sans"'), document.fonts.load('700 12px "Chakra Petch"', "0123456789")]), new Promise(r => setTimeout(r, 2500))]) : Promise.resolve();
 fontReady.then(() => {
   boot();
+  setCity(cityId());
   $("#verTag").textContent = "v" + VERSION;
   document.title = companyName();
   if (S.lastVersion && S.lastVersion !== VERSION && S.seen && !S.over) setTimeout(() => toast(`Updated to v${VERSION}. Tap ? to see what’s new.`, "good"), 1500);

@@ -1,4 +1,4 @@
-# Fine Print Syndicate
+# Insurance Tycoon
 
 A satirical London-market insurance tower game. You write the source as separate files; `build.js` bundles them into **one self-contained HTML file** that runs anywhere.
 
@@ -7,11 +7,11 @@ A satirical London-market insurance tower game. You write the source as separate
 Needs Node.js (any recent version). No packages to install.
 
 ```
-node build.js           # writes dist/fine-print-syndicate.html
+node build.js           # writes dist/insurance-tycoon.html
 node build.js --check   # same, then checks the bundled script parses
 ```
 
-Open `dist/fine-print-syndicate.html` in a browser to play. Phaser 3.80.1 and the fonts load from a CDN.
+Open `dist/insurance-tycoon.html` in a browser to play. Phaser 3.80.1 and the fonts load from a CDN.
 
 ## Releasing a new version
 
@@ -40,6 +40,7 @@ src/
     market.js            pricing strategies, market cycle messages, investment strategies
     tutorial.js          tutorial steps
     changelog.js         What's new notes, newest first
+    cities.js            London, New York and Bermuda: names, buildings, currency
   art/                   all graphics (drawn in code, so there are no image files to load)
     palette.js           skin, hair, outfit, wood and sky colours
     tower.js             the tower, skyline, street, lobby and characters
@@ -53,6 +54,10 @@ src/
 ## The CEO
 
 Every run starts on the Create your CEO screen (`openSetup()` in `src/ui/panels.js`). The choices are stored in `S.ceo` and `S.companyName` and are locked until the player starts a new company. Use `ceoName()` / `companyName()` for plain text, or `ceoN()` / `coName()` when inserting into HTML (they escape the text).
+
+## Cities, exits and the penthouse
+
+`S.city` picks the art in `src/art/tower.js` (`facadeAlt`, `roofNYC`, `roofBermuda`, `skylineNYC`, `skylineBermuda`) and the currency (`setCity()` sets `CUR`, used by `fmt()`). Selling the company lives in `src/game/endings.js` (`exitValue`, `sellCompany`); golden tickets are stored under `fineprint-legacy` so they survive new runs. The penthouse is a normal floor type that `workFloors()` leaves out of every count; `addFloor()` keeps new floors below it.
 
 ## Adding content
 

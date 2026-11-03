@@ -18,7 +18,7 @@ function hud(){
   $("#stock").textContent = fmt2(S.stock);
   const nx = RANKS[S.rankIdx+1];
   $("#rank").textContent = nx ? `${RANKS[S.rankIdx].name} (${nx.goals.filter(goalMet).length}/${nx.goals.length})` : RANKS[S.rankIdx].name;
-  if (S.idleMode) $("#rank").textContent = "🛋️ Idle mode";
+  if (S.idleMode) $("#rank").textContent = "🛋️ Idle mode"; else if (S.idleTainted) $("#rank").textContent += " (unranked)";
   $("#happyBar").style.width = S.happy + "%";
   $("#happyTxt").textContent = MOODS.find(m => S.happy >= m[0])[1];
   const qn = S.quarter;

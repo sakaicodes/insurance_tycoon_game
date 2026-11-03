@@ -6,7 +6,7 @@ function scoreParts(){
   const money = Math.round(Math.sqrt(Math.max(0, S.earned || 0))*8);
   const days = daysSurvived()*4;
   const achN = ACH.filter(a => S.ach[a.id]).length;
-  const bonus = (S.stars || 0)*40 + achN*150 + S.rankIdx*400;
+  const bonus = (S.stars || 0)*40 + achN*150 + S.rankIdx*400 + (S.exit ? Math.round(Math.sqrt(S.exit.value)*15) : 0);
   const rep = avgRep(), mult = 0.5 + rep/100;
   return {money, days, bonus, achN, rep, mult, total:Math.round((money + days + bonus)*mult)};
 }

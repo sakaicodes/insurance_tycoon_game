@@ -12,6 +12,9 @@ function newState(){
     cover:{cat:false, cyber:false, dno:false, event:false}, swan:null, swansSurvived:0, best3:false};
 }
 function ensureState(){
+  if (S.floors && S.floors.filter(f => f.type === "penthouse").length){
+    const ph = S.floors.find(f => f.type === "penthouse"); S.floors = S.floors.filter(f => f.type !== "penthouse"); S.floors.push(ph); S.penthouseBought = true;
+  }
   const d = newState();
   for (const k of ["diff","conf","strikes","cleanQ","cleanRun","stars","favour","perks","ach","cover","swansSurvived","best3","earned","repSum","repT","profHist","lastCall","tipAuto","price","cyc","divQ","execs","invRisk","invLast","prQ","unlocked"]) if (S[k] == null) S[k] = d[k];
   if (S.swan === undefined) S.swan = null;
@@ -19,16 +22,24 @@ function ensureState(){
   for (const f of S.floors) S.unlocked[f.type] = true;
 }
 function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === 1) return s; }catch(e){} return null; }
+const PENTHOUSE_COST = 20, PENTHOUSE_UP = 6;
+function hasPenthouse(){ return S.floors.some(f => f.type === "penthouse"); }
+function workFloors(){ return S.floors.length - (hasPenthouse() ? 1 : 0); }
+let lastAddedFloor = -1;
+function addFloor(f){ const ph = S.floors.findIndex(x => x.type === "penthouse"); const i = ph >= 0 ? ph : S.floors.length; S.floors.splice(i, 0, f);
+  if (ph >= 0){ W.splice(i, 0, []); popT.splice(i, 0, 0); } lastAddedFloor = i; return i; }
+function cityName(){ return (CITIES[cityId()] || CITIES.london).name; }
 function companyName(){ return (S && S.companyName) || "Fine Print Syndicate"; }
 function coName(){ return esc(companyName()); }
 function ceoName(){ return (S && S.ceo && S.ceo.name) || "the CEO"; }
 function ceoN(){ return esc(ceoName()); }
-const HAIR_SPRITE = {short:0, pixie:0, cap:0, windswept:0, bob:1, long:1, ponytail:2, bun:3, curly:4, braids:5};
+const HAIR_SPRITE = {short:0, pixie:0, cap:0, windswept:0, crew:0, sidepart:0, bob:1, long:1, ponytail:2, bun:3, manbun:3, curly:4, braids:5, bald:6, scarf:7, quiff:8};
 function ceoLook(c){
   c = c || (S && S.ceo) || {}; const at = c.attire || "tie", outfit = c.outfit || OUTFITS[0];
   const skirt = at === "skirt" ? "#2B3352" : at === "dress" ? outfit : null;
   return {skin:c.skin || SKINS[2], hair:c.hair || HAIRS[0], shirt:outfit, pants:skirt ? "#3A3048" : "#2B3352", skirt, style:HAIR_SPRITE[c.hairStyle] || 0,
-    tie:at === "tie" ? "#F2C14E" : null, blouse:at === "blouse" || at === "skirt", earrings:!!c.earrings, glasses:!!c.glasses, hat:c.hairStyle === "cap"};
+    tie:at === "tie" || at === "three" ? "#F2C14E" : null, blouse:["blouse","skirt","trouser","open"].includes(at), earrings:!!c.earrings, glasses:!!c.glasses, hat:c.hairStyle === "cap",
+    scarf:c.hairStyle === "scarf" ? shade(outfit, -0.15) : null, beard:c.facial === "beard" ? (c.hair || HAIRS[0]) : null, mo:c.facial === "moustache" ? (c.hair || HAIRS[0]) : null};
 }
 function save(){ try{ S.savedAt = Date.now(); localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 let S = load() || newState();

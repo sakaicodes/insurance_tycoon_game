@@ -1,8 +1,11 @@
 /* game/progression.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 function checkAch(){
-  for (const a of ACH){
-    if (!S.ach[a.id] && a.test()){ S.ach[a.id] = true; S.favour++; toast(`Achievement: ${a.name}! +1 ★ to spend in the Boardroom.`, "good"); fxConfetti(); }
-  }
+  const got = [];
+  for (const a of ACH){ if (!S.ach[a.id]){ let ok = false; try { ok = a.test(); } catch(e){} if (ok){ S.ach[a.id] = true; S.favour++; got.push(a.name); } } }
+  if (!got.length) return;
+  if (got.length <= 2) got.forEach(n => toast(`Achievement: ${n}! +1 ★ to spend in the Boardroom.`, "good"));
+  else toast(`${got.length} achievements unlocked: ${got.slice(0, 3).join(", ")}${got.length > 3 ? " and more" : ""}. +${got.length} ★ to spend in the Boardroom.`, "good");
+  fxConfetti();
 }
 function compHtml(){
   const need = compNeed(), have = compHave(), gap = need - have;

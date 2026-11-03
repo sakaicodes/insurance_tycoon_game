@@ -30,7 +30,7 @@ function dither(x, y, w, h, col, density = 0.5, seed = 0){ for (let yy = 0; yy <
 
 /* 3x5 pixel font */
 const G = {A:"010101111101101",B:"110101110101110",C:"011100100100011",D:"110101101101110",E:"111100110100111",F:"111100110100100",G:"011100101101011",H:"101101111101101",I:"111010010010111",J:"001001001101010",K:"101101110101101",L:"100100100100111",M:"101111111101101",N:"110101101101101",O:"010101101101010",P:"110101110100100",Q:"010101101110011",R:"110101110101101",S:"011100010001110",T:"111010010010010",U:"101101101101111",V:"101101101101010",W:"101101111111101",X:"101101010101101",Y:"101101010010010",Z:"111001010100111",
-  "0":"111101101101111","1":"010110010010111","2":"110001010100111","3":"110001010001110","4":"101101111001001","5":"111100110001110","6":"011100110101010","7":"111001010010010","8":"010101010101010","9":"010101011001110","!":"010010010000010","?":"110001010000010","%":"101001010100101","£":"011010111010111","-":"000000111000000",".":"000000000000010",":":"000010000010000","'":"010010000000000","(":"010100100100010",")":"010001001001010"," ":"000000000000000"};
+  "0":"111101101101111","1":"010110010010111","2":"110001010100111","3":"110001010001110","4":"101101111001001","5":"111100110001110","6":"011100110101010","7":"111001010010010","8":"010101010101010","9":"010101011001110","!":"010010010000010","?":"110001010000010","%":"101001010100101","£":"011010111010111","-":"000000111000000",".":"000000000000010",":":"000010000010000","'":"010010000000000","(":"010100100100010","+":"000010111010000",")":"010001001001010"," ":"000000000000000"};
 function text(str, x, y, col, s = 1, shadow){
   str = String(str).toUpperCase(); let cx = x;
   for (const ch of str){ const g = G[ch] || G[" "];
@@ -120,9 +120,15 @@ function face(o){
   else if (hs2 === "braids"){ oval(24, 19, 15, 13, o.hair); for (let y = 24; y < 47; y += 3){ P(8, y, 5, 2, o.hair); P(35, y, 5, 2, o.hair); P(9, y + 2, 3, 1, hD); P(36, y + 2, 3, 1, hD); } P(9, 45, 3, 2, "#E3C064"); P(36, 45, 3, 2, "#E3C064"); }
   else if (hs2 === "ponytail"){ P(35, 11, 7, 18, o.hair); P(37, 27, 5, 8, o.hair); P(38, 14, 1, 18, hD); }
   else if (hs2 === "bun"){ disc(24, 6, 6, o.hair); P(21, 3, 3, 1, hL); }
+  else if (hs2 === "manbun"){ disc(24, 5, 4, o.hair); P(22, 3, 2, 1, hL); }
+  else if (hs2 === "scarf"){ const sc = o.scarf || "#3E2E6A"; oval(24, 22, 18, 19, sc); P(6, 34, 36, 14, sc); P(9, 24, 2, 14, shadeC(sc, -0.2)); P(37, 24, 2, 14, shadeC(sc, -0.2)); }
   // shoulders and outfit
   const at = o.attire || "tie";
-  if (at === "dress"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); oval(24, 39, 7, 4, o.skin); P(6, 38, 36, 1, shadeC(o.shirt, 0.2)); }
+  if (at === "open"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); tri(18, 38, 30, 38, 24, 46, "#F7F2E6"); tri(21, 38, 27, 38, 24, 42, o.skin); line(18, 38, 24, 47, shadeC(o.shirt, -0.3)); line(30, 38, 24, 47, shadeC(o.shirt, -0.3)); }
+  else if (at === "three"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); P(17, 38, 14, 10, shadeC(o.shirt, -0.28)); P(20, 38, 8, 3, "#F7F2E6"); P(22, 40, 4, 8, "#E3C064"); for (let k = 0; k < 3; k++) px(24, 42 + k*2, "#E3C064"); line(17, 38, 22, 47, "#F7F2E6"); line(31, 38, 26, 47, "#F7F2E6"); }
+  else if (at === "casual"){ P(6, 39, 36, 9, o.shirt); P(19, 32, 10, 8, o.skin); P(17, 38, 14, 2, "#F7F2E6"); P(22, 40, 4, 3, o.shirt); px(24, 41, "#F7F2E6"); for (let x = 8; x < 40; x += 3) px(x, 44, shadeC(o.shirt, -0.15)); }
+  else if (at === "trouser"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); tri(18, 38, 30, 38, 24, 46, "#F7F2E6"); line(16, 38, 22, 47, shadeC(o.shirt, 0.25)); line(32, 38, 26, 47, shadeC(o.shirt, 0.25)); }
+  else if (at === "dress"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); oval(24, 39, 7, 4, o.skin); P(6, 38, 36, 1, shadeC(o.shirt, 0.2)); }
   else if (at === "blouse" || at === "skirt"){ P(6, 38, 36, 10, o.shirt); P(19, 32, 10, 7, o.skin); tri(17, 38, 31, 38, 24, 48, "#F7F2E6"); line(17, 38, 24, 47, shadeC(o.shirt, -0.3)); line(31, 38, 24, 47, shadeC(o.shirt, -0.3)); if (at === "skirt") disc(13, 43, 1.5, "#E3C064"); }
   else { P(6, 38, 36, 10, o.shirt); P(20, 38, 8, 10, o.collar || "#f4f1e8"); if (o.tie) P(22, 40, 4, 8, o.tie); P(19, 32, 10, 7, o.skin); }
   // head
@@ -138,8 +144,14 @@ function face(o){
   else if (o.hairStyle === "ponytail"){ P(11, 7, 26, 6, o.hair); P(10, 10, 3, 6, o.hair); P(35, 10, 3, 5, o.hair); P(36, 13, 3, 2, "#E3C064"); }
   else if (o.hairStyle === "bun"){ P(11, 7, 26, 6, o.hair); P(10, 10, 3, 6, o.hair); P(35, 10, 3, 6, o.hair); P(20, 7, 8, 1, "#E3C064"); }
   else if (o.hairStyle === "curly"){ for (let k = 0; k < 8; k++) disc(12 + k*3.4, 8 + (k % 2)*2, 3, o.hair); disc(10, 16, 3, o.hair); disc(38, 16, 3, o.hair); }
+  else if (o.hairStyle === "crew"){ P(12, 8, 24, 3, o.hair); P(11, 10, 2, 5, o.hair); P(35, 10, 2, 5, o.hair); for (let x = 12; x < 36; x += 2) px(x, 11, hD); }
+  else if (o.hairStyle === "sidepart"){ P(11, 7, 26, 6, o.hair); P(10, 10, 3, 7, o.hair); P(35, 10, 2, 5, o.hair); P(18, 7, 1, 5, hD); tri(19, 8, 36, 8, 36, 13, hL); }
+  else if (o.hairStyle === "quiff"){ P(11, 8, 26, 5, o.hair); oval(19, 6, 8, 3, o.hair); P(14, 4, 8, 1, hL); P(10, 10, 3, 6, o.hair); P(35, 10, 3, 6, o.hair); }
+  else if (o.hairStyle === "manbun"){ P(11, 8, 26, 4, o.hair); P(10, 10, 3, 6, o.hair); P(35, 10, 3, 6, o.hair); P(22, 7, 4, 2, o.hair); }
+  else if (o.hairStyle === "bald"){ P(15, 9, 5, 2, "rgba(255,255,255,.35)"); P(10, 16, 2, 5, shadeC(o.skin, -0.12)); P(36, 16, 2, 5, shadeC(o.skin, -0.12)); }
+  else if (o.hairStyle === "scarf"){ const sc = o.scarf || "#3E2E6A"; P(12, 8, 24, 3, sc); P(11, 9, 3, 18, sc); P(34, 9, 3, 18, sc); P(16, 8, 10, 1, shadeC(sc, 0.25)); }
   else { P(11, 7, 26, 7, o.hair); P(10, 10, 4, 8, o.hair); }
-  if (o.hair && o.hairStyle !== "cap") P(15, 8, 6, 1, "rgba(255,255,255,.22)");
+  if (o.hair && !["cap","bald","scarf","crew"].includes(o.hairStyle)) P(15, 8, 6, 1, "rgba(255,255,255,.22)");
   // eyes
   const ey = 22, wide = o.eyes === "wide";
   if (blink){ P(15, ey + 1, 6, 1, "#1F2238"); P(27, ey + 1, 6, 1, "#1F2238"); }
@@ -159,6 +171,10 @@ function face(o){
   P(22, 25, 3, 4, "rgba(0,0,0,.12)");
   if (o.beard){ P(14, 28, 20, 9, o.beard); P(18, 30, 12, 3, o.skin); P(20, 31, 8, talk ? 2 : 1, "#5a1a1a"); }
   if (o.sweat){ const sy = fr(t*1.2)*10; P(37, 14 + sy, 2, 3, "#9fd8ff"); px(37, 14 + sy, "#ffffff"); P(9, 18 + fr(t*1.2 + .5)*8, 2, 3, "#9fd8ff"); }
+  if (o.freckles) for (const [fx, fy] of [[15,27],[17,28],[16,29],[31,27],[33,28],[32,29],[23,26]]) px(fx, fy, "rgba(150,80,40,.55)");
+  if (o.facial === "stubble"){ for (let y = 29; y < 37; y += 2) for (let x = 14 + (y % 4 === 1 ? 1 : 0); x < 34; x += 2) if (Math.abs(x - 24) > 3 || y > 33) px(x, y, "rgba(40,30,30,.28)"); }
+  else if (o.facial === "moustache"){ P(19, 29, 10, 2, o.hair); px(18, 30, o.hair); px(29, 30, o.hair); }
+  else if (o.facial === "beard"){ P(14, 28, 20, 9, o.hair); P(18, 30, 12, 3, o.skin); P(19, 29, 10, 1, o.hair); P(20, 31, 8, 1, o.lip || "#5a1a1a"); P(15, 36, 18, 1, hD); }
   if (o.earrings){ disc(10, 28, 1.5, "#E3C064"); disc(37, 28, 1.5, "#E3C064"); px(10, 27, "#FFF6D0"); px(37, 27, "#FFF6D0"); }
   if (o.headset){ P(8, 14, 3, 12, "#2a2a3a"); P(37, 14, 3, 12, "#2a2a3a"); P(10, 5, 28, 3, "#2a2a3a"); P(36, 26, 2, 6, "#2a2a3a"); P(30, 31, 7, 2, "#2a2a3a"); }
   // rim light
@@ -451,13 +467,164 @@ const LINES2 = {
   solar:{name:"Professor Iris, Space Weather", line:"In 1859 it set telegraph offices on fire. Today it has so much more to work with."},
 };
 
+/* ---------- career cutscenes: promotions, endings and exits. They star the player's own CEO. ---------- */
+function ceoSpr(frame){
+  const lk = (typeof ceoLook === "function") ? ceoLook() : {skin:"#F2C9A0", hair:"#2B1B10", shirt:"#2F6FE4", pants:"#2B3352", style:0};
+  return makeSprite("ceo_" + JSON.stringify(lk) + "_" + frame, 11, 20, () => { const sv = ctx; ctx = c; person(5, 18, lk, frame, 1); ctx = sv; });
+}
+function confetti(t, n, top){ const cols = ["#E3C064","#B23A3A","#2F6FE4","#3E9B4F","#F7F2E6","#C8507A"]; for (let k = 0; k < n; k++){ const tt = fr(t*0.8 + hs(k, 1)); P(hs(k, 2)*SW + Math.sin(tt*9 + k)*6, (top || 0) + tt*140 - 10, 2, 1.5, cols[k % 6]); } }
+function hallBackdrop(){
+  bands(0, 100, ["#141A2C","#1A2236","#1F2A44","#24305A"]);
+  for (let x = 0; x < SW; x += 10){ P(x, 0, 5, 100, "rgba(255,255,255,.04)"); P(x + 5, 0, 1, 100, "rgba(0,0,0,.18)"); }
+  P(0, 0, SW, 4, "#C9A54A"); P(0, 4, SW, 1, "#8E7228");
+  P(0, 100, SW, 35, "#2B3352"); P(0, 100, SW, 2, "#C9A54A"); for (let x = 0; x < SW; x += 8) P(x, 104, 4, 1, "rgba(255,255,255,.06)");
+}
+function spotlight(x, w){ for (let y = 0; y < 100; y++){ const half = 4 + (w - 4)*(y/100); for (let xx = -half; xx < half; xx += 2) if ((xx + y) % 4 === 0) px(x + xx, y, "rgba(255,240,190,.10)"); } oval(x, 100, w, 4, "rgba(255,240,190,.25)"); }
+function crowd(y, n, t, cheer){ for (let k = 0; k < n; k++){ const x = 8 + k*(224/n), bob = cheer ? Math.round(Math.abs(Math.sin(t*14 + k))*2) : 0; disc(x, y - bob, 5, ["#1F2238","#2B2238","#22283A"][k % 3]); P(x - 6, y + 3 - bob, 12, 10, ["#2B3352","#3A2A3E","#24305A"][k % 3]); if (cheer && k % 2) { P(x - 7, y - 9 - bob, 2, 7, "#2B3352"); P(x + 5, y - 9 - bob, 2, 7, "#2B3352"); } } }
+function bigText(str, cx, y, col, shadow){ const s = textW(str, 2) <= 200 ? 2 : 1; text(str, cx - textW(str, s)/2, y, col, s, shadow); }
+const RANK_LINES = [
+  "Regional disruption complete. Next: disrupting the region again, but harder.",
+  "Synergy isn’t a word. It’s a lifestyle. And a consultancy fee.",
+  "My new book is called Thinking. Chapter one: think. Chapter two: invoice.",
+  "Fortune 500? I prefer to think of it as Fortune 499 and climbing.",
+  "We’re now too big to fail. It’s like success, but with a government guarantee.",
+  "I now own the weather. Tomorrow: sunny, with a 100% chance of premiums.",
+];
+SCENES2.promo = function(t){
+  const r = clamp(S.rankIdx - 1, 0, 5), name = RANKS[clamp(S.rankIdx, 1, RANKS.length - 1)].name.toUpperCase();
+  hallBackdrop(); spotlight(98, 34);
+  P(28, 10, 184, 20, "#C9A54A"); P(30, 12, 180, 16, "#1F2A44"); bigText(name, 120, name.length > 12 ? 18 : 15, "#E3C064", "#0E1222");
+  // rank prop on the right
+  const px0 = 176;
+  if (r === 0){ P(px0 - 8, 70, 16, 30, "#2B3352"); P(px0 - 8, 70, 16, 2, "#C9A54A"); tri(px0 - 9, 52, px0 + 9, 52, px0, 68, "#E3C064"); P(px0 - 2, 66, 4, 4, "#E3C064"); P(px0 - 11, 54, 3, 6, "#E3C064"); P(px0 + 8, 54, 3, 6, "#E3C064"); text("REGIONAL", px0 - 15, 82, "#E3C064"); }
+  else if (r === 1){ P(px0 - 30, 40, 60, 38, "#F7F2E6"); P(px0 - 30, 40, 60, 3, "#B23A3A"); text("SYNERGY", px0 - 14, 50, "#1F2A44"); for (let k = 0; k < 3; k++){ line(px0 - 20 + k*14, 70, px0 - 12 + k*14, 60, "#3E9B4F"); } disc(px0, 100, 10, "#B23A3A"); }
+  else if (r === 2){ P(px0 - 26, 84, 52, 16, "#8E5A30"); for (let k = 0; k < 5; k++){ P(px0 - 20 + (k % 2)*2, 78 - k*5, 22, 5, ["#2F6FE4","#B23A3A","#3E9B4F","#E39A2C","#7A4FBF"][k]); } text("THINKING", px0 - 16, 50, "#E3C064"); }
+  else if (r === 3){ P(px0 - 22, 34, 44, 60, "#F7F2E6"); P(px0 - 22, 34, 44, 10, "#B23A3A"); text("FORTUNE", px0 - 14, 36, "#FFFFFF"); blit(ceoSpr(0), px0, 78, 0, false, 1.6); text("500", px0 - 6, 86, "#1F2A44"); }
+  else if (r === 4){ blit(chibi({skin:"#F2C9A0", hair:"#9A9AA8", shirt:"#2B2D52", tie:"#B23A3A"}, "stand", "minister"), px0 + 14, 98); P(px0 - 34, 60, 50, 22, "#F7F2E6"); P(px0 - 34, 60, 50, 22, "rgba(201,165,74,.0)"); P(px0 - 34, 60, 50, 1, "#C9A54A"); text("BAILOUT", px0 - 30, 64, "#1F2A44"); text("£999BN", px0 - 30, 72, "#3E9B4F"); }
+  else { const rainy = fr(t*1.6) < 0.5; cloudPuff(px0, 44, 14, rainy ? "#8A96AA" : "#F7F2E6", rainy ? "#6A768A" : "#D8E0EA"); if (rainy) for (let k = 0; k < 14; k++) P(px0 - 14 + k*2, 56 + fr(t*3 + k*0.3)*30, 1, 3, "#9CC9E6"); else { disc(px0 + 16, 34, 7, "#F2C14E"); for (let k = 0; k < 8; k++){ const a = k*Math.PI/4 + t*2; P(px0 + 16 + Math.cos(a)*11, 34 + Math.sin(a)*11, 2, 2, "#F2C14E"); } }
+    for (let k = 0; k < 5; k++) for (let x = -24; x < 24; x++) px(px0 + x, 78 - Math.sqrt(Math.max(0, 576 - x*x))*0.5 + k*1.5, ["#E8452C","#E39A2C","#F2C14E","#3E9B4F","#2F6FE4"][k]); }
+  // podium and the CEO walking on stage
+  const walk = Math.min(1, t/0.35), cx = 24 + ease(walk)*68;
+  blit(ceoSpr(walk < 1 ? (Math.floor(t*12) % 2) : 0), cx, 96 - (walk >= 1 ? Math.round(Math.abs(Math.sin(t*8))) : 0));
+  P(102, 80, 22, 20, "#C9A54A"); P(104, 82, 18, 16, "#1F2A44"); P(102, 80, 22, 1, "#E8D08A"); P(110, 74, 1, 7, "#1F2238"); disc(110, 73, 2, "#1F2238");
+  crowd(124, 14, t, t > 0.35);
+  if (t > 0.35) confetti(t, 60, 0);
+};
+SCENES2.fired = function(t){
+  P(0, 0, SW, SH, "#EDE8DC"); for (let x = 0; x < SW; x += 24){ P(x, 8, 22, 70, "#E2DCCF"); P(x, 8, 22, 1, "#F7F2E6"); }
+  P(0, 0, SW, 8, "#1F2A44"); P(0, 8, SW, 2, "#C9A54A");
+  // the boardroom through the glass: the board toasting, Biscuit in your chair
+  P(120, 18, 110, 56, "#1F2A44"); P(122, 20, 106, 52, "#9CC9E6"); P(122, 20, 106, 1, "#FFFFFF"); text("BOARDROOM", 150, 12, "#E3C064");
+  P(130, 52, 90, 6, "#5A3825"); P(130, 52, 90, 1, "#8E5A30");
+  const clink = fr(t*2) < 0.3 ? -2 : 0;
+  for (let k = 0; k < 4; k++){ const bx = 140 + k*18; disc(bx, 44, 4, "#2B3352"); P(bx - 5, 47, 10, 6, "#2B3352"); P(bx + 3, 38 + (k % 2 ? clink : 0), 2, 5, "#F7F2E6"); px(bx + 3, 38 + (k % 2 ? clink : 0), "#E3C064"); }
+  P(206, 30, 14, 22, "#3A2618"); disc(213, 40, 5, "#D9A55A"); P(209, 36, 3, 4, "#C08A48"); P(214, 36, 3, 4, "#C08A48"); px(211, 40, "#1F2238"); px(215, 40, "#1F2238"); P(212, 43, 3, 1, "#1F2238"); P(208, 45, 10, 4, "#B23A3A");
+  // the corridor floor and an exit sign
+  P(0, 100, SW, 35, "#C9C3B0"); for (let x = 0; x < SW; x += 12) P(x, 100, 6, 35, "#D3CDBF");
+  P(8, 26, 22, 9, "#3E9B4F"); text("EXIT", 11, 28, "#FFFFFF");
+  // the long walk: you and your box, security close behind
+  const cx = 110 - t*80;
+  blit(ceoSpr(Math.floor(t*10) % 2), cx, 112, 0, true);
+  P(cx - 7, 98, 12, 7, "#C9A877"); P(cx - 7, 98, 12, 1, "#E2C79A"); P(cx - 3, 92, 3, 6, "#6E8A3A"); P(cx - 5, 90, 3, 3, "#8AA04A"); px(cx - 2, 89, "#A8A04A");
+  blit(chibi({skin:"#8D5524", hair:"#1C1C1C", shirt:"#1F2238", cap:"#1F2238"}, "walk", "security"), cx + 20, 112, 0, true);
+  // Percy has claimed your parking space
+  P(40, 112, 30, 14, "#4A4A52"); P(40, 112, 30, 1, "#F7F2E6"); text("CEO", 48, 116, "#E3C064");
+  const percy = makeSprite("percy2", 10, 10, () => { oval(5, 6, 4, 3, "#9AA3B5"); disc(7, 3, 2.5, "#9AA3B5"); P(9, 3, 2, 1, "#E39A2C"); px(7, 2, "#1F2238"); P(3, 8, 1, 2, "#E39A2C"); P(6, 8, 1, 2, "#E39A2C"); P(3, 0, 6, 2, "#E3C064"); });
+  blit(percy, 56, 106 - Math.round(Math.abs(Math.sin(t*6))));
+};
+SCENES2.bankrupt = function(t){
+  bands(0, 90, ["#8AA6C4","#A2BAD2","#BACCE0","#D2DEEA"]);
+  for (let k = 0; k < 3; k++) cloudPuff(fr(hs(k, 3) + t*0.03)*SW, 14 + k*8, 10, "#F7F2E6", "#D8E0EA");
+  P(60, 10, 120, 92, "#C9C3B0"); for (let r = 0; r < 7; r++) for (let k = 0; k < 6; k++) P(66 + k*19, 16 + r*11, 14, 7, "#5A6E8A");
+  P(96, 66, 48, 36, "#1F2A44"); P(100, 70, 18, 32, "#9CC9E6"); P(122, 70, 18, 32, "#9CC9E6");
+  P(70, 40, 100, 18, "#B23A3A"); P(72, 42, 96, 14, "#F7F2E6"); bigText("FOR SALE", 120, 44, "#B23A3A");
+  P(0, 102, SW, 33, "#C4C2BC"); P(0, 102, SW, 2, "#E2E0DA");
+  // bailiffs carrying the furniture away
+  const bx = 150 + t*60;
+  blit(chibi({skin:"#E0A878", hair:"#2B1B10", shirt:"#4A4A52"}, "walk", "bailiff1"), bx, 120); blit(chibi({skin:"#C68650", hair:"#1C1C1C", shirt:"#4A4A52"}, "walk", "bailiff2"), bx + 22, 120);
+  P(bx - 4, 100, 30, 3, "#8E5A30"); P(bx - 2, 103, 2, 6, "#5A3825"); P(bx + 22, 103, 2, 6, "#5A3825");
+  const umb = makeSprite("umb2", 14, 10, () => { for (let i = 0; i < 6; i++) P(i, 6 - Math.floor(i*0.8), 14 - i*2, 1, i % 2 ? "#E8452C" : "#B23A3A"); P(6, 6, 1, 4, "#4A4A52"); });
+  blit(umb, bx + 30, 96 - Math.abs(Math.sin(t*10))*2, 0.3);
+  // Biscuit, your replacement, arrives in a suit
+  const dog = makeSprite("biscuit", 18, 14, () => { oval(9, 9, 7, 4, "#D9A55A"); disc(15, 5, 3.5, "#D9A55A"); P(16, 6, 3, 2, "#C08A48"); px(15, 4, "#1F2238"); P(18, 6, 1, 1, "#1F2238"); P(4, 12, 2, 2, "#C08A48"); P(12, 12, 2, 2, "#C08A48"); P(6, 6, 7, 3, "#1F2A44"); P(8, 6, 2, 3, "#F7F2E6"); P(9, 6, 1, 3, "#B23A3A"); });
+  blit(dog, 120 - (1 - ease(Math.min(1, t*1.5)))*60, 122);
+  P(104, 112, 30, 6, "#E3C064"); text("NEW CEO", 105, 113, "#1F2A44");
+  // and you, on the kerb, holding your box
+  blit(ceoSpr(0), 30, 124); P(24, 116, 12, 7, "#C9A877"); P(24, 116, 12, 1, "#E2C79A");
+};
+SCENES2.licence = function(t){
+  bands(0, 95, ["#7CB4E4","#98C6EC","#B4D8F2"]);
+  P(70, 14, 100, 88, "#F2EDE2"); P(70, 14, 100, 2, "#C9A54A"); for (let r = 0; r < 6; r++) for (let k = 0; k < 5; k++) P(76 + k*19, 30 + r*10, 13, 6, "#9CC9E6");
+  P(84, 4, 72, 16, "#3E2A1E"); P(86, 6, 68, 12, "#5A3825"); text("COFFEE", 108, 9, "#F7F2E6"); P(146, 8, 6, 7, "#F7F2E6"); P(152, 10, 2, 3, "#F7F2E6");
+  P(0, 98, SW, 37, "#C4C2BC"); P(0, 98, SW, 2, "#E2E0DA");
+  // the coffee counter, with you behind it in an apron
+  P(14, 90, 60, 20, "#5A3825"); P(14, 90, 60, 2, "#8E5A30"); blit(ceoSpr(0), 44, 88);
+  P(40, 80, 9, 8, "#F7F2E6"); P(40, 78, 9, 2, "#3E9B4F");
+  P(28, 84, 6, 6, "#F7F2E6"); P(29, 82, 4, 2, "#8E5A30"); for (let k = 0; k < 3; k++) px(30 + k, 78 - fr(t*2 + k*0.3)*6, "rgba(255,255,255,.7)");
+  // the regulator brings down the stamp
+  const sx = 178, down = fr(t*1.4) > 0.55 ? 1 : 0;
+  P(150, 102, 70, 24, "#F7F2E6"); P(150, 102, 70, 1, "#C9C3B0"); for (let k = 0; k < 4; k++) P(156, 108 + k*4, 50, 1, "#C9C3B0");
+  if (t > 0.3) { P(158, 106, 48, 14, "rgba(178,58,58,.0)"); text("REVOKED", 164, 110, "#B23A3A", 1); P(160, 107, 44, 1, "#B23A3A"); P(160, 117, 44, 1, "#B23A3A"); }
+  P(sx - 6, 70 + down*20, 12, 8, "#B23A3A"); P(sx - 2, 60 + down*20, 4, 10, "#4A3020");
+  blit(chibi({skin:"#F2C9A0", hair:"#9A9AA8", shirt:"#6A6A72", long:true, glasses:true}, "stand", "regulator"), 210, 100);
+};
+SCENES2.ipo = function(t){
+  P(0, 0, SW, SH, "#1A2236"); P(0, 0, SW, 60, "#141A2C");
+  P(10, 8, 220, 40, "#06080E");
+  const nm = ((typeof companyName === "function" ? companyName() : "FINE PRINT").toUpperCase().replace(/[^A-Z0-9 ]/g, "").slice(0, 18) || "FINE PRINT") + "  +38%   ";
+  text(nm.repeat(3), 14 - fr(t*0.6)*nm.length*4, 14, "#5BEFA6"); bigText("+38%", 120, 28, "#5BEFA6", "#0E3020");
+  P(0, 48, SW, 3, "#C9A54A");
+  // the balcony and the bell
+  P(80, 62, 80, 10, "#C9A54A"); P(80, 72, 80, 4, "#8E7228");
+  const swing = Math.sin(t*18)*0.4;
+  c.save(); c.translate(150, 54); c.rotate(swing); tri(-6, 0, 6, 0, 0, -10, "#E3C064"); P(-7, -1, 14, 4, "#E3C064"); disc(0, 4, 1.5, "#8E7228"); c.restore();
+  for (let k = 0; k < 3; k++){ const r = 8 + fr(t*3 + k/3)*14; for (let a = -0.8; a < 0.8; a += 0.15) px(150 + Math.cos(a - Math.PI/2)*r*1.3, 50 + Math.sin(a - Math.PI/2)*r, "rgba(227,192,100,.6)"); }
+  blit(ceoSpr(0), 128, 62 - Math.round(Math.abs(Math.sin(t*16))));
+  P(132, 50, 2, 6, "#4A3020");
+  // traders cheering on the floor
+  P(0, 100, SW, 35, "#2B3352");
+  for (let k = 0; k < 9; k++) blit(chibi(PEOPLE[k % 6], "cheer", "trader" + k), 16 + k*26, 124 - Math.round(Math.abs(Math.sin(t*14 + k))*3));
+  confetti(t, 70, 40);
+};
+SCENES2.pe = function(t){
+  bands(0, 80, ["#3A4A7A","#6A5A8A","#C8708A","#F2A07A","#FFD09A"]);
+  disc(180, 74, 12, "#FFE2A8"); disc(180, 74, 9, "#FFF2D0");
+  bands(78, 135, ["#3E5A88","#34507C","#2A4670","#203A60"]);
+  for (let k = 0; k < 20; k++) P(hs(k, 1)*SW, 82 + hs(k, 2)*50, 6, 1, "rgba(255,210,160,.35)");
+  // the superyacht deck
+  P(10, 92, 220, 16, "#F7F2E6"); tri(220, 92, 238, 92, 220, 108, "#F7F2E6"); P(10, 104, 228, 4, "#1F2A44"); P(10, 92, 228, 1, "#FFFFFF");
+  P(40, 70, 80, 22, "#F7F2E6"); P(44, 74, 72, 8, "#5A6E8A"); P(30, 66, 100, 4, "#E8E4DA");
+  for (let x = 14; x < 230; x += 8) P(x, 86, 1, 6, "#C9C3B0"); P(14, 86, 216, 1, "#C9C3B0");
+  // the handshake over a giant cheque
+  blit(ceoSpr(0), 140, 90);
+  blit(chibi({skin:"#F2C9A0", hair:"#C9A227", shirt:"#1F2A44", tie:null, glasses:true}, "stand", "rupert"), 166, 90);
+  P(144, 79, 18, 2, "#F2C9A0");
+  P(128, 58, 60, 20, "#F7F2E6"); P(128, 58, 60, 2, "#3E9B4F"); text("PAY", 131, 62, "#1F2A44"); text("£££££", 131, 70, "#3E9B4F"); P(176, 70, 10, 1, "#1F2238");
+  // champagne
+  const pop = fr(t*1.2);
+  P(200, 82, 4, 10, "#2E5A3E"); P(201, 78, 2, 4, "#2E5A3E"); P(200, 84, 4, 2, "#E3C064");
+  P(201 + pop*20, 76 - pop*30 + pop*pop*20, 2, 2, "#C8A060");
+  for (let k = 0; k < 10; k++){ const tt = fr(t*2 + k/10); px(202 + (hs(k, 1) - .5)*10*tt, 76 - tt*14, "rgba(255,250,220,.8)"); }
+  const gull = makeSprite("gull", 10, 5, () => { line(0, 2, 4, 0, "#F7F2E6"); line(4, 0, 5, 2, "#F7F2E6"); line(5, 2, 9, 0, "#F7F2E6"); });
+  blit(gull, fr(t*0.3)*SW, 24 + Math.sin(t*6)*3);
+};
+PORTRAITS2.fired = t => portrait2({t, skin:"#F2C9A0", hair:"#E9E2CF", hairStyle:"windswept", shirt:"#1F2A44", tie:"#B23A3A", eyes:"normal", brows:"angry", mouth:"talk", glasses:true, bg:"#9CC9E6"});
+PORTRAITS2.bankrupt = t => portrait2({t, skin:"#E0A878", hair:"#2B1B10", hairStyle:"cap", shirt:"#4A4A52", collar:"#6A6A72", eyes:"normal", brows:"flat", mouth:"talk", beard:"#3A2618", bg:"#C4C2BC"});
+PORTRAITS2.licence = t => portrait2({t, skin:"#F2C9A0", hair:"#9A9AA8", hairStyle:"bob", shirt:"#6A6A72", collar:"#F7F2E6", eyes:"normal", brows:"flat", mouth:"talk", glasses:true, bg:"#B4D8F2"});
+PORTRAITS2.pe = t => portrait2({t, skin:"#F2C9A0", hair:"#C9A227", hairStyle:"windswept", shirt:"#1F2A44", collar:"#F7F2E6", eyes:"normal", brows:"flat", mouth:"smile", glasses:true, bg:"#F2A07A"});
+LINES2.fired = {name:"Sir Clive, Chair of the Board", line:"Clear your desk. Percy is having your parking space. He’s very good with stakeholders."};
+LINES2.bankrupt = {name:"Barry, Bailiff", line:"Sign here, here and here. The umbrella’s ours as well, I’m afraid."};
+LINES2.licence = {name:"The Regulator", line:"Your licence is revoked. Your flat white, however, is excellent."};
+LINES2.pe = {name:"Rupert, Private Equity", line:"We’ll add some debt, cut some costs and sell it on in three years. Welcome to the family."};
+
 return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.keys(SCENES2),
   drawScene(g, kind, t){ c = g; c.imageSmoothingEnabled = false; c.setTransform(1,0,0,1,0,0); c.clearRect(0, 0, SW, SH); (SCENES2[kind] || SCENES2.hurricane)(t);
     const vg = c.createRadialGradient(SW/2, SH*0.52, SH*0.4, SW/2, SH*0.52, SW*0.64); vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(14,18,34,.45)"); c.fillStyle = vg; c.fillRect(0, 0, SW, SH); },
   drawPortrait(g, kind, t){ c = g; c.imageSmoothingEnabled = false; c.setTransform(1,0,0,1,0,0); c.clearRect(0, 0, 48, 48); (PORTRAITS2[kind] || PORTRAITS2.hurricane)(t); },
   drawCEO(g, look, t){ t = t || 0.3; c = g; c.imageSmoothingEnabled = false; c.setTransform(1,0,0,1,0,0); c.clearRect(0, 0, 48, 48);
-    face({t, skin:look.skin, hair:look.hair, hairStyle:look.hairStyle === "short" ? undefined : look.hairStyle, shirt:look.outfit, tie:(look.attire || "tie") === "tie" ? "#E3C064" : null,
-      attire:look.attire || "tie", lashes:look.lashes, lip:look.lipstick ? "#C0395A" : null, earrings:look.earrings, glasses:look.glasses, eyes:"normal", brows:"flat", mouth:"smile", bg:"#E9E2CF"});
+    face({t, skin:look.skin, hair:look.hair, hairStyle:look.hairStyle === "short" ? undefined : look.hairStyle, shirt:look.outfit, tie:["tie","three"].includes(look.attire || "tie") ? "#E3C064" : null,
+      attire:look.attire || "tie", lashes:look.lashes, lip:look.lipstick ? "#C0395A" : null, earrings:look.earrings, glasses:look.glasses, freckles:look.freckles, facial:look.facial, scarf:look.outfit && look.hairStyle === "scarf" ? shadeC(look.outfit, -0.15) : null,
+      eyes:"normal", brows:"flat", mouth:"smile", bg:"#E9E2CF"});
     P(13, 27, 3, 2, "rgba(235,110,110,.45)"); P(32, 27, 3, 2, "rgba(235,110,110,.45)"); },
 };
 })();

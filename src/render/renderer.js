@@ -8,7 +8,7 @@ let rainEm = null, confettiEm = null, dustEm = null;
 let lastKey = "", prevLevels = [], prevCount = 0, lastNight = null, bellRinging = false, rainOn = null, scrollHint = false;
 let tick8 = 0, tick2 = 0, hudT = 0, saveT = 0, vel = 0, drag = null, pendingBottom = true;
 let padX = 0;
-let ceoW = {x:58, dir:1, pause:1.5, ft:0}, ceoSpr = null, ceoTag = null, ceoKey = "";
+let ceoW = {x:58, dir:1, pause:1.5, ft:0, where:"lobby", stay:25}, ceoSpr = null, ceoTag = null, ceoKey = "";
 const pxL = css => css*dpr/cz;
 const SK = n => n + "@" + RS;
 const col = s => Phaser.Display.Color.ValueToColor(s).color;
@@ -49,7 +49,7 @@ function framesTex(key, fw, fh, frames, opt){
   return key;
 }
 function personTexture(lk){
-  const key = "p3_" + [lk.skin, lk.hair, lk.shirt, lk.pants, lk.style, lk.tie || "-", lk.glasses ? 1 : 0, lk.hat ? 1 : 0, lk.skirt || "-", lk.blouse ? 1 : 0, lk.earrings ? 1 : 0].join("_") + "@" + RS;
+  const key = "p3_" + [lk.skin, lk.hair, lk.shirt, lk.pants, lk.style, lk.tie || "-", lk.glasses ? 1 : 0, lk.hat ? 1 : 0, lk.skirt || "-", lk.blouse ? 1 : 0, lk.earrings ? 1 : 0, lk.beard || "-", lk.mo || "-", lk.scarf || "-"].join("_") + "@" + RS;
   return framesTex(key, 11, 20, [["f0", () => person(5,18,lk,0,1)], ["f1", () => person(5,18,lk,1,1)], ["sit", () => person(5,18,lk,-1,1,0), false], ["sitb", () => person(5,18,lk,-1,1,1), false]], {outline:true, shadow:[5,18.1,3]});
 }
 function drawBub(kind){
@@ -75,12 +75,14 @@ function ensureStatic(){
   paint(SK("elev"), 14, 22, () => { R(0,0,14,22,"#1F2A44"); R(1,1,12,20,"#C9A54A"); R(2,2,4,18,"#E8D08A"); R(8,2,4,18,"#E8D08A"); R(6,1,2,20,"#8E7228"); R(3,9,2,1,"#FFF6D0"); R(9,9,2,1,"#FFF6D0"); R(0,21,14,1,"#161B2E"); }, 0, 0);
   paint(SK("bus"), 32, 17, () => {
     ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.beginPath(); ctx.ellipse(16, 16, 16, 1, 0, 0, Math.PI*2); ctx.fill();
-    R(0,0,32,14,"#D7262E"); R(0,6,32,1,"#A51C22"); R(0,0,32,1,"#E8545A");
+    const bc = cityId() === "nyc" ? ["#F2F2EE","#2F6FE4","#FFFFFF"] : ["#D7262E","#A51C22","#E8545A"];
+    if (cityId() === "bermuda"){ R(0,0,32,7,"#F28AB0"); R(0,0,32,1,"#F7B6CE"); R(0,7,32,7,"#2F6FE4"); R(0,6.4,32,1.2,"#FFFFFF"); R(0,13,32,1,"#1F4FB4"); }
+    else { R(0,0,32,14,bc[0]); R(0,6,32,1,bc[1]); R(0,0,32,1,bc[2]); }
     for (let k = 0; k < 5; k++){ R(2+k*6,2,4,3,"#BFD9EA"); R(2+k*6,8,4,3,"#BFD9EA"); }
     R(4,13,4,3,"#1B1B2F"); R(23,13,4,3,"#1B1B2F"); R(31,10,1,2,"#FFE88A");
   }, 0, 0);
   paint(SK("cab"), 19, 10, () => {
-    const y = 1; R(0,y+3,19,5,"#1B1B2F"); R(4,y,11,4,"#1B1B2F"); R(5,y+1,4,2,"#9DB8CC"); R(10,y+1,4,2,"#9DB8CC");
+    const y = 1, cc = cityId() === "nyc" ? "#F2C11E" : cityId() === "bermuda" ? "#F7F2E6" : "#1B1B2F"; R(0,y+3,19,5,cc); R(4,y,11,4,cc); if (cityId() === "nyc") for (let k = 0; k < 4; k++) R(2 + k*4,y+5,2,1,"#1B1B2F"); if (cityId() === "bermuda") R(15,y-2,3,2,"#2F6FE4"); R(5,y+1,4,2,"#9DB8CC"); R(10,y+1,4,2,"#9DB8CC");
     R(8,y-1,3,1,"#FFD23F"); R(2,y+7,3,2,"#555"); R(14,y+7,3,2,"#555"); R(18,y+4,1,1,"#FFE88A");
   }, 0, 0);
   framesTex(SK("percy2"), 13, 20, [["p0", () => percy(6,18,0,1)], ["p1", () => percy(6,18,1,1)]], {outline:true, shadow:[6,18.1,4]});
@@ -131,7 +133,7 @@ function paintTall(prefix, w, yTop, yBot, fn, tx, imgX, depth, create){
   }
 }
 function addImg(key, x, y, depth){ const im = scene.add.image(x, y, key).setOrigin(0,0).setScale(1/RS).setDepth(depth); objs.push(im); return im; }
-function towerKey(){ return `${RS}|${cssW}|${cssH}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}${f.lim || 0}`).join(","); }
+function towerKey(){ return `${RS}|${cssW}|${cssH}|${cityId()}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}${f.lim || 0}`).join(","); }
 function viewH(){ return scene.cameras.main.height/scene.cameras.main.zoom; }
 function clampScroll(y){ const vh = viewH(); const mn = Math.min(0, LH - vh), mx = Math.max(mn, LH - vh); return clamp(y, mn, mx); }
 
@@ -149,6 +151,8 @@ function buildFloorObjs(L, i){
   const fs = Math.max(pxL(11.5), 6.6), pad = Math.max(pxL(5), 2.6), ps = Math.max(pxL(5), 2.8), gap = Math.max(pxL(2), 1);
   o.lt = scene.add.text(0, 0, TYPES[f.type].name, {fontFamily:FONT, fontSize:fs+"px", fontStyle:"600", color:"#FFF1D0", resolution:Math.ceil(cz)}).setDepth(20.2);
   objs.push(o.lt);
+  o.ln = scene.add.text(0, 0, f.type === "penthouse" ? "PH" : String(i + 1), {fontFamily:FONT, fontSize:fs+"px", fontStyle:"700", color:"#E3C064", resolution:Math.ceil(cz)}).setDepth(20.2); objs.push(o.ln);
+  o.numW = o.ln.width + pxL(6);
   let tagW = 0;
   if (f.type === "claims"){
     const [txt0, c] = f.mode === "deny" ? ["Deny all","#FF8A8A"] : f.mode === "smart" ? ["Intel","#8FDCFA"] : ["Pay all","#5BEFA6"];
@@ -156,12 +160,13 @@ function buildFloorObjs(L, i){
     o.tag = scene.add.text(0, 0, txt, {fontFamily:FONT, fontSize:(fs*0.9)+"px", fontStyle:"600", color:c, resolution:Math.ceil(cz)}).setDepth(20.2);
     objs.push(o.tag); tagW = o.tag.width + pxL(5);
   }
-  const tw = o.lt.width, ph = o.lt.height + pxL(1);
+  const tw = o.lt.width + o.numW, ph = o.lt.height + pxL(1);
   o.pipX = pad + tw + pxL(5);
   const pw = o.pipX + MAXL*(ps+gap) - gap + pxL(4) + tagW + pad - pxL(4);
   o.lg = scene.add.graphics().setDepth(20.1); objs.push(o.lg);
   o.lg.fillStyle(0x000000, .35); o.lg.fillRoundedRect(0, pxL(2), pw, ph, pxL(3));
   o.lg.fillStyle(0xC9A54A, 1); o.lg.fillRoundedRect(0, 0, pw, ph, pxL(3)); o.lg.fillStyle(0x1F2A44, 1); o.lg.fillRoundedRect(pxL(1.2), pxL(1.2), pw - pxL(2.4), ph - pxL(2.4), pxL(2));
+  o.lg.fillStyle(0xC9A54A, .8); o.lg.fillRect(pad + o.numW - pxL(3.5), pxL(2.5), Math.max(pxL(0.9), 0.6), ph - pxL(5));
   for (let k = 0; k < MAXL; k++){ o.lg.fillStyle(k < f.level ? 0xFFD23F : 0xFFFFFF, k < f.level ? 1 : .28); o.lg.fillRect(o.pipX + k*(ps+gap), (ph-ps)/2, ps, ps); }
   o.pad = pad; o.ph = ph; o.tagX = o.pipX + MAXL*(ps+gap) + pxL(3);
   floorObjs[i] = o;
@@ -171,7 +176,7 @@ function placeFloor(o){
   o.bg.setPosition(OX+28, y).setAlpha(a); o.fg.setPosition(OX+28, y).setAlpha(a);
   const lx = OX + 30, ly = y + 1;
   o.lg.setPosition(lx, ly).setAlpha(a);
-  o.lt.setPosition(lx + o.pad, ly + pxL(0.5)).setAlpha(a);
+  o.lt.setPosition(lx + o.pad + o.numW, ly + pxL(0.5)).setAlpha(a); o.ln.setPosition(lx + o.pad, ly + pxL(0.5)).setAlpha(a);
   if (o.tag) o.tag.setPosition(lx + o.tagX, ly + (o.ph - o.tag.height)/2).setAlpha(a);
   for (const {w, im} of o.workers){
     if (w.mode === "sit"){
@@ -243,7 +248,7 @@ function rebuildAll(){
 
   const L2 = layout();
   if (prevCount && S.floors.length > prevCount){
-    const o = floorObjs[S.floors.length-1];
+    const o = floorObjs[lastAddedFloor >= 0 ? lastAddedFloor : S.floors.length-1];
     o.anim.dy = -46; o.anim.a = 0; sfx("build");
     scene.tweens.add({targets:o.anim, dy:0, a:1, duration:800, ease:"Bounce.easeOut", onComplete:() => { [50,100,150].forEach(x => dustEm.explode(8, OX+x, o.fy+38)); }});
     scene.tweens.add({targets:cam, scrollY:clampScroll(o.fy - 50), duration:600, ease:"Cubic.easeOut"});
@@ -329,7 +334,8 @@ function tapAt(wx, wy){
   if (modalOpen || cutsceneOn) return;
   const lx = wx - OX, ly = wy;
   const L = layout(), fy = L.lobbyY + 40;
-  if (S.setupDone && Math.abs(lx - ceoW.x) <= 5 && ly >= fy - 22 && ly <= fy + 2){ openBoard(); return; }
+  { const ph = S.floors.findIndex(f => f.type === "penthouse"), cy = ceoW.where === "pent" && ph >= 0 ? floorY(L, ph) + 35 : fy;
+    if (S.setupDone && Math.abs(lx - ceoW.x) <= 5 && ly >= cy - 22 && ly <= cy + 2){ openBoard(); return; } }
   for (const u of CUST){ if (u.state === "wait" && Math.abs(lx - u.x) <= 8 && ly >= fy - 26 && ly <= fy + 2){ openClaims(u.id); return; } }
   if (L.can && ly >= TOP && ly < TOP + FH){ openFloors(); return; }
   if (ly >= L.floorsTop && ly < L.lobbyY){ const k = Math.floor((ly - L.floorsTop)/FH); openFloor(L.n - 1 - k); return; }
@@ -339,7 +345,10 @@ function tapAt(wx, wy){
 
 function ceoSync(dt){
   if (!scene || !S.setupDone){ if (ceoSpr && ceoSpr.active){ ceoSpr.setVisible(false); ceoTag.setVisible(false); } return; }
-  const L = layout(), fy = L.lobbyY + 40, key = personTexture(ceoLook());
+  const L = layout(), ph = S.floors.findIndex(f => f.type === "penthouse");
+  if (ph < 0) ceoW.where = "lobby";
+  else { ceoW.stay -= dt; if (ceoW.stay <= 0 && ceoW.pause > 0){ ceoW.where = ceoW.where === "pent" ? "lobby" : "pent"; ceoW.stay = 18 + Math.random()*22; ceoW.x = ceoW.where === "pent" ? 160 : 100; ceoW.dir = -1; } }
+  const inPent = ceoW.where === "pent" && ph >= 0, fy = inPent ? floorY(L, ph) + 35 : L.lobbyY + 40, lo = inPent ? 40 : 50, hi = inPent ? 162 : 104, key = personTexture(ceoLook());
   if (!ceoSpr || !ceoSpr.active || ceoKey !== key || ceoTag.text !== ceoName()){
     if (ceoSpr && ceoSpr.active){ ceoSpr.destroy(); ceoTag.destroy(); }
     ceoSpr = scene.add.image(0, 0, key, "f0").setOrigin(5/11, 18/20).setScale(1/RS).setDepth(14.5); objs.push(ceoSpr);
@@ -347,7 +356,7 @@ function ceoSync(dt){
     ceoKey = key;
   }
   if (ceoW.pause > 0) ceoW.pause -= dt;
-  else { ceoW.x += ceoW.dir*9*dt; ceoW.ft += dt; if (ceoW.x > 104 || ceoW.x < 50){ ceoW.x = clamp(ceoW.x, 50, 104); ceoW.dir *= -1; ceoW.pause = 1.5 + Math.random()*3; } }
+  else { ceoW.x += ceoW.dir*9*dt; ceoW.ft += dt; if (ceoW.x > hi || ceoW.x < lo){ ceoW.x = clamp(ceoW.x, lo, hi); ceoW.dir *= -1; ceoW.pause = 1.5 + Math.random()*3; } }
   const walking = ceoW.pause <= 0;
   ceoSpr.setVisible(true).setPosition(OX + ceoW.x, fy).setFrame(walking && Math.floor(ceoW.ft*6) % 2 ? "f1" : "f0").setFlipX(ceoW.dir < 0);
   ceoTag.setVisible(true).setPosition(OX + ceoW.x, fy - 18.5 + (walking ? 0 : Math.round(Math.sin(time*2))*0.3));
@@ -432,6 +441,7 @@ hud();
 const fontReady = document.fonts && document.fonts.load ? Promise.race([Promise.all([document.fonts.load('600 12px "Pixelify Sans"'), document.fonts.load('700 12px "Chakra Petch"', "0123456789")]), new Promise(r => setTimeout(r, 2500))]) : Promise.resolve();
 fontReady.then(() => {
   boot();
+  setCity(cityId());
   $("#verTag").textContent = "v" + VERSION;
   document.title = companyName();
   if (S.lastVersion && S.lastVersion !== VERSION && S.seen && !S.over) setTimeout(() => toast(`Updated to v${VERSION}. Tap ? to see what’s new.`, "good"), 1500);

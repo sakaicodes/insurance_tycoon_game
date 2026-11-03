@@ -1,7 +1,7 @@
 /* game/endings.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 function gameOver(reason){
   reason = reason || "bankrupt";
-  if (perk("parachute")){
+  if (perk("parachute") && reason !== "exit"){
     delete S.perks.parachute;
     S.cash = Math.max(S.cash, 0); S.conf = Math.max(S.conf, 35); S.strikes = Math.min(S.strikes, maxStrikes() - 1);
     fxConfetti(); save();
@@ -9,9 +9,14 @@ function gameOver(reason){
       <div class="closeRow"><button class="btn" data-act="close">Never again</button></div>`, {locked:true});
     return;
   }
-  const e = ENDINGS[reason]; sfx("lose");
+  if (!S.overCut && scene && !window.__bot && CAREER_CUTS[reason]){
+    S.overCut = true; S.over = true; save(); if (modalOpen){ modalLocked = false; closeModal(); }
+    const cc = CAREER_CUTS[reason]; playCutscene(typeof cc.kind === "function" ? cc.kind() : cc.kind, () => gameOver(reason), Object.assign({}, cc.opts(), {}));
+    return;
+  }
+  const e = ENDINGS[reason]; if (reason !== "exit") sfx("lose");
   const spR = scoreParts(); let run = S.runId ? loadRuns().find(r => r.id === S.runId) : null;
-  if (!run && !S.idleMode){ run = recordRun(spR, reason); S.runId = run.id; }
+  if (!run && !S.idleMode && !S.idleTainted){ run = recordRun(spR, reason); S.runId = run.id; }
   const sp = scoreParts(), prevBest = bestScore(), isNew = !S.idleMode && sp.total > prevBest;
   if (isNew) saveBest(sp.total);
   S.over = true; save();
@@ -41,12 +46,12 @@ function swanResolve(kind){
     const il = lv("invest") ? Math.round(invCapital()*INV[S.invRisk || 0].crash) : 0; if (il){ S.cash -= il; S.q.other += il; }
     body = `<p>Your share price fell ${Math.round(drop*100)}%. ${lv("ir") ? "Capital Relations softened the blow." : "Capital Relations could have softened the blow."} Board confidence fell.${il ? ` Your ${INV[S.invRisk || 0].name.toLowerCase()} investments lost ${fmt(il)}.` : ""}</p>`;
   } else {
-    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, S.floors.length - 10))*(1 + 0.1*Math.max(0, S.diff - 2))));
+    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, workFloors() - 10))*(1 + 0.1*Math.max(0, S.diff - 2))));
     const mit = sw.mit(), afterMit = Math.round(gross*(1 - mit)), riskCut = Math.min(0.2, 0.04*lv("risk")), net = Math.round(afterMit*(1 - riskCut));
     const covered = S.cover[sw.cover];
     const loss = covered ? Math.round(net*0.1) : net;
     spend(loss, "other");
-    if (covered){ S.swansSurvived = (S.swansSurvived || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); }
+    if (covered){ S.swansSurvived = (S.swansSurvived || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); } S.swanKinds = Object.assign(S.swanKinds || {}, {[kind]: true}); if (!covered) S.swanNaked = (S.swanNaked || 0) + 1;
     else S.conf = clamp(S.conf - Math.round(25*prDamp()), 0, 100);
     body = `<table class="ledger">
       <tr><td>Total loss</td><td class="neg">−${fmt(gross)}</td></tr>
@@ -63,3 +68,36 @@ function swanResolve(kind){
       if (S.conf <= 0) return gameOver("fired");
       save(); }});
 }
+
+/* Cutscenes for the ways a run can end. */
+const CAREER_CUTS = {
+  fired:{kind:"fired", opts:() => ({title:`${ceoName()} has been fired`, tag:"FIRED"})},
+  bankrupt:{kind:"bankrupt", opts:() => ({title:`${companyName()} is bankrupt`, tag:"BANKRUPT"})},
+  licence:{kind:"licence", opts:() => ({title:"The regulator has had enough", tag:"LICENCE REVOKED"})},
+  exit:{kind:() => S.exit && S.exit.kind === "pe" ? "pe" : "ipo", opts:() => S.exit && S.exit.kind === "pe"
+    ? {title:`${companyName()} sold to private equity`, tag:"SOLD", tagColor:0x2E7D4F}
+    : {title:`${companyName()} goes public`, tag:"IPO", tagColor:0x2E7D4F, ceo:true, line:"Ding ding! I’m now a very liquid individual."}},
+};
+
+/* ---------- selling the company, and the golden ticket it earns ---------- */
+const LEGACY_KEY = "fineprint-legacy";
+function loadLegacy(){ try { return JSON.parse(localStorage.getItem(LEGACY_KEY)) || {tickets:0, seed:0, stars:0}; } catch(e){ return {tickets:0, seed:0, stars:0}; } }
+function saveLegacy(l){ try { localStorage.setItem(LEGACY_KEY, JSON.stringify(l)); } catch(e){} }
+const EXIT_REQ = {pe:{cash:1000000, stock:150}, ipo:{cash:2500000, stock:250, conf:70}};
+function exitUnlocked(){ return S.rankIdx >= 3 && S.quarter >= 8; }
+function exitReady(kind){ const r = EXIT_REQ[kind]; return exitUnlocked() && S.cash >= r.cash && S.stock >= r.stock && (!r.conf || S.conf >= r.conf); }
+function exitValue(){
+  const h = (S.profHist || []).slice(-4), q = h.length ? h.reduce((a, b) => a + b, 0)/h.length : 0;
+  const base = Math.max(0, q)*16 + Math.max(0, S.cash)*0.5 + S.floors.reduce((a, f) => a + f.level, 0)*600;
+  return Math.round(base*Math.sqrt(Math.max(1, S.stock)/10)*(1 + Math.min(0.4, 0.02*S.favour)));
+}
+function ticketFor(value){ return {seed:Math.min(50000, Math.round(value*0.03)), stars:3}; }
+function sellCompany(kind){
+  if (!exitReady(kind)) return;
+  const v = exitValue(), mult = kind === "ipo" ? rand(0.8, 1.6) : 1, value = Math.round(v*mult);
+  S.exit = {kind, value, mult}; S.exitKind = kind;
+  const leg = loadLegacy(), tk = ticketFor(value);
+  leg.tickets = Math.min(4, (leg.tickets || 0) + 1); leg.seed = tk.seed; leg.stars = tk.stars; leg.lastValue = value; saveLegacy(leg);
+  checkAch(); save(); closeModal(); gameOver("exit");
+}
+

@@ -6,22 +6,22 @@ function happyMult(){ return 0.4 + S.happy/100*0.9; }
 function salesFloorRate(level){ return 5.5*Math.pow(level,1.38); }
 function exposureRate(level){ return 5.5*Math.pow(level,1.27); }
 function exposure(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += exposureRate(f.level); return s*salesMult()*volume(); }
-function salesMult(){ return (1 + 0.35*lv("marketing") + 0.10*lv("it") + 0.05*lv("hr") + (perk("loyalty") ? 0.1 : 0)) * happyMult() * morale() * Math.max(0.5, 1 - 0.03*lv("risk") - 0.04*lv("compliance")); }
+function salesMult(){ return (1 + 0.05*Math.min(4, S.tickets || 0)) * (1 + 0.35*lv("marketing") + 0.10*lv("it") + 0.05*lv("hr") + (perk("loyalty") ? 0.1 : 0)) * happyMult() * morale() * Math.max(0.5, 1 - 0.03*lv("risk") - 0.04*lv("compliance")); }
 function cycleVal(){ return Math.sin(S.cyc || 0); }
 function cycleName(){ const c = cycleVal(); return c > 0.35 ? "Hard market" : c < -0.35 ? "Soft market" : "Steady market"; }
 function priceIdx(){ return S.price == null ? 1 : S.price; }
 function marketRate(){ return PRICES[priceIdx()].p*(1 + 0.25*cycleVal()); }
 function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1)); }
-function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + f.level, 0)/70); }
+function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + (f.type === "penthouse" ? 0 : f.level), 0)/70); }
 function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level); return s*salesMult()*marketRate()*volume(); }
 function income(){ return baseIncome() * (S.buffs.sales > 0 ? 2 : 1) * (S.outage > 0 ? 0.5 : 1); }
-function salFactor(){ return 1 + 0.06*S.floors.length; }
+function salFactor(){ return 1 + 0.06*workFloors(); }
 function upkeep(){ let s = 0; for (const f of S.floors) s += (TYPES[f.type].sal || 0.6)*f.level; return s*salFactor() + execCost(); }
 function perk(id){ return !!(S.perks && S.perks[id]); }
 function claimSizeMult(){ return (1 + 0.10*lv("marketing"))*(0.9 + 0.1*S.diff); }
 function claimSpeed(){ return morale()*(1 + 0.15*lv("it")); }
 function regCreep(){ return Math.floor((S.quarter - 1)/8); }
-function compNeed(){ return Math.max(0, S.floors.length - 3 + Math.max(0, lv("breakroom") - lv("hr")) + regCreep() + (lv("invest") && S.invRisk === 2 ? 1 : 0)); }
+function compNeed(){ return Math.max(0, workFloors() - 3 + Math.max(0, lv("breakroom") - lv("hr")) + regCreep() + (lv("invest") && S.invRisk === 2 ? 1 : 0)); }
 function isUnlocked(t){ return !UNLOCKS[t] || !!(S.unlocked && S.unlocked[t]) || S.floors.some(f => f.type === t) || UNLOCKS[t].test(); }
 function checkUnlocks(){
   if (!S.unlocked) S.unlocked = {};
@@ -64,6 +64,7 @@ function resolveRival(k, auto){
   else if (k === 1){ kept = Math.random() < lunchOdds(); msg = kept ? `Four hours, three courses and a cheese trolley later, nobody remembers ${r.name}’s offer.` : `The lunch was lovely. They still left for ${r.name}.`; }
   else if (k === 2){ spend(Math.round(r.cost/2), "other"); kept = Math.random() < hrOdds(); msg = kept ? "HR found a retention bonus and a nicer chair. They’re staying." : `HR’s retention plan was a branded mug. They left for ${r.name}.`; }
   else msg = `They left for ${r.name}.`;
+  if (kept) S.rivalsKept = (S.rivalsKept || 0) + 1;
   if (!kept){ f.level = Math.max(1, f.level - 1); rebuildWorkers(r.i); msg += ` Your ${TYPES[f.type].name} drops to level ${f.level}.`; }
   if (auto){ toast(`${r.name} tried to poach your staff. ${msg}`, kept ? "good" : "bad"); save(); return; }
   openModal(`<h2>🦈 ${r.name}</h2><p>${msg}</p><div class="closeRow"><button class="btn" data-act="close">Back to work</button></div>`, {locked:true, onClose:() => save()});
@@ -80,7 +81,7 @@ function maxStrikes(){ return perk("lobbyist") ? 4 : 3; }
 function growthRate(){ return Math.max(0.01, (0.06 + 0.04*S.diff + 0.02*lv("ir") - (perk("dinners") ? 0.03 : 0))*(1 - 0.85*maturity())); }
 function mktName(){ return S.diff < 1.6 ? "Calm market" : S.diff < 2.3 ? "Choppy market" : S.diff < 3.1 ? "Stormy market" : S.diff < 4 ? "Brutal market" : S.diff < 5 ? "Cutthroat market" : "Feeding frenzy"; }
 function actRed(){ return Math.min(0.55, 0.07*lv("actuary")); }
-function buildCost(){ const n = S.floors.length - 1; return Math.round(100*Math.pow(1.6, Math.min(n, 13))*Math.pow(1.25, Math.max(0, n - 13))); }
+function buildCost(){ const n = workFloors() - 1; return Math.round(100*Math.pow(1.6, Math.min(n, 13))*Math.pow(1.25, Math.max(0, n - 13))); }
 function upCost(f){ return Math.round(TYPES[f.type].up*Math.pow(1.9, f.level)); }
 function claimInterval(){ return Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))/volume() * (S.buffs.surge > 0 ? 0.35 : 1); }
 function B(){ return Math.max(120, Math.round(baseIncome()*25/10)*10); }

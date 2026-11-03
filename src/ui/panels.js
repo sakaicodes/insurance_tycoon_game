@@ -29,7 +29,7 @@ const pips = l => `<span class="pips" aria-label="Level ${l} of ${MAXL}">${Array
 /* Intro */
 function intro(){
   openModal(`<div class="top"><h2>How to play</h2>${xBtn}</div>
-  <p>You’re ${ceoN()}, CEO of ${coName()} in the London market. Grow the tower, keep the City happy, and don’t get wiped out.</p>
+  <p>You’re ${ceoN()}, CEO of ${coName()} in ${(CITIES[cityId()] || CITIES.london).market}. Grow the tower, keep the City happy, and don’t get wiped out.</p>
   <div class="intro-scroll">
     <h3 class="intro-h" style="border:0;padding:0;margin-top:0">What’s new in v${VERSION}</h3>
     ${changesFor(VERSION).map(n => `<p><span>✨</span><span>${n}</span></p>`).join("")}
@@ -42,7 +42,7 @@ function intro(){
     <p><span>🤖</span><span><b>Autopilot.</b> Promotions unlock executives who run parts of the business for a salary: claims, insurance, compliance, pricing, even expansion. Your syndicate also earns while you’re away.</span></p>
     <p><span>🏦</span><span><b>Capital rules.</b> From quarter 6 the regulator requires you to hold cash in proportion to the premiums you write. Fall short at an earnings call and you get a warning. Catastrophe reinsurance and Cat Modelling lower the requirement.</span></p>
     <p><span>🦈</span><span><b>Rivals.</b> Later on, rival syndicates try to poach your underwriters and brokers. Match their offer, take them to lunch, ask HR, or let them go.</span></p>
-    <p><span>🛋️</span><span><b>Idle mode.</b> Prefer to watch? Turn on idle mode in the Boardroom and the board makes every decision. It can’t be undone, and the run won’t be scored.</span></p>
+    <p><span>🛋️</span><span><b>Idle mode.</b> Prefer to watch? Turn on idle mode in the Boardroom and the board makes every decision. You can take back control any time, but a run that used idle mode isn’t scored.</span></p>
     <p><span>♾️</span><span><b>Play forever, if you can.</b> As your tower matures, the City expects less growth and “in line” results are fine. But regulation keeps piling up, and dividends keep the board sweet.</span></p>
     <p><span>⚖️</span><span><b>Compliance</b> must cover your floors. Fall short and the regulator issues warnings. Three warnings and you lose your licence.</span></p>
     <p><span>🦢</span><span><b>Black swans</b> are huge disasters based on real ones: hurricanes, a ship blocking a canal, a global IT meltdown, a bank collapse and more. They strike with no warning, roughly every 8 to 12 quarters from quarter 5. Without cover you pay the whole loss, which can sink you. Buy reinsurance and your other covers in the Boardroom: they pay 90%.</span></p>
@@ -75,11 +75,13 @@ function effectText(type, l, d){
   }
 }
 function openFloors(){
-  const cost = buildCost(), can = S.floors.length < MAXF, afford = S.cash >= cost;
+  const cost = buildCost(), can = workFloors() < MAXF, afford = S.cash >= cost;
   const types = [...ORDER].sort((a, b) => isUnlocked(b) - isUnlocked(a)).map(t => `<button class="type" data-act="build:${t}" ${(!can||!afford||!isUnlocked(t))?"disabled":""}>
       <div class="sw" style="background:${TYPES[t].wall}"></div><b>${TYPES[t].name}</b><span class="pro">＋ ${TYPES[t].pro}</span><span class="con">− ${TYPES[t].con}</span>${!isUnlocked(t) ? `<span class="dim">🔒 ${UNLOCKS[t].text}</span>` : ""}</button>`).join("");
   const list = S.floors.map((f,i) => ({f,i})).reverse().map(({f,i}) => {
-    const max = f.level >= MAXL, c = upCost(f);
+    const max = f.level >= MAXL, c = upCost(f), ph = f.type === "penthouse";
+    if (ph) return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div><div class="nm">${TYPES[f.type].name}${pips(f.level)}</div>
+      <button class="btn ghost" data-act="floor:${i}">Manage</button><button class="btn" data-act="up:${i}:floors" ${max || S.favour < PENTHOUSE_UP ? "disabled" : ""}>${max ? "Maxed" : `Upgrade ${PENTHOUSE_UP} ★`}</button></div>`;
     return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div>
       <div class="nm">${TYPES[f.type].name}${pips(f.level)}</div>
       <button class="btn ghost" data-act="floor:${i}">Manage</button>
@@ -90,8 +92,18 @@ function openFloors(){
           : `<p>The tower is as tall as zoning allows. The zoning board has been offered several yachts.</p>`}
     <h3>Your floors</h3><div class="flist">${list}</div>`, {view:"floors", focus:false});
 }
+function openPenthouse(i){
+  const f = S.floors[i], max = f.level >= MAXL, cost = PENTHOUSE_UP;
+  const feats = ["A sofa, a city view and a well-stocked bar", "A grand piano nobody can play", "An aquarium with two very calm fish", "An art collection, bought by the square metre", "A chandelier and a telescope for watching rivals"];
+  openModal(`<div class="top"><h2>Penthouse</h2><button class="x" data-act="close" aria-label="Close">✕</button></div>
+    <p>${TYPES.penthouse.desc}</p>
+    <div class="goals"><ul>${feats.map((t, k) => `<li class="${k < f.level ? "ok" : ""}"><i>${k < f.level ? "✓" : k + 1}</i>${t}</li>`).join("")}</ul></div>
+    <p class="dim">${ceoN()} pops up here between visits to The Room. Tap them to open the Boardroom.</p>
+    <button class="btn" style="width:100%" data-act="up:${i}:floor" ${max || S.favour < cost ? "disabled" : ""}>${max ? "Fully furnished" : `Upgrade for ${cost} ★`}${!max && S.favour < cost ? `<small>You have ${S.favour} ★</small>` : ""}</button>
+    <p class="dim">The penthouse is yours for the rest of this company’s life.</p>`, {view:"floor" + i});
+}
 function openFloor(i){
-  const f = S.floors[i]; if (!f) return; variantOf(f);
+  const f = S.floors[i]; if (!f) return; if (f.type === "penthouse") return openPenthouse(i); variantOf(f);
   const t = TYPES[f.type], max = f.level >= MAXL, c = upCost(f);
   const up = (TYPES[f.type].sal || 0.6)*salFactor();
   let extra = "";
@@ -139,17 +151,18 @@ function openFloor(i){
 }
 function build(type){
   const cost = buildCost();
-  if (S.cash < cost || S.floors.length >= MAXF) return;
+  if (S.cash < cost || workFloors() >= MAXF) return;
   if (!isUnlocked(type)) return;
   S.cash -= cost; discSpent += cost;
-  S.floors.push({type, level:1, mode:"pay"});
-  rebuildWorkers(S.floors.length-1);
+  rebuildWorkers(addFloor({type, level:1, mode:"pay"}));
   closeModal();
   toast(`Built: ${TYPES[type].name}. ${TYPES[type].joke}`, "good");
   save();
 }
 function upgrade(i, back){
-  const f = S.floors[i]; const c = upCost(f);
+  const f = S.floors[i];
+  if (f && f.type === "penthouse"){ if (f.level >= MAXL || S.favour < PENTHOUSE_UP) return; S.favour -= PENTHOUSE_UP; f.level++; sfx("chime"); fxConfetti(); save(); return back === "floors" ? openFloors() : openPenthouse(i); }
+  const c = upCost(f);
   if (f.level >= MAXL || S.cash < c) return;
   S.cash -= c; discSpent += c; f.level++; rebuildWorkers(i);
   const L = layout(); pop("Level "+f.level+"!", 100, floorY(L,i)+16, "");
@@ -219,7 +232,7 @@ function openBoard(confirmRestart, intro){
     </div>
     ${execsHtml()}
     <div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb">🏆 Leaderboard</button></div>
-    <p class="dim" style="margin-top:12px">Score so far: <b>${scoreParts().total.toLocaleString("en-GB")}</b> (grade ${grade(scoreParts().total)})${S.idleMode ? ", not recorded in idle mode" : ""}. Personal best: ${bestScore().toLocaleString("en-GB")}.</p>
+    <p class="dim" style="margin-top:12px">Score so far: <b>${scoreParts().total.toLocaleString("en-GB")}</b> (grade ${grade(scoreParts().total)})${S.idleMode || S.idleTainted ? ", not recorded because idle mode was used" : ""}. Personal best: ${bestScore().toLocaleString("en-GB")}.</p>
     ${goalsHtml(next)}
     <h3 style="margin-top:14px">Pricing</h3>
     <p class="dim"><b style="color:var(--ink)">${cycleName()}.</b> ${CYCLE_MSG[cycleName()].replace(/^The market has (hardened|softened|steadied)\. /, "")}</p>
@@ -240,8 +253,15 @@ function openBoard(confirmRestart, intro){
     ${PERKS.map(pk => { const own = perk(pk.id);
       return `<div class="action"><div><h3>${own ? "✓ " : ""}${pk.name}</h3><p>${pk.desc}</p></div>
         ${own ? `<button class="btn ghost" disabled>Owned</button>` : `<button class="btn" data-act="perk:${pk.id}" ${S.favour < pk.cost ? "disabled" : ""}>${pk.cost} ★</button>`}</div>`; }).join("")}
+    <h3 style="margin-top:14px">Star shop <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">Buy as often as you like</span></h3>
+    ${STAR_SHOP.map(it => { const ok = S.favour >= it.cost && (!it.can || it.can());
+      return `<div class="action"><div><h3>${it.name}</h3><p>${it.desc}</p></div><button class="btn" data-act="starshop:${it.id}" ${ok ? "" : "disabled"}>${it.cost} ★</button></div>`; }).join("")}
+    ${hasPenthouse() ? `<p class="dim">You own the penthouse. Tap it at the top of the tower to furnish it.</p>`
+      : `<div class="action"><div><h3>Build a penthouse</h3><p>A private top floor for ${ceoN()} to roam, with the best view in the city. One per company, and no business benefit whatsoever.</p></div><button class="btn" data-act="penthouse" ${S.favour < PENTHOUSE_COST ? "disabled" : ""}>${PENTHOUSE_COST} ★</button></div>`}
     <h3 style="margin-top:14px">Achievements (${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length})</h3>
-    <div class="achs">${ACH.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div>
+    <p class="dim">Each one earns a ★. Tap a category to see what’s left.</p>
+    ${[...new Set(ACH.map(a => a.cat))].map(c => { const list = ACH.filter(a => a.cat === c), got = list.filter(a => S.ach[a.id]).length;
+      return `<details class="achcat"><summary><b>${c}</b><span>${got} of ${list.length}</span></summary><div class="achs">${list.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div></details>`; }).join("")}
     <div class="big" style="margin-top:14px">${fmt2(S.stock)}</div>
     ${sparkline()}
     <p class="dim">Share price after each earnings call</p>
@@ -265,9 +285,18 @@ function openBoard(confirmRestart, intro){
     <p class="dim" style="margin-top:12px">How the money works: premiums come in every second, salaries go out every second, and claims cost money when you pay them. Profit is whatever survives.</p>
     <h3 style="margin-top:14px">Idle mode</h3>
     ${S.idleMode ? `<p class="note">Idle mode is on. The board is making every decision, and this run’s score won’t be recorded.</p>
+      <button class="btn ghost" style="width:100%;margin-bottom:10px" data-act="idle-off">Take back control</button>
       <h3>Watching speed</h3>
       <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
       <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
+    <h3 style="margin-top:14px">Exit strategy</h3>
+    ${exitUnlocked() ? (() => { const v = exitValue(), tk = ticketFor(v);
+      const req = (k, r) => { const row = (ok, txt) => `<li class="${ok ? "ok" : ""}"><i>${ok ? "✓" : "·"}</i>${txt}</li>`;
+        return `<div class="goals"><ul>${row(S.cash >= r.cash, `Cash of at least ${fmt(r.cash)} (you have ${fmt(Math.max(0, S.cash))})`)}${row(S.stock >= r.stock, `Share price of at least ${fmt2(r.stock)} (now ${fmt2(S.stock)})`)}${r.conf ? row(S.conf >= r.conf, `Board confidence of at least ${r.conf}% (now ${Math.round(S.conf)}%)`) : ""}</ul></div>`; };
+      return `<p>Your company is valued at about <b class="pos">${fmt(v)}</b>, including ${Math.round(Math.min(40, 2*S.favour))}% for your unspent stars. Selling ends this run with a big score bonus and a <b>golden ticket</b>: your next company starts with about ${fmt(tk.seed)} and ${tk.stars} ★, and earns 5% more income for each ticket you hold (up to 4).</p>
+      <div class="action"><div><h3>Sell to private equity</h3><p>A guaranteed price: ${fmt(v)}. Buyers only look at companies with serious cash and a strong share price.</p>${req("pe", EXIT_REQ.pe)}</div><button class="btn" data-act="exit:pe" ${exitReady("pe") && !S.idleMode ? "" : "disabled"}>Sell</button></div>
+      <div class="action"><div><h3>Float on the stock exchange</h3><p>Anywhere from 0.8 to 1.6 times the valuation, depending on the market. The bar is higher than for a private sale.</p>${req("ipo", EXIT_REQ.ipo)}</div><button class="btn" data-act="exit:ipo" ${exitReady("ipo") && !S.idleMode ? "" : "disabled"}>IPO</button></div>`; })()
+      : `<p class="dim">Reach Thought Leader and quarter 8 to sell your company to private equity (needs ${fmt(EXIT_REQ.pe.cash)} cash and a ${fmt2(EXIT_REQ.pe.stock)} share price) or float it on the stock exchange (needs ${fmt(EXIT_REQ.ipo.cash)} and ${fmt2(EXIT_REQ.ipo.stock)}).</p>`}
     <button class="btn red" style="width:100%" data-act="restart">Start a new company</button>
     <p class="ver-line">${coName()}, version ${VERSION}</p>`, {view:"board", focus:false});
   drawCeoFace("#ceoFace");
@@ -335,7 +364,7 @@ function earnings(){
   S.conf = clamp(S.conf + dc, 0, 100);
   const oldDiff = S.diff;
   { let dd = 0.02 + (stars ? 0.05 + 0.04*stars : -0.1); if (dd > 0 && S.diff > 3) dd /= (S.diff - 2); S.diff = Math.max(1, 1 + 0.035*qn, S.diff + dd); }
-  if (qn >= 9 && S.rivalT == null && Math.random() < Math.min(0.6, 0.15 + 0.08*Math.max(0, S.diff - 2) + 0.01*Math.max(0, S.floors.length - 10))) S.rivalT = rand(10, 50);
+  if (qn >= 9 && S.rivalT == null && Math.random() < Math.min(0.6, 0.15 + 0.08*Math.max(0, S.diff - 2) + 0.01*Math.max(0, workFloors() - 10))) S.rivalT = rand(10, 50);
   if (S.idleMode && qn > 4 && Math.random() < 0.22*Math.min(1, (qn - 4)/8)){
     const bl = pick(BLUNDERS), cost = Math.round(Math.max(150, Math.abs(profit)*bl.k)/10)*10;
     S.cash -= cost; if (bl.conf) S.conf = clamp(S.conf - bl.conf, 0, 100); if (bl.mood) mood(-bl.mood);
@@ -396,9 +425,13 @@ function checkRank(){
     S.rankIdx++; S.conf = clamp(S.conf + 10, 0, 100); S.favour += 2;
     const unl = EXECS.filter(x => x.rank === S.rankIdx).map(x => x.name);
     toast(`${ceoName()} has been promoted: ${next.name}! +10 board confidence and +2 ★.${unl.length ? ` You can now hire: ${unl.join(" and ")}.` : ""}`, "good"); fxConfetti();
-    if (S.rankIdx === RANKS.length-1 && !S.won){ S.won = true; setTimeout(victory, 300); }
+    const finalRank = S.rankIdx === RANKS.length-1 && !S.won; if (finalRank) S.won = true;
+    queueCut("promo", {title:`${ceoName()} is now ${next.name}`, tag:"PROMOTED", tagColor:0xC9A54A, tagText:"#1F2238", ceo:true, line:RANK_LINES_UI[S.rankIdx] || "Onwards and upwards."}, finalRank ? () => setTimeout(victory, 200) : null);
   }
 }
+const RANK_LINES_UI = ["", "Regional disruption complete. Next: disrupting the region again, but harder.", "Synergy isn’t a word. It’s a lifestyle. And a consultancy fee.",
+  "My new book is called Thinking. Chapter one: think. Chapter two: invoice.", "Fortune 500? I prefer to think of it as Fortune 499 and climbing.",
+  "We’re now too big to fail. It’s like success, but with a government guarantee.", "I now own the weather. Tomorrow: sunny, with a 100% chance of premiums."];
 function victory(){
   openModal(`<h2>You own the weather</h2>
     <p>You hit every target the board set. Legal found a loophole that technically makes you the owner of the weather, so you can now deny claims for storms you caused.</p>
@@ -407,33 +440,45 @@ function victory(){
 }
 
 /* ---------- Create your CEO (start of every run) ---------- */
-const HAIRSTYLES = [["short","Short"],["pixie","Pixie"],["bob","Bob"],["long","Long"],["ponytail","Ponytail"],["bun","Bun"],["curly","Curly"],["braids","Braids"],["windswept","Messy"],["cap","Cap"]];
-const ATTIRES = [["tie","Suit & tie"],["blouse","Blazer & blouse"],["skirt","Skirt suit"],["dress","Dress"]];
-const EXTRAS = [["lashes","Lashes"],["lipstick","Lipstick"],["earrings","Earrings"],["glasses","Glasses"]];
-const CEO_DEFAULTS = () => ({name:"", company:"", skin:SKINS[2], hair:HAIRS[0], hairStyle:"short", outfit:OUTFITS[0], attire:"tie", lashes:false, lipstick:false, earrings:false, glasses:false});
+const STYLE_SETS = {
+  f:{label:"♀ Women’s styles", hair:[["pixie","Pixie"],["bob","Bob"],["long","Long"],["ponytail","Ponytail"],["bun","Bun"],["curly","Curly"],["braids","Braids"],["scarf","Headscarf"],["cap","Cap"]],
+     attire:[["blouse","Blazer & blouse"],["trouser","Trouser suit"],["skirt","Skirt suit"],["dress","Dress"]],
+     face:{title:"Makeup", field:"makeup", opts:[["none","None"],["lashes","Lashes"],["lipstick","Lipstick"],["both","Both"]]}},
+  m:{label:"♂ Men’s styles", hair:[["short","Short"],["crew","Crew cut"],["sidepart","Side part"],["quiff","Quiff"],["curly","Curly"],["long","Long"],["manbun","Man bun"],["bald","Bald"],["cap","Cap"]],
+     attire:[["tie","Suit & tie"],["open","Open collar"],["three","Three-piece"],["casual","Smart casual"]],
+     face:{title:"Facial hair", field:"facial", opts:[["none","None"],["stubble","Stubble"],["moustache","Moustache"],["beard","Beard"]]}},
+};
+const EXTRAS = [["glasses","Glasses"],["earrings","Earrings"],["freckles","Freckles"]];
+function guessSet(c){ return c && (c.set || (["blouse","skirt","dress","trouser"].includes(c.attire) || ["pixie","bob","ponytail","bun","braids","scarf"].includes(c.hairStyle) ? "f" : "m")); }
+const CEO_DEFAULTS = () => ({name:"", company:"", city:"london", set:"m", skin:SKINS[2], hair:HAIRS[0], hairStyle:"short", outfit:OUTFITS[0], attire:"tie", facial:"none", makeup:"none", lashes:false, lipstick:false, earrings:false, glasses:false, freckles:false});
+function applySet(d, set){ const st = STYLE_SETS[set]; d.set = set; if (!st.hair.some(([k]) => k === d.hairStyle)) d.hairStyle = st.hair[0][0]; if (!st.attire.some(([k]) => k === d.attire)) d.attire = st.attire[0][0]; if (set === "f") d.facial = "none"; else { d.makeup = "none"; d.lashes = false; d.lipstick = false; } }
 let setupDraft = null;
 function drawCeoFace(sel, look){ const cv = $(sel); if (!cv) return; CUT.drawCEO(cv.getContext("2d"), look || S.ceo || {}, 0); }
 function openSetup(){
-  if (!setupDraft) setupDraft = Object.assign(CEO_DEFAULTS(), S.ceo || {}, {name:(S.ceo && S.ceo.name) || "", company:S.companyName || ""});
+  if (!setupDraft){ setupDraft = Object.assign(CEO_DEFAULTS(), S.ceo || {}, {name:(S.ceo && S.ceo.name) || "", company:S.companyName || "", city:S.city || "london"}); applySet(setupDraft, guessSet(setupDraft)); }
   const d = setupDraft, sw = (field, list, label) => `<div class="swatches">${list.map((col, i) => `<button class="sw" data-act="look:${field}:${i}" aria-pressed="${d[field] === col}" aria-label="${label} ${i + 1}" style="background:${col}"></button>`).join("")}</div>`;
   const midRun = S.seen && S.quarter > 1;
   openModal(`<h2>Create your CEO</h2>
     <p>${midRun ? "Your company is already up and running, so this is a one-time chance to name yourself and the business." : "Every tycoon starts somewhere. Who are you, and what’s on the sign?"}</p>
+    ${(() => { const l = loadLegacy(); return l.tickets ? `<p class="note">🎫 <b>Golden ticket${l.tickets > 1 ? "s" : ""} x${l.tickets}.</b> ${l.seed || l.stars ? `This company starts with an extra ${fmt(l.seed)} and ${l.stars} ★, and ` : ""}every company you found earns ${5*Math.min(4, l.tickets)}% more income.</p>` : ""; })()}
+    <h3>Where is your headquarters?</h3>
+    <div class="cities">${Object.entries(CITIES).map(([k, c]) => `<button class="type city" data-act="look:city:${k}" aria-pressed="${d.city === k}"><b>${c.flag} ${c.name}, ${c.country}</b><span>${c.building}</span><span class="dim">${c.blurb}</span></button>`).join("")}</div>
     <div class="ceo-setup"><canvas id="ceoPrev" width="48" height="48" aria-label="Your portrait"></canvas>
       <div class="ceo-fields">
         <label>Your name<input id="ceoName" maxlength="20" value="${esc(d.name)}" placeholder="Alex" autocomplete="off"></label>
         <label>Company name<input id="coNameIn" maxlength="28" value="${esc(d.company)}" placeholder="Fine Print Syndicate" autocomplete="off"></label>
       </div></div>
     <h3>Skin tone</h3>${sw("skin", SKINS, "Skin tone")}
-    <h3>Hairstyle</h3><div class="seg four">${HAIRSTYLES.map(([k, l]) => `<button class="btn" data-act="look:hairStyle:${k}" aria-pressed="${d.hairStyle === k}">${l}</button>`).join("")}</div>
+    <div class="seg two ceo-set">${["f","m"].map(k => `<button class="btn" data-act="look:set:${k}" aria-pressed="${d.set === k}">${STYLE_SETS[k].label}</button>`).join("")}</div>
+    <h3>Hairstyle</h3><div class="seg three">${STYLE_SETS[d.set].hair.map(([k, l]) => `<button class="btn" data-act="look:hairStyle:${k}" aria-pressed="${d.hairStyle === k}">${l}</button>`).join("")}</div>
     <h3>Hair colour</h3>${sw("hair", HAIRS, "Hair colour")}
-    <h3>Outfit style</h3><div class="seg four">${ATTIRES.map(([k, l]) => `<button class="btn" data-act="look:attire:${k}" aria-pressed="${d.attire === k}">${l}</button>`).join("")}</div>
+    <h3>Outfit</h3><div class="seg two">${STYLE_SETS[d.set].attire.map(([k, l]) => `<button class="btn" data-act="look:attire:${k}" aria-pressed="${d.attire === k}">${l}</button>`).join("")}</div>
     <h3>Outfit colour</h3>${sw("outfit", OUTFITS, "Outfit colour")}
-    <h3>Extras</h3><div class="seg four">${EXTRAS.map(([k, l]) => `<button class="btn" data-act="look-t:${k}" aria-pressed="${!!d[k]}">${l}</button>`).join("")}</div>
-    <p class="dim">Mix and match anything. Every option is open to every CEO.</p>
-    <p class="note">Choose carefully: your name and your company’s name are set for the whole run. You can pick new ones when you start a new company.</p>
+    <h3>${STYLE_SETS[d.set].face.title}</h3><div class="seg four">${STYLE_SETS[d.set].face.opts.map(([k, l]) => `<button class="btn" data-act="look:${STYLE_SETS[d.set].face.field}:${k}" aria-pressed="${d[STYLE_SETS[d.set].face.field] === k}">${l}</button>`).join("")}</div>
+    <h3>Extras</h3><div class="seg three">${EXTRAS.map(([k, l]) => `<button class="btn" data-act="look-t:${k}" aria-pressed="${!!d[k]}">${l}</button>`).join("")}</div>
+    <p class="note">Choose carefully: your city, your name and your company’s name are set for the whole run. You can pick new ones when you start a new company.</p>
     <button class="btn" style="width:100%" data-act="setup-go">Start my syndicate</button>`, {locked:true, view:"setup", focus:false});
-  drawCeoFace("#ceoPrev", d);
+  drawCeoFace("#ceoPrev", Object.assign({}, d, {lashes:d.set === "f" && (d.makeup === "lashes" || d.makeup === "both"), lipstick:d.set === "f" && (d.makeup === "lipstick" || d.makeup === "both"), facial:d.set === "m" ? d.facial : "none"}));
 }
 function readSetupInputs(){ if (!setupDraft) return; const n = $("#ceoName"), c = $("#coNameIn"); if (n) setupDraft.name = n.value; if (c) setupDraft.company = c.value; }
 function finishSetup(){
@@ -441,8 +486,12 @@ function finishSetup(){
   const clean = (v, max) => String(v || "").replace(/[<>]/g, "").replace(/\s+/g, " ").trim().slice(0, max);
   const d = setupDraft, name = clean(d.name, 20), company = clean(d.company, 28) || "Fine Print Syndicate";
   if (!name){ toast("Your CEO needs a name. Even just initials will do.", "bad"); const n = $("#ceoName"); if (n) n.focus(); return; }
-  S.ceo = {name, skin:d.skin, hair:d.hair, hairStyle:d.hairStyle, outfit:d.outfit, attire:d.attire, lashes:!!d.lashes, lipstick:!!d.lipstick, earrings:!!d.earrings, glasses:!!d.glasses}; S.companyName = company; S.setupDone = true; setupDraft = null;
+  const mk = d.set === "f" ? d.makeup : "none";
+  const leg = loadLegacy();
+  if (leg.tickets && !S.tickets){ S.tickets = leg.tickets; if (leg.seed || leg.stars){ S.cash += leg.seed || 0; S.favour = (S.favour || 0) + (leg.stars || 0); leg.seed = 0; leg.stars = 0; saveLegacy(leg); } }
+  S.ceo = {name, set:d.set, skin:d.skin, hair:d.hair, hairStyle:d.hairStyle, outfit:d.outfit, attire:d.attire, facial:d.set === "m" ? d.facial : "none", makeup:mk, lashes:mk === "lashes" || mk === "both", lipstick:mk === "lipstick" || mk === "both", earrings:!!d.earrings, glasses:!!d.glasses, freckles:!!d.freckles}; S.companyName = company; S.city = d.city || "london"; setCity(S.city); S.setupDone = true; setupDraft = null;
   document.title = company; save(); closeModal(); sfx("chime");
   toast(`Welcome aboard, ${name}. ${company} is open for business.`, "good");
+  const lg = loadLegacy(); lg.cities = Object.assign(lg.cities || {}, {[S.city]: true}); saveLegacy(lg);
   if (!S.seen) setTimeout(startTutorial, 400); else offlineCheck();
 }

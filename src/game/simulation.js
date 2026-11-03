@@ -24,7 +24,7 @@ function animate(dt){
     let u = CUST.find(u => u.id === c.id && u.state !== "out");
     if (!u){ u = {id:c.id, x:34, state:"wait", face:1, moving:false, mood:null,
       look:(() => { const alt = Math.random() < 0.5, skirt = alt && Math.random() < 0.4 ? pick(["#2B2D52","#4A6FA5","#B23A3A","#3E9B4F"]) : null;
-        return {skin:pick(SKINS), hair:pick(HAIRS), shirt:pick(CUST_SHIRTS), pants:skirt ? "#3A3048" : pick(["#2B2D52","#4A6FA5","#6B4A2B","#3A3F6B"]), skirt, style:alt ? pick([1,2,3,4,5]) : pick([0,0,4,1]), earrings:alt && Math.random() < 0.4, hat:!alt && Math.random() < 0.6}; })()};
+        return {skin:pick(SKINS), hair:pick(HAIRS), shirt:pick(CUST_SHIRTS), pants:skirt ? "#3A3048" : pick(["#2B2D52","#4A6FA5","#6B4A2B","#3A3F6B"]), skirt, style:alt ? pick([1,2,3,4,5,7]) : pick([0,0,4,1,6,8]), scarf:pick(["#3E2E6A","#B23A3A","#2BB3B1"]), beard:!alt && Math.random() < 0.25 ? "#3A2618" : null, earrings:alt && Math.random() < 0.4, hat:!alt && Math.random() < 0.5}; })()};
       CUST.push(u); }
     u.tx = 140 - k*15;
   });
@@ -40,7 +40,10 @@ function animate(dt){
 }
 
 /* ---------- Simulation (paused while a panel is open) ---------- */
+let pendingCut = null;
+function queueCut(kind, opts, done){ if (!scene || window.__bot){ if (done) done(); return; } pendingCut = {kind, opts, done}; }
 function update(dt){
+  if (pendingCut && !modalOpen && !cutsceneOn && scene){ const pc = pendingCut; pendingCut = null; playCutscene(pc.kind, pc.done || (() => {}), pc.opts); return; }
   if (S.over) return;
   const inc = income(), up = upkeep();
   S.cash += (inc - up)*dt; S.q.prem += inc*dt; S.q.sal += up*dt; S.insured += inc*dt*0.04;
@@ -70,7 +73,7 @@ function update(dt){
     l.t -= dt;
     if (l.t <= 0){
       S.lawsuits.splice(S.lawsuits.indexOf(l),1);
-      if (Math.random() < (l.win != null ? l.win : 0.85)){ spend(l.amt, "other"); S.sued = (S.sued || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); fxShake(); sfx("gavel"); toast(`Lawsuit lost${l.name ? " to " + l.name : ""}: ${fmt(l.amt)}. ${pick(LAWSUIT_QUIPS)}`, "bad"); }
+      S.suits = (S.suits || 0) + 1; if (Math.random() < (l.win != null ? l.win : 0.85)){ spend(l.amt, "other"); S.sued = (S.sued || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); fxShake(); sfx("gavel"); toast(`Lawsuit lost${l.name ? " to " + l.name : ""}: ${fmt(l.amt)}. ${pick(LAWSUIT_QUIPS)}`, "bad"); }
       else { const fee = Math.round(l.amt*0.15); spend(fee, "other"); sfx("chime"); toast(`You won in court${l.name ? " against " + l.name : ""}. The claim really was dodgy. Legal fees: ${fmt(fee)}.`, "good"); }
     }
   }
