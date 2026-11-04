@@ -8,7 +8,7 @@ let rainEm = null, confettiEm = null, dustEm = null;
 let lastKey = "", prevLevels = [], prevCount = 0, lastNight = null, bellRinging = false, rainOn = null, scrollHint = false;
 let tick8 = 0, tick2 = 0, hudT = 0, saveT = 0, vel = 0, drag = null, pendingBottom = true;
 let padX = 0;
-let ceoW = {x:58, dir:1, pause:1.5, ft:0, where:"lobby", stay:25}, ceoSpr = null, ceoTag = null, ceoKey = "";
+let ceoW = {x:58, dir:1, pause:1.5, ft:0, where:"lobby", ride:0, init:false}, ceoSpr = null, ceoTag = null, ceoKey = "";
 const pxL = css => css*dpr/cz;
 const SK = n => n + "@" + RS;
 const col = s => Phaser.Display.Color.ValueToColor(s).color;
@@ -226,11 +226,11 @@ function rebuildAll(){
   paintTall("facade", LW, TOP, L.groundY, () => facadeRows(L), OX, 0, 4, true);
   lastNight = isNight();
   imgRoof = addImg(paint("roof", LW, 44, () => drawRoof(L), OX, -(TOP-42)), 0, TOP-42, 5);
-  imgSlot = L.can ? addImg(paint("slot", 172, FH, () => drawSlot(L), -24, -TOP), OX+24, TOP, 6) : null;
+  imgSlot = L.can ? addImg(paint("slot", 172, FH, () => drawSlot(L), -24, -L.slotY), OX+24, L.slotY, 6) : null;
   for (let i = 0; i < L.n; i++) buildFloorObjs(L, i);
   imgLobby = addImg(paint("lobby", 146, 44, () => drawLobby(L), -28, -L.lobbyY), OX+28, L.lobbyY, 13);
   bellImg = scene.add.image(OX+64.5, L.lobbyY+5, SK("bell")).setOrigin(6.5/14, 0).setScale(1/RS).setDepth(13.5); objs.push(bellImg); bellRinging = false;
-  paintTall("shaft", 172, L.floorsTop, L.groundY, () => drawShaftStatic(L), -24, OX+24, 16, true);
+  paintTall("shaft", 172, L.ph ? TOP : L.floorsTop, L.groundY, () => drawShaftStatic(L), -24, OX+24, 16, true);
   elevImg = scene.add.image(OX+176, elev.y || L.lobbyY+18, SK("elev")).setOrigin(0,0).setScale(1/RS).setDepth(17); objs.push(elevImg);
   confettiEm = scene.add.particles(0, 0, SK("px"), {
     speed:{min:40, max:120}, angle:{min:200, max:340}, gravityY:170, lifespan:1200,
@@ -315,7 +315,7 @@ function redrawDynamic(){
   for (const o of floorObjs) if (o && o.animated && o.fy + 40 > vTop && o.fy < vBot) paint("rbg"+o.i, 146, 38, () => drawRoomBG(o.f, W[o.i] || [], 0), -28, 0);
   paint("lobby", 146, 44, () => drawLobby(L), -28, -L.lobbyY);
   paint("roof", LW, 44, () => drawRoof(L), OX, -(TOP-42));
-  if (imgSlot) paint("slot", 172, FH, () => drawSlot(L), -24, -TOP);
+  if (imgSlot) paint("slot", 172, FH, () => drawSlot(L), -24, -L.slotY);
   redrawStars();
 }
 function redrawSlow(){
@@ -335,31 +335,47 @@ function tapAt(wx, wy){
   const lx = wx - OX, ly = wy;
   const L = layout(), fy = L.lobbyY + 40;
   { const ph = S.floors.findIndex(f => f.type === "penthouse"), cy = ceoW.where === "pent" && ph >= 0 ? floorY(L, ph) + 35 : fy;
-    if (S.setupDone && Math.abs(lx - ceoW.x) <= 5 && ly >= cy - 22 && ly <= cy + 2){ openBoard(); return; } }
+    if (S.setupDone && ceoW.where !== "ride" && Math.abs(lx - ceoW.x) <= 5 && ly >= cy - 22 && ly <= cy + 2){ openBoard(); return; } }
   for (const u of CUST){ if (u.state === "wait" && Math.abs(lx - u.x) <= 8 && ly >= fy - 26 && ly <= fy + 2){ openClaims(u.id); return; } }
-  if (L.can && ly >= TOP && ly < TOP + FH){ openFloors(); return; }
-  if (ly >= L.floorsTop && ly < L.lobbyY){ const k = Math.floor((ly - L.floorsTop)/FH); openFloor(L.n - 1 - k); return; }
+  if (L.ph && ly >= TOP && ly < TOP + FH){ openFloor(L.n - 1); return; }
+  if (L.can && ly >= L.slotY && ly < L.slotY + FH){ openFloors(); return; }
+  if (ly >= L.floorsTop && ly < L.lobbyY){ const k = Math.floor((ly - L.floorsTop)/FH); openFloor(L.nw - 1 - k); return; }
   if (ly >= L.lobbyY && ly < L.groundY && lx >= 24 && lx <= 196){ openClaims(); return; }
   if (ly < TOP) openBoard();
 }
 
 function ceoSync(dt){
   if (!scene || !S.setupDone){ if (ceoSpr && ceoSpr.active){ ceoSpr.setVisible(false); ceoTag.setVisible(false); } return; }
-  const L = layout(), ph = S.floors.findIndex(f => f.type === "penthouse");
+  const L = layout(), ph = S.floors.findIndex(f => f.type === "penthouse"), key = personTexture(ceoLook());
+  if (!ceoW.init){ ceoW.init = true; if (ph >= 0){ ceoW.where = "pent"; ceoW.x = 110; } }
   if (ph < 0) ceoW.where = "lobby";
-  else { ceoW.stay -= dt; if (ceoW.stay <= 0 && ceoW.pause > 0){ ceoW.where = ceoW.where === "pent" ? "lobby" : "pent"; ceoW.stay = 18 + Math.random()*22; ceoW.x = ceoW.where === "pent" ? 160 : 100; ceoW.dir = -1; } }
-  const inPent = ceoW.where === "pent" && ph >= 0, fy = inPent ? floorY(L, ph) + 35 : L.lobbyY + 40, lo = inPent ? 40 : 50, hi = inPent ? 162 : 104, key = personTexture(ceoLook());
+  else if (ceoW.where === "lobby"){ ceoW.where = "toLift"; ceoW.pause = 0; }
   if (!ceoSpr || !ceoSpr.active || ceoKey !== key || ceoTag.text !== ceoName()){
     if (ceoSpr && ceoSpr.active){ ceoSpr.destroy(); ceoTag.destroy(); }
     ceoSpr = scene.add.image(0, 0, key, "f0").setOrigin(5/11, 18/20).setScale(1/RS).setDepth(14.5); objs.push(ceoSpr);
     ceoTag = scene.add.text(0, 0, ceoName(), {fontFamily:FONT, fontSize:Math.max(pxL(10), 5.4) + "px", fontStyle:"700", color:"#FFF1D0", stroke:"#1F2A44", strokeThickness:Math.max(pxL(3), 1.4), resolution:Math.ceil(cz)}).setOrigin(0.5, 1).setDepth(14.6); objs.push(ceoTag);
     ceoKey = key;
   }
-  if (ceoW.pause > 0) ceoW.pause -= dt;
-  else { ceoW.x += ceoW.dir*9*dt; ceoW.ft += dt; if (ceoW.x > hi || ceoW.x < lo){ ceoW.x = clamp(ceoW.x, lo, hi); ceoW.dir *= -1; ceoW.pause = 1.5 + Math.random()*3; } }
-  const walking = ceoW.pause <= 0;
-  ceoSpr.setVisible(true).setPosition(OX + ceoW.x, fy).setFrame(walking && Math.floor(ceoW.ft*6) % 2 ? "f1" : "f0").setFlipX(ceoW.dir < 0);
-  ceoTag.setVisible(true).setPosition(OX + ceoW.x, fy - 18.5 + (walking ? 0 : Math.round(Math.sin(time*2))*0.3));
+  const lobbyFy = L.lobbyY + 40, pentFy = ph >= 0 ? floorY(L, ph) + 35 : lobbyFy;
+  let fy = lobbyFy, x = ceoW.x, walking = false, riding = false;
+  if (ceoW.where === "toLift"){                      // walk across The Room to the lift
+    ceoW.dir = 1; ceoW.x = Math.min(170, ceoW.x + 24*dt); ceoW.ft += dt; walking = true; x = ceoW.x;
+    if (ceoW.x >= 170){ ceoW.where = "ride"; ceoW.ride = 0; }
+  } else if (ceoW.where === "ride"){                 // ride the lift up to the penthouse
+    ceoW.ride = Math.min(1, ceoW.ride + dt/Math.max(2.5, (lobbyFy - pentFy)/90));
+    const u = ceoW.ride < 0.5 ? 2*ceoW.ride*ceoW.ride : 1 - Math.pow(-2*ceoW.ride + 2, 2)/2;
+    fy = lobbyFy + (pentFy - lobbyFy)*u; x = 183; riding = true;
+    elev.y = elev.ty = fy - 20; elev.wait = 2; if (elevImg) elevImg.y = elev.y;
+    if (ceoW.ride >= 1){ ceoW.where = "pent"; ceoW.x = 162; ceoW.dir = -1; ceoW.pause = 1; }
+  } else {                                           // stroll around The Room, or the penthouse once it exists
+    const inPent = ceoW.where === "pent", lo = inPent ? 40 : 50, hi = inPent ? 162 : 104;
+    fy = inPent ? pentFy : lobbyFy;
+    if (ceoW.pause > 0) ceoW.pause -= dt;
+    else { ceoW.x += ceoW.dir*9*dt; ceoW.ft += dt; walking = true; if (ceoW.x > hi || ceoW.x < lo){ ceoW.x = clamp(ceoW.x, lo, hi); ceoW.dir *= -1; ceoW.pause = 1.5 + Math.random()*3; } }
+    x = ceoW.x;
+  }
+  ceoSpr.setVisible(true).setDepth(riding ? 17.5 : 14.5).setPosition(OX + x, fy).setFrame(walking && Math.floor(ceoW.ft*6) % 2 ? "f1" : "f0").setFlipX(ceoW.dir < 0);
+  ceoTag.setVisible(!riding).setPosition(OX + x, fy - 18.5 + (walking ? 0 : Math.round(Math.sin(time*2))*0.3));
 }
 class TowerScene extends Phaser.Scene {
   constructor(){ super("tower"); }
@@ -442,6 +458,7 @@ const fontReady = document.fonts && document.fonts.load ? Promise.race([Promise.
 fontReady.then(() => {
   boot();
   setCity(cityId());
+  setTimeout(() => flushPending().catch(() => {}), 4000);
   $("#verTag").textContent = "v" + VERSION;
   document.title = companyName();
   if (S.lastVersion && S.lastVersion !== VERSION && S.seen && !S.over) setTimeout(() => toast(`Updated to v${VERSION}. Tap ? to see what’s new.`, "good"), 1500);

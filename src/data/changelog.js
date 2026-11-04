@@ -1,6 +1,13 @@
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.5.0", notes:[
+    "A global leaderboard: your finished runs are sent automatically and you can compare scores with everyone, filtered by city. Your company and CEO names appear there publicly. Idle mode runs aren’t included.",
+    "If you finish a run offline, your score is sent the next time you play online.",
+    "The penthouse is now locked as the very top floor, right under the roof, with new floors built beneath it.",
+    "When you buy the penthouse, your CEO takes the lift up and moves in for good.",
+    "Fixed: the game-over screen no longer breaks for runs that switched idle mode on and off.",
+  ]},
   {v:"0.4.3", notes:[
     "55 new achievements (70 in all), covering promotions, every black swan, the penthouse, the star shop, lawsuits, rivals, the three cities, selling your company and golden tickets.",
     "Achievements are now grouped into categories in the Boardroom, each with its own progress count.",

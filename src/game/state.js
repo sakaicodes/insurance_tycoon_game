@@ -1,8 +1,9 @@
 /* game/state.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* ---------- State ---------- */
 function blankQ(){ return {prem:0, paid:0, sal:0, other:0}; }
+function newGlobalId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 12); }
 function newState(){
-  return {v:1, cash:250, happy:70, stock:10, hist:[10], quarter:1, qt:0,
+  return {v:1, globalId:newGlobalId(), cash:250, happy:70, stock:10, hist:[10], quarter:1, qt:0,
     floors:[{type:"sales", level:1, mode:"pay"}], claims:[], q:blankQ(), lastProfit:null,
     buffs:{sales:0, morale:0, surge:0}, aiHype:false, nextClaim:6, nextEvent:38,
     lawsuits:[], returns:[], yachts:0, insured:0, rankIdx:0, won:false, over:false, seen:false,
@@ -12,6 +13,7 @@ function newState(){
     cover:{cat:false, cyber:false, dno:false, event:false}, swan:null, swansSurvived:0, best3:false};
 }
 function ensureState(){
+  if (!S.globalId) S.globalId = newGlobalId();
   if (S.floors && S.floors.filter(f => f.type === "penthouse").length){
     const ph = S.floors.find(f => f.type === "penthouse"); S.floors = S.floors.filter(f => f.type !== "penthouse"); S.floors.push(ph); S.penthouseBought = true;
   }

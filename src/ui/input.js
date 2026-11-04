@@ -45,7 +45,7 @@ $("#sheet").addEventListener("click", e => {
     toast(pick(["PR released a heartfelt video of the CEO adopting a three-legged dog. Mood +15.","PR sponsored a puppy calendar. Customers are moved. Mood +15.","PR held a press conference with a choir. Nobody remembers what went wrong. Mood +15."]), "good");
     save(); const k = S.floors.findIndex(f => f.type === "pr"); if (k >= 0) openFloor(k); else closeModal();
   }
-  else if (a === "lb") openLeaderboard();
+  else if (a === "lb") openLeaderboard(p, q);
   else if (a === "lbname"){
     const inp = $("#lbName"); const name = (inp ? inp.value : "").replace(/[<>]/g, "").trim().slice(0, 24) || companyName();
     try { localStorage.setItem(NAME_KEY, name); } catch(e){}

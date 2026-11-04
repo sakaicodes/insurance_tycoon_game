@@ -37,10 +37,11 @@ S.floors.forEach((f,i) => rebuildWorkers(i));
 /* ---------- Layout ---------- */
 const LW = 232, OX = 6, FH = 40, TOP = 82, LOBBY_H = 44, GROUND = 24;
 function layout(){
-  const n = S.floors.length, can = workFloors() < MAXF;
-  const floorsTop = TOP + (can ? FH : 0);
-  const lobbyY = floorsTop + n*FH;
+  const n = S.floors.length, can = workFloors() < MAXF, ph = n > 0 && S.floors[n-1].type === "penthouse", nw = n - (ph ? 1 : 0);
+  const slotY = TOP + (ph ? FH : 0);            // the penthouse sits directly under the roof, above the build slot
+  const floorsTop = slotY + (can ? FH : 0);
+  const lobbyY = floorsTop + nw*FH;
   const groundY = lobbyY + LOBBY_H;
-  return {n, can, floorsTop, lobbyY, groundY, LH:groundY + GROUND};
+  return {n, nw, ph, slotY, can, floorsTop, lobbyY, groundY, LH:groundY + GROUND};
 }
-function floorY(L, i){ return L.floorsTop + (L.n-1-i)*FH; }
+function floorY(L, i){ return L.ph && i === L.n - 1 ? TOP : L.floorsTop + (L.nw-1-i)*FH; }

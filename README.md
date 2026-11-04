@@ -1,4 +1,4 @@
-# Insurance Tycoon
+# Fine Print Syndicate
 
 A satirical London-market insurance tower game. You write the source as separate files; `build.js` bundles them into **one self-contained HTML file** that runs anywhere.
 
@@ -7,11 +7,11 @@ A satirical London-market insurance tower game. You write the source as separate
 Needs Node.js (any recent version). No packages to install.
 
 ```
-node build.js           # writes dist/insurance-tycoon.html
+node build.js           # writes dist/fine-print-syndicate.html
 node build.js --check   # same, then checks the bundled script parses
 ```
 
-Open `dist/insurance-tycoon.html` in a browser to play. Phaser 3.80.1 and the fonts load from a CDN.
+Open `dist/fine-print-syndicate.html` in a browser to play. Phaser 3.80.1 and the fonts load from a CDN.
 
 ## Releasing a new version
 
@@ -58,6 +58,16 @@ Every run starts on the Create your CEO screen (`openSetup()` in `src/ui/panels.
 ## Cities, exits and the penthouse
 
 `S.city` picks the art in `src/art/tower.js` (`facadeAlt`, `roofNYC`, `roofBermuda`, `skylineNYC`, `skylineBermuda`) and the currency (`setCity()` sets `CUR`, used by `fmt()`). Selling the company lives in `src/game/endings.js` (`exitValue`, `sellCompany`); golden tickets are stored under `fineprint-legacy` so they survive new runs. The penthouse is a normal floor type that `workFloors()` leaves out of every count; `addFloor()` keeps new floors below it.
+
+## Global leaderboard (Supabase)
+
+The game reads and submits scores using the URL and publishable key in `src/data/online.js` (set `enabled:false` to switch it off). The publishable key is meant to be public: Row Level Security only lets it read the `scores` table.
+
+- `supabase/migrations/..._create_scores.sql` creates the table and its read-only policy. Run it with `npx supabase db push --linked`, or paste it into the dashboard's SQL Editor.
+- `supabase/functions/submit-score/index.ts` is the only way scores get written. Deploy it with `npx supabase functions deploy submit-score --no-verify-jwt --use-api`. Its `ALLOWED` list must include the site the game is served from.
+- The score formula is duplicated in the function so the server can recompute it. If you change `scoreParts()` in `src/game/score.js`, change the function to match and redeploy.
+
+Free Supabase projects pause after about a week without activity. Restore yours from the dashboard if the Global tab stops loading.
 
 ## Adding content
 

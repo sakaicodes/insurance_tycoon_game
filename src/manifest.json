@@ -27,6 +27,7 @@
     "data/tutorial.js",
     "data/changelog.js",
     "data/cities.js",
+    "data/online.js",
     "art/palette.js",
     "art/floor-designs.js",
     "art/cutscenes.js",

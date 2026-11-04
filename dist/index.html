@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Insurance Tycoon</title>
+<title>Fine Print Syndicate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
@@ -1022,6 +1022,13 @@ const TUT = [
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.5.0", notes:[
+    "A global leaderboard: your finished runs are sent automatically and you can compare scores with everyone, filtered by city. Your company and CEO names appear there publicly. Idle mode runs aren’t included.",
+    "If you finish a run offline, your score is sent the next time you play online.",
+    "The penthouse is now locked as the very top floor, right under the roof, with new floors built beneath it.",
+    "When you buy the penthouse, your CEO takes the lift up and moves in for good.",
+    "Fixed: the game-over screen no longer breaks for runs that switched idle mode on and off.",
+  ]},
   {v:"0.4.3", notes:[
     "55 new achievements (70 in all), covering promotions, every black swan, the penthouse, the star shop, lawsuits, rivals, the three cities, selling your company and golden tickets.",
     "Achievements are now grouped into categories in the Boardroom, each with its own progress count.",
@@ -1086,6 +1093,15 @@ const CITIES = {
     building:"A Front Street office with a white stepped roof", blurb:"The world’s reinsurance capital: pastel offices, hurricane-proof roofs and a lot of very large cheques."},
 };
 function setCity(id){ CUR = (CITIES[id] || CITIES.london).cur; }
+
+/* data/online.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
+/* The global leaderboard (Supabase). The publishable key is designed to be public: it can only read scores.
+   Scores are written by the submit-score Edge Function, which checks them first. Set enabled:false to turn it off. */
+const ONLINE = {
+  enabled: true,
+  url: "https://eatzxbevifurxhaczkjv.supabase.co",
+  key: "sb_publishable_W7qw3JOAkACT8W1kwN7wrQ_6saKb5Dt",
+};
 
 /* art/palette.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 const SKINS = ["#FFDBAC","#F2C9A0","#E0A878","#C68650","#8D5524","#5C3A21"];
@@ -1990,7 +2006,7 @@ return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.key
 
 /* core/constants.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* VERSION and BUILD_DATE are filled in by build.js from package.json. */
-const VERSION = "0.4.3", BUILD_DATE = "2026-11-03";
+const VERSION = "0.5.0", BUILD_DATE = "2026-11-04";
 function intelSpread(n){ return Math.max(0, 36 - 6*n); }
 function intelText(n){
   if (n <= 0) return "No claim intel yet";
@@ -2004,8 +2020,9 @@ const Q_LEN = 60, MAXL = 5, MAXF = Infinity, KEY = "fineprint-mutual-v1";
 /* game/state.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* ---------- State ---------- */
 function blankQ(){ return {prem:0, paid:0, sal:0, other:0}; }
+function newGlobalId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 12); }
 function newState(){
-  return {v:1, cash:250, happy:70, stock:10, hist:[10], quarter:1, qt:0,
+  return {v:1, globalId:newGlobalId(), cash:250, happy:70, stock:10, hist:[10], quarter:1, qt:0,
     floors:[{type:"sales", level:1, mode:"pay"}], claims:[], q:blankQ(), lastProfit:null,
     buffs:{sales:0, morale:0, surge:0}, aiHype:false, nextClaim:6, nextEvent:38,
     lawsuits:[], returns:[], yachts:0, insured:0, rankIdx:0, won:false, over:false, seen:false,
@@ -2015,6 +2032,7 @@ function newState(){
     cover:{cat:false, cyber:false, dno:false, event:false}, swan:null, swansSurvived:0, best3:false};
 }
 function ensureState(){
+  if (!S.globalId) S.globalId = newGlobalId();
   if (S.floors && S.floors.filter(f => f.type === "penthouse").length){
     const ph = S.floors.find(f => f.type === "penthouse"); S.floors = S.floors.filter(f => f.type !== "penthouse"); S.floors.push(ph); S.penthouseBought = true;
   }
@@ -2291,13 +2309,14 @@ S.floors.forEach((f,i) => rebuildWorkers(i));
 /* ---------- Layout ---------- */
 const LW = 232, OX = 6, FH = 40, TOP = 82, LOBBY_H = 44, GROUND = 24;
 function layout(){
-  const n = S.floors.length, can = workFloors() < MAXF;
-  const floorsTop = TOP + (can ? FH : 0);
-  const lobbyY = floorsTop + n*FH;
+  const n = S.floors.length, can = workFloors() < MAXF, ph = n > 0 && S.floors[n-1].type === "penthouse", nw = n - (ph ? 1 : 0);
+  const slotY = TOP + (ph ? FH : 0);            // the penthouse sits directly under the roof, above the build slot
+  const floorsTop = slotY + (can ? FH : 0);
+  const lobbyY = floorsTop + nw*FH;
   const groundY = lobbyY + LOBBY_H;
-  return {n, can, floorsTop, lobbyY, groundY, LH:groundY + GROUND};
+  return {n, nw, ph, slotY, can, floorsTop, lobbyY, groundY, LH:groundY + GROUND};
 }
-function floorY(L, i){ return L.floorsTop + (L.n-1-i)*FH; }
+function floorY(L, i){ return L.ph && i === L.n - 1 ? TOP : L.floorsTop + (L.nw-1-i)*FH; }
 
 /* art/tower.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* ---------- Drawing target ---------- */
@@ -2502,11 +2521,11 @@ function facadeRows(L){
     ctx.fillStyle = night ? "rgba(8,16,34,.4)" : "rgba(36,66,96,.32)";
     for (let k = 3; k < maxF; k += 3) ctx.fillRect(base + side*k - 0.25, top, 0.5, bot - top);
     ctx.fillStyle = "rgba(30,42,68,.9)";
-    for (let i = 0; i < L.n; i++) ctx.fillRect(x0, L.floorsTop + i*FH + 38, maxF, 2);
+    for (let i = 0; i < L.n; i++) ctx.fillRect(x0, floorY(L, i) + 38, maxF, 2);
     const sh = ctx.createLinearGradient(base, top, base + side*maxF*1.5, top + 160);
     sh.addColorStop(0, "rgba(255,255,255,0)"); sh.addColorStop(0.42, night ? "rgba(255,255,255,.04)" : "rgba(255,255,255,.24)"); sh.addColorStop(0.5, "rgba(255,255,255,0)");
     ctx.fillStyle = sh; ctx.fillRect(x0, top, maxF, bot - top);
-    if (night) for (let i = 0; i < L.n; i++) for (let k = 4; k < maxF - 1; k += 6) if (hash(i, k) > .72){ ctx.fillStyle = "rgba(255,226,140,.55)"; ctx.fillRect(base + side*k - 1, L.floorsTop + i*FH + 12, 2, 6); }
+    if (night) for (let i = 0; i < L.n; i++) for (let k = 4; k < maxF - 1; k += 6) if (hash(i, k) > .72){ ctx.fillStyle = "rgba(255,226,140,.55)"; ctx.fillRect(base + side*k - 1, floorY(L, i) + 12, 2, 6); }
     ctx.restore();
     ctx.beginPath(); for (let y = top; y <= bot; y += 1){ const x = base + side*fl(y); if (y === top) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
     ctx.strokeStyle = night ? "rgba(140,170,210,.55)" : "rgba(235,245,255,.85)"; ctx.lineWidth = 0.6; ctx.stroke();
@@ -2539,7 +2558,7 @@ function drawRoof(L){
   R(x1-3, base-38, 2, 2, Math.floor(time*1.5) % 2 ? "#FF5A5F" : "#7A2A2A");
 }
 function drawSlot(L){
-  const y = TOP, can = S.cash >= buildCost();
+  const y = L.slotY, can = S.cash >= buildCost();
   ctx.globalAlpha = can ? 0.28 + 0.12*Math.sin(time*4) : 0.16;
   R(24,y,172,FH,"#FFFFFF"); ctx.globalAlpha = 1;
   const c = "#C98A2E";
@@ -2642,7 +2661,7 @@ function drawLobby(L){
   if (S.claims.length > 6){ R(46,y+12,30,8,"#C0392B"); T(`+${S.claims.length-6} waiting`, 61, y+17.5, 4.5, "#FFF6E2", "center", 700); }
 }
 function drawShaftStatic(L){
-  const top = L.floorsTop, bot = L.lobbyY + 40;
+  const top = L.ph ? TOP : L.floorsTop, bot = L.lobbyY + 40;
   R(174,top,18,bot-top,"#6E4428"); for (let yy = top; yy < bot; yy += 4) for (let xx = 174; xx < 192; xx += 6) R(xx + ((yy/4|0) % 2)*3, yy, 5.4, 3.4, "#2A3552");
   R(182,top,1,bot-top,"#1E2238"); R(185,top,1,bot-top,"#1E2238"); R(183,top,2,bot-top,"#141A2C");
   for (let i = 0; i < L.n; i++){ const y = floorY(L,i); R(174,y+14,1.4,24,"#C9A54A"); R(175.4,y+14,0.6,24,"#1F2A44"); }
@@ -3729,7 +3748,58 @@ function lbTable(hl){
   if (!runs.length) return `<div class="empty"><p>No finished runs yet. Your first one will appear here.</p></div>`;
   return `<table class="lb"><tr><th>#</th><th>Syndicate</th><th>Score</th><th>Grade</th><th>Qtrs</th></tr>${runs.map((r, k) => `<tr class="${r.id === hl ? "me" : ""}"><td>${k + 1}</td><td>${esc(r.name)}<small>${esc(r.title)}</small>${r.ceo ? `<small style="display:block;color:var(--ink-dim)">led by ${esc(r.ceo)}</small>` : ""}</td><td>${r.score.toLocaleString("en-GB")}</td><td>${r.grade}</td><td>${r.quarters}</td></tr>`).join("")}</table>`;
 }
-function openLeaderboard(){ openModal(`<div class="top"><h2>Leaderboard</h2>${xBtn}</div><p class="dim">Your 10 best runs on this device.</p>${lbTable()}`, {view:"lb"}); }
+function openLeaderboard(tab, city){
+  tab = tab === "global" && onlineOk() ? "global" : (tab || (onlineOk() ? "global" : "local")); city = city || "all";
+  const tabs = onlineOk() ? `<div class="seg two">${[["global","🌍 Global"],["local","📱 This device"]].map(([k, l]) => `<button class="btn" data-act="lb:${k}" aria-pressed="${tab === k}">${l}</button>`).join("")}</div>` : "";
+  const cities = tab === "global" ? `<div class="seg four" style="margin-top:6px">${[["all","All"],["london","London"],["nyc","New York"],["bermuda","Bermuda"]].map(([k, l]) => `<button class="btn" data-act="lb:global:${k}" aria-pressed="${city === k}">${l}</button>`).join("")}</div>` : "";
+  openModal(`<div class="top"><h2>Leaderboard</h2>${xBtn}</div>${tabs}${cities}
+    ${tab === "global" ? `<div id="lbGlobal"><p class="dim">Loading the global leaderboard…</p></div><p class="dim">Company and CEO names on the global leaderboard are public. Idle mode runs aren’t included.</p>` : `<p class="dim">Your 10 best runs on this device.</p>${lbTable()}`}`, {view:"lb" + tab + city});
+  if (tab === "global"){ const want = "lb" + tab + city;
+    fetchGlobal(city).then(rows => { if (view !== want) return; const el = $("#lbGlobal"); if (el) el.innerHTML = globalTable(rows); })
+      .catch(() => { if (view !== want) return; const el = $("#lbGlobal"); if (el) el.innerHTML = `<p class="note">Couldn’t reach the global leaderboard right now. Check your connection, or look at your runs on this device.</p>`; }); }
+}
+
+/* ---------- global leaderboard (Supabase) ---------- */
+const PENDING_KEY = "fineprint-pending-scores";
+function onlineOk(){ return !!(typeof ONLINE !== "undefined" && ONLINE.enabled && ONLINE.url && ONLINE.key && typeof fetch === "function"); }
+function withTimeout(p, ms){ return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]); }
+function runPayload(sp){
+  return {runId:S.globalId, name:companyName(), ceo:ceoName(), city:cityId(), quarters:Math.max(1, S.quarter - 1), days:daysSurvived(),
+    earned:Math.round(S.earned || 0), stars:S.stars || 0, achievements:sp.achN, rankIdx:S.rankIdx, avgMood:Math.round(sp.rep),
+    exitBonus:S.exit ? Math.round(Math.sqrt(S.exit.value)*15) : 0, version:VERSION};
+}
+async function postScore(p){
+  const r = await withTimeout(fetch(`${ONLINE.url}/functions/v1/submit-score`, {method:"POST", headers:{"content-type":"application/json", apikey:ONLINE.key}, body:JSON.stringify(p)}), 9000);
+  if (!r.ok){ const err = new Error((await r.text().catch(() => "")) || String(r.status)); err.status = r.status; throw err; }
+  return r.json();
+}
+function loadPending(){ try { return JSON.parse(localStorage.getItem(PENDING_KEY)) || []; } catch(e){ return []; } }
+function savePending(list){ try { localStorage.setItem(PENDING_KEY, JSON.stringify(list.slice(-5))); } catch(e){} }
+async function flushPending(){
+  if (!onlineOk()) return; const list = loadPending(); if (!list.length) return; const keep = [];
+  for (const p of list){ try { await postScore(p); } catch(e){ if (!e.status || e.status >= 500 || e.status === 429) keep.push(p); } }
+  savePending(keep);
+}
+async function submitGlobal(sp){
+  if (!onlineOk()) return {skipped:"off"};
+  if (S.idleMode || S.idleTainted) return {skipped:"idle"};
+  if (S.globalSent) return {skipped:"sent"};
+  const p = runPayload(sp);
+  try { const res = await postScore(p); S.globalSent = true; save(); return res; }
+  catch(e){ if (!e.status || e.status >= 500 || e.status === 429){ queuePending(p); return {queued:true}; } if (/already submitted/.test(e.message)){ S.globalSent = true; save(); return {skipped:"sent"}; } return {error:e.message}; }
+}
+function queuePending(p){ const list = loadPending().filter(x => x.runId !== p.runId); list.push(p); savePending(list); }
+async function fetchGlobal(city){
+  const q = `${ONLINE.url}/rest/v1/scores?select=name,ceo,city,score,quarters,rank_idx,created_at&order=score.desc&limit=20${city && city !== "all" ? `&city=eq.${encodeURIComponent(city)}` : ""}`;
+  const r = await withTimeout(fetch(q, {headers:{apikey:ONLINE.key}}), 9000);
+  if (!r.ok) throw new Error(String(r.status));
+  return r.json();
+}
+function globalTable(rows){
+  if (!rows || !rows.length) return `<div class="empty"><p>No scores here yet. Finish a run to claim the top spot.</p></div>`;
+  const flag = {london:"🇬🇧", nyc:"🇺🇸", bermuda:"🇧🇲"}, mine = companyName();
+  return `<table class="lb"><tr><th>#</th><th>Syndicate</th><th>Score</th><th>Qtrs</th></tr>${rows.map((r, k) => `<tr class="${r.name === mine && r.ceo === ceoName() ? "me" : ""}"><td>${k + 1}</td><td>${flag[r.city] || ""} ${esc(r.name)}<small>${RANKS[clamp(r.rank_idx || 0, 0, RANKS.length - 1)].name}${r.ceo ? `, led by ${esc(r.ceo)}` : ""}</small></td><td>${Number(r.score).toLocaleString("en-GB")}</td><td>${r.quarters}</td></tr>`).join("")}</table>`;
+}
 
 /* game/endings.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 function gameOver(reason){
@@ -3763,10 +3833,17 @@ function gameOver(reason){
       <div class="fact"><span>Stars earned</span><b>${S.stars} ★</b></div>
       <div class="fact"><span>Achievements</span><b>${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length}</b></div>
     </div>
-    ${S.idleMode ? `<p class="note">This was an idle mode run. The board made the decisions, so the score isn’t recorded.</p>` : `<h3>Leaderboard</h3>
+    ${S.idleMode || S.idleTainted || !run ? `<p class="note">This run used idle mode, so the board made some of the decisions and the score isn’t recorded.</p>` : `<h3>Leaderboard</h3>
+    ${onlineOk() ? `<p class="dim" id="globalStatus">Sending your score to the global leaderboard…</p>` : ""}
     <div class="lbname"><input id="lbName" maxlength="24" placeholder="Name your syndicate" value="${esc(run.name)}" aria-label="Your name on the leaderboard"><button class="btn ghost" data-act="lbname:${run.id}">Save name</button></div>
     <div id="lbArea">${lbTable(run.id)}</div>`}
+    ${onlineOk() && run ? `<div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb:global">🌍 Global leaderboard</button></div>` : ""}
     <button class="btn" style="width:100%;margin-top:12px" data-act="restart-yes">Start a new company</button>`, {locked:true});
+  if (run && onlineOk()) submitGlobal(sp).then(res => { const el = $("#globalStatus"); if (!el) return;
+    el.textContent = res.score != null ? `Your score is on the global leaderboard as ${companyName()}, led by ${ceoName()}. Names there are public.`
+      : res.queued ? "Couldn’t reach the global leaderboard. Your score will be sent next time you play online."
+      : res.skipped === "sent" ? "This run is already on the global leaderboard."
+      : res.error ? `The global leaderboard didn’t accept this run (${res.error}).` : ""; });
 }
 function coverCost(k, prem){ return Math.round(Math.max(60, prem*COVERS[k].rate)*(perk("reinsdisc") ? 0.75 : 1)); }
 function blackSwan(kind){ if (!SWANS[kind]) kind = pick(SWAN_POOL); S.swanDone = true; S.cyc = Math.PI/2; playCutscene(kind, () => swanResolve(kind)); }
@@ -3975,7 +4052,7 @@ $("#sheet").addEventListener("click", e => {
     toast(pick(["PR released a heartfelt video of the CEO adopting a three-legged dog. Mood +15.","PR sponsored a puppy calendar. Customers are moved. Mood +15.","PR held a press conference with a choir. Nobody remembers what went wrong. Mood +15."]), "good");
     save(); const k = S.floors.findIndex(f => f.type === "pr"); if (k >= 0) openFloor(k); else closeModal();
   }
-  else if (a === "lb") openLeaderboard();
+  else if (a === "lb") openLeaderboard(p, q);
   else if (a === "lbname"){
     const inp = $("#lbName"); const name = (inp ? inp.value : "").replace(/[<>]/g, "").trim().slice(0, 24) || companyName();
     try { localStorage.setItem(NAME_KEY, name); } catch(e){}
@@ -4117,7 +4194,7 @@ let rainEm = null, confettiEm = null, dustEm = null;
 let lastKey = "", prevLevels = [], prevCount = 0, lastNight = null, bellRinging = false, rainOn = null, scrollHint = false;
 let tick8 = 0, tick2 = 0, hudT = 0, saveT = 0, vel = 0, drag = null, pendingBottom = true;
 let padX = 0;
-let ceoW = {x:58, dir:1, pause:1.5, ft:0, where:"lobby", stay:25}, ceoSpr = null, ceoTag = null, ceoKey = "";
+let ceoW = {x:58, dir:1, pause:1.5, ft:0, where:"lobby", ride:0, init:false}, ceoSpr = null, ceoTag = null, ceoKey = "";
 const pxL = css => css*dpr/cz;
 const SK = n => n + "@" + RS;
 const col = s => Phaser.Display.Color.ValueToColor(s).color;
@@ -4335,11 +4412,11 @@ function rebuildAll(){
   paintTall("facade", LW, TOP, L.groundY, () => facadeRows(L), OX, 0, 4, true);
   lastNight = isNight();
   imgRoof = addImg(paint("roof", LW, 44, () => drawRoof(L), OX, -(TOP-42)), 0, TOP-42, 5);
-  imgSlot = L.can ? addImg(paint("slot", 172, FH, () => drawSlot(L), -24, -TOP), OX+24, TOP, 6) : null;
+  imgSlot = L.can ? addImg(paint("slot", 172, FH, () => drawSlot(L), -24, -L.slotY), OX+24, L.slotY, 6) : null;
   for (let i = 0; i < L.n; i++) buildFloorObjs(L, i);
   imgLobby = addImg(paint("lobby", 146, 44, () => drawLobby(L), -28, -L.lobbyY), OX+28, L.lobbyY, 13);
   bellImg = scene.add.image(OX+64.5, L.lobbyY+5, SK("bell")).setOrigin(6.5/14, 0).setScale(1/RS).setDepth(13.5); objs.push(bellImg); bellRinging = false;
-  paintTall("shaft", 172, L.floorsTop, L.groundY, () => drawShaftStatic(L), -24, OX+24, 16, true);
+  paintTall("shaft", 172, L.ph ? TOP : L.floorsTop, L.groundY, () => drawShaftStatic(L), -24, OX+24, 16, true);
   elevImg = scene.add.image(OX+176, elev.y || L.lobbyY+18, SK("elev")).setOrigin(0,0).setScale(1/RS).setDepth(17); objs.push(elevImg);
   confettiEm = scene.add.particles(0, 0, SK("px"), {
     speed:{min:40, max:120}, angle:{min:200, max:340}, gravityY:170, lifespan:1200,
@@ -4424,7 +4501,7 @@ function redrawDynamic(){
   for (const o of floorObjs) if (o && o.animated && o.fy + 40 > vTop && o.fy < vBot) paint("rbg"+o.i, 146, 38, () => drawRoomBG(o.f, W[o.i] || [], 0), -28, 0);
   paint("lobby", 146, 44, () => drawLobby(L), -28, -L.lobbyY);
   paint("roof", LW, 44, () => drawRoof(L), OX, -(TOP-42));
-  if (imgSlot) paint("slot", 172, FH, () => drawSlot(L), -24, -TOP);
+  if (imgSlot) paint("slot", 172, FH, () => drawSlot(L), -24, -L.slotY);
   redrawStars();
 }
 function redrawSlow(){
@@ -4444,31 +4521,47 @@ function tapAt(wx, wy){
   const lx = wx - OX, ly = wy;
   const L = layout(), fy = L.lobbyY + 40;
   { const ph = S.floors.findIndex(f => f.type === "penthouse"), cy = ceoW.where === "pent" && ph >= 0 ? floorY(L, ph) + 35 : fy;
-    if (S.setupDone && Math.abs(lx - ceoW.x) <= 5 && ly >= cy - 22 && ly <= cy + 2){ openBoard(); return; } }
+    if (S.setupDone && ceoW.where !== "ride" && Math.abs(lx - ceoW.x) <= 5 && ly >= cy - 22 && ly <= cy + 2){ openBoard(); return; } }
   for (const u of CUST){ if (u.state === "wait" && Math.abs(lx - u.x) <= 8 && ly >= fy - 26 && ly <= fy + 2){ openClaims(u.id); return; } }
-  if (L.can && ly >= TOP && ly < TOP + FH){ openFloors(); return; }
-  if (ly >= L.floorsTop && ly < L.lobbyY){ const k = Math.floor((ly - L.floorsTop)/FH); openFloor(L.n - 1 - k); return; }
+  if (L.ph && ly >= TOP && ly < TOP + FH){ openFloor(L.n - 1); return; }
+  if (L.can && ly >= L.slotY && ly < L.slotY + FH){ openFloors(); return; }
+  if (ly >= L.floorsTop && ly < L.lobbyY){ const k = Math.floor((ly - L.floorsTop)/FH); openFloor(L.nw - 1 - k); return; }
   if (ly >= L.lobbyY && ly < L.groundY && lx >= 24 && lx <= 196){ openClaims(); return; }
   if (ly < TOP) openBoard();
 }
 
 function ceoSync(dt){
   if (!scene || !S.setupDone){ if (ceoSpr && ceoSpr.active){ ceoSpr.setVisible(false); ceoTag.setVisible(false); } return; }
-  const L = layout(), ph = S.floors.findIndex(f => f.type === "penthouse");
+  const L = layout(), ph = S.floors.findIndex(f => f.type === "penthouse"), key = personTexture(ceoLook());
+  if (!ceoW.init){ ceoW.init = true; if (ph >= 0){ ceoW.where = "pent"; ceoW.x = 110; } }
   if (ph < 0) ceoW.where = "lobby";
-  else { ceoW.stay -= dt; if (ceoW.stay <= 0 && ceoW.pause > 0){ ceoW.where = ceoW.where === "pent" ? "lobby" : "pent"; ceoW.stay = 18 + Math.random()*22; ceoW.x = ceoW.where === "pent" ? 160 : 100; ceoW.dir = -1; } }
-  const inPent = ceoW.where === "pent" && ph >= 0, fy = inPent ? floorY(L, ph) + 35 : L.lobbyY + 40, lo = inPent ? 40 : 50, hi = inPent ? 162 : 104, key = personTexture(ceoLook());
+  else if (ceoW.where === "lobby"){ ceoW.where = "toLift"; ceoW.pause = 0; }
   if (!ceoSpr || !ceoSpr.active || ceoKey !== key || ceoTag.text !== ceoName()){
     if (ceoSpr && ceoSpr.active){ ceoSpr.destroy(); ceoTag.destroy(); }
     ceoSpr = scene.add.image(0, 0, key, "f0").setOrigin(5/11, 18/20).setScale(1/RS).setDepth(14.5); objs.push(ceoSpr);
     ceoTag = scene.add.text(0, 0, ceoName(), {fontFamily:FONT, fontSize:Math.max(pxL(10), 5.4) + "px", fontStyle:"700", color:"#FFF1D0", stroke:"#1F2A44", strokeThickness:Math.max(pxL(3), 1.4), resolution:Math.ceil(cz)}).setOrigin(0.5, 1).setDepth(14.6); objs.push(ceoTag);
     ceoKey = key;
   }
-  if (ceoW.pause > 0) ceoW.pause -= dt;
-  else { ceoW.x += ceoW.dir*9*dt; ceoW.ft += dt; if (ceoW.x > hi || ceoW.x < lo){ ceoW.x = clamp(ceoW.x, lo, hi); ceoW.dir *= -1; ceoW.pause = 1.5 + Math.random()*3; } }
-  const walking = ceoW.pause <= 0;
-  ceoSpr.setVisible(true).setPosition(OX + ceoW.x, fy).setFrame(walking && Math.floor(ceoW.ft*6) % 2 ? "f1" : "f0").setFlipX(ceoW.dir < 0);
-  ceoTag.setVisible(true).setPosition(OX + ceoW.x, fy - 18.5 + (walking ? 0 : Math.round(Math.sin(time*2))*0.3));
+  const lobbyFy = L.lobbyY + 40, pentFy = ph >= 0 ? floorY(L, ph) + 35 : lobbyFy;
+  let fy = lobbyFy, x = ceoW.x, walking = false, riding = false;
+  if (ceoW.where === "toLift"){                      // walk across The Room to the lift
+    ceoW.dir = 1; ceoW.x = Math.min(170, ceoW.x + 24*dt); ceoW.ft += dt; walking = true; x = ceoW.x;
+    if (ceoW.x >= 170){ ceoW.where = "ride"; ceoW.ride = 0; }
+  } else if (ceoW.where === "ride"){                 // ride the lift up to the penthouse
+    ceoW.ride = Math.min(1, ceoW.ride + dt/Math.max(2.5, (lobbyFy - pentFy)/90));
+    const u = ceoW.ride < 0.5 ? 2*ceoW.ride*ceoW.ride : 1 - Math.pow(-2*ceoW.ride + 2, 2)/2;
+    fy = lobbyFy + (pentFy - lobbyFy)*u; x = 183; riding = true;
+    elev.y = elev.ty = fy - 20; elev.wait = 2; if (elevImg) elevImg.y = elev.y;
+    if (ceoW.ride >= 1){ ceoW.where = "pent"; ceoW.x = 162; ceoW.dir = -1; ceoW.pause = 1; }
+  } else {                                           // stroll around The Room, or the penthouse once it exists
+    const inPent = ceoW.where === "pent", lo = inPent ? 40 : 50, hi = inPent ? 162 : 104;
+    fy = inPent ? pentFy : lobbyFy;
+    if (ceoW.pause > 0) ceoW.pause -= dt;
+    else { ceoW.x += ceoW.dir*9*dt; ceoW.ft += dt; walking = true; if (ceoW.x > hi || ceoW.x < lo){ ceoW.x = clamp(ceoW.x, lo, hi); ceoW.dir *= -1; ceoW.pause = 1.5 + Math.random()*3; } }
+    x = ceoW.x;
+  }
+  ceoSpr.setVisible(true).setDepth(riding ? 17.5 : 14.5).setPosition(OX + x, fy).setFrame(walking && Math.floor(ceoW.ft*6) % 2 ? "f1" : "f0").setFlipX(ceoW.dir < 0);
+  ceoTag.setVisible(!riding).setPosition(OX + x, fy - 18.5 + (walking ? 0 : Math.round(Math.sin(time*2))*0.3));
 }
 class TowerScene extends Phaser.Scene {
   constructor(){ super("tower"); }
@@ -4551,6 +4644,7 @@ const fontReady = document.fonts && document.fonts.load ? Promise.race([Promise.
 fontReady.then(() => {
   boot();
   setCity(cityId());
+  setTimeout(() => flushPending().catch(() => {}), 4000);
   $("#verTag").textContent = "v" + VERSION;
   document.title = companyName();
   if (S.lastVersion && S.lastVersion !== VERSION && S.seen && !S.over) setTimeout(() => toast(`Updated to v${VERSION}. Tap ? to see what’s new.`, "good"), 1500);

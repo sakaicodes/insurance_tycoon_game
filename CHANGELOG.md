@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+- **Global leaderboard (Supabase).** At game over, runs are posted to the `submit-score` Edge Function, which checks plausibility, recomputes the score with the game's formula, rate-limits by hashed IP and rejects duplicates. The leaderboard has Global and This device tabs, with All, London, New York and Bermuda filters. Offline submissions are queued and retried on the next visit. Idle mode runs are never sent. Config lives in `src/data/online.js`; the table and function are in `supabase/`.
+- **Penthouse locked to the top:** it sits directly under the roof, with the build slot beneath it, so new floors always appear below it.
+- **CEO moves in:** after the penthouse is bought, the CEO walks to the lift, rides it up the shaft and stays in the penthouse.
+- Fixed: the game-over screen crashed for runs that had used idle mode and then switched it off.
+
 ## 0.4.3
 - Achievements: 55 new ones (70 in all) across eight categories: Tower, Career, Money, Claims, Black swans, Strategy, Cities and Exits. New tracking for black swans survived by kind (and with no cover), lawsuits won, poaching attempts fended off, star shop purchases, profitable time away, black swans while away, and the cities you've founded companies in (stored with your golden tickets, so it spans runs).
 - The Boardroom shows achievements in collapsible categories with progress counts. When several unlock at once (for example, on loading an older save), they're announced in one message.

@@ -201,11 +201,11 @@ function facadeRows(L){
     ctx.fillStyle = night ? "rgba(8,16,34,.4)" : "rgba(36,66,96,.32)";
     for (let k = 3; k < maxF; k += 3) ctx.fillRect(base + side*k - 0.25, top, 0.5, bot - top);
     ctx.fillStyle = "rgba(30,42,68,.9)";
-    for (let i = 0; i < L.n; i++) ctx.fillRect(x0, L.floorsTop + i*FH + 38, maxF, 2);
+    for (let i = 0; i < L.n; i++) ctx.fillRect(x0, floorY(L, i) + 38, maxF, 2);
     const sh = ctx.createLinearGradient(base, top, base + side*maxF*1.5, top + 160);
     sh.addColorStop(0, "rgba(255,255,255,0)"); sh.addColorStop(0.42, night ? "rgba(255,255,255,.04)" : "rgba(255,255,255,.24)"); sh.addColorStop(0.5, "rgba(255,255,255,0)");
     ctx.fillStyle = sh; ctx.fillRect(x0, top, maxF, bot - top);
-    if (night) for (let i = 0; i < L.n; i++) for (let k = 4; k < maxF - 1; k += 6) if (hash(i, k) > .72){ ctx.fillStyle = "rgba(255,226,140,.55)"; ctx.fillRect(base + side*k - 1, L.floorsTop + i*FH + 12, 2, 6); }
+    if (night) for (let i = 0; i < L.n; i++) for (let k = 4; k < maxF - 1; k += 6) if (hash(i, k) > .72){ ctx.fillStyle = "rgba(255,226,140,.55)"; ctx.fillRect(base + side*k - 1, floorY(L, i) + 12, 2, 6); }
     ctx.restore();
     ctx.beginPath(); for (let y = top; y <= bot; y += 1){ const x = base + side*fl(y); if (y === top) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
     ctx.strokeStyle = night ? "rgba(140,170,210,.55)" : "rgba(235,245,255,.85)"; ctx.lineWidth = 0.6; ctx.stroke();
@@ -238,7 +238,7 @@ function drawRoof(L){
   R(x1-3, base-38, 2, 2, Math.floor(time*1.5) % 2 ? "#FF5A5F" : "#7A2A2A");
 }
 function drawSlot(L){
-  const y = TOP, can = S.cash >= buildCost();
+  const y = L.slotY, can = S.cash >= buildCost();
   ctx.globalAlpha = can ? 0.28 + 0.12*Math.sin(time*4) : 0.16;
   R(24,y,172,FH,"#FFFFFF"); ctx.globalAlpha = 1;
   const c = "#C98A2E";
@@ -341,7 +341,7 @@ function drawLobby(L){
   if (S.claims.length > 6){ R(46,y+12,30,8,"#C0392B"); T(`+${S.claims.length-6} waiting`, 61, y+17.5, 4.5, "#FFF6E2", "center", 700); }
 }
 function drawShaftStatic(L){
-  const top = L.floorsTop, bot = L.lobbyY + 40;
+  const top = L.ph ? TOP : L.floorsTop, bot = L.lobbyY + 40;
   R(174,top,18,bot-top,"#6E4428"); for (let yy = top; yy < bot; yy += 4) for (let xx = 174; xx < 192; xx += 6) R(xx + ((yy/4|0) % 2)*3, yy, 5.4, 3.4, "#2A3552");
   R(182,top,1,bot-top,"#1E2238"); R(185,top,1,bot-top,"#1E2238"); R(183,top,2,bot-top,"#141A2C");
   for (let i = 0; i < L.n; i++){ const y = floorY(L,i); R(174,y+14,1.4,24,"#C9A54A"); R(175.4,y+14,0.6,24,"#1F2A44"); }
