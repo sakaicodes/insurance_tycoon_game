@@ -1,6 +1,17 @@
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.6.3", notes:[
+    "Step down: end a run whenever you like (from quarter 4) from the Boardroom’s Company tab, and your score is recorded on your device and the global leaderboard.",
+    "A farewell party cutscene for stepping down, with bunting, a very long speech, a carriage clock and a pigeon eating the cake.",
+    "New achievement: Quit while ahead.",
+  ]},
+  {v:"0.6.2", notes:[
+    "Customer mood is now neutral at 50%: happier customers add up to 60% to your premiums, unhappy ones take up to 60% away.",
+    "A slower start: your business grows with your tower, starting at 70% and reaching full strength as you build. Writing more than one line of business also earns a bonus of up to 30%.",
+    "Your city now matters: each one makes some disasters more likely and more damaging (hurricanes in Bermuda, IT meltdowns and Wall Street collapses in New York, ash clouds and City collapses in London), and favours its home lines of business.",
+    "The Book tab now tells you what to do about each disaster: whether you’re covered, which floor softens it, and which line makes it worse.",
+  ]},
   {v:"0.6.1", notes:[
     "The tutorial now covers lines of business, actuarial specialisms, retraining and the new Boardroom tabs.",
     "The Boardroom tabs now wrap onto a second row instead of scrolling sideways.",

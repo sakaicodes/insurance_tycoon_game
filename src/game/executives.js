@@ -94,7 +94,7 @@ function offlineCheck(){
   for (let q = 0; q < whole; q++){
     if (S.quarter < 5 || q - lastQ < 3 || Math.random() >= 0.1) continue;
     lastQ = q;
-    const kind = pick(SWAN_POOL), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*swanExposure(kind)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
+    const kind = pickSwan(), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*swanExposure(kind)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
     const covered = !!(S.cover && S.cover[sw.cover]), net = covered ? gross*0.1 : gross;
     swanNet += net; swanCover += covered ? gross*0.9 : 0; swans.push({title:sw.title, covered, net});
   }

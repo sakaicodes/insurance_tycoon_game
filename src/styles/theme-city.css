@@ -72,10 +72,20 @@ blockquote{background:rgba(201,165,74,.12)}
 .achcat[open] summary::after{content:"▴"}
 .achcat summary span{margin-left:auto;color:var(--ink-dim);font-size:14px}
 .achcat .achs{padding:0 10px 10px}
-.btabs{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 12px;padding:4px 0 6px;position:sticky;top:-18px;z-index:2;background:var(--panel-2)}
+.btabs{display:flex;flex-wrap:wrap;gap:6px;margin:2px -12px 12px;padding:4px 12px 6px;position:sticky;top:-18px;z-index:3;background:var(--panel-2)}
 .btab{flex:1 1 auto;text-align:center;font:600 14px "Chakra Petch","Pixelify Sans",sans-serif;color:#1F2A44;background:#E9E4D6;border:2px solid #1F2A44;border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
 .btab[aria-selected="true"]{background:#E3C064;box-shadow:0 2px 0 #1F2A44}
 .btab:focus-visible{outline:3px solid #E3C064;outline-offset:2px}
 .types .type.spec{display:grid;gap:3px;text-align:left}
 .type.spec .blurb{font-style:italic;color:var(--ink-dim)}
+.exposures{display:grid;gap:8px;margin:6px 0 4px}
+.expo{border:2px solid var(--line);border-radius:8px;padding:8px 10px;background:#FFFDF7}
+.expo.hi{border-color:#D99A8E;background:#FFF5F2}
+.expo.lo{border-color:#A8CDB4}
+.expo-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.expo-top span{flex:0 1 44%;min-width:0;display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.expo-top span i{flex:1 1 auto;max-width:100%}
+.expo{overflow:hidden}
+.expo ul{margin:4px 0 0;padding:0;list-style:none;font-size:13px;color:var(--ink-dim)}
+.expo li{margin:2px 0}
 

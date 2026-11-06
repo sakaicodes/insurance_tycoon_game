@@ -615,6 +615,50 @@ PORTRAITS2.pe = t => portrait2({t, skin:"#F2C9A0", hair:"#C9A227", hairStyle:"wi
 LINES2.fired = {name:"Sir Clive, Chair of the Board", line:"Clear your desk. Percy is having your parking space. He’s very good with stakeholders."};
 LINES2.bankrupt = {name:"Barry, Bailiff", line:"Sign here, here and here. The umbrella’s ours as well, I’m afraid."};
 LINES2.licence = {name:"The Regulator", line:"Your licence is revoked. Your flat white, however, is excellent."};
+SCENES2.retire = function(t){
+  P(0, 0, SW, SH, "#EDE8DC"); for (let x = 0; x < SW; x += 8) P(x, 8, 1, 80, "rgba(150,160,190,.16)");
+  P(0, 0, SW, 6, "#1F2A44"); P(0, 6, SW, 2, "#C9A54A");
+  // the view the board is about to enjoy without you
+  P(158, 18, 70, 44, "#1F2A44"); P(160, 20, 66, 40, "#9CC9E6"); P(160, 20, 66, 12, "#BFE0F2");
+  for (let k = 0; k < 7; k++){ const h = 8 + hs(k, 31)*22; P(162 + k*9, 60 - h, 7, h, "#7FA3C0"); }
+  P(192, 20, 2, 40, "#1F2A44"); P(160, 39, 66, 1, "#1F2A44");
+  // bunting, already sagging
+  for (let k = 0; k < 15; k++){ const x = 6 + k*10, y = 12 + Math.sin(k*0.42)*4 + 4; tri(x, y, x + 8, y, x + 4, y + 6, ["#B23A3A","#E3C064","#2F6FE4","#3E9B4F"][k % 4]); }
+  // the banner
+  const nm = (typeof ceoName === "function" ? ceoName() : "BOSS").toUpperCase().replace(/[^A-Z0-9 ]/g, "").trim().slice(0, 12) || "BOSS";
+  const msg = "SO LONG " + nm;
+  P(14, 26, 130, 14, "#1F2A44"); P(15, 27, 128, 12, "#B23A3A"); text(msg, 79 - textW(msg)/2, 31, "#FFF6E2");
+  P(124, 30, 18, 7, "#E3C064"); text("BYE", 127, 31, "#1F2238");
+  // the floor and the buffet
+  P(0, 92, SW, 43, "#C9C3B0"); for (let x = 0; x < SW; x += 12) P(x, 92, 6, 43, "#D3CDBF"); P(0, 92, SW, 1, "#8E7228");
+  P(70, 82, 84, 4, "#F7F2E6"); P(70, 82, 84, 1, "#FFFFFF"); P(74, 86, 2, 12, "#5A3825"); P(148, 86, 2, 12, "#5A3825");
+  // the cake, being steadily eaten by Percy
+  const eaten = Math.min(1, Math.max(0, (t - 0.25)/0.6));
+  P(100, 72, Math.round(16*(1 - eaten*0.7)), 10, "#F7F2E6"); P(100, 72, Math.round(16*(1 - eaten*0.7)), 2, "#F28AB0");
+  if (eaten < 0.9){ P(104, 68, 1, 4, "#2F6FE4"); P(108, 68, 1, 4, "#2F6FE4"); if (fr(t*6) < 0.6){ px(104, 67, "#F2C14E"); px(108, 67, "#F2C14E"); } }
+  const percy = makeSprite("percy3", 10, 10, () => { oval(5, 6, 4, 3, "#9AA3B5"); disc(7, 3, 2.5, "#9AA3B5"); P(9, 3, 2, 1, "#E39A2C"); px(7, 2, "#1F2238"); P(3, 8, 1, 2, "#E39A2C"); P(6, 8, 1, 2, "#E39A2C"); P(3, 0, 6, 2, "#E3C064"); });
+  blit(percy, 120, 76 - (Math.floor(t*14) % 2));
+  P(84, 79, 6, 3, "#E3C064"); P(85, 76, 4, 3, "#F2DC8E"); P(134, 78, 4, 4, "#F7F2E6"); P(140, 78, 4, 4, "#F7F2E6");
+  // colleagues in party hats: one asleep, one checking the time
+  const party = (x, k, pose) => { blit(chibi(PEOPLE[k], pose, "party" + k), x, 112); tri(x - 3, 104, x + 3, 104, x, 97, ["#E3C064","#2F6FE4","#B23A3A","#3E9B4F"][k % 4]); px(x, 96, "#FFFFFF"); };
+  party(30, 0, "stand"); party(48, 2, "stand"); party(176, 3, "stand"); party(196, 4, "stand");
+  text("Z", 53, 92 - fr(t)*6, "#5A6380"); text("Z", 58, 86 - fr(t + .5)*6, "#5A6380");
+  if (fr(t*1.5) < 0.5){ P(173, 103, 4, 2, "#F2C14E"); }
+  // the chair's speech, which has reached the year 2009
+  blit(chibi({skin:"#F2C9A0", hair:"#E9E2CF", shirt:"#1F2A44", tie:"#B23A3A", glasses:true}, "stand", "chair2"), 216, 112);
+  P(203, 107, 12, 12, "#5A3825"); P(202, 106, 14, 2, "#8E5A30"); P(208, 102, 1, 5, "#1F2238"); disc(208, 101, 1.5, "#1F2238");
+  const speech = ["AND IN 2009...", "AS I WAS SAYING", "...SYNERGIES...", "WHERE WAS I"][Math.floor(t*4) % 4];
+  P(150, 66, textW(speech) + 8, 10, "#FFFFFF"); P(150, 66, textW(speech) + 8, 1, "#1F2238"); text(speech, 154, 69, "#1F2238"); P(204, 76, 2, 3, "#FFFFFF");
+  // one limp party popper
+  if (t > 0.15 && t < 0.4){ const u = (t - 0.15)/0.25; for (let k = 0; k < 5; k++) px(70 + k*2, 70 - u*8 + u*u*16 + k, ["#E3C064","#B23A3A","#2F6FE4"][k % 3]); }
+  // you, clutching your carriage clock, then slipping out of the door
+  const leave = Math.max(0, (t - 0.6)/0.4), cx = 66 - ease(leave)*58;
+  P(2, 52, 18, 40, "#1F2A44"); P(4, 54, 14, 38, "#8E5A30"); P(15, 72, 2, 3, "#E3C064");
+  P(3, 44, 16, 7, "#3E9B4F"); text("EXIT", 4, 45, "#FFFFFF");
+  blit(ceoSpr(leave > 0 ? Math.floor(t*12) % 2 : 0), cx, 112, 0, leave > 0);
+  P(cx + 2, 98, 7, 8, "#C9A54A"); P(cx + 3, 99, 5, 5, "#FFF6D0"); px(cx + 5, 101, "#1F2238"); px(cx + 6, 100, "#1F2238"); P(cx + 1, 106, 9, 1, "#8E7228");
+};
+LINES2.retire = {name:"", line:""};
 LINES2.pe = {name:"Rupert, Private Equity", line:"We’ll add some debt, cut some costs and sell it on in three years. Welcome to the family."};
 
 return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.keys(SCENES2),

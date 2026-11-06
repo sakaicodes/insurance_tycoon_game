@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.6.3
+- **Step down:** a new ending in the Boardroom's Company tab, available from quarter 4, with a confirmation step. It records the run like any other ending (on the device and, unless idle mode was used, on the global leaderboard) with no sale bonus or golden ticket. The golden parachute perk doesn't intervene.
+- **Farewell cutscene:** a leaving do with sagging bunting, a "SO LONG …" banner using the CEO's name, colleagues in party hats (one asleep), the Chair's endless speech, Percy eating the cake, one limp party popper, and the CEO leaving with a carriage clock. The CEO's portrait delivers one of three parting lines.
+- New achievement, Quit while ahead (71 in total).
+- `submit-score` now accepts up to 150 achievements (was 70), so new achievements can't cause a valid run to be rejected. Redeploy the function to apply this.
+
+## 0.6.2
+- **Mood baseline:** premiums are neutral at 50% customer mood, ±1.2% per point (clamped to −60% and +60%), still scaled by each line's mood sensitivity.
+- **Slower start:** a business volume factor (applied to both premiums and claims) starts at 70% and reaches 100% at 25 total floor levels. A diversification bonus of +6% per extra line of business (max +30%) applies to premium. In bot tests, premiums by quarter 4 fell from about £35K to about £10K, while quarter 10 and 20 totals stayed similar.
+- **City risk:** each city has disaster multipliers that scale both how often each black swan is picked and how much it costs (Bermuda: hurricanes 1.7×; New York: IT meltdown and bank collapse 1.5×; London: ash 1.4×, bank 1.3×, canal 1.2×), plus home-market premium bonuses (London: Marine and Specialty; New York: Casualty, Excess Casualty and Cyber; Bermuda: Treaty and Property). The setup screen describes each city's risks.
+- **Actionable exposure:** the Book tab shows a card per disaster with your exposure, whether you hold the cover that pays for it, which floor softens it (and its level), and which line and city make it worse. The damage report also mentions when your city made a disaster worse or better.
+- Fixed exposure numbers overflowing their rows and showing beside the Boardroom tabs.
+
 ## 0.6.1
 - Tutorial: "Build floors" now covers choosing a line of business or actuarial specialism and retraining; "The Boardroom" describes the tabs; "Black swans" points to the Risk tab and notes that your mix of business changes how hard disasters hit.
 - How to play has a new entry on lines of business and actuaries, and the Boardroom's first-time pricing intro points to the tabs.

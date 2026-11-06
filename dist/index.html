@@ -395,12 +395,22 @@ blockquote{background:rgba(201,165,74,.12)}
 .achcat[open] summary::after{content:"▴"}
 .achcat summary span{margin-left:auto;color:var(--ink-dim);font-size:14px}
 .achcat .achs{padding:0 10px 10px}
-.btabs{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 12px;padding:4px 0 6px;position:sticky;top:-18px;z-index:2;background:var(--panel-2)}
+.btabs{display:flex;flex-wrap:wrap;gap:6px;margin:2px -12px 12px;padding:4px 12px 6px;position:sticky;top:-18px;z-index:3;background:var(--panel-2)}
 .btab{flex:1 1 auto;text-align:center;font:600 14px "Chakra Petch","Pixelify Sans",sans-serif;color:#1F2A44;background:#E9E4D6;border:2px solid #1F2A44;border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
 .btab[aria-selected="true"]{background:#E3C064;box-shadow:0 2px 0 #1F2A44}
 .btab:focus-visible{outline:3px solid #E3C064;outline-offset:2px}
 .types .type.spec{display:grid;gap:3px;text-align:left}
 .type.spec .blurb{font-style:italic;color:var(--ink-dim)}
+.exposures{display:grid;gap:8px;margin:6px 0 4px}
+.expo{border:2px solid var(--line);border-radius:8px;padding:8px 10px;background:#FFFDF7}
+.expo.hi{border-color:#D99A8E;background:#FFF5F2}
+.expo.lo{border-color:#A8CDB4}
+.expo-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.expo-top span{flex:0 1 44%;min-width:0;display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.expo-top span i{flex:1 1 auto;max-width:100%}
+.expo{overflow:hidden}
+.expo ul{margin:4px 0 0;padding:0;list-style:none;font-size:13px;color:var(--ink-dim)}
+.expo li{margin:2px 0}
 
 
 </style>
@@ -727,6 +737,7 @@ const BLUNDERS = [
 const ENDINGS = {
   bankrupt:{title:"Bankrupt", text:"The bank has taken the building. The board replaced you with a golden retriever named Biscuit. The share price rose 4% on the news."},
   fired:{title:"Fired", text:"The board has lost all confidence in you. Security walked you out holding a box with one sad plant. Percy kept your parking space."},
+  retire:{title:"Stepped down", get text(){ return `${ceoN()} stepped down as CEO of ${coName()} after ${Math.max(1, S.quarter - 1)} quarter${S.quarter - 1 === 1 ? "" : "s"}, clutching a carriage clock and a card signed by everyone except Percy, who ate it.`; }},
   exit:{title:"Sold!", get text(){ const x = S.exit || {value:0, kind:"pe"}; return `${x.kind === "ipo" ? `${coName()} floated on the stock exchange${x.mult >= 1.2 ? " and the shares flew" : x.mult < 1 ? ", though the shares wobbled a bit" : ""}` : `You sold ${coName()} to private equity`}, valuing it at ${fmt(x.value)}. You walk away with a golden ticket for your next company.`; }},
   licence:{title:"Licence revoked", get text(){ return `After three warnings, the regulator has pulled your licence. ${coName()} is now a very tall coffee shop.`; }},
 };
@@ -766,6 +777,7 @@ const ACH = [
   {cat:"Career", id:"three", name:"Three stars", desc:"Earn 3 stars in one quarter.", test:() => S.best3},
   {cat:"Career", id:"q40", name:"Veteran", desc:"Survive 40 quarters.", test:() => S.quarter > 40},
   {cat:"Career", id:"q100", name:"Lifer", desc:"Survive 100 quarters.", test:() => S.quarter > 100},
+  {cat:"Career", id:"retire", name:"Quit while ahead", desc:"Step down as CEO and leave on your own terms.", test:() => !!S.retired},
   {cat:"Career", id:"execs", name:"Full house", desc:"Have all six executives hired at once.", test:() => !S.idleMode && EXECS.every(x => S.execs && S.execs[x.id])},
   // money
   {cat:"Money", id:"stock100", name:"Triple digits", desc:"Reach a share price of 100.", test:() => S.stock >= 100},
@@ -1028,6 +1040,17 @@ const TUT = [
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.6.3", notes:[
+    "Step down: end a run whenever you like (from quarter 4) from the Boardroom’s Company tab, and your score is recorded on your device and the global leaderboard.",
+    "A farewell party cutscene for stepping down, with bunting, a very long speech, a carriage clock and a pigeon eating the cake.",
+    "New achievement: Quit while ahead.",
+  ]},
+  {v:"0.6.2", notes:[
+    "Customer mood is now neutral at 50%: happier customers add up to 60% to your premiums, unhappy ones take up to 60% away.",
+    "A slower start: your business grows with your tower, starting at 70% and reaching full strength as you build. Writing more than one line of business also earns a bonus of up to 30%.",
+    "Your city now matters: each one makes some disasters more likely and more damaging (hurricanes in Bermuda, IT meltdowns and Wall Street collapses in New York, ash clouds and City collapses in London), and favours its home lines of business.",
+    "The Book tab now tells you what to do about each disaster: whether you’re covered, which floor softens it, and which line makes it worse.",
+  ]},
   {v:"0.6.1", notes:[
     "The tutorial now covers lines of business, actuarial specialisms, retraining and the new Boardroom tabs.",
     "The Boardroom tabs now wrap onto a second row instead of scrolling sideways.",
@@ -1104,13 +1127,21 @@ function changesFor(v){ return (CHANGELOG.find(c => c.v === v) || CHANGELOG[0]).
 /* Where your company is based. Chosen when a run starts. */
 const CITIES = {
   london:{name:"London", country:"United Kingdom", flag:"🇬🇧", cur:"£", market:"the London market",
-    building:"20 Fenchurch Street, “the Walkie Talkie”", blurb:"The heart of the world’s specialist insurance market, a short walk from Lloyd’s."},
+    building:"20 Fenchurch Street, “the Walkie Talkie”", blurb:"The heart of the world’s specialist insurance market, a short walk from Lloyd’s.",
+    risk:"Home of marine and specialty insurance. Ash clouds and City collapses hit harder; hurricanes rarely visit.",
+    swans:{hurricane:0.7, canal:1.2, outage:1.0, ash:1.4, cancel:1.1, bank:1.3, rocket:0.9, solar:1.0}, lines:{marine:1.12, specialty:1.12}},
   nyc:{name:"New York", country:"United States", flag:"🇺🇸", cur:"$", market:"New York’s insurance district",
-    building:"The Metropolitan Life Insurance Company Tower", blurb:"Built by an insurer in 1909 on Madison Square, and briefly the tallest building in the world."},
+    building:"The Metropolitan Life Insurance Company Tower", blurb:"Built by an insurer in 1909 on Madison Square, and briefly the tallest building in the world.",
+    risk:"Big on casualty, lawsuits and cyber. IT meltdowns and Wall Street collapses hit harder; ash clouds hardly register.",
+    swans:{hurricane:1.1, canal:0.8, outage:1.5, ash:0.6, cancel:1.0, bank:1.5, rocket:1.1, solar:1.1}, lines:{casualty:1.1, excess:1.12, cyber:1.12}},
   bermuda:{name:"Hamilton", country:"Bermuda", flag:"🇧🇲", cur:"$", market:"Bermuda’s reinsurance market",
-    building:"A Front Street office with a white stepped roof", blurb:"The world’s reinsurance capital: pastel offices, hurricane-proof roofs and a lot of very large cheques."},
+    building:"A Front Street office with a white stepped roof", blurb:"The world’s reinsurance capital: pastel offices, hurricane-proof roofs and a lot of very large cheques.",
+    risk:"The reinsurance capital. Hurricanes and solar storms hit hardest here; City collapses and IT meltdowns less so.",
+    swans:{hurricane:1.7, canal:1.0, outage:0.8, ash:0.6, cancel:0.8, bank:0.8, rocket:0.9, solar:1.2}, lines:{treaty:1.15, property:1.08}},
 };
 function setCity(id){ CUR = (CITIES[id] || CITIES.london).cur; }
+function cityRisk(kind){ const c = CITIES[cityId()] || CITIES.london; return (c.swans && c.swans[kind]) || 1; }
+function cityLine(line){ const c = CITIES[cityId()] || CITIES.london; return (c.lines && c.lines[line]) || 1; }
 
 /* data/online.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* The global leaderboard (Supabase). The publishable key is designed to be public: it can only read scores.
@@ -2228,6 +2259,50 @@ PORTRAITS2.pe = t => portrait2({t, skin:"#F2C9A0", hair:"#C9A227", hairStyle:"wi
 LINES2.fired = {name:"Sir Clive, Chair of the Board", line:"Clear your desk. Percy is having your parking space. He’s very good with stakeholders."};
 LINES2.bankrupt = {name:"Barry, Bailiff", line:"Sign here, here and here. The umbrella’s ours as well, I’m afraid."};
 LINES2.licence = {name:"The Regulator", line:"Your licence is revoked. Your flat white, however, is excellent."};
+SCENES2.retire = function(t){
+  P(0, 0, SW, SH, "#EDE8DC"); for (let x = 0; x < SW; x += 8) P(x, 8, 1, 80, "rgba(150,160,190,.16)");
+  P(0, 0, SW, 6, "#1F2A44"); P(0, 6, SW, 2, "#C9A54A");
+  // the view the board is about to enjoy without you
+  P(158, 18, 70, 44, "#1F2A44"); P(160, 20, 66, 40, "#9CC9E6"); P(160, 20, 66, 12, "#BFE0F2");
+  for (let k = 0; k < 7; k++){ const h = 8 + hs(k, 31)*22; P(162 + k*9, 60 - h, 7, h, "#7FA3C0"); }
+  P(192, 20, 2, 40, "#1F2A44"); P(160, 39, 66, 1, "#1F2A44");
+  // bunting, already sagging
+  for (let k = 0; k < 15; k++){ const x = 6 + k*10, y = 12 + Math.sin(k*0.42)*4 + 4; tri(x, y, x + 8, y, x + 4, y + 6, ["#B23A3A","#E3C064","#2F6FE4","#3E9B4F"][k % 4]); }
+  // the banner
+  const nm = (typeof ceoName === "function" ? ceoName() : "BOSS").toUpperCase().replace(/[^A-Z0-9 ]/g, "").trim().slice(0, 12) || "BOSS";
+  const msg = "SO LONG " + nm;
+  P(14, 26, 130, 14, "#1F2A44"); P(15, 27, 128, 12, "#B23A3A"); text(msg, 79 - textW(msg)/2, 31, "#FFF6E2");
+  P(124, 30, 18, 7, "#E3C064"); text("BYE", 127, 31, "#1F2238");
+  // the floor and the buffet
+  P(0, 92, SW, 43, "#C9C3B0"); for (let x = 0; x < SW; x += 12) P(x, 92, 6, 43, "#D3CDBF"); P(0, 92, SW, 1, "#8E7228");
+  P(70, 82, 84, 4, "#F7F2E6"); P(70, 82, 84, 1, "#FFFFFF"); P(74, 86, 2, 12, "#5A3825"); P(148, 86, 2, 12, "#5A3825");
+  // the cake, being steadily eaten by Percy
+  const eaten = Math.min(1, Math.max(0, (t - 0.25)/0.6));
+  P(100, 72, Math.round(16*(1 - eaten*0.7)), 10, "#F7F2E6"); P(100, 72, Math.round(16*(1 - eaten*0.7)), 2, "#F28AB0");
+  if (eaten < 0.9){ P(104, 68, 1, 4, "#2F6FE4"); P(108, 68, 1, 4, "#2F6FE4"); if (fr(t*6) < 0.6){ px(104, 67, "#F2C14E"); px(108, 67, "#F2C14E"); } }
+  const percy = makeSprite("percy3", 10, 10, () => { oval(5, 6, 4, 3, "#9AA3B5"); disc(7, 3, 2.5, "#9AA3B5"); P(9, 3, 2, 1, "#E39A2C"); px(7, 2, "#1F2238"); P(3, 8, 1, 2, "#E39A2C"); P(6, 8, 1, 2, "#E39A2C"); P(3, 0, 6, 2, "#E3C064"); });
+  blit(percy, 120, 76 - (Math.floor(t*14) % 2));
+  P(84, 79, 6, 3, "#E3C064"); P(85, 76, 4, 3, "#F2DC8E"); P(134, 78, 4, 4, "#F7F2E6"); P(140, 78, 4, 4, "#F7F2E6");
+  // colleagues in party hats: one asleep, one checking the time
+  const party = (x, k, pose) => { blit(chibi(PEOPLE[k], pose, "party" + k), x, 112); tri(x - 3, 104, x + 3, 104, x, 97, ["#E3C064","#2F6FE4","#B23A3A","#3E9B4F"][k % 4]); px(x, 96, "#FFFFFF"); };
+  party(30, 0, "stand"); party(48, 2, "stand"); party(176, 3, "stand"); party(196, 4, "stand");
+  text("Z", 53, 92 - fr(t)*6, "#5A6380"); text("Z", 58, 86 - fr(t + .5)*6, "#5A6380");
+  if (fr(t*1.5) < 0.5){ P(173, 103, 4, 2, "#F2C14E"); }
+  // the chair's speech, which has reached the year 2009
+  blit(chibi({skin:"#F2C9A0", hair:"#E9E2CF", shirt:"#1F2A44", tie:"#B23A3A", glasses:true}, "stand", "chair2"), 216, 112);
+  P(203, 107, 12, 12, "#5A3825"); P(202, 106, 14, 2, "#8E5A30"); P(208, 102, 1, 5, "#1F2238"); disc(208, 101, 1.5, "#1F2238");
+  const speech = ["AND IN 2009...", "AS I WAS SAYING", "...SYNERGIES...", "WHERE WAS I"][Math.floor(t*4) % 4];
+  P(150, 66, textW(speech) + 8, 10, "#FFFFFF"); P(150, 66, textW(speech) + 8, 1, "#1F2238"); text(speech, 154, 69, "#1F2238"); P(204, 76, 2, 3, "#FFFFFF");
+  // one limp party popper
+  if (t > 0.15 && t < 0.4){ const u = (t - 0.15)/0.25; for (let k = 0; k < 5; k++) px(70 + k*2, 70 - u*8 + u*u*16 + k, ["#E3C064","#B23A3A","#2F6FE4"][k % 3]); }
+  // you, clutching your carriage clock, then slipping out of the door
+  const leave = Math.max(0, (t - 0.6)/0.4), cx = 66 - ease(leave)*58;
+  P(2, 52, 18, 40, "#1F2A44"); P(4, 54, 14, 38, "#8E5A30"); P(15, 72, 2, 3, "#E3C064");
+  P(3, 44, 16, 7, "#3E9B4F"); text("EXIT", 4, 45, "#FFFFFF");
+  blit(ceoSpr(leave > 0 ? Math.floor(t*12) % 2 : 0), cx, 112, 0, leave > 0);
+  P(cx + 2, 98, 7, 8, "#C9A54A"); P(cx + 3, 99, 5, 5, "#FFF6D0"); px(cx + 5, 101, "#1F2238"); px(cx + 6, 100, "#1F2238"); P(cx + 1, 106, 9, 1, "#8E7228");
+};
+LINES2.retire = {name:"", line:""};
 LINES2.pe = {name:"Rupert, Private Equity", line:"We’ll add some debt, cut some costs and sell it on in three years. Welcome to the family."};
 
 return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.keys(SCENES2),
@@ -2244,7 +2319,7 @@ return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.key
 
 /* core/constants.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* VERSION and BUILD_DATE are filled in by build.js from package.json. */
-const VERSION = "0.6.1", BUILD_DATE = "2026-11-06";
+const VERSION = "0.6.3", BUILD_DATE = "2026-11-06";
 function intelSpread(n){ return Math.max(0, 36 - 6*n); }
 function intelText(n){
   if (n <= 0) return "No claim intel yet";
@@ -2287,7 +2362,10 @@ function lvSpec(type, spec){ let n = 0; for (const f of S.floors) if (f.type ===
 function floorName(f){ const sp = fSpec(f); if (f.type === "sales") return LINES[sp].name + " Underwriting"; if (f.type === "actuary") return ACT_SPECS[sp].name + " Actuaries"; return TYPES[f.type].name; }
 function bookMix(){ const m = {}; let tot = 0; for (const f of S.floors) if (f.type === "sales"){ const k = fSpec(f), w = salesFloorRate(f.level)*LINES[k].rate; m[k] = (m[k] || 0) + w; tot += w; } for (const k in m) m[k] /= tot || 1; return m; }
 function mixAvg(field){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*LINES[k][field]; any = true; } return any ? v : 1; }
-function swanExposure(kind){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*(LINES[k].swans[kind] != null ? LINES[k].swans[kind] : 0.8); any = true; } return any ? Math.max(0.3, v) : 1; }
+function bookExposure(kind){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*(LINES[k].swans[kind] != null ? LINES[k].swans[kind] : 0.8); any = true; } return any ? Math.max(0.3, v) : 1; }
+function swanExposure(kind){ return bookExposure(kind)*cityRisk(kind); }
+function pickSwan(){ const w = {}; for (const k of SWAN_POOL) w[k] = (w[k] || 0) + 1; let tot = 0; for (const k in w){ w[k] *= cityRisk(k); tot += w[k]; }
+  let r = Math.random()*tot; for (const k in w){ r -= w[k]; if (r <= 0) return k; } return SWAN_POOL[0]; }
 function swanCulprit(kind){ const m = bookMix(); let best = null, bv = -1; for (const k in m){ const v = m[k]*(LINES[k].swans[kind] || 0.8); if (v > bv){ bv = v; best = k; } } return best; }
 function lineUnlocked(k){ return !LINES[k].unlock || S.rankIdx >= LINES[k].unlock; }
 function autoSpec(type){
@@ -2322,7 +2400,7 @@ ensureState();
 /* ---------- Economy ---------- */
 function lv(t){ let s = 0; for (const f of S.floors) if (f.type === t) s += f.level; return s; }
 function morale(){ return (1 + 0.08*lv("breakroom") + 0.05*lv("hr") + (S.buffs.morale > 0 ? 0.3 : 0) + (perk("espresso") ? 0.05 : 0))*(S.hrSlump > 0 ? 0.75 : 1); }
-function happyMult(){ const base = clamp(1 + (S.happy - 65)*0.016, 0.25, 1.6); return 1 + (base - 1)*mixAvg("mood"); }
+function happyMult(){ const base = clamp(1 + (S.happy - 50)*0.012, 0.4, 1.6); return 1 + (base - 1)*mixAvg("mood"); }
 function salesFloorRate(level){ return 5.5*Math.pow(level,1.38); }
 function exposureRate(level){ return 5.5*Math.pow(level,1.27); }
 function exposure(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += exposureRate(f.level); return s*salesMult()*volume(); }
@@ -2331,10 +2409,12 @@ function cycleVal(){ return Math.sin(S.cyc || 0); }
 function cycleName(){ const c = cycleVal(); return c > 0.35 ? "Hard market" : c < -0.35 ? "Soft market" : "Steady market"; }
 function priceIdx(){ return S.price == null ? 1 : S.price; }
 function marketRate(){ return PRICES[priceIdx()].p*(1 + 0.25*cycleVal()); }
-function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1)); }
+function businessScale(){ const lv = S.floors.reduce((a, f) => a + (f.type === "penthouse" ? 0 : f.level), 0); return 0.7 + 0.3*Math.min(1, lv/25); }
+function divBonus(){ const n = Object.keys(bookMix()).length; return 1 + Math.min(0.3, 0.06*Math.max(0, n - 1)); }
+function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1))*businessScale(); }
 function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + (f.type === "penthouse" ? 0 : f.level), 0)/70); }
 function pricingBoost(){ return 1 + Math.min(0.4, 0.06*lvSpec("actuary", "pricing")); }
-function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level)*LINES[fSpec(f)].rate; return s*salesMult()*marketRate()*volume()*pricingBoost(); }
+function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level)*LINES[fSpec(f)].rate*cityLine(fSpec(f)); return s*salesMult()*marketRate()*volume()*pricingBoost()*divBonus(); }
 function income(){ return baseIncome() * (S.buffs.sales > 0 ? 2 : 1) * (S.outage > 0 ? 0.5 : 1); }
 function salFactor(){ return 1 + 0.06*workFloors(); }
 function upkeep(){ let s = 0; for (const f of S.floors) s += (TYPES[f.type].sal || 0.6)*f.level; return s*salFactor() + execCost(); }
@@ -3537,6 +3617,10 @@ function openBoard(confirmRestart, intro, tabArg){
       <h3>Watching speed</h3>
       <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
       <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
+    <h3 style="margin-top:14px">Step down</h3>
+    <p>End this run now and record your score as it stands, on this device${onlineOk() ? " and the global leaderboard" : ""}. There’s no sale bonus or golden ticket: those are for selling the company. You do get a carriage clock.</p>
+    ${S.idleMode || S.idleTainted ? `<p class="note">This run used idle mode, so stepping down won’t record a score.</p>` : ""}
+    <button class="btn" style="width:100%" data-act="stepdown" ${canStepDown() ? "" : "disabled"}>${canStepDown() ? `Step down as CEO` : `Available from quarter ${STEP_DOWN_Q}`}</button>
     <h3 style="margin-top:14px">Start again</h3>
     <button class="btn red" style="width:100%" data-act="restart">Start a new company</button>
     <p class="ver-line">${coName()}, version ${VERSION}</p>` : ""}`, {view:"board-" + tab, focus:false});
@@ -3617,7 +3701,7 @@ function earnings(){
   const sinceSwan = qn - (S.lastSwanQ || 1);
   if (qn >= 4 && !S.swan && sinceSwan >= 3 && (sinceSwan >= 10 || Math.random() < Math.min(0.6, (0.03*sinceSwan + 0.005*(S.diff - 1))*(S.idleMode ? 1.3 : 1)))){
     S.lastSwanQ = qn;
-    S.swan = {t:rand(12, 48), kind:pick(SWAN_POOL)};
+    S.swan = {t:rand(12, 48), kind:pickSwan()};
   }
   if (qn % 8 === 0) notes.push("New regulations: a 400-page rulebook just landed. Compliance must now cover one more floor than before.");
   { const resLv = lvSpec("actuary", "reserving");
@@ -3706,7 +3790,7 @@ function openSetup(){
     <p>${midRun ? "Your company is already up and running, so this is a one-time chance to name yourself and the business." : "Every tycoon starts somewhere. Who are you, and what’s on the sign?"}</p>
     ${(() => { const l = loadLegacy(); return l.tickets ? `<p class="note">🎫 <b>Golden ticket${l.tickets > 1 ? "s" : ""} x${l.tickets}.</b> ${l.seed || l.stars ? `This company starts with an extra ${fmt(l.seed)} and ${l.stars} ★, and ` : ""}every company you found earns ${5*Math.min(4, l.tickets)}% more income.</p>` : ""; })()}
     <h3>Where is your headquarters?</h3>
-    <div class="cities">${Object.entries(CITIES).map(([k, c]) => `<button class="type city" data-act="look:city:${k}" aria-pressed="${d.city === k}"><b>${c.flag} ${c.name}, ${c.country}</b><span>${c.building}</span><span class="dim">${c.blurb}</span></button>`).join("")}</div>
+    <div class="cities">${Object.entries(CITIES).map(([k, c]) => `<button class="type city" data-act="look:city:${k}" aria-pressed="${d.city === k}"><b>${c.flag} ${c.name}, ${c.country}</b><span>${c.building}</span><span class="dim">${c.blurb}</span><span>${c.risk}</span></button>`).join("")}</div>
     <div class="ceo-setup"><canvas id="ceoPrev" width="48" height="48" aria-label="Your portrait"></canvas>
       <div class="ceo-fields">
         <label>Your name<input id="ceoName" maxlength="20" value="${esc(d.name)}" placeholder="Alex" autocomplete="off"></label>
@@ -3745,10 +3829,11 @@ function bookHtml(){
   const mix = bookMix(), keys = Object.keys(mix).sort((a, b) => mix[b] - mix[a]), mp = moodPct();
   const acts = Object.keys(ACT_SPECS).map(k => [k, lvSpec("actuary", k)]).filter(x => x[1] > 0);
   const swanRows = Object.keys(SWANS).map(k => [k, swanExposure(k)]).sort((a, b) => b[1] - a[1]);
-  const bar = v => `<i style="display:inline-block;height:8px;width:${Math.round(Math.min(1, v/2.5)*100)}%;background:${v > 1.15 ? "var(--danger)" : v < 0.85 ? "var(--money)" : "var(--gold)"};border-radius:4px"></i>`;
+  const bar = v => `<i style="display:inline-block;height:8px;flex:0 1 ${Math.round(Math.min(1, v/2.5)*100)}%;background:${v > 1.15 ? "var(--danger)" : v < 0.85 ? "var(--money)" : "var(--gold)"};border-radius:4px"></i>`;
   return `<h3>Your book of business</h3>
     ${keys.length ? `<table class="ledger">${keys.map(k => `<tr><td>${LINES[k].icon} ${LINES[k].name}</td><td>${Math.round(mix[k]*100)}% of premium</td></tr>`).join("")}</table>`
       : `<p class="dim">You don’t underwrite anything yet. Build an Underwriting floor and pick a line.</p>`}
+    ${keys.length ? `<p class="dim">${keys.length > 1 ? `Your mix of ${keys.length} lines earns <b>+${Math.round((divBonus() - 1)*100)}%</b> premium: brokers like a syndicate that can do a bit of everything.` : "Writing a second line of business would earn a bonus: brokers like a syndicate that can do a bit of everything."} ${CITIES[cityId()].lines ? `${cityName()} favours ${Object.keys(CITIES[cityId()].lines).map(k => LINES[k].name).join(" and ")}, which earn a little extra here.` : ""}</p>` : ""}
     <p class="dim">${keys.length === 1 ? "All your eggs are in one basket. It’s a lovely basket, right up until someone drops it." : keys.length >= 4 ? "A nicely mixed book: when one line has a terrible year, the others pay for the biscuits." : "A mixed book rides out more storms. Retrain or build floors to spread your bets."}</p>
     <h3 style="margin-top:14px">Customers and premiums</h3>
     <div class="status"><div><span>Customer mood</span><b>${Math.round(S.happy)}%</b></div><div><span>Effect on premiums</span><b class="${mp < 0 ? "neg" : "pos"}">${mp >= 0 ? "+" : "−"}${Math.abs(mp)}%</b></div></div>
@@ -3757,8 +3842,13 @@ function bookHtml(){
     ${acts.length ? `<table class="ledger">${acts.map(([k, n]) => `<tr><td>${ACT_SPECS[k].icon} ${ACT_SPECS[k].name}</td><td>${k === "pricing" ? `+${Math.round((pricingBoost() - 1)*100)}% premium` : k === "reserving" ? `−${Math.round(actRed()*100)}% claim costs` : `−${Math.round(Math.min(0.5, 0.08*n)*100)}% black swan losses`}</td></tr>`).join("")}</table>`
       : `<p class="dim">No actuaries yet. Pricing earns more, Reserving makes claims cheaper, and Capital Modelling softens disasters.</p>`}
     <h3 style="margin-top:14px">How exposed you are to black swans</h3>
-    <p class="dim">Compared with an average insurer. Over 1× means this disaster would hit you harder.</p>
-    <table class="ledger">${swanRows.map(([k, v]) => `<tr><td>${SWANS[k].title}</td><td style="width:42%">${bar(v)} <b>${v.toFixed(1)}×</b></td></tr>`).join("")}</table>`;
+    <p class="dim">Compared with an average insurer, based on what you insure and where you are (${cityName()}). Over 1× means a disaster would hit you harder. To soften a big one, buy the cover that pays for it, build the floor that softens it, or write less of the line most in its way.</p>
+    <div class="exposures">${swanRows.map(([k, v]) => { const sw = SWANS[k], cov = COVERS[sw.cover], covered = !!(S.cover && S.cover[sw.cover]), cul = swanCulprit(k);
+      const mitLv = sw.mitName === "Capital Modelling" ? lvSpec("actuary", "capital") : sw.mitName === "IT" ? lv("it") : sw.mitName === "Legal" ? lv("legal") : sw.mitName === "Compliance" ? lv("compliance") : 0;
+      const tips = [covered ? `✅ ${cov.name} pays 90%` : `⚠️ Not covered: buy ${cov.name} in the Risk tab`,
+        mitLv ? `🛡️ ${sw.mitName} softens it (level ${mitLv})` : `🛡️ ${sw.mitName} would soften it`];
+      if (v > 1.15 && cul) tips.push(`📉 Most exposed through ${LINES[cul].name}${cityRisk(k) > 1.15 ? `, and ${cityName()} makes it worse` : ""}`);
+      return `<div class="expo ${v > 1.15 ? "hi" : v < 0.85 ? "lo" : ""}"><div class="expo-top"><b>${sw.title}</b><span>${bar(v)} <b>${v.toFixed(1)}×</b></span></div><ul>${tips.map(t => `<li>${t}</li>`).join("")}</ul></div>`; }).join("")}</div>`;
 }
 
 /* game/score.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
@@ -4042,7 +4132,7 @@ function offlineCheck(){
   for (let q = 0; q < whole; q++){
     if (S.quarter < 5 || q - lastQ < 3 || Math.random() >= 0.1) continue;
     lastQ = q;
-    const kind = pick(SWAN_POOL), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*swanExposure(kind)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
+    const kind = pickSwan(), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*swanExposure(kind)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
     const covered = !!(S.cover && S.cover[sw.cover]), net = covered ? gross*0.1 : gross;
     swanNet += net; swanCover += covered ? gross*0.9 : 0; swans.push({title:sw.title, covered, net});
   }
@@ -4142,7 +4232,7 @@ function globalTable(rows){
 /* game/endings.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 function gameOver(reason){
   reason = reason || "bankrupt";
-  if (perk("parachute") && reason !== "exit"){
+  if (perk("parachute") && reason !== "exit" && reason !== "retire"){
     delete S.perks.parachute;
     S.cash = Math.max(S.cash, 0); S.conf = Math.max(S.conf, 35); S.strikes = Math.min(S.strikes, maxStrikes() - 1);
     fxConfetti(); save();
@@ -4184,7 +4274,7 @@ function gameOver(reason){
       : res.error ? `The global leaderboard didn’t accept this run (${res.error}).` : ""; });
 }
 function coverCost(k, prem){ return Math.round(Math.max(60, prem*COVERS[k].rate)*(perk("reinsdisc") ? 0.75 : 1)*(1 - Math.min(0.25, 0.05*lvSpec("actuary", "capital")))); }
-function blackSwan(kind){ if (!SWANS[kind]) kind = pick(SWAN_POOL); S.swanDone = true; S.cyc = Math.PI/2; playCutscene(kind, () => swanResolve(kind)); }
+function blackSwan(kind){ if (!SWANS[kind]) kind = pickSwan(); S.swanDone = true; S.cyc = Math.PI/2; playCutscene(kind, () => swanResolve(kind)); }
 function swanResolve(kind){
   const sw = SWANS[kind];
   let body;
@@ -4205,7 +4295,7 @@ function swanResolve(kind){
       <tr><td>Total loss</td><td class="neg">−${fmt(gross)}</td></tr>
       ${mit ? `<tr><td>Saved by ${sw.mitName}</td><td class="pos">+${fmt(gross - afterMit)}</td></tr>` : ""}
       ${riskCut ? `<tr><td>Saved by your Risk Dept</td><td class="pos">+${fmt(afterMit - net)}</td></tr>` : ""}
-      ${(() => { const ex = swanExposure(kind), cul = swanCulprit(kind); return cul && Math.abs(ex - 1) > 0.15 ? `<tr><td colspan="2" class="dim">${ex > 1 ? `Your ${LINES[cul].name} book took the worst of it, so this hit you ${ex.toFixed(1)}× harder than an average insurer.` : `Not much of what you insure was in the way: you took ${ex.toFixed(1)}× the usual hit.`}</td></tr>` : ""; })()}
+      ${(() => { const ex = swanExposure(kind), cul = swanCulprit(kind); const cr = cityRisk(kind); return cul && Math.abs(ex - 1) > 0.15 ? `<tr><td colspan="2" class="dim">${ex > 1 ? `Your ${LINES[cul].name} book took the worst of it${cr > 1.15 ? `, and being in ${cityName()} didn’t help` : ""}, so this hit you ${ex.toFixed(1)}× harder than an average insurer.` : `Not much of what you insure was in the way${cr < 0.85 ? `, and ${cityName()} was spared the worst` : ""}: you took ${ex.toFixed(1)}× the usual hit.`}</td></tr>` : ""; })()}
       ${covered ? `<tr><td>Paid by your ${COVERS[sw.cover].name.toLowerCase()}</td><td class="pos">+${fmt(net - loss)}</td></tr>` : ""}
       <tr class="total"><td>You pay</td><td class="neg">−${fmt(loss)}</td></tr></table>
       <p>${covered ? "Your cover held. You paid only the 10% retention." : `You had no ${COVERS[sw.cover].name.toLowerCase()}, so you paid the lot. Board confidence −25.`}</p>
@@ -4223,6 +4313,8 @@ const CAREER_CUTS = {
   fired:{kind:"fired", opts:() => ({title:`${ceoName()} has been fired`, tag:"FIRED"})},
   bankrupt:{kind:"bankrupt", opts:() => ({title:`${companyName()} is bankrupt`, tag:"BANKRUPT"})},
   licence:{kind:"licence", opts:() => ({title:"The regulator has had enough", tag:"LICENCE REVOKED"})},
+  retire:{kind:"retire", opts:() => ({title:`${ceoName()} steps down`, tag:"STEPPING DOWN", tagColor:0xC9A54A, tagText:"#1F2238", ceo:true,
+    line:pick(["I’m stepping down to spend more time with my family. They’ve asked me to reconsider.", "I leave the company in safe hands. Mostly Percy’s.", "Thank you for the clock. I’ll treasure the time it tells."])})},
   exit:{kind:() => S.exit && S.exit.kind === "pe" ? "pe" : "ipo", opts:() => S.exit && S.exit.kind === "pe"
     ? {title:`${companyName()} sold to private equity`, tag:"SOLD", tagColor:0x2E7D4F}
     : {title:`${companyName()} goes public`, tag:"IPO", tagColor:0x2E7D4F, ceo:true, line:"Ding ding! I’m now a very liquid individual."}},
@@ -4249,6 +4341,11 @@ function sellCompany(kind){
   leg.tickets = Math.min(4, (leg.tickets || 0) + 1); leg.seed = tk.seed; leg.stars = tk.stars; leg.lastValue = value; saveLegacy(leg);
   checkAch(); save(); closeModal(); gameOver("exit");
 }
+
+/* Stepping down: end the run on your own terms and record the score as it stands. */
+const STEP_DOWN_Q = 4;
+function canStepDown(){ return S.quarter >= STEP_DOWN_Q && !S.over; }
+function stepDown(){ if (!canStepDown()) return; S.retired = true; checkAch(); save(); closeModal(); gameOver("retire"); }
 
 /* ui/cutscene-player.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 let cutsceneOn = false;
@@ -4349,7 +4446,7 @@ function fireEvent(){
 $("#sheet").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
   const [a, p, q] = b.dataset.act.split(":");
-  if (S.idleMode && ["build","up","mode","lim","spec","exit","exit-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
+  if (S.idleMode && ["build","up","mode","lim","spec","exit","exit-go","stepdown","stepdown-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
   if (a === "idle"){
     openModal(`<h2>Hand over the keys?</h2><p>The board will make every decision from now on: claims, pricing, insurance, compliance, building, upgrades and events. You can keep watching.</p>
       <p class="dim">Be warned: the board is not you. It makes mistakes, blunders on vanity projects, is slow to buy insurance, and idle companies attract more black swans. It may not last forever.</p>
@@ -4422,6 +4519,14 @@ $("#sheet").addEventListener("click", e => {
       <div class="seg"><button class="btn ghost" data-act="board">Not yet</button><button class="btn" data-act="exit-go:${p}">${p === "ipo" ? "Ring the bell" : "Shake hands"}</button></div>`, {view:"exitconfirm"});
   }
   else if (a === "exit-go"){ sellCompany(p === "ipo" ? "ipo" : "pe"); }
+  else if (a === "stepdown"){
+    if (!canStepDown()) return;
+    openModal(`<h2>Step down as CEO?</h2>
+      <p>This ends the run now. ${S.idleMode || S.idleTainted ? "It used idle mode, so the score won’t be recorded." : `Your score is recorded as it stands${onlineOk() ? ", including on the global leaderboard" : ""}.`}</p>
+      <p class="dim">Selling the company instead would earn a bonus and a golden ticket, if you can reach the thresholds.</p>
+      <div class="seg"><button class="btn ghost" data-act="board">Stay on</button><button class="btn" data-act="stepdown-go">Step down</button></div>`, {view:"stepdownconfirm"});
+  }
+  else if (a === "stepdown-go") stepDown();
   else if (a === "penthouse"){
     if (hasPenthouse() || S.penthouseBought || S.favour < PENTHOUSE_COST) return;
     S.favour -= PENTHOUSE_COST; S.penthouseBought = true; S.floors.push({type:"penthouse", level:1, mode:"pay", skin:0}); rebuildWorkers(S.floors.length - 1); lastAddedFloor = S.floors.length - 1;

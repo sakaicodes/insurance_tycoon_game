@@ -1,7 +1,7 @@
 /* game/endings.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 function gameOver(reason){
   reason = reason || "bankrupt";
-  if (perk("parachute") && reason !== "exit"){
+  if (perk("parachute") && reason !== "exit" && reason !== "retire"){
     delete S.perks.parachute;
     S.cash = Math.max(S.cash, 0); S.conf = Math.max(S.conf, 35); S.strikes = Math.min(S.strikes, maxStrikes() - 1);
     fxConfetti(); save();
@@ -43,7 +43,7 @@ function gameOver(reason){
       : res.error ? `The global leaderboard didn’t accept this run (${res.error}).` : ""; });
 }
 function coverCost(k, prem){ return Math.round(Math.max(60, prem*COVERS[k].rate)*(perk("reinsdisc") ? 0.75 : 1)*(1 - Math.min(0.25, 0.05*lvSpec("actuary", "capital")))); }
-function blackSwan(kind){ if (!SWANS[kind]) kind = pick(SWAN_POOL); S.swanDone = true; S.cyc = Math.PI/2; playCutscene(kind, () => swanResolve(kind)); }
+function blackSwan(kind){ if (!SWANS[kind]) kind = pickSwan(); S.swanDone = true; S.cyc = Math.PI/2; playCutscene(kind, () => swanResolve(kind)); }
 function swanResolve(kind){
   const sw = SWANS[kind];
   let body;
@@ -64,7 +64,7 @@ function swanResolve(kind){
       <tr><td>Total loss</td><td class="neg">−${fmt(gross)}</td></tr>
       ${mit ? `<tr><td>Saved by ${sw.mitName}</td><td class="pos">+${fmt(gross - afterMit)}</td></tr>` : ""}
       ${riskCut ? `<tr><td>Saved by your Risk Dept</td><td class="pos">+${fmt(afterMit - net)}</td></tr>` : ""}
-      ${(() => { const ex = swanExposure(kind), cul = swanCulprit(kind); return cul && Math.abs(ex - 1) > 0.15 ? `<tr><td colspan="2" class="dim">${ex > 1 ? `Your ${LINES[cul].name} book took the worst of it, so this hit you ${ex.toFixed(1)}× harder than an average insurer.` : `Not much of what you insure was in the way: you took ${ex.toFixed(1)}× the usual hit.`}</td></tr>` : ""; })()}
+      ${(() => { const ex = swanExposure(kind), cul = swanCulprit(kind); const cr = cityRisk(kind); return cul && Math.abs(ex - 1) > 0.15 ? `<tr><td colspan="2" class="dim">${ex > 1 ? `Your ${LINES[cul].name} book took the worst of it${cr > 1.15 ? `, and being in ${cityName()} didn’t help` : ""}, so this hit you ${ex.toFixed(1)}× harder than an average insurer.` : `Not much of what you insure was in the way${cr < 0.85 ? `, and ${cityName()} was spared the worst` : ""}: you took ${ex.toFixed(1)}× the usual hit.`}</td></tr>` : ""; })()}
       ${covered ? `<tr><td>Paid by your ${COVERS[sw.cover].name.toLowerCase()}</td><td class="pos">+${fmt(net - loss)}</td></tr>` : ""}
       <tr class="total"><td>You pay</td><td class="neg">−${fmt(loss)}</td></tr></table>
       <p>${covered ? "Your cover held. You paid only the 10% retention." : `You had no ${COVERS[sw.cover].name.toLowerCase()}, so you paid the lot. Board confidence −25.`}</p>
@@ -82,6 +82,8 @@ const CAREER_CUTS = {
   fired:{kind:"fired", opts:() => ({title:`${ceoName()} has been fired`, tag:"FIRED"})},
   bankrupt:{kind:"bankrupt", opts:() => ({title:`${companyName()} is bankrupt`, tag:"BANKRUPT"})},
   licence:{kind:"licence", opts:() => ({title:"The regulator has had enough", tag:"LICENCE REVOKED"})},
+  retire:{kind:"retire", opts:() => ({title:`${ceoName()} steps down`, tag:"STEPPING DOWN", tagColor:0xC9A54A, tagText:"#1F2238", ceo:true,
+    line:pick(["I’m stepping down to spend more time with my family. They’ve asked me to reconsider.", "I leave the company in safe hands. Mostly Percy’s.", "Thank you for the clock. I’ll treasure the time it tells."])})},
   exit:{kind:() => S.exit && S.exit.kind === "pe" ? "pe" : "ipo", opts:() => S.exit && S.exit.kind === "pe"
     ? {title:`${companyName()} sold to private equity`, tag:"SOLD", tagColor:0x2E7D4F}
     : {title:`${companyName()} goes public`, tag:"IPO", tagColor:0x2E7D4F, ceo:true, line:"Ding ding! I’m now a very liquid individual."}},
@@ -108,4 +110,9 @@ function sellCompany(kind){
   leg.tickets = Math.min(4, (leg.tickets || 0) + 1); leg.seed = tk.seed; leg.stars = tk.stars; leg.lastValue = value; saveLegacy(leg);
   checkAch(); save(); closeModal(); gameOver("exit");
 }
+
+/* Stepping down: end the run on your own terms and record the score as it stands. */
+const STEP_DOWN_Q = 4;
+function canStepDown(){ return S.quarter >= STEP_DOWN_Q && !S.over; }
+function stepDown(){ if (!canStepDown()) return; S.retired = true; checkAch(); save(); closeModal(); gameOver("retire"); }
 

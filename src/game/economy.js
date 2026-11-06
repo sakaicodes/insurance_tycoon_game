@@ -2,7 +2,7 @@
 /* ---------- Economy ---------- */
 function lv(t){ let s = 0; for (const f of S.floors) if (f.type === t) s += f.level; return s; }
 function morale(){ return (1 + 0.08*lv("breakroom") + 0.05*lv("hr") + (S.buffs.morale > 0 ? 0.3 : 0) + (perk("espresso") ? 0.05 : 0))*(S.hrSlump > 0 ? 0.75 : 1); }
-function happyMult(){ const base = clamp(1 + (S.happy - 65)*0.016, 0.25, 1.6); return 1 + (base - 1)*mixAvg("mood"); }
+function happyMult(){ const base = clamp(1 + (S.happy - 50)*0.012, 0.4, 1.6); return 1 + (base - 1)*mixAvg("mood"); }
 function salesFloorRate(level){ return 5.5*Math.pow(level,1.38); }
 function exposureRate(level){ return 5.5*Math.pow(level,1.27); }
 function exposure(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += exposureRate(f.level); return s*salesMult()*volume(); }
@@ -11,10 +11,12 @@ function cycleVal(){ return Math.sin(S.cyc || 0); }
 function cycleName(){ const c = cycleVal(); return c > 0.35 ? "Hard market" : c < -0.35 ? "Soft market" : "Steady market"; }
 function priceIdx(){ return S.price == null ? 1 : S.price; }
 function marketRate(){ return PRICES[priceIdx()].p*(1 + 0.25*cycleVal()); }
-function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1)); }
+function businessScale(){ const lv = S.floors.reduce((a, f) => a + (f.type === "penthouse" ? 0 : f.level), 0); return 0.7 + 0.3*Math.min(1, lv/25); }
+function divBonus(){ const n = Object.keys(bookMix()).length; return 1 + Math.min(0.3, 0.06*Math.max(0, n - 1)); }
+function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1))*businessScale(); }
 function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + (f.type === "penthouse" ? 0 : f.level), 0)/70); }
 function pricingBoost(){ return 1 + Math.min(0.4, 0.06*lvSpec("actuary", "pricing")); }
-function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level)*LINES[fSpec(f)].rate; return s*salesMult()*marketRate()*volume()*pricingBoost(); }
+function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level)*LINES[fSpec(f)].rate*cityLine(fSpec(f)); return s*salesMult()*marketRate()*volume()*pricingBoost()*divBonus(); }
 function income(){ return baseIncome() * (S.buffs.sales > 0 ? 2 : 1) * (S.outage > 0 ? 0.5 : 1); }
 function salFactor(){ return 1 + 0.06*workFloors(); }
 function upkeep(){ let s = 0; for (const f of S.floors) s += (TYPES[f.type].sal || 0.6)*f.level; return s*salFactor() + execCost(); }

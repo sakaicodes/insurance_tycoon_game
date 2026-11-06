@@ -3,7 +3,7 @@
 $("#sheet").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
   const [a, p, q] = b.dataset.act.split(":");
-  if (S.idleMode && ["build","up","mode","lim","spec","exit","exit-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
+  if (S.idleMode && ["build","up","mode","lim","spec","exit","exit-go","stepdown","stepdown-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
   if (a === "idle"){
     openModal(`<h2>Hand over the keys?</h2><p>The board will make every decision from now on: claims, pricing, insurance, compliance, building, upgrades and events. You can keep watching.</p>
       <p class="dim">Be warned: the board is not you. It makes mistakes, blunders on vanity projects, is slow to buy insurance, and idle companies attract more black swans. It may not last forever.</p>
@@ -76,6 +76,14 @@ $("#sheet").addEventListener("click", e => {
       <div class="seg"><button class="btn ghost" data-act="board">Not yet</button><button class="btn" data-act="exit-go:${p}">${p === "ipo" ? "Ring the bell" : "Shake hands"}</button></div>`, {view:"exitconfirm"});
   }
   else if (a === "exit-go"){ sellCompany(p === "ipo" ? "ipo" : "pe"); }
+  else if (a === "stepdown"){
+    if (!canStepDown()) return;
+    openModal(`<h2>Step down as CEO?</h2>
+      <p>This ends the run now. ${S.idleMode || S.idleTainted ? "It used idle mode, so the score won’t be recorded." : `Your score is recorded as it stands${onlineOk() ? ", including on the global leaderboard" : ""}.`}</p>
+      <p class="dim">Selling the company instead would earn a bonus and a golden ticket, if you can reach the thresholds.</p>
+      <div class="seg"><button class="btn ghost" data-act="board">Stay on</button><button class="btn" data-act="stepdown-go">Step down</button></div>`, {view:"stepdownconfirm"});
+  }
+  else if (a === "stepdown-go") stepDown();
   else if (a === "penthouse"){
     if (hasPenthouse() || S.penthouseBought || S.favour < PENTHOUSE_COST) return;
     S.favour -= PENTHOUSE_COST; S.penthouseBought = true; S.floors.push({type:"penthouse", level:1, mode:"pay", skin:0}); rebuildWorkers(S.floors.length - 1); lastAddedFloor = S.floors.length - 1;

@@ -339,6 +339,10 @@ function openBoard(confirmRestart, intro, tabArg){
       <h3>Watching speed</h3>
       <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
       <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
+    <h3 style="margin-top:14px">Step down</h3>
+    <p>End this run now and record your score as it stands, on this device${onlineOk() ? " and the global leaderboard" : ""}. There’s no sale bonus or golden ticket: those are for selling the company. You do get a carriage clock.</p>
+    ${S.idleMode || S.idleTainted ? `<p class="note">This run used idle mode, so stepping down won’t record a score.</p>` : ""}
+    <button class="btn" style="width:100%" data-act="stepdown" ${canStepDown() ? "" : "disabled"}>${canStepDown() ? `Step down as CEO` : `Available from quarter ${STEP_DOWN_Q}`}</button>
     <h3 style="margin-top:14px">Start again</h3>
     <button class="btn red" style="width:100%" data-act="restart">Start a new company</button>
     <p class="ver-line">${coName()}, version ${VERSION}</p>` : ""}`, {view:"board-" + tab, focus:false});
@@ -419,7 +423,7 @@ function earnings(){
   const sinceSwan = qn - (S.lastSwanQ || 1);
   if (qn >= 4 && !S.swan && sinceSwan >= 3 && (sinceSwan >= 10 || Math.random() < Math.min(0.6, (0.03*sinceSwan + 0.005*(S.diff - 1))*(S.idleMode ? 1.3 : 1)))){
     S.lastSwanQ = qn;
-    S.swan = {t:rand(12, 48), kind:pick(SWAN_POOL)};
+    S.swan = {t:rand(12, 48), kind:pickSwan()};
   }
   if (qn % 8 === 0) notes.push("New regulations: a 400-page rulebook just landed. Compliance must now cover one more floor than before.");
   { const resLv = lvSpec("actuary", "reserving");
@@ -508,7 +512,7 @@ function openSetup(){
     <p>${midRun ? "Your company is already up and running, so this is a one-time chance to name yourself and the business." : "Every tycoon starts somewhere. Who are you, and what’s on the sign?"}</p>
     ${(() => { const l = loadLegacy(); return l.tickets ? `<p class="note">🎫 <b>Golden ticket${l.tickets > 1 ? "s" : ""} x${l.tickets}.</b> ${l.seed || l.stars ? `This company starts with an extra ${fmt(l.seed)} and ${l.stars} ★, and ` : ""}every company you found earns ${5*Math.min(4, l.tickets)}% more income.</p>` : ""; })()}
     <h3>Where is your headquarters?</h3>
-    <div class="cities">${Object.entries(CITIES).map(([k, c]) => `<button class="type city" data-act="look:city:${k}" aria-pressed="${d.city === k}"><b>${c.flag} ${c.name}, ${c.country}</b><span>${c.building}</span><span class="dim">${c.blurb}</span></button>`).join("")}</div>
+    <div class="cities">${Object.entries(CITIES).map(([k, c]) => `<button class="type city" data-act="look:city:${k}" aria-pressed="${d.city === k}"><b>${c.flag} ${c.name}, ${c.country}</b><span>${c.building}</span><span class="dim">${c.blurb}</span><span>${c.risk}</span></button>`).join("")}</div>
     <div class="ceo-setup"><canvas id="ceoPrev" width="48" height="48" aria-label="Your portrait"></canvas>
       <div class="ceo-fields">
         <label>Your name<input id="ceoName" maxlength="20" value="${esc(d.name)}" placeholder="Alex" autocomplete="off"></label>
@@ -547,10 +551,11 @@ function bookHtml(){
   const mix = bookMix(), keys = Object.keys(mix).sort((a, b) => mix[b] - mix[a]), mp = moodPct();
   const acts = Object.keys(ACT_SPECS).map(k => [k, lvSpec("actuary", k)]).filter(x => x[1] > 0);
   const swanRows = Object.keys(SWANS).map(k => [k, swanExposure(k)]).sort((a, b) => b[1] - a[1]);
-  const bar = v => `<i style="display:inline-block;height:8px;width:${Math.round(Math.min(1, v/2.5)*100)}%;background:${v > 1.15 ? "var(--danger)" : v < 0.85 ? "var(--money)" : "var(--gold)"};border-radius:4px"></i>`;
+  const bar = v => `<i style="display:inline-block;height:8px;flex:0 1 ${Math.round(Math.min(1, v/2.5)*100)}%;background:${v > 1.15 ? "var(--danger)" : v < 0.85 ? "var(--money)" : "var(--gold)"};border-radius:4px"></i>`;
   return `<h3>Your book of business</h3>
     ${keys.length ? `<table class="ledger">${keys.map(k => `<tr><td>${LINES[k].icon} ${LINES[k].name}</td><td>${Math.round(mix[k]*100)}% of premium</td></tr>`).join("")}</table>`
       : `<p class="dim">You don’t underwrite anything yet. Build an Underwriting floor and pick a line.</p>`}
+    ${keys.length ? `<p class="dim">${keys.length > 1 ? `Your mix of ${keys.length} lines earns <b>+${Math.round((divBonus() - 1)*100)}%</b> premium: brokers like a syndicate that can do a bit of everything.` : "Writing a second line of business would earn a bonus: brokers like a syndicate that can do a bit of everything."} ${CITIES[cityId()].lines ? `${cityName()} favours ${Object.keys(CITIES[cityId()].lines).map(k => LINES[k].name).join(" and ")}, which earn a little extra here.` : ""}</p>` : ""}
     <p class="dim">${keys.length === 1 ? "All your eggs are in one basket. It’s a lovely basket, right up until someone drops it." : keys.length >= 4 ? "A nicely mixed book: when one line has a terrible year, the others pay for the biscuits." : "A mixed book rides out more storms. Retrain or build floors to spread your bets."}</p>
     <h3 style="margin-top:14px">Customers and premiums</h3>
     <div class="status"><div><span>Customer mood</span><b>${Math.round(S.happy)}%</b></div><div><span>Effect on premiums</span><b class="${mp < 0 ? "neg" : "pos"}">${mp >= 0 ? "+" : "−"}${Math.abs(mp)}%</b></div></div>
@@ -559,6 +564,11 @@ function bookHtml(){
     ${acts.length ? `<table class="ledger">${acts.map(([k, n]) => `<tr><td>${ACT_SPECS[k].icon} ${ACT_SPECS[k].name}</td><td>${k === "pricing" ? `+${Math.round((pricingBoost() - 1)*100)}% premium` : k === "reserving" ? `−${Math.round(actRed()*100)}% claim costs` : `−${Math.round(Math.min(0.5, 0.08*n)*100)}% black swan losses`}</td></tr>`).join("")}</table>`
       : `<p class="dim">No actuaries yet. Pricing earns more, Reserving makes claims cheaper, and Capital Modelling softens disasters.</p>`}
     <h3 style="margin-top:14px">How exposed you are to black swans</h3>
-    <p class="dim">Compared with an average insurer. Over 1× means this disaster would hit you harder.</p>
-    <table class="ledger">${swanRows.map(([k, v]) => `<tr><td>${SWANS[k].title}</td><td style="width:42%">${bar(v)} <b>${v.toFixed(1)}×</b></td></tr>`).join("")}</table>`;
+    <p class="dim">Compared with an average insurer, based on what you insure and where you are (${cityName()}). Over 1× means a disaster would hit you harder. To soften a big one, buy the cover that pays for it, build the floor that softens it, or write less of the line most in its way.</p>
+    <div class="exposures">${swanRows.map(([k, v]) => { const sw = SWANS[k], cov = COVERS[sw.cover], covered = !!(S.cover && S.cover[sw.cover]), cul = swanCulprit(k);
+      const mitLv = sw.mitName === "Capital Modelling" ? lvSpec("actuary", "capital") : sw.mitName === "IT" ? lv("it") : sw.mitName === "Legal" ? lv("legal") : sw.mitName === "Compliance" ? lv("compliance") : 0;
+      const tips = [covered ? `✅ ${cov.name} pays 90%` : `⚠️ Not covered: buy ${cov.name} in the Risk tab`,
+        mitLv ? `🛡️ ${sw.mitName} softens it (level ${mitLv})` : `🛡️ ${sw.mitName} would soften it`];
+      if (v > 1.15 && cul) tips.push(`📉 Most exposed through ${LINES[cul].name}${cityRisk(k) > 1.15 ? `, and ${cityName()} makes it worse` : ""}`);
+      return `<div class="expo ${v > 1.15 ? "hi" : v < 0.85 ? "lo" : ""}"><div class="expo-top"><b>${sw.title}</b><span>${bar(v)} <b>${v.toFixed(1)}×</b></span></div><ul>${tips.map(t => `<li>${t}</li>`).join("")}</ul></div>`; }).join("")}</div>`;
 }

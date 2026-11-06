@@ -46,6 +46,7 @@ const BLUNDERS = [
 const ENDINGS = {
   bankrupt:{title:"Bankrupt", text:"The bank has taken the building. The board replaced you with a golden retriever named Biscuit. The share price rose 4% on the news."},
   fired:{title:"Fired", text:"The board has lost all confidence in you. Security walked you out holding a box with one sad plant. Percy kept your parking space."},
+  retire:{title:"Stepped down", get text(){ return `${ceoN()} stepped down as CEO of ${coName()} after ${Math.max(1, S.quarter - 1)} quarter${S.quarter - 1 === 1 ? "" : "s"}, clutching a carriage clock and a card signed by everyone except Percy, who ate it.`; }},
   exit:{title:"Sold!", get text(){ const x = S.exit || {value:0, kind:"pe"}; return `${x.kind === "ipo" ? `${coName()} floated on the stock exchange${x.mult >= 1.2 ? " and the shares flew" : x.mult < 1 ? ", though the shares wobbled a bit" : ""}` : `You sold ${coName()} to private equity`}, valuing it at ${fmt(x.value)}. You walk away with a golden ticket for your next company.`; }},
   licence:{title:"Licence revoked", get text(){ return `After three warnings, the regulator has pulled your licence. ${coName()} is now a very tall coffee shop.`; }},
 };
@@ -85,6 +86,7 @@ const ACH = [
   {cat:"Career", id:"three", name:"Three stars", desc:"Earn 3 stars in one quarter.", test:() => S.best3},
   {cat:"Career", id:"q40", name:"Veteran", desc:"Survive 40 quarters.", test:() => S.quarter > 40},
   {cat:"Career", id:"q100", name:"Lifer", desc:"Survive 100 quarters.", test:() => S.quarter > 100},
+  {cat:"Career", id:"retire", name:"Quit while ahead", desc:"Step down as CEO and leave on your own terms.", test:() => !!S.retired},
   {cat:"Career", id:"execs", name:"Full house", desc:"Have all six executives hired at once.", test:() => !S.idleMode && EXECS.every(x => S.execs && S.execs[x.id])},
   // money
   {cat:"Money", id:"stock100", name:"Triple digits", desc:"Reach a share price of 100.", test:() => S.stock >= 100},
