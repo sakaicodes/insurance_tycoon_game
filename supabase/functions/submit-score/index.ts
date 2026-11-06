@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
   if (![r.quarters, r.days, r.earned, r.stars, r.achievements, r.rankIdx, r.avgMood].every(num)) return bad("missing fields");
   if (r.quarters < 1 || r.quarters > 500) return bad("bad quarters");
   if (r.rankIdx < 0 || r.rankIdx > 6 || r.achievements < 0 || r.achievements > 70) return bad("implausible");
-  if (r.stars > r.quarters * 3 || r.earned > r.quarters * 5e7 || r.days > r.quarters * 92) return bad("implausible");
+  if (r.stars > (r.quarters + 1) * 3 || r.earned > (r.quarters + 1) * 5e7 || r.days > (r.quarters + 1) * 92) return bad("implausible");
 
   // recompute the score with the game's own formula instead of trusting the client
   const money = Math.round(Math.sqrt(Math.max(0, r.earned)) * 8), days = Math.max(0, Math.round(r.days)) * 4;
