@@ -25,6 +25,20 @@ function ensureState(){
 }
 function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === 1) return s; }catch(e){} return null; }
 const PENTHOUSE_COST = 20, PENTHOUSE_UP = 6;
+function fSpec(f){ return f.spec || (f.type === "sales" ? "property" : f.type === "actuary" ? "capital" : null); }
+function lvSpec(type, spec){ let n = 0; for (const f of S.floors) if (f.type === type && fSpec(f) === spec) n += f.level; return n; }
+function floorName(f){ const sp = fSpec(f); if (f.type === "sales") return LINES[sp].name + " Underwriting"; if (f.type === "actuary") return ACT_SPECS[sp].name + " Actuaries"; return TYPES[f.type].name; }
+function bookMix(){ const m = {}; let tot = 0; for (const f of S.floors) if (f.type === "sales"){ const k = fSpec(f), w = salesFloorRate(f.level)*LINES[k].rate; m[k] = (m[k] || 0) + w; tot += w; } for (const k in m) m[k] /= tot || 1; return m; }
+function mixAvg(field){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*LINES[k][field]; any = true; } return any ? v : 1; }
+function swanExposure(kind){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*(LINES[k].swans[kind] != null ? LINES[k].swans[kind] : 0.8); any = true; } return any ? Math.max(0.3, v) : 1; }
+function swanCulprit(kind){ const m = bookMix(); let best = null, bv = -1; for (const k in m){ const v = m[k]*(LINES[k].swans[kind] || 0.8); if (v > bv){ bv = v; best = k; } } return best; }
+function lineUnlocked(k){ return !LINES[k].unlock || S.rankIdx >= LINES[k].unlock; }
+function autoSpec(type){
+  if (type === "sales"){ const own = k => S.floors.filter(f => f.type === "sales" && fSpec(f) === k).length; const opts = Object.keys(LINES).filter(lineUnlocked); return opts.sort((a, b) => own(a) - own(b) || Math.random() - 0.5)[0]; }
+  if (type === "actuary"){ const own = k => S.floors.filter(f => f.type === "actuary" && fSpec(f) === k).length; return Object.keys(ACT_SPECS).sort((a, b) => own(a) - own(b))[0]; }
+  return undefined;
+}
+function moodPct(){ return Math.round((happyMult() - 1)*100); }
 function hasPenthouse(){ return S.floors.some(f => f.type === "penthouse"); }
 function workFloors(){ return S.floors.length - (hasPenthouse() ? 1 : 0); }
 let lastAddedFloor = -1;

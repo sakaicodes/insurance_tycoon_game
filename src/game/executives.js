@@ -48,7 +48,7 @@ function autopilot(dt){
       else {
       const odd = S.idleMode && S.quarter > 4 && need !== "compliance" && Math.random() < 0.12;
       const kind = odd ? pick(ORDER.filter(t => isUnlocked(t) && t !== need)) || need : need;
-      const c = buildCost(); S.cash -= c; discSpent += c; rebuildWorkers(addFloor({type:kind, level:1, mode:"pay"})); if (S.idleMode) S.cooCd = 20;
+      const c = buildCost(); S.cash -= c; discSpent += c; rebuildWorkers(addFloor(Object.assign({type:kind, level:1, mode:"pay"}, autoSpec(kind) ? {spec:autoSpec(kind)} : {}))); if (S.idleMode) S.cooCd = 20;
       toast(odd ? `The board built a ${TYPES[kind].name} nobody asked for. Someone’s nephew runs it.` : `Your COO built a new ${TYPES[kind].name}.`, odd ? "bad" : "");
       }
     } else {
@@ -94,7 +94,7 @@ function offlineCheck(){
   for (let q = 0; q < whole; q++){
     if (S.quarter < 5 || q - lastQ < 3 || Math.random() >= 0.1) continue;
     lastQ = q;
-    const kind = pick(SWAN_POOL), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
+    const kind = pick(SWAN_POOL), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*swanExposure(kind)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
     const covered = !!(S.cover && S.cover[sw.cover]), net = covered ? gross*0.1 : gross;
     swanNet += net; swanCover += covered ? gross*0.9 : 0; swans.push({title:sw.title, covered, net});
   }

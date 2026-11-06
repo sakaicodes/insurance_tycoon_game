@@ -47,7 +47,7 @@ const DESIGNS = {
         const cx = 118, cy = y+15, a = time*1.5;
         for (let arm = 0; arm < 3; arm++) for (let r = 1; r < 7; r++){ const t = a + arm*2.09 + r*0.5; R(Math.round(cx + Math.cos(t)*r), Math.round(cy + Math.sin(t)*r*0.7), 1, 1, "#E8EEF6"); }
         R(cx,cy,1,1,"#FF6B6B");
-        R(148,y+9,22,12,"#0B1226"); T("Cat 5", 159, y+14.5, 4.5, "#FF6B6B", "center", 700); T("probably", 159, y+19.5, 3.8, "#C9CCF5", "center", 600);
+        R(148,y+9,22,12,"#0B1226"); T("95%", 159, y+14.5, 4.5, "#FF6B6B", "center", 700); T("probably", 159, y+19.5, 3.8, "#C9CCF5", "center", 600);
       }},
     {name:"Monte Carlo", wall:"#2A1F45", trim:"#1A1230",
       decor:y => {

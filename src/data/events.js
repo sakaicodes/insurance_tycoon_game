@@ -83,7 +83,7 @@ const EVENTS = [
     {label:() => `Merge (${fmt(B()*2)})`, run(){ spend(B()*2,"other"); S.stock *= 1.08; mood(-5); return "Share price up 8%. Customers now have two hold lines that connect to each other."; }},
     {label:() => "Decline", run(){ return "Their CEO says “let’s circle back.” He will not circle back."; }}]},
   {id:"audit", title:"The auditors are here", text:"They found a spreadsheet named “final_FINAL_v7_REAL_use this one.xlsx.”", choices:[
-    {label:() => "Have the actuaries explain it", run(){ if (lv("actuary") >= 2){ S.stock *= 1.02; return "The actuaries explained it for four hours. The auditors left impressed and slightly frightened. Share price up 2%."; } const f = B(); spend(f,"other"); return `You don’t have enough actuaries to explain it. Fine: ${fmt(f)}. (More Cat Modelling would help.)`; }},
+    {label:() => "Have the actuaries explain it", run(){ if (lv("actuary") >= 2){ S.stock *= 1.02; return "The actuaries explained it for four hours. The auditors left impressed and slightly frightened. Share price up 2%."; } const f = B(); spend(f,"other"); return `You don’t have enough actuaries to explain it. Fine: ${fmt(f)}. (More Capital Modelling would help.)`; }},
     {label:() => "Blame the intern", run(){ mood(-1); return "The intern takes the fall. He’s fine. He has a jet ski."; }}]},
   {id:"lottery", title:"Someone won the lottery", text:"A Claims Office employee won the lottery and quit mid-call. The customer is still on hold.", choices:[
     {label:() => `Throw a farewell party (${fmt(B()*0.2)})`, run(){ spend(B()*0.2,"other"); S.buffs.morale = 25; return "Lovely party. They paid for the cake. Everyone works faster for a while."; }},

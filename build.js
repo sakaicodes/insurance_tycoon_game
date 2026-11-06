@@ -22,7 +22,7 @@ let html = read("index.html")
 html = stamp(html);
 
 fs.mkdirSync(path.join(root, "dist"), {recursive:true});
-const out = path.join(root, "dist", "fine-print-syndicate.html");
+const out = path.join(root, "dist", "index.html");
 fs.writeFileSync(out, html);
 console.log(`Built v${pkg.version}: ${path.relative(root, out)} (${(html.length/1024).toFixed(0)} KB, ${manifest.scripts.length} scripts, ${manifest.styles.length} stylesheets)`);
 

@@ -42,7 +42,7 @@ function gameOver(reason){
       : res.skipped === "sent" ? "This run is already on the global leaderboard."
       : res.error ? `The global leaderboard didn’t accept this run (${res.error}).` : ""; });
 }
-function coverCost(k, prem){ return Math.round(Math.max(60, prem*COVERS[k].rate)*(perk("reinsdisc") ? 0.75 : 1)); }
+function coverCost(k, prem){ return Math.round(Math.max(60, prem*COVERS[k].rate)*(perk("reinsdisc") ? 0.75 : 1)*(1 - Math.min(0.25, 0.05*lvSpec("actuary", "capital")))); }
 function blackSwan(kind){ if (!SWANS[kind]) kind = pick(SWAN_POOL); S.swanDone = true; S.cyc = Math.PI/2; playCutscene(kind, () => swanResolve(kind)); }
 function swanResolve(kind){
   const sw = SWANS[kind];
@@ -53,7 +53,7 @@ function swanResolve(kind){
     const il = lv("invest") ? Math.round(invCapital()*INV[S.invRisk || 0].crash) : 0; if (il){ S.cash -= il; S.q.other += il; }
     body = `<p>Your share price fell ${Math.round(drop*100)}%. ${lv("ir") ? "Capital Relations softened the blow." : "Capital Relations could have softened the blow."} Board confidence fell.${il ? ` Your ${INV[S.invRisk || 0].name.toLowerCase()} investments lost ${fmt(il)}.` : ""}</p>`;
   } else {
-    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, workFloors() - 10))*(1 + 0.1*Math.max(0, S.diff - 2))));
+    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, workFloors() - 10))*(1 + 0.1*Math.max(0, S.diff - 2))*swanExposure(kind)));
     const mit = sw.mit(), afterMit = Math.round(gross*(1 - mit)), riskCut = Math.min(0.2, 0.04*lv("risk")), net = Math.round(afterMit*(1 - riskCut));
     const covered = S.cover[sw.cover];
     const loss = covered ? Math.round(net*0.1) : net;
@@ -64,6 +64,7 @@ function swanResolve(kind){
       <tr><td>Total loss</td><td class="neg">−${fmt(gross)}</td></tr>
       ${mit ? `<tr><td>Saved by ${sw.mitName}</td><td class="pos">+${fmt(gross - afterMit)}</td></tr>` : ""}
       ${riskCut ? `<tr><td>Saved by your Risk Dept</td><td class="pos">+${fmt(afterMit - net)}</td></tr>` : ""}
+      ${(() => { const ex = swanExposure(kind), cul = swanCulprit(kind); return cul && Math.abs(ex - 1) > 0.15 ? `<tr><td colspan="2" class="dim">${ex > 1 ? `Your ${LINES[cul].name} book took the worst of it, so this hit you ${ex.toFixed(1)}× harder than an average insurer.` : `Not much of what you insure was in the way: you took ${ex.toFixed(1)}× the usual hit.`}</td></tr>` : ""; })()}
       ${covered ? `<tr><td>Paid by your ${COVERS[sw.cover].name.toLowerCase()}</td><td class="pos">+${fmt(net - loss)}</td></tr>` : ""}
       <tr class="total"><td>You pay</td><td class="neg">−${fmt(loss)}</td></tr></table>
       <p>${covered ? "Your cover held. You paid only the 10% retention." : `You had no ${COVERS[sw.cover].name.toLowerCase()}, so you paid the lot. Board confidence −25.`}</p>

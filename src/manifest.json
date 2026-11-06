@@ -28,6 +28,7 @@
     "data/changelog.js",
     "data/cities.js",
     "data/online.js",
+    "data/lines.js",
     "art/palette.js",
     "art/floor-designs.js",
     "art/cutscenes.js",

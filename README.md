@@ -41,6 +41,8 @@ src/
     tutorial.js          tutorial steps
     changelog.js         What's new notes, newest first
     cities.js            London, New York and Bermuda: names, buildings, currency
+    lines.js             lines of business, actuarial specialisms, line-specific claims, extra names
+    online.js            global leaderboard URL and publishable key
   art/                   all graphics (drawn in code, so there are no image files to load)
     palette.js           skin, hair, outfit, wood and sky colours
     tower.js             the tower, skyline, street, lobby and characters
@@ -71,7 +73,8 @@ Free Supabase projects pause after about a week without activity. Restore yours 
 
 ## Adding content
 
-- **A new claim:** add a line to `INCIDENTS` in `src/data/claims.js`. For a claim about a specific person, add a `[name, text]` pair to `NAMED`.
+- **A new claim:** add it to the right line in `LINE_INCIDENTS` in `src/data/lines.js` (or to the general `INCIDENTS` list in `src/data/claims.js`).
+- **A new line of business:** add it to `LINES` in `src/data/lines.js` with its rate, freq, size, sue, mood and swans multipliers, a blurb, pro and con, plus a pool in `LINE_INCIDENTS` and a prop in `drawSpecProp()` (`src/art/tower.js`). For a claim about a specific person, add a `[name, text]` pair to `NAMED`.
 - **A new event:** add an object to `EVENTS` in `src/data/events.js`. Each choice has a `label` and a `run()` that returns the result text.
 - **A new black swan:** add it to `SWANS` in `src/data/black-swans.js` and to `SWAN_POOL` (the weighted pick list) in the same file, then add a scene to `SCENES2`, a portrait to `PORTRAITS2` and a line to `LINES2` in `src/art/cutscenes.js`, all under the same key.
 

@@ -96,6 +96,7 @@ function drawRoomBG(f, ws, y){
   R(28,y+26,146,9,"rgba(31,42,68,.30)"); R(28,y+26,146,1,"#C9A54A"); R(28,y+27,146,0.6,"rgba(20,26,46,.5)");
   for (let x = 31; x < 172; x += 16){ R(x, y+29, 13, 5, "rgba(255,230,190,.08)"); R(x, y+33.4, 13, 0.6, "rgba(20,26,46,.35)"); }
   v.decor(y);
+  if (f.type === "sales" || f.type === "actuary") drawSpecProp(f, y);
   roomLighting(y, v.trim);
   for (const w of ws) if (w.mode === "sit"){ const sx = 34 + w.slot*28; R(sx-1,y+25,1.4,9,"#6E4424"); R(sx-1,y+25,1.4,0.6,"#46526E"); R(sx-1,y+32,6,1,"#2E3B5E"); R(sx+1,y+33,1,2,"#6E4424"); R(sx+4,y+33,1,2,"#6E4424"); }
 }
@@ -133,7 +134,7 @@ function paintTall(prefix, w, yTop, yBot, fn, tx, imgX, depth, create){
   }
 }
 function addImg(key, x, y, depth){ const im = scene.add.image(x, y, key).setOrigin(0,0).setScale(1/RS).setDepth(depth); objs.push(im); return im; }
-function towerKey(){ return `${RS}|${cssW}|${cssH}|${cityId()}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}${f.lim || 0}`).join(","); }
+function towerKey(){ return `${RS}|${cssW}|${cssH}|${cityId()}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}${f.lim || 0}${fSpec(f) || ""}`).join(","); }
 function viewH(){ return scene.cameras.main.height/scene.cameras.main.zoom; }
 function clampScroll(y){ const vh = viewH(); const mn = Math.min(0, LH - vh), mx = Math.max(mn, LH - vh); return clamp(y, mn, mx); }
 
@@ -149,7 +150,7 @@ function buildFloorObjs(L, i){
     objs.push(im); return {w, im};
   });
   const fs = Math.max(pxL(11.5), 6.6), pad = Math.max(pxL(5), 2.6), ps = Math.max(pxL(5), 2.8), gap = Math.max(pxL(2), 1);
-  o.lt = scene.add.text(0, 0, TYPES[f.type].name, {fontFamily:FONT, fontSize:fs+"px", fontStyle:"600", color:"#FFF1D0", resolution:Math.ceil(cz)}).setDepth(20.2);
+  o.lt = scene.add.text(0, 0, floorName(f), {fontFamily:FONT, fontSize:fs+"px", fontStyle:"600", color:"#FFF1D0", resolution:Math.ceil(cz)}).setDepth(20.2);
   objs.push(o.lt);
   o.ln = scene.add.text(0, 0, f.type === "penthouse" ? "PH" : String(i + 1), {fontFamily:FONT, fontSize:fs+"px", fontStyle:"700", color:"#E3C064", resolution:Math.ceil(cz)}).setDepth(20.2); objs.push(o.ln);
   o.numW = o.ln.width + pxL(6);

@@ -20,7 +20,7 @@ function hud(){
   $("#rank").textContent = nx ? `${RANKS[S.rankIdx].name} (${nx.goals.filter(goalMet).length}/${nx.goals.length})` : RANKS[S.rankIdx].name;
   if (S.idleMode) $("#rank").textContent = "🛋️ Idle mode"; else if (S.idleTainted) $("#rank").textContent += " (unranked)";
   $("#happyBar").style.width = S.happy + "%";
-  $("#happyTxt").textContent = MOODS.find(m => S.happy >= m[0])[1];
+  { const mp = moodPct(); $("#happyTxt").textContent = MOODS.find(m => S.happy >= m[0])[1] + ` (${mp >= 0 ? "+" : "−"}${Math.abs(mp)}% premiums)`; }
   const qn = S.quarter;
   $("#qLabel").textContent = `Q${((qn-1)%4)+1} earnings call in ${Math.ceil((Q_LEN - S.qt)/(S.idleMode ? (S.idleSpeed || 0.5) : 1))}s`;
   $("#qBar").style.width = (S.qt/Q_LEN*100) + "%";

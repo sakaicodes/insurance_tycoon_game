@@ -2,7 +2,7 @@
 /* ---------- Economy ---------- */
 function lv(t){ let s = 0; for (const f of S.floors) if (f.type === t) s += f.level; return s; }
 function morale(){ return (1 + 0.08*lv("breakroom") + 0.05*lv("hr") + (S.buffs.morale > 0 ? 0.3 : 0) + (perk("espresso") ? 0.05 : 0))*(S.hrSlump > 0 ? 0.75 : 1); }
-function happyMult(){ return 0.4 + S.happy/100*0.9; }
+function happyMult(){ const base = clamp(1 + (S.happy - 65)*0.016, 0.25, 1.6); return 1 + (base - 1)*mixAvg("mood"); }
 function salesFloorRate(level){ return 5.5*Math.pow(level,1.38); }
 function exposureRate(level){ return 5.5*Math.pow(level,1.27); }
 function exposure(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += exposureRate(f.level); return s*salesMult()*volume(); }
@@ -13,7 +13,8 @@ function priceIdx(){ return S.price == null ? 1 : S.price; }
 function marketRate(){ return PRICES[priceIdx()].p*(1 + 0.25*cycleVal()); }
 function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1)); }
 function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + (f.type === "penthouse" ? 0 : f.level), 0)/70); }
-function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level); return s*salesMult()*marketRate()*volume(); }
+function pricingBoost(){ return 1 + Math.min(0.4, 0.06*lvSpec("actuary", "pricing")); }
+function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level)*LINES[fSpec(f)].rate; return s*salesMult()*marketRate()*volume()*pricingBoost(); }
 function income(){ return baseIncome() * (S.buffs.sales > 0 ? 2 : 1) * (S.outage > 0 ? 0.5 : 1); }
 function salFactor(){ return 1 + 0.06*workFloors(); }
 function upkeep(){ let s = 0; for (const f of S.floors) s += (TYPES[f.type].sal || 0.6)*f.level; return s*salFactor() + execCost(); }
@@ -33,7 +34,7 @@ function checkUnlocks(){
 function capReq(){
   if (S.quarter < 6) return 0;
   const ramp = Math.min(1, (S.quarter - 5)/8), annual = Math.max(0, baseIncome())*Q_LEN*4;
-  const risk = (S.cover && S.cover.cat ? 0.8 : 1)*(1 - Math.min(0.3, 0.05*lv("actuary")))*(lv("invest") && S.invRisk === 2 ? 1.15 : 1)*(1 + 0.1*Math.max(0, S.diff - 1));
+  const risk = (S.cover && S.cover.cat ? 0.8 : 1)*(1 - Math.min(0.4, 0.06*lvSpec("actuary", "capital")))*(lv("invest") && S.invRisk === 2 ? 1.15 : 1)*(1 + 0.1*Math.max(0, S.diff - 1));
   return Math.round(annual*(0.08 + 0.32*maturity())*risk*ramp/10)*10;
 }
 function capRatio(){ const r = capReq(); return r ? Math.max(0, S.cash)/r : Infinity; }
@@ -80,10 +81,10 @@ function compGap(){ return compNeed() - compHave(); }
 function maxStrikes(){ return perk("lobbyist") ? 4 : 3; }
 function growthRate(){ return Math.max(0.01, (0.06 + 0.04*S.diff + 0.02*lv("ir") - (perk("dinners") ? 0.03 : 0))*(1 - 0.85*maturity())); }
 function mktName(){ return S.diff < 1.6 ? "Calm market" : S.diff < 2.3 ? "Choppy market" : S.diff < 3.1 ? "Stormy market" : S.diff < 4 ? "Brutal market" : S.diff < 5 ? "Cutthroat market" : "Feeding frenzy"; }
-function actRed(){ return Math.min(0.55, 0.07*lv("actuary")); }
+function actRed(){ return Math.min(0.4, 0.06*lvSpec("actuary", "reserving")); }
 function buildCost(){ const n = workFloors() - 1; return Math.round(100*Math.pow(1.6, Math.min(n, 13))*Math.pow(1.25, Math.max(0, n - 13))); }
 function upCost(f){ return Math.round(TYPES[f.type].up*Math.pow(1.9, f.level)); }
-function claimInterval(){ return Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))/volume() * (S.buffs.surge > 0 ? 0.35 : 1); }
+function claimInterval(){ return Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))/volume()/mixAvg("freq") * (S.buffs.surge > 0 ? 0.35 : 1); }
 function B(){ return Math.max(120, Math.round(baseIncome()*25/10)*10); }
 function canPay(a){ return S.cash - a >= -overdraft()*0.6; }
 function overdraft(){ return Math.max(1500, baseIncome()*90); }
@@ -109,15 +110,15 @@ function mood(d){ S.happy = clamp(S.happy + d, 0, 100); }
 function spend(a, cat){ S.cash -= a; S.q[cat] += a; }
 function gain(a){ S.cash += a; S.q.prem += a; S.earned = (S.earned || 0) + a; }
 
-function addClaim(name, desc, amount){
-  const nc = {id:S.claimId++, name, desc, amount:Math.max(25, Math.round(amount/5)*5), pat:40, max:40, stalls:0};
+function addClaim(name, desc, amount, line){
+  const nc = {id:S.claimId++, name, desc, line:line || "property", amount:Math.max(25, Math.round(amount/5)*5), pat:40, max:40, stalls:0};
   ensureIntel(nc); S.claims.push(nc);
   if (!S.tipClaim){ S.tipClaim = true; toast("A broker just walked into The Room with a claim. Tap them, or open Claims."); }
 }
-function typicalClaim(){ return Math.max(25, Math.max(3, exposure()/volume())*Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))*0.55*(1-actRed())*claimSizeMult()); }
+function typicalClaim(){ return Math.max(25, Math.max(3, exposure()/volume())*Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))*0.55*(1-actRed())*claimSizeMult()*mixAvg("size")); }
 function ensureIntel(c){
   if (c.sev != null) return;
-  const r = c.amount / typicalClaim();
+  const r = c.amount / (typicalClaim()*(c.line && LINES[c.line] ? LINES[c.line].size/Math.max(0.3, mixAvg("size")) : 1));
   c.sev = r < 0.8 ? 1 : r < 1.25 ? 2 : 3;
   c.lp = Math.random() < Math.max(0.45, 0.75 - 0.05*(S.diff - 1)) ? rand(0.68, 0.98) : rand(0.05, 0.45);
   c.legit = Math.random() < c.lp;
@@ -127,7 +128,7 @@ function ensureIntel(c){
 function estCenter(p, nz, sp){ return clamp(p*100 + nz*sp/2, 0, 100); }
 function legitEst(c){ ensureIntel(c); return estCenter(c.lp, c.nz1, intelSpread(lv("risk"))); }
 function legitFactor(lp){ return Math.pow(clamp((lp - 0.3)/0.65, 0, 1), 1.5); }
-function baseSue(c){ return clamp(0.02 + SEV_SUE[c.sev-1]*legitFactor(c.lp)*(0.85 + (c.lit || 0)) + 0.08*(c.stalls || 0), 0.02, 0.92); }
+function baseSue(c){ return clamp((0.02 + SEV_SUE[c.sev-1]*legitFactor(c.lp)*(0.85 + (c.lit || 0)))*(c.line && LINES[c.line] ? LINES[c.line].sue : 1) + 0.08*(c.stalls || 0), 0.02, 0.92); }
 function suePct(c){ return Math.min(0.92, baseSue(c)*Math.pow(0.85, lv("legal"))*(0.9 + 0.1*S.diff)); }
 function courtWin(c){ return c.legit ? clamp(0.85 - 0.06*lv("legal"), 0.4, 0.9) : clamp(0.15 - 0.02*lv("legal"), 0.03, 0.15); }
 function estText(p, nz, sp){
@@ -151,6 +152,9 @@ function intelHtml(c){
 function spawnClaim(){
   const inc = Math.max(3, exposure()*marketRate());
   const amt = inc*claimInterval()*0.55*rand(0.5,1.5)*(1-actRed())*claimSizeMult() / (S.buffs.surge > 0 ? 0.35 : 1) / marketRate();
-  if (Math.random() < 0.12){ const n = pickFresh(NAMED, "recentNamed", 6); addClaim(n[0], n[1], amt); }
-  else addClaim(pickFresh(NAMES, "recentNm", 20), pickFresh(INCIDENTS, "recentInc", 45), amt);
+  const mix = bookMix(), keys = Object.keys(mix); let line = "property";
+  if (keys.length){ let r = Math.random()*keys.reduce((t, k) => t + mix[k]*LINES[k].freq, 0); for (const k of keys){ r -= mix[k]*LINES[k].freq; if (r <= 0){ line = k; break; } line = k; } }
+  const lineAmt = amt*LINES[line].size;
+  if (Math.random() < 0.10){ const n = pickFresh(NAMED, "recentNamed", 6); addClaim(n[0], n[1], lineAmt, line); }
+  else addClaim(pickFresh(NAMES.concat(MORE_NAMES), "recentNm", 40), lineIncident(line), lineAmt, line);
 }

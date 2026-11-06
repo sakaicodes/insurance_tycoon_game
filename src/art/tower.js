@@ -455,3 +455,19 @@ function skylineBermuda(L){
 }
 function bermudaPalms(gy){ for (const x of [6, 54, 214]){ for (let i = 0; i < 22; i++) R(x + Math.sin(i*0.08)*3, gy - i, 1.6, 1, i % 3 ? "#A8824E" : "#8E6A3E"); for (let f = 0; f < 6; f++){ const a = f/6*Math.PI*2 + Math.sin(time*1.4 + x)*0.08; for (let k = 0; k < 9; k++) R(x + 2 + Math.cos(a)*k, gy - 22 + Math.sin(a)*k*0.5 + k*k*0.04, 1.4, 1.2, k < 5 ? "#3E8A3A" : "#5DB04A"); } } }
 function nycStreet(gy, night){ R(30, gy - 6, 3, 6, "#B23A3A"); R(29.5, gy - 7, 4, 1.5, "#B23A3A"); R(204, gy - 10, 14, 7, "#C0C4CC"); R(203, gy - 13, 16, 3, "#E39A2C"); R(205, gy - 3, 2, 3, "#2B2D3A"); R(214, gy - 3, 2, 3, "#2B2D3A"); for (let k = 0; k < 3; k++) R(120 + k*0.6, gy + 6 - ((time*0.6 + k*0.3) % 1)*12, 4, 3, "rgba(240,240,245,.35)"); }
+
+/* A small prop beside the last desk shows each room's line of business or specialism. */
+function drawSpecProp(f, y){
+  const sp = fSpec(f); if (!sp) return; const x = 164, b = y + 35;
+  if (sp === "property"){ R(x, b-7, 8, 7, "#F2EDE2"); ctx.fillStyle = "#B23A3A"; ctx.beginPath(); ctx.moveTo(x-1, b-7); ctx.lineTo(x+4, b-11); ctx.lineTo(x+9, b-7); ctx.fill(); R(x+3, b-4, 2, 4, "#8E5A30"); R(x+1, b-6, 1.5, 1.5, "#9CC9E6"); R(x+5.5, b-6, 1.5, 1.5, "#9CC9E6"); }
+  else if (sp === "casualty"){ ctx.fillStyle = "#F2C14E"; ctx.beginPath(); ctx.moveTo(x, b); ctx.lineTo(x+3.5, b-10); ctx.lineTo(x+7, b); ctx.fill(); R(x+3, b-7, 1, 3, "#1F2238"); R(x+3, b-3, 1, 1, "#1F2238"); }
+  else if (sp === "excess"){ R(x+1, b-2, 8, 2, "#5A3825"); R(x+2, b-8, 6, 3, "#8E5A30"); R(x+4.5, b-5, 1, 3, "#5A3825"); R(x+1.5, b-8, 1, 3, "#C9A54A"); R(x+7.5, b-8, 1, 3, "#C9A54A"); }
+  else if (sp === "marine"){ ctx.strokeStyle = "#8E5A30"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x+4, b-5, 3.5, 0, Math.PI*2); ctx.stroke(); for (let k = 0; k < 4; k++){ const a = k*Math.PI/4 + time*0.5; R(x+4 + Math.cos(a)*5 - 0.5, b-5 + Math.sin(a)*5 - 0.5, 1, 1, "#8E5A30"); R(x+4 - Math.cos(a)*5 - 0.5, b-5 - Math.sin(a)*5 - 0.5, 1, 1, "#8E5A30"); } R(x+3.5, b-5.5, 1, 1, "#C9A54A"); }
+  else if (sp === "cyber"){ R(x, b-12, 8, 12, "#1F2238"); for (let k = 0; k < 4; k++){ R(x+1, b-11 + k*3, 6, 2, "#2B3352"); R(x+5.5, b-10.5 + k*3, 1, 1, (Math.floor(time*3) + k) % 2 ? "#4BE39A" : "#E8705F"); } }
+  else if (sp === "specialty"){ R(x+3, b-11, 3, 9, "#F7F2E6"); ctx.fillStyle = "#B23A3A"; ctx.beginPath(); ctx.moveTo(x+3, b-11); ctx.lineTo(x+4.5, b-14); ctx.lineTo(x+6, b-11); ctx.fill(); R(x+1.5, b-4, 1.5, 3, "#B23A3A"); R(x+6, b-4, 1.5, 3, "#B23A3A"); R(x+3.5, b-8, 2, 2, "#9CC9E6"); }
+  else if (sp === "treaty"){ R(x+3.5, b-3, 2, 3, "#C9A54A"); R(x+1, b-1, 7, 1, "#C9A54A"); ctx.fillStyle = "#2F6FE4"; ctx.beginPath(); ctx.arc(x+4.5, b-7, 4, 0, Math.PI*2); ctx.fill(); R(x+2, b-9, 3, 2, "#3E9B4F"); R(x+5, b-6, 2, 2, "#3E9B4F"); }
+  else if (sp === "pricing"){ R(x+1, b-9, 7, 9, "#2B3352"); R(x+2, b-8, 5, 2, "#B8E0B0"); for (let r = 0; r < 2; r++) for (let k = 0; k < 3; k++) R(x+2 + k*1.8, b-5 + r*2, 1.2, 1.2, "#E9E2CF"); }
+  else if (sp === "reserving"){ R(x, b-9, 9, 9, "#4A5670"); R(x+1, b-8, 7, 7, "#6A768A"); ctx.strokeStyle = "#C9A54A"; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.arc(x+4.5, b-4.5, 2, 0, Math.PI*2); ctx.stroke(); R(x+8, b-6, 1, 3, "#C9A54A"); }
+  else if (sp === "capital"){ ctx.fillStyle = "#C9A54A"; ctx.beginPath(); ctx.moveTo(x, b-10); ctx.lineTo(x+9, b-10); ctx.lineTo(x+9, b-5); ctx.lineTo(x+4.5, b); ctx.lineTo(x, b-5); ctx.closePath(); ctx.fill(); ctx.fillStyle = "#1F2A44"; ctx.beginPath(); ctx.moveTo(x+1.5, b-8.5); ctx.lineTo(x+7.5, b-8.5); ctx.lineTo(x+7.5, b-5.5); ctx.lineTo(x+4.5, b-2); ctx.lineTo(x+1.5, b-5.5); ctx.closePath(); ctx.fill(); }
+}
+

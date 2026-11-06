@@ -3,7 +3,7 @@
 $("#sheet").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
   const [a, p, q] = b.dataset.act.split(":");
-  if (S.idleMode && ["build","up","mode","lim","exit","exit-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
+  if (S.idleMode && ["build","up","mode","lim","spec","exit","exit-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
   if (a === "idle"){
     openModal(`<h2>Hand over the keys?</h2><p>The board will make every decision from now on: claims, pricing, insurance, compliance, building, upgrades and events. You can keep watching.</p>
       <p class="dim">Be warned: the board is not you. It makes mistakes, blunders on vanity projects, is slow to buy insurance, and idle companies attract more black swans. It may not last forever.</p>
@@ -13,7 +13,13 @@ $("#sheet").addEventListener("click", e => {
   }
   if (a === "idle-yes"){ S.preIdleExecs = Object.assign({}, S.execs); S.idleTainted = true; S.idleMode = true; S.idleSpeed = 0.5; for (const x of EXECS) S.execs[x.id] = true; save(); closeModal(); toast("Idle mode is on. Sit back. The board has it from here.", "good"); return; }
   if (a === "close") closeModal();
-  else if (a === "build") build(p);
+  else if (a === "build") build(p, q);
+  else if (a === "spec"){
+    const i = +p, f = S.floors[i], opts = f && specOptions(f.type), rc = retrainCost();
+    if (!opts || !opts[q] || fSpec(f) === q || S.cash < rc || (f.type === "sales" && !lineUnlocked(q))) return;
+    S.cash -= rc; f.spec = q; rebuildWorkers(i); sfx("chime");
+    toast(`Retrained: the floor is now ${floorName(f)}. The old team has been sent on a course.`, "good"); save(); openFloor(i);
+  }
   else if (a === "up") upgrade(+p, q);
   else if (a === "floor") openFloor(+p);
   else if (a === "mv"){
@@ -24,7 +30,7 @@ $("#sheet").addEventListener("click", e => {
   }
   else if (a === "demo"){
     const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1 || f.type === "penthouse") return;
-    openModal(`<h2>Demolish ${TYPES[f.type].name}?</h2><p>This floor (level ${f.level}) and everyone in it will be gone for good. The builders will salvage about ${fmt(demoRefund(f))} of fixtures and fittings.</p>
+    openModal(`<h2>Demolish ${floorName(f)}?</h2><p>This floor (level ${f.level}) and everyone in it will be gone for good. The builders will salvage about ${fmt(demoRefund(f))} of fixtures and fittings.</p>
       ${f.type === "compliance" ? `<p class="note">Removing Compliance may leave the regulator uncovered.</p>` : ""}
       <div class="seg"><button class="btn ghost" data-act="floor:${i}">Keep it</button><button class="btn red" data-act="demo-yes:${i}">Demolish</button></div>`, {view:"demo" + i});
   }
@@ -34,7 +40,7 @@ $("#sheet").addEventListener("click", e => {
     S.floors.splice(i, 1); W.splice(i, 1); popT.splice(i, 1);
     prevLevels = S.floors.map(x => x.level); prevCount = S.floors.length;
     if (scene) scene.cameras.main.shake(250, 0.004); sfx("stamp");
-    toast(`${TYPES[f.type].name} demolished. You salvaged ${fmt(refund)}${f.type === "compliance" ? ". Check your Compliance cover." : "."}`, f.type === "compliance" ? "bad" : "good");
+    toast(`${floorName(f)} demolished. You salvaged ${fmt(refund)}${f.type === "compliance" ? ". Check your Compliance cover." : "."}`, f.type === "compliance" ? "bad" : "good");
     save(); closeModal();
   }
   else if (a === "exec"){ const x = EXECS.find(x => x.id === p); if (!x || S.rankIdx < x.rank) return; S.execs[p] = q === "on"; toast(q === "on" ? `You hired a ${x.name}. ${x.joke}` : `Your ${x.name} has left to “spend more time with their yacht.”`, q === "on" ? "good" : ""); save(); openBoard(); }
@@ -75,6 +81,7 @@ $("#sheet").addEventListener("click", e => {
     S.favour -= PENTHOUSE_COST; S.penthouseBought = true; S.floors.push({type:"penthouse", level:1, mode:"pay", skin:0}); rebuildWorkers(S.floors.length - 1); lastAddedFloor = S.floors.length - 1;
     sfx("chime"); fxConfetti(); toast(`The penthouse is ready. ${ceoName()} has already put their feet up.`, "good"); save(); closeModal();
   }
+  else if (a === "btab"){ S.boardTab = p; openBoard(false, false, p); }
   else if (a === "starshop"){
     const it = STAR_SHOP.find(x => x.id === p); if (!it || S.favour < it.cost || (it.can && !it.can())) return;
     S.favour -= it.cost; S.shopBuys = (S.shopBuys || 0) + 1; const msg = it.run(); sfx("chime"); toast(msg, "good"); save(); openBoard();
@@ -132,7 +139,7 @@ $("#sheet").addEventListener("click", e => {
     sfx("paper"); toast(`Settled out of court for ${fmt(cost)}. Nobody admits anything.`, "good"); save();
     if (S.lawsuits.length) openLawsuits(); else closeModal();
   }
-  else if (a === "restart") openBoard(true);
+  else if (a === "restart"){ S.boardTab = "company"; openBoard(true); }
   else if (a === "restart-yes") restart();
 });
 $("#btnFloors").addEventListener("click", openFloors);

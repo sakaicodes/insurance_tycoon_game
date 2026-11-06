@@ -40,17 +40,18 @@ function intro(){
     <p><span>📈</span><span><b>The market fights back.</b> Success attracts competition: more claims, more fraud, higher targets. Meanwhile the insurance cycle swings between hard markets (high prices) and soft markets (price wars).</span></p>
     <p><span>🏷️</span><span><b>Set your pricing</b> in the Boardroom. Undercut for volume, charge a premium for margin, or gouge and risk the regulator. The best choice depends on the cycle.</span></p>
     <p><span>🤖</span><span><b>Autopilot.</b> Promotions unlock executives who run parts of the business for a salary: claims, insurance, compliance, pricing, even expansion. Your syndicate also earns while you’re away.</span></p>
-    <p><span>🏦</span><span><b>Capital rules.</b> From quarter 6 the regulator requires you to hold cash in proportion to the premiums you write. Fall short at an earnings call and you get a warning. Catastrophe reinsurance and Cat Modelling lower the requirement.</span></p>
+    <p><span>🏦</span><span><b>Capital rules.</b> From quarter 6 the regulator requires you to hold cash in proportion to the premiums you write. Fall short at an earnings call and you get a warning. Catastrophe reinsurance and Capital Modelling lower the requirement.</span></p>
     <p><span>🦈</span><span><b>Rivals.</b> Later on, rival syndicates try to poach your underwriters and brokers. Match their offer, take them to lunch, ask HR, or let them go.</span></p>
     <p><span>🛋️</span><span><b>Idle mode.</b> Prefer to watch? Turn on idle mode in the Boardroom and the board makes every decision. You can take back control any time, but a run that used idle mode isn’t scored.</span></p>
     <p><span>♾️</span><span><b>Play forever, if you can.</b> As your tower matures, the City expects less growth and “in line” results are fine. But regulation keeps piling up, and dividends keep the board sweet.</span></p>
     <p><span>⚖️</span><span><b>Compliance</b> must cover your floors. Fall short and the regulator issues warnings. Three warnings and you lose your licence.</span></p>
+    <p><span>📊</span><span><b>What you insure matters.</b> Each Underwriting floor writes a line of business, from Property to Treaty Reinsurance, and each earns, claims and suffers differently. Actuaries can make you more money, cheaper claims or a tougher hide. The Boardroom’s Book tab shows your mix.</span></p>
     <p><span>🦢</span><span><b>Black swans</b> are huge disasters based on real ones: hurricanes, a ship blocking a canal, a global IT meltdown, a bank collapse and more. They strike with no warning, roughly every 8 to 12 quarters from quarter 5. Without cover you pay the whole loss, which can sink you. Buy reinsurance and your other covers in the Boardroom: they pay 90%.</span></p>
     <p><span>⭐</span><span><b>Spend stars</b> on perks in the Boardroom, and unlock achievements for extra stars.</span></p>
     <p><span>💀</span><span><b>You lose</b> if you go bankrupt, the board’s confidence hits zero, or you lose your licence.</span></p>
     <h3 class="intro-h">The rooms you can build</h3>
     ${ORDER.map(t => `<p class="intro-room"><span class="isw" style="background:${TYPES[t].wall}"></span><span><b>${TYPES[t].name}.</b> ${TYPES[t].desc}<em class="pro">＋ ${TYPES[t].pro}</em><em class="con">− ${TYPES[t].con}</em>${UNLOCKS[t] ? `<em class="dim">🔓 ${UNLOCKS[t].text}</em>` : ""}</span></p>`).join("")}
-    <p class="intro-tip"><span>💡</span><span>Start with Underwriting Boxes for income, keep a cash buffer for big claims, and add Compliance before your 4th floor.</span></p>
+    <p class="intro-tip"><span>💡</span><span>Start with Underwritinges for income, keep a cash buffer for big claims, and add Compliance before your 4th floor.</span></p>
   </div>
   <div class="closeRow"><button class="btn blue" data-act="tutorial">Replay the tutorial</button><button class="btn" data-act="close">Back to the game</button></div>
   <p class="ver-line">Version ${VERSION}, built ${BUILD_DATE}</p>`, {cls:"intro"});
@@ -67,7 +68,7 @@ function effectText(type, l, d){
     case "invest": return `Invests up to ${fmt(Math.round(l*Math.max(300, income()*Q_LEN*0.3)))} of spare cash per quarter`;
     case "compliance": return `Covers ${3*l} floors for the regulator, scandal losses ${Math.min(60,15*l)}% smaller`;
     case "actuary": return `Claims cost ${Math.min(55,7*l)}% less`;
-    case "marketing": return `Underwriting Boxes write ${35*l}% more`;
+    case "marketing": return `Underwritinges write ${35*l}% more`;
     case "legal": return `Denials ${Math.min(70,12*l)}% less upsetting, fewer lawsuits`;
     case "breakroom": return `Everyone works ${8*l}% faster`;
     case "risk": return intelText(lv("risk") + (d || 0));
@@ -80,10 +81,10 @@ function openFloors(){
       <div class="sw" style="background:${TYPES[t].wall}"></div><b>${TYPES[t].name}</b><span class="pro">＋ ${TYPES[t].pro}</span><span class="con">− ${TYPES[t].con}</span>${!isUnlocked(t) ? `<span class="dim">🔒 ${UNLOCKS[t].text}</span>` : ""}</button>`).join("");
   const list = S.floors.map((f,i) => ({f,i})).reverse().map(({f,i}) => {
     const max = f.level >= MAXL, c = upCost(f), ph = f.type === "penthouse";
-    if (ph) return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div><div class="nm">${TYPES[f.type].name}${pips(f.level)}</div>
+    if (ph) return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div><div class="nm">${floorName(f)}${pips(f.level)}</div>
       <button class="btn ghost" data-act="floor:${i}">Manage</button><button class="btn" data-act="up:${i}:floors" ${max || S.favour < PENTHOUSE_UP ? "disabled" : ""}>${max ? "Maxed" : `Upgrade ${PENTHOUSE_UP} ★`}</button></div>`;
     return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div>
-      <div class="nm">${TYPES[f.type].name}${pips(f.level)}</div>
+      <div class="nm">${floorName(f)}${pips(f.level)}</div>
       <button class="btn ghost" data-act="floor:${i}">Manage</button>
       <button class="btn" data-act="up:${i}:floors" ${max||S.cash<c?"disabled":""}>${max?"Maxed":"Upgrade "+fmt(c)}</button></div>`;
   }).join("");
@@ -98,7 +99,7 @@ function openPenthouse(i){
   openModal(`<div class="top"><h2>Penthouse</h2><button class="x" data-act="close" aria-label="Close">✕</button></div>
     <p>${TYPES.penthouse.desc}</p>
     <div class="goals"><ul>${feats.map((t, k) => `<li class="${k < f.level ? "ok" : ""}"><i>${k < f.level ? "✓" : k + 1}</i>${t}</li>`).join("")}</ul></div>
-    <p class="dim">${ceoN()} pops up here between visits to The Room. Tap them to open the Boardroom.</p>
+    <p class="dim">${ceoN()} has moved in for good, and runs the company from up here now. Tap them to open the Boardroom.</p>
     <button class="btn" style="width:100%" data-act="up:${i}:floor" ${max || S.favour < cost ? "disabled" : ""}>${max ? "Fully furnished" : `Upgrade for ${cost} ★`}${!max && S.favour < cost ? `<small>You have ${S.favour} ★</small>` : ""}</button>
     <p class="dim">The penthouse is yours for the rest of this company’s life.</p>`, {view:"floor" + i});
 }
@@ -107,6 +108,12 @@ function openFloor(i){
   const t = TYPES[f.type], max = f.level >= MAXL, c = upCost(f);
   const up = (TYPES[f.type].sal || 0.6)*salFactor();
   let extra = "";
+  if (specOptions(f.type)){
+    const opts = specOptions(f.type), cur = fSpec(f), sp = opts[cur], rc = retrainCost();
+    extra = `<div class="note"><b>${sp.icon} ${sp.name}.</b> ${sp.blurb}<br><span class="pos">＋ ${sp.pro}</span><br><span class="neg">− ${sp.con}</span></div>
+      <details class="achcat"><summary><b>Retrain this floor</b><span>${fmt(rc)}</span></summary><div class="types" style="padding:0 10px 10px">
+      ${Object.keys(opts).filter(k => k !== cur).map(k => specCard(f.type, k, `spec:${i}:${k}`, S.cash < rc ? `<span class="dim">You need ${fmt(rc)}</span>` : "")).join("")}</div></details>`;
+  }
   if (f.type === "pr"){
     const cost = prCost(), ready = S.prQ !== S.quarter;
     extra = `<h3>Damage control</h3><div class="action"><div><h3>Launch a campaign</h3><p>Apologies, a charity photo op and a heartfelt video. Customer mood +15, board confidence +6. Once per quarter.</p></div>
@@ -126,7 +133,7 @@ function openFloor(i){
     <div class="seg four">${[0, 0.6, 1, 2].map(m => `<button class="btn ${m ? "ghost" : ""}" data-act="lim:${i}:${m}" aria-pressed="${(f.lim || 0) === m}">${m ? "Up to " + fmt(typicalClaim()*m) : "No limit"}</button>`).join("")}</div>
     <p class="dim">Claims above the limit are left for you to decide. The limit grows with your business.</p>`;
   }
-  openModal(`<div class="top"><h2>${t.name}</h2>${xBtn}</div>
+  openModal(`<div class="top"><h2>${floorName(f)}</h2>${xBtn}</div>
     <p>${t.desc}</p><p class="joke">${t.joke}</p>
     <div class="pc"><p class="pro">＋ ${t.pro}</p><p class="con">− ${t.con}</p></div>
     ${f.type === "compliance" ? compHtml() : ""}
@@ -149,16 +156,35 @@ function openFloor(i){
       <button class="btn red" data-act="demo:${i}" ${S.floors.length <= 1 ? "disabled" : ""}>Demolish</button>
     </div>`, {view:"floor" + i});
 }
-function build(type){
+function specOptions(type){ return type === "sales" ? LINES : type === "actuary" ? ACT_SPECS : null; }
+function specCard(type, k, act, extraNote){
+  const sp = specOptions(type)[k], locked = type === "sales" && !lineUnlocked(k);
+  const owned = S.floors.filter(f => f.type === type && fSpec(f) === k).length;
+  return `<button class="type spec" data-act="${act}" ${locked ? "disabled" : ""}><b>${sp.icon} ${sp.name}${owned ? ` <span class="dim">(you have ${owned})</span>` : ""}</b>
+    <span class="blurb">${sp.blurb}</span><span class="pro">＋ ${sp.pro}</span><span class="con">− ${sp.con}</span>${locked ? `<span class="dim">🔒 Unlocks at ${RANKS[LINES[k].unlock].name}</span>` : ""}${extraNote || ""}</button>`;
+}
+function openSpecPick(type){
+  const cost = buildCost(), opts = specOptions(type);
+  openModal(`<div class="top"><h2>${type === "sales" ? "Which line of business?" : "Which kind of actuaries?"}</h2>${xBtn}</div>
+    <p>${type === "sales" ? "Every line earns, claims and suffers differently. A mixed book rides out more storms." : "Each specialism strengthens a different part of the business."} Building costs ${fmt(cost)}.</p>
+    <div class="types">${Object.keys(opts).map(k => specCard(type, k, `build:${type}:${k}`)).join("")}</div>
+    <div class="closeRow"><button class="btn ghost" data-act="floors">Back</button></div>`, {view:"spec-" + type});
+}
+function build(type, spec){
   const cost = buildCost();
   if (S.cash < cost || workFloors() >= MAXF) return;
   if (!isUnlocked(type)) return;
+  const opts = specOptions(type);
+  if (opts && !opts[spec]) return openSpecPick(type);
+  if (type === "sales" && !lineUnlocked(spec)) return;
   S.cash -= cost; discSpent += cost;
-  rebuildWorkers(addFloor({type, level:1, mode:"pay"}));
+  const nf = {type, level:1, mode:"pay"}; if (opts) nf.spec = spec;
+  rebuildWorkers(addFloor(nf));
   closeModal();
-  toast(`Built: ${TYPES[type].name}. ${TYPES[type].joke}`, "good");
+  toast(`Built: ${floorName(nf)}. ${opts ? opts[spec].blurb : TYPES[type].joke}`, "good");
   save();
 }
+function retrainCost(){ return Math.round(buildCost()*0.4/10)*10; }
 function upgrade(i, back){
   const f = S.floors[i];
   if (f && f.type === "penthouse"){ if (f.level >= MAXL || S.favour < PENTHOUSE_UP) return; S.favour -= PENTHOUSE_UP; f.level++; sfx("chime"); fxConfetti(); save(); return back === "floors" ? openFloors() : openPenthouse(i); }
@@ -211,18 +237,22 @@ function pricingIntroHtml(){
     <h3>Start here: choose your pricing</h3>
     <p>This is the Boardroom, your strategy room. Your first big decision is how to price your policies. Right now the market is <b>${cycleName().replace(" market", "").toLowerCase()}</b>: ${cycleName() === "Hard market" ? "prices are high, so Premium costs you fewer customers" : cycleName() === "Soft market" ? "rivals are cutting prices, so charging more loses customers" : "prices are normal"}.</p>
     ${PRICES.map((pr, k) => `<button class="type" style="width:100%;margin:0 0 6px;${priceIdx() === k ? "border-color:var(--gold)" : ""}" data-act="price:${k}"><b>${priceIdx() === k ? "✓ " : ""}${pr.name}</b><span>${pr.desc}</span></button>`).join("")}
-    <p class="dim">Market rate is the safe start. Everything else in the Boardroom (insurance, executives, perks and more) is below, and you can change pricing any time. Once you have spare cash, buy your own insurance too: black swans strike with no warning.</p>
+    <p class="dim">Market rate is the safe start. Everything else in the Boardroom (your book of business, insurance, executives, perks and more) is in the tabs above, and you can change pricing any time. Once you have spare cash, buy your own insurance in the Risk tab too: black swans strike with no warning.</p>
   </div>`;
 }
-function openBoard(confirmRestart, intro){
+function openBoard(confirmRestart, intro, tabArg){
   const r = S.rankIdx, next = RANKS[r+1];
   if (confirmRestart){
     openModal(`<h2>Start over?</h2><p>Your tower, your yachts and your share price all go away. Percy keeps his contract.</p>
       <div class="seg"><button class="btn ghost" data-act="board">Keep playing</button><button class="btn red" data-act="restart-yes">Start a new company</button></div>`, {view:"board"});
     return;
   }
+  const tab = intro ? "overview" : (tabArg || S.boardTab || "overview"); S.boardTab = tab;
+  const BTABS = [["overview","🏢 Overview"],["book","📊 Book"],["risk","🛡️ Risk"],["team","👔 Team"],["money","💷 Money"],["stars","⭐ Stars"],["company","⚙️ Company"]];
   openModal(`<div class="top"><h2>Boardroom</h2>${xBtn}</div>
     ${intro ? pricingIntroHtml() : ""}
+    <div class="btabs" role="tablist">${BTABS.map(([k, l]) => `<button class="btab" role="tab" data-act="btab:${k}" aria-selected="${tab === k}">${l}</button>`).join("")}</div>
+    ${tab === "overview" ? `
     <div class="ceo-card"><canvas id="ceoFace" width="48" height="48" aria-hidden="true"></canvas><div><b>${ceoN()}</b><span>CEO of ${coName()}</span><small>Your title: ${RANKS[r].name}</small></div></div>
     <div class="status">
       <div><span>Board confidence</span><b class="${S.conf < 30 ? "neg" : "pos"}">${Math.round(S.conf)}%</b></div>
@@ -230,38 +260,27 @@ function openBoard(confirmRestart, intro){
       <div><span>Competition</span><b>${mktName().replace(" market","")}</b></div>
       <div><span>Capital held</span><b class="${capReq() && S.cash < capReq() ? "neg" : "pos"}">${capReq() ? Math.round(capRatio()*100) + "% of required" : "Not required yet"}</b></div>
     </div>
-    ${execsHtml()}
-    <div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb">🏆 Leaderboard</button></div>
     <p class="dim" style="margin-top:12px">Score so far: <b>${scoreParts().total.toLocaleString("en-GB")}</b> (grade ${grade(scoreParts().total)})${S.idleMode || S.idleTainted ? ", not recorded because idle mode was used" : ""}. Personal best: ${bestScore().toLocaleString("en-GB")}.</p>
     ${goalsHtml(next)}
     <h3 style="margin-top:14px">Pricing</h3>
     <p class="dim"><b style="color:var(--ink)">${cycleName()}.</b> ${CYCLE_MSG[cycleName()].replace(/^The market has (hardened|softened|steadied)\. /, "")}</p>
     <div class="seg four">${PRICES.map((pr, k) => `<button class="btn" data-act="price:${k}" aria-pressed="${priceIdx() === k}">${pr.name}</button>`).join("")}</div>
-    <p class="dim">${PRICES[priceIdx()].desc} Right now: premium income ×${(marketRate()*volume()).toFixed(2)}, customers ×${volume().toFixed(2)}.</p>
-    <h3 style="margin-top:14px">Emergency funding</h3>
-    <p class="dim">Short of cash? These keep you alive, at a price.</p>
-    <div class="action"><div><h3>Cash call</h3><p>Ask your syndicate’s investors for ${fmt(cashCallAmt())}. Share price −15%, board confidence −12. Once every 2 quarters.</p></div>
-      <button class="btn" data-act="cashcall" ${S.quarter - S.lastCall < 2 ? "disabled" : ""}>${S.quarter - S.lastCall < 2 ? "Too soon" : "Raise " + fmt(cashCallAmt())}</button></div>
-    <div class="action"><div><h3>Bank loan</h3><p>${S.loan ? `You owe ${fmt(S.loan.left)}, repaid ${fmt(S.loan.per)} at each earnings call.` : `Borrow ${fmt(loanAmt())} now. Repay ${fmt(Math.round(loanAmt()*1.25))} over 4 earnings calls. One loan at a time.`}</p></div>
-      <button class="btn ghost" data-act="loan" ${S.loan ? "disabled" : ""}>${S.loan ? "In progress" : "Borrow " + fmt(loanAmt())}</button></div>
+    <p class="dim">${PRICES[priceIdx()].desc} Right now: premium income ×${(marketRate()*volume()).toFixed(2)}, customers ×${volume().toFixed(2)}.</p>` : ""}
+    ${tab === "book" ? bookHtml() : ""}
+    ${tab === "risk" ? `
+    <div class="status">
+      <div><span>Capital held</span><b class="${capReq() && S.cash < capReq() ? "neg" : "pos"}">${capReq() ? Math.round(capRatio()*100) + "% of required" : "Not required yet"}</b></div>
+      <div><span>Capital required</span><b>${capReq() ? fmt(capReq()) : "From quarter 6"}</b></div>
+    </div>
+    <p class="dim">The regulator wants enough cash on hand to survive a bad year. Capital Modelling actuaries and catastrophe reinsurance both lower the bar.</p>
     <h3 style="margin-top:14px">Your own insurance</h3>
     <p class="dim">Black swans strike with no warning, roughly every 8 to 12 quarters, and the longer it’s been since the last one, the closer the next. Without cover you pay the whole loss, which can sink the company. Cover renews at each earnings call.</p>
     ${Object.keys(COVERS).map(k => { const c = COVERS[k], on = S.cover[k], cost = coverCost(k, income()*Q_LEN);
       return `<div class="action"><div><h3>${on ? "🛡️ " : ""}${c.name}</h3><p>${c.desc} About ${fmt(cost)} per quarter.</p></div>
-        ${on ? `<button class="btn ghost" data-act="cover:${k}:off">Cancel</button>` : `<button class="btn green" data-act="cover:${k}:on" ${S.cash < cost ? "disabled" : ""}>Buy ${fmt(cost)}</button>`}</div>`; }).join("")}
-    <h3 style="margin-top:14px">Perks <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">You have ${S.favour} ★ to spend</span></h3>
-    ${PERKS.map(pk => { const own = perk(pk.id);
-      return `<div class="action"><div><h3>${own ? "✓ " : ""}${pk.name}</h3><p>${pk.desc}</p></div>
-        ${own ? `<button class="btn ghost" disabled>Owned</button>` : `<button class="btn" data-act="perk:${pk.id}" ${S.favour < pk.cost ? "disabled" : ""}>${pk.cost} ★</button>`}</div>`; }).join("")}
-    <h3 style="margin-top:14px">Star shop <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">Buy as often as you like</span></h3>
-    ${STAR_SHOP.map(it => { const ok = S.favour >= it.cost && (!it.can || it.can());
-      return `<div class="action"><div><h3>${it.name}</h3><p>${it.desc}</p></div><button class="btn" data-act="starshop:${it.id}" ${ok ? "" : "disabled"}>${it.cost} ★</button></div>`; }).join("")}
-    ${hasPenthouse() ? `<p class="dim">You own the penthouse. Tap it at the top of the tower to furnish it.</p>`
-      : `<div class="action"><div><h3>Build a penthouse</h3><p>A private top floor for ${ceoN()} to roam, with the best view in the city. One per company, and no business benefit whatsoever.</p></div><button class="btn" data-act="penthouse" ${S.favour < PENTHOUSE_COST ? "disabled" : ""}>${PENTHOUSE_COST} ★</button></div>`}
-    <h3 style="margin-top:14px">Achievements (${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length})</h3>
-    <p class="dim">Each one earns a ★. Tap a category to see what’s left.</p>
-    ${[...new Set(ACH.map(a => a.cat))].map(c => { const list = ACH.filter(a => a.cat === c), got = list.filter(a => S.ach[a.id]).length;
-      return `<details class="achcat"><summary><b>${c}</b><span>${got} of ${list.length}</span></summary><div class="achs">${list.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div></details>`; }).join("")}
+        ${on ? `<button class="btn ghost" data-act="cover:${k}:off">Cancel</button>` : `<button class="btn green" data-act="cover:${k}:on" ${S.cash < cost ? "disabled" : ""}>Buy ${fmt(cost)}</button>`}</div>`; }).join("")}` : ""}
+    ${tab === "team" ? `
+    ${execsHtml()}` : ""}
+    ${tab === "money" ? `
     <div class="big" style="margin-top:14px">${fmt2(S.stock)}</div>
     ${sparkline()}
     <p class="dim">Share price after each earnings call</p>
@@ -283,12 +302,12 @@ function openBoard(confirmRestart, intro){
     <div class="action"><div><h3>Pay yourself a bonus</h3><p>Buys a yacht. Share price down 1% for “optics.”</p></div>
       <button class="btn ghost" data-act="bonus" ${S.cash<bonusCost()?"disabled":""}>${fmt(bonusCost())}</button></div>
     <p class="dim" style="margin-top:12px">How the money works: premiums come in every second, salaries go out every second, and claims cost money when you pay them. Profit is whatever survives.</p>
-    <h3 style="margin-top:14px">Idle mode</h3>
-    ${S.idleMode ? `<p class="note">Idle mode is on. The board is making every decision, and this run’s score won’t be recorded.</p>
-      <button class="btn ghost" style="width:100%;margin-bottom:10px" data-act="idle-off">Take back control</button>
-      <h3>Watching speed</h3>
-      <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
-      <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
+    <h3 style="margin-top:14px">Emergency funding</h3>
+    <p class="dim">Short of cash? These keep you alive, at a price.</p>
+    <div class="action"><div><h3>Cash call</h3><p>Ask your syndicate’s investors for ${fmt(cashCallAmt())}. Share price −15%, board confidence −12. Once every 2 quarters.</p></div>
+      <button class="btn" data-act="cashcall" ${S.quarter - S.lastCall < 2 ? "disabled" : ""}>${S.quarter - S.lastCall < 2 ? "Too soon" : "Raise " + fmt(cashCallAmt())}</button></div>
+    <div class="action"><div><h3>Bank loan</h3><p>${S.loan ? `You owe ${fmt(S.loan.left)}, repaid ${fmt(S.loan.per)} at each earnings call.` : `Borrow ${fmt(loanAmt())} now. Repay ${fmt(Math.round(loanAmt()*1.25))} over 4 earnings calls. One loan at a time.`}</p></div>
+      <button class="btn ghost" data-act="loan" ${S.loan ? "disabled" : ""}>${S.loan ? "In progress" : "Borrow " + fmt(loanAmt())}</button></div>
     <h3 style="margin-top:14px">Exit strategy</h3>
     ${exitUnlocked() ? (() => { const v = exitValue(), tk = ticketFor(v);
       const req = (k, r) => { const row = (ok, txt) => `<li class="${ok ? "ok" : ""}"><i>${ok ? "✓" : "·"}</i>${txt}</li>`;
@@ -296,9 +315,33 @@ function openBoard(confirmRestart, intro){
       return `<p>Your company is valued at about <b class="pos">${fmt(v)}</b>, including ${Math.round(Math.min(40, 2*S.favour))}% for your unspent stars. Selling ends this run with a big score bonus and a <b>golden ticket</b>: your next company starts with about ${fmt(tk.seed)} and ${tk.stars} ★, and earns 5% more income for each ticket you hold (up to 4).</p>
       <div class="action"><div><h3>Sell to private equity</h3><p>A guaranteed price: ${fmt(v)}. Buyers only look at companies with serious cash and a strong share price.</p>${req("pe", EXIT_REQ.pe)}</div><button class="btn" data-act="exit:pe" ${exitReady("pe") && !S.idleMode ? "" : "disabled"}>Sell</button></div>
       <div class="action"><div><h3>Float on the stock exchange</h3><p>Anywhere from 0.8 to 1.6 times the valuation, depending on the market. The bar is higher than for a private sale.</p>${req("ipo", EXIT_REQ.ipo)}</div><button class="btn" data-act="exit:ipo" ${exitReady("ipo") && !S.idleMode ? "" : "disabled"}>IPO</button></div>`; })()
-      : `<p class="dim">Reach Thought Leader and quarter 8 to sell your company to private equity (needs ${fmt(EXIT_REQ.pe.cash)} cash and a ${fmt2(EXIT_REQ.pe.stock)} share price) or float it on the stock exchange (needs ${fmt(EXIT_REQ.ipo.cash)} and ${fmt2(EXIT_REQ.ipo.stock)}).</p>`}
+      : `<p class="dim">Reach Thought Leader and quarter 8 to sell your company to private equity (needs ${fmt(EXIT_REQ.pe.cash)} cash and a ${fmt2(EXIT_REQ.pe.stock)} share price) or float it on the stock exchange (needs ${fmt(EXIT_REQ.ipo.cash)} and ${fmt2(EXIT_REQ.ipo.stock)}).</p>`}` : ""}
+    ${tab === "stars" ? `
+    <h3 style="margin-top:14px">Perks <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">You have ${S.favour} ★ to spend</span></h3>
+    ${PERKS.map(pk => { const own = perk(pk.id);
+      return `<div class="action"><div><h3>${own ? "✓ " : ""}${pk.name}</h3><p>${pk.desc}</p></div>
+        ${own ? `<button class="btn ghost" disabled>Owned</button>` : `<button class="btn" data-act="perk:${pk.id}" ${S.favour < pk.cost ? "disabled" : ""}>${pk.cost} ★</button>`}</div>`; }).join("")}
+    <h3 style="margin-top:14px">Star shop <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">Buy as often as you like</span></h3>
+    ${STAR_SHOP.map(it => { const ok = S.favour >= it.cost && (!it.can || it.can());
+      return `<div class="action"><div><h3>${it.name}</h3><p>${it.desc}</p></div><button class="btn" data-act="starshop:${it.id}" ${ok ? "" : "disabled"}>${it.cost} ★</button></div>`; }).join("")}
+    ${hasPenthouse() ? `<p class="dim">You own the penthouse. Tap it at the top of the tower to furnish it.</p>`
+      : `<div class="action"><div><h3>Build a penthouse</h3><p>A private top floor for ${ceoN()} to roam, with the best view in the city. One per company, and no business benefit whatsoever.</p></div><button class="btn" data-act="penthouse" ${S.favour < PENTHOUSE_COST ? "disabled" : ""}>${PENTHOUSE_COST} ★</button></div>`}
+    <h3 style="margin-top:14px">Achievements (${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length})</h3>
+    <p class="dim">Each one earns a ★. Tap a category to see what’s left.</p>
+    ${[...new Set(ACH.map(a => a.cat))].map(c => { const list = ACH.filter(a => a.cat === c), got = list.filter(a => S.ach[a.id]).length;
+      return `<details class="achcat"><summary><b>${c}</b><span>${got} of ${list.length}</span></summary><div class="achs">${list.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div></details>`; }).join("")}` : ""}
+    ${tab === "company" ? `
+    <h3>Leaderboard</h3>
+    <div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb">🏆 Leaderboard</button></div>
+    <h3 style="margin-top:14px">Idle mode</h3>
+    ${S.idleMode ? `<p class="note">Idle mode is on. The board is making every decision, and this run’s score won’t be recorded.</p>
+      <button class="btn ghost" style="width:100%;margin-bottom:10px" data-act="idle-off">Take back control</button>
+      <h3>Watching speed</h3>
+      <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
+      <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
+    <h3 style="margin-top:14px">Start again</h3>
     <button class="btn red" style="width:100%" data-act="restart">Start a new company</button>
-    <p class="ver-line">${coName()}, version ${VERSION}</p>`, {view:"board", focus:false});
+    <p class="ver-line">${coName()}, version ${VERSION}</p>` : ""}`, {view:"board-" + tab, focus:false});
   drawCeoFace("#ceoFace");
 }
 function doBuyback(){ const c = buybackCost(); if (S.cash < c) return false; spend(c, "other"); discSpent += c; S.stock *= 1.04; checkRank(); return true; }
@@ -379,7 +422,10 @@ function earnings(){
     S.swan = {t:rand(12, 48), kind:pick(SWAN_POOL)};
   }
   if (qn % 8 === 0) notes.push("New regulations: a 400-page rulebook just landed. Compliance must now cover one more floor than before.");
-  if (qn === 5) notes.push("Coming next quarter: capital rules. The regulator will require you to hold cash in proportion to the premiums you write. Catastrophe reinsurance and Cat Modelling reduce how much.");
+  { const resLv = lvSpec("actuary", "reserving");
+    if (resLv && Math.random() < Math.min(0.4, 0.08*resLv)){ const rel = Math.round(baseIncome()*Q_LEN*0.05); S.cash += rel;
+      notes.push(`Your reserving actuaries set aside a little too much for old claims. ${fmt(rel)} has been released back into profit, and they are being insufferable about it.`); } }
+  if (qn === 5) notes.push("Coming next quarter: capital rules. The regulator will require you to hold cash in proportion to the premiums you write. Catastrophe reinsurance and Capital Modelling actuaries reduce how much.");
   const qLabel = `Q${((qn-1)%4)+1}, year ${Math.ceil(qn/4)}`;
   let lede, quote;
   if (profit < 0){ lede = "You lost money this quarter."; quote = pick(["“Is the building on fire? Asking for a client.”","“We’re downgrading you to ‘Hold your breath.’”","“Bold strategy. Incorrect, but bold.”"]); }
@@ -494,4 +540,25 @@ function finishSetup(){
   toast(`Welcome aboard, ${name}. ${company} is open for business.`, "good");
   const lg = loadLegacy(); lg.cities = Object.assign(lg.cities || {}, {[S.city]: true}); saveLegacy(lg);
   if (!S.seen) setTimeout(startTutorial, 400); else offlineCheck();
+}
+
+/* The Book tab: what you insure, and what that means when the weather turns. */
+function bookHtml(){
+  const mix = bookMix(), keys = Object.keys(mix).sort((a, b) => mix[b] - mix[a]), mp = moodPct();
+  const acts = Object.keys(ACT_SPECS).map(k => [k, lvSpec("actuary", k)]).filter(x => x[1] > 0);
+  const swanRows = Object.keys(SWANS).map(k => [k, swanExposure(k)]).sort((a, b) => b[1] - a[1]);
+  const bar = v => `<i style="display:inline-block;height:8px;width:${Math.round(Math.min(1, v/2.5)*100)}%;background:${v > 1.15 ? "var(--danger)" : v < 0.85 ? "var(--money)" : "var(--gold)"};border-radius:4px"></i>`;
+  return `<h3>Your book of business</h3>
+    ${keys.length ? `<table class="ledger">${keys.map(k => `<tr><td>${LINES[k].icon} ${LINES[k].name}</td><td>${Math.round(mix[k]*100)}% of premium</td></tr>`).join("")}</table>`
+      : `<p class="dim">You don’t underwrite anything yet. Build an Underwriting floor and pick a line.</p>`}
+    <p class="dim">${keys.length === 1 ? "All your eggs are in one basket. It’s a lovely basket, right up until someone drops it." : keys.length >= 4 ? "A nicely mixed book: when one line has a terrible year, the others pay for the biscuits." : "A mixed book rides out more storms. Retrain or build floors to spread your bets."}</p>
+    <h3 style="margin-top:14px">Customers and premiums</h3>
+    <div class="status"><div><span>Customer mood</span><b>${Math.round(S.happy)}%</b></div><div><span>Effect on premiums</span><b class="${mp < 0 ? "neg" : "pos"}">${mp >= 0 ? "+" : "−"}${Math.abs(mp)}%</b></div></div>
+    <p class="dim">Happy customers buy more policies; unhappy ones take their business elsewhere. ${mix.treaty > 0.3 ? "Your Treaty clients are other insurers, so they care less about the headlines." : "Pay claims fairly and keep prices sensible to keep them coming back."}</p>
+    <h3 style="margin-top:14px">Your actuaries</h3>
+    ${acts.length ? `<table class="ledger">${acts.map(([k, n]) => `<tr><td>${ACT_SPECS[k].icon} ${ACT_SPECS[k].name}</td><td>${k === "pricing" ? `+${Math.round((pricingBoost() - 1)*100)}% premium` : k === "reserving" ? `−${Math.round(actRed()*100)}% claim costs` : `−${Math.round(Math.min(0.5, 0.08*n)*100)}% black swan losses`}</td></tr>`).join("")}</table>`
+      : `<p class="dim">No actuaries yet. Pricing earns more, Reserving makes claims cheaper, and Capital Modelling softens disasters.</p>`}
+    <h3 style="margin-top:14px">How exposed you are to black swans</h3>
+    <p class="dim">Compared with an average insurer. Over 1× means this disaster would hit you harder.</p>
+    <table class="ledger">${swanRows.map(([k, v]) => `<tr><td>${SWANS[k].title}</td><td style="width:42%">${bar(v)} <b>${v.toFixed(1)}×</b></td></tr>`).join("")}</table>`;
 }

@@ -395,6 +395,12 @@ blockquote{background:rgba(201,165,74,.12)}
 .achcat[open] summary::after{content:"▴"}
 .achcat summary span{margin-left:auto;color:var(--ink-dim);font-size:14px}
 .achcat .achs{padding:0 10px 10px}
+.btabs{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 12px;padding:4px 0 6px;position:sticky;top:-18px;z-index:2;background:var(--panel-2)}
+.btab{flex:1 1 auto;text-align:center;font:600 14px "Chakra Petch","Pixelify Sans",sans-serif;color:#1F2A44;background:#E9E4D6;border:2px solid #1F2A44;border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.btab[aria-selected="true"]{background:#E3C064;box-shadow:0 2px 0 #1F2A44}
+.btab:focus-visible{outline:3px solid #E3C064;outline-offset:2px}
+.types .type.spec{display:grid;gap:3px;text-align:left}
+.type.spec .blurb{font-style:italic;color:var(--ink-dim)}
 
 
 </style>
@@ -449,18 +455,18 @@ const TYPES = {
   penthouse:{name:"Penthouse", wall:"#F2EDE2", trim:"#C9A54A", shirt:"#2B3352", pants:"#1F2238", up:0, sal:0, screen:"#fff",
     desc:"Your CEO’s private top floor, with the best view in the city. No business happens here, which is rather the point.",
     pro:"Somewhere for your CEO to roam. Upgrade it with stars.", con:"No practical benefit whatsoever."},
-  sales:{name:"Underwriting Box", wall:"#FFB84D", trim:"#D9822B", shirt:"#2F6FE4", pants:"#2B2D52", up:80, screen:"#7FD3F7",
-    desc:"Underwriters sign brokers’ slips to take on risk. Every slip brings in premium, which is the money part.",
+  sales:{name:"Underwriting", wall:"#FFB84D", trim:"#D9822B", shirt:"#2F6FE4", pants:"#2B2D52", up:80, screen:"#7FD3F7",
+    desc:"Underwriters sign brokers’ slips to take on risk. Choose a line of business when you build: each one earns, claims and suffers differently.",
     joke:"Motto: “If it moves, we’ll write it. If it doesn’t, we’ll write it twice.”", sal:1.0,
     pro:"Your main source of premium income.", con:"Underwriters are the best-paid people in the building. More business also means more claims, and more floors for Compliance to cover."},
   claims:{name:"Claims Office", wall:"#8FD9CB", trim:"#4FA597", shirt:"#FFFFFF", pants:"#3A3F6B", up:90, screen:"#CDEAFF",
     desc:"Handles claims on its own so The Room doesn’t fill up. You choose how generous it is.",
     joke:"Hold music: all four hours of one opera.", sal:0.6,
     pro:"Handles claims for you, faster with IT.", con:"Salaries, and “Pay all” can drain your cash quickly."},
-  actuary:{name:"Cat Modelling", wall:"#2B3157", trim:"#1A1F3D", shirt:"#7C8AA8", pants:"#1F2238", up:120, screen:"#4BE39A",
-    desc:"Catastrophe modellers price risk more carefully, so every claim costs you a bit less.",
+  actuary:{name:"Actuarial", wall:"#2B3157", trim:"#1A1F3D", shirt:"#7C8AA8", pants:"#1F2238", up:120, screen:"#4BE39A",
+    desc:"Actuaries turn uncertainty into spreadsheets. Choose a specialism when you build: Pricing, Reserving or Capital Modelling.",
     joke:"They’ve simulated 10,000 years of hurricanes and not one weekend.", sal:0.85,
-    pro:"Claims cost 7% less per level, and catastrophe losses are softened.", con:"Expensive specialists with high salaries."},
+    pro:"Each specialism strengthens a different part of the business.", con:"Expensive specialists with high salaries."},
   marketing:{name:"Broker Lunches", wall:"#FF9CC2", trim:"#E0628F", shirt:"#7A3FE0", pants:"#2B2D52", up:110, screen:"#FFE27A",
     desc:"Long lunches keep brokers bringing you business, so every Underwriting Box writes more. Hosted by Percy the Pigeon.",
     joke:"Average lunch: four hours. Average salad eaten: none.", sal:0.6,
@@ -902,7 +908,7 @@ const EVENTS = [
     {label:() => `Merge (${fmt(B()*2)})`, run(){ spend(B()*2,"other"); S.stock *= 1.08; mood(-5); return "Share price up 8%. Customers now have two hold lines that connect to each other."; }},
     {label:() => "Decline", run(){ return "Their CEO says “let’s circle back.” He will not circle back."; }}]},
   {id:"audit", title:"The auditors are here", text:"They found a spreadsheet named “final_FINAL_v7_REAL_use this one.xlsx.”", choices:[
-    {label:() => "Have the actuaries explain it", run(){ if (lv("actuary") >= 2){ S.stock *= 1.02; return "The actuaries explained it for four hours. The auditors left impressed and slightly frightened. Share price up 2%."; } const f = B(); spend(f,"other"); return `You don’t have enough actuaries to explain it. Fine: ${fmt(f)}. (More Cat Modelling would help.)`; }},
+    {label:() => "Have the actuaries explain it", run(){ if (lv("actuary") >= 2){ S.stock *= 1.02; return "The actuaries explained it for four hours. The auditors left impressed and slightly frightened. Share price up 2%."; } const f = B(); spend(f,"other"); return `You don’t have enough actuaries to explain it. Fine: ${fmt(f)}. (More Capital Modelling would help.)`; }},
     {label:() => "Blame the intern", run(){ mood(-1); return "The intern takes the fall. He’s fine. He has a jet ski."; }}]},
   {id:"lottery", title:"Someone won the lottery", text:"A Claims Office employee won the lottery and quit mid-call. The customer is still on hold.", choices:[
     {label:() => `Throw a farewell party (${fmt(B()*0.2)})`, run(){ spend(B()*0.2,"other"); S.buffs.morale = 25; return "Lovely party. They paid for the cake. Everyone works faster for a while."; }},
@@ -987,16 +993,16 @@ const COVERS = {
   dno:{name:"Directors’ and officers’ cover", rate:0.025, desc:"Pays 90% when a big corporate collapse lands on your D&O book."},
   event:{name:"Event cancellation cover", rate:0.02, desc:"Pays 90% if a global outbreak cancels every event you insure."},
 };
-const actMit = () => Math.min(0.5, 0.08*lv("actuary"));
+const actMit = () => Math.min(0.5, 0.08*lvSpec("actuary", "capital"));
 const SWANS = {
-  hurricane:{title:"Hurricane Deductible makes landfall", text:"A category 5 hurricane hit a coastline full of beachfront condos you insured. Cat bond investors in Mayfair are discovering what the “cat” stands for.", cover:"cat", mit:actMit, mitName:"Cat Modelling"},
-  canal:{title:"Ship wedged in the canal", text:"A 400-metre container ship you insure turned sideways and blocked the canal. Billions of pounds of cargo a day are stuck behind one very long parking mistake.", cover:"cat", mit:actMit, mitName:"Cat Modelling"},
+  hurricane:{title:"Hurricane Deductible makes landfall", text:"A category 5 hurricane hit a coastline full of beachfront condos you insured. Cat bond investors in Mayfair are discovering what the “cat” stands for.", cover:"cat", mit:actMit, mitName:"Capital Modelling"},
+  canal:{title:"Ship wedged in the canal", text:"A 400-metre container ship you insure turned sideways and blocked the canal. Billions of pounds of cargo a day are stuck behind one very long parking mistake.", cover:"cat", mit:actMit, mitName:"Capital Modelling"},
   outage:{title:"The update that broke the world", text:"A routine software update crashed 8.5 million computers at once. Airlines, banks, broadcasters and the office coffee machine are all showing the same sad face.", cover:"cyber", mit:() => Math.min(0.6, 0.15*lv("it")), mitName:"IT"},
-  ash:{title:"The volcano nobody can pronounce", text:"An Icelandic volcano closed Europe’s airspace for a week. 100,000 flights were cancelled, and every travel policy you wrote just became a claim.", cover:"cat", mit:actMit, mitName:"Cat Modelling"},
+  ash:{title:"The volcano nobody can pronounce", text:"An Icelandic volcano closed Europe’s airspace for a week. 100,000 flights were cancelled, and every travel policy you wrote just became a claim.", cover:"cat", mit:actMit, mitName:"Capital Modelling"},
   cancel:{title:"Everything is cancelled", text:"A global outbreak cancelled every event on the calendar. Event cancellation claims are pouring in, led by one tennis club that paid for pandemic cover for 17 years straight.", cover:"event", mit:() => Math.min(0.5, 0.1*lv("legal")), mitName:"Legal"},
   bank:{title:"Megabank goes bust overnight", text:"A giant investment bank collapsed overnight. Its directors have all claimed on the D&O cover you wrote them, and every one of them was apparently on holiday that year.", cover:"dno", mit:() => Math.min(0.6, 0.15*lv("compliance")), mitName:"Compliance"},
-  rocket:{title:"Rocket launch goes boom", text:"A rocket carrying satellites you insured exploded 40 seconds after launch. The satellites are now very expensive confetti.", cover:"cat", mit:actMit, mitName:"Cat Modelling"},
-  solar:{title:"The solar superstorm", text:"The biggest solar storm since 1859 lit up the sky over London and fried satellites, power grids and every sat-nav in the country.", cover:"cat", mit:actMit, mitName:"Cat Modelling"},
+  rocket:{title:"Rocket launch goes boom", text:"A rocket carrying satellites you insured exploded 40 seconds after launch. The satellites are now very expensive confetti.", cover:"cat", mit:actMit, mitName:"Capital Modelling"},
+  solar:{title:"The solar superstorm", text:"The biggest solar storm since 1859 lit up the sky over London and fried satellites, power grids and every sat-nav in the country.", cover:"cat", mit:actMit, mitName:"Capital Modelling"},
 };
 const SWAN_POOL = ["hurricane","hurricane","canal","canal","outage","outage","ash","cancel","bank","bank","rocket","rocket","solar"];
 
@@ -1006,22 +1012,34 @@ const TUT = [
   {el:null, get title(){ return `Welcome, ${ceoN()}`; }, text:"You’re the new CEO of a syndicate in the London insurance market. This quick tour shows you how everything works. The game is paused while it runs."},
   {el:"#cashBox", title:"Cash", text:"Your money, and what you earn each second before claims. If cash falls too far below zero, the bank takes the building."},
   {el:".hud .stock", title:"Share price and title", text:"Earnings calls move your share price. The numbers in brackets show how many of the board’s targets you’ve hit toward your next promotion."},
-  {el:() => $("#happyBar").closest(".stat"), title:"Customer mood", text:"Paying claims keeps customers happy, and happy customers buy more. Very unhappy customers bring regulator warnings. Mood is also your reputation in the final score."},
+  {el:() => $("#happyBar").closest(".stat"), title:"Customer mood", text:"Customer mood decides how much business you win. Happy customers buy more policies, so your premiums go up; miserable ones take their business elsewhere. Paying claims keeps them happy. The number in brackets shows the effect right now."},
   {el:() => $("#qLabel").closest(".qrow"), title:"Earnings calls", text:"Every 60 seconds the City checks your profit against its target. Beat it to earn up to 3 stars, a cash bonus and board confidence. The better you do, the higher the target goes."},
   {el:() => $("#confBar").closest(".qrow"), title:"Board confidence and the market", text:"If board confidence reaches zero, you’re fired. The label on the right shows the insurance cycle: hard markets mean high prices, soft markets mean price wars. Set your pricing to match in the Boardroom."},
   {el:"#btnHelp", title:"Pause and help", text:"Pause the game any time with the Pause button or the P key. This ? button reopens the tutorial and the full room guide whenever you need them."},
   {el:"#game", title:"Your tower", text:"Drag to scroll. Tap a floor to upgrade it or change its design. Brokers with a “!” in The Room at the bottom are claims waiting for you. Tap them."},
-  {el:"#btnFloors", title:"Build floors", text:"Every room has an upside and a downside, and each new floor raises all salaries by 6%. After your first 3 floors, Compliance must cover the rest or the regulator will warn you. New kinds of floor unlock as you grow."},
+  {el:"#btnFloors", title:"Build floors", text:"Every room has an upside and a downside, and each new floor raises all salaries by 6%. When you build Underwriting you choose what to insure, from houses to rockets, and Actuarial floors choose a specialism. Each plays differently, and a mixed book rides out more storms. Tap a floor later to retrain it. After your first 3 floors, Compliance must cover the rest or the regulator will warn you."},
   {el:"#btnClaims", title:"Handle claims", text:"Pay, deny or stall with paperwork. Serious claims that look genuine are the most likely to sue, and to win. A Risk Dept shows you the odds."},
-  {el:"#btnBoard", title:"The Boardroom", text:"Your strategy room. Check promotion targets, buy your own insurance against black swans, hire executives, pay dividends, spend stars on perks and see the leaderboard. It opens for you as soon as this tour ends."},
+  {el:"#btnBoard", title:"The Boardroom", text:"Your strategy room, split into tabs. Overview has your promotion targets and pricing, Book shows what you insure and what could hurt you, Risk is your own insurance, and the rest cover executives, money, stars and the leaderboard. It opens for you as soon as this tour ends."},
   {el:"#btnBoard", title:"Pricing strategy", text:"Your first Boardroom decision. Undercut wins customers but thins margins. Market rate is the safe middle. Premium earns more per policy but loses customers in a soft market. Gouge makes a fortune until the regulator notices. Match it to the market cycle shown in the top bar."},
-  {el:"#btnBoard", title:"Black swans", text:"Every so often a huge disaster hits: a hurricane, a global IT meltdown, a bank collapse. There’s no warning. Without your own insurance you pay the whole loss, and it can sink you. Buy reinsurance and other cover in the Boardroom under Your own insurance. It renews at each earnings call and pays 90% when disaster strikes."},
+  {el:"#btnBoard", title:"Black swans", text:"Every so often a huge disaster hits: a hurricane, a global IT meltdown, a bank collapse. There’s no warning, and what you insure decides how badly it hurts. Without your own insurance you pay the whole loss. Buy cover in the Boardroom’s Risk tab: it renews at each earnings call and pays 90% when disaster strikes."},
   {el:null, title:"How it ends", text:"You lose if you go bankrupt, get fired, or lose your licence after three warnings. Your final score combines the money you generate, the days you survive and your reputation. Prefer to just watch? Idle mode in the Boardroom lets the board run everything, but that run’s score won’t count."},
 ];
 
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.6.1", notes:[
+    "The tutorial now covers lines of business, actuarial specialisms, retraining and the new Boardroom tabs.",
+    "The Boardroom tabs now wrap onto a second row instead of scrolling sideways.",
+  ]},
+  {v:"0.6.0", notes:[
+    "Underwriting floors now write a line of business: Property, Casualty, Excess Casualty, Marine, Cyber, Specialty or Treaty Reinsurance. Each earns, claims and suffers differently, and each feels different black swans.",
+    "Cat Modelling is now Actuarial, with three specialisms: Pricing (more premium), Reserving (cheaper claims, and the odd reserve release) and Capital Modelling (softer black swans, lower capital needs, cheaper reinsurance).",
+    "Retrain a floor to a different line or specialism at any time, for a fee.",
+    "Customer mood now clearly drives premiums: the HUD shows the effect, from −75% when customers are miserable to +56% when they love you.",
+    "The Boardroom is now split into tabs, including a new Book tab showing your mix of business and which disasters you’re most exposed to.",
+    "145 new claims written for each line of business, and 130 new claimant names.",
+  ]},
   {v:"0.5.0", notes:[
     "A global leaderboard: your finished runs are sent automatically and you can compare scores with everyone, filtered by city. Your company and CEO names appear there publicly. Idle mode runs aren’t included.",
     "If you finish a run offline, your score is sent the next time you play online.",
@@ -1103,6 +1121,226 @@ const ONLINE = {
   key: "sb_publishable_W7qw3JOAkACT8W1kwN7wrQ_6saKb5Dt",
 };
 
+/* data/lines.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
+/* Lines of business for Underwriting floors, and specialisms for Actuarial floors.
+   The blurbs teach by stealth: each one is a joke that happens to be true. */
+const LINES = {
+  property:{name:"Property", icon:"🏠", rate:1.0, freq:1.15, size:0.85, sue:0.6, mood:1.1,
+    swans:{hurricane:1.8, solar:1.4, ash:0.8, canal:0.6, outage:0.6, cancel:0.5, bank:0.4, rocket:0.4},
+    blurb:"Houses, offices and the occasional shed full of jet skis. Steady money until the sky turns purple.",
+    pro:"Steady premium, small claims, and people rarely sue over a burst pipe.", con:"Hurricanes and solar storms hit every building you insure at once."},
+  casualty:{name:"Casualty", icon:"⚖️", rate:1.0, freq:1.3, size:0.75, sue:1.6, mood:1.2,
+    swans:{bank:0.9, cancel:0.7, outage:0.6, hurricane:0.4, solar:0.4, ash:0.4, canal:0.4, rocket:0.4},
+    blurb:"You pay when your customer gets the blame: a wet floor, a wobbly ladder, a toaster with ambitions.",
+    pro:"Barely touched by natural disasters.", con:"Lots of claims, and claimants love a lawsuit."},
+  excess:{name:"Excess Casualty", icon:"🏛️", rate:1.45, freq:0.45, size:2.4, sue:2.0, mood:0.8, unlock:2,
+    swans:{bank:1.9, outage:0.9, cancel:0.8, hurricane:0.5, solar:0.5, ash:0.5, canal:0.6, rocket:0.5},
+    blurb:"You only pay once a claim has eaten through everyone else’s policy first. It rarely happens. When it does, bring biscuits.",
+    pro:"Big premiums for claims that rarely reach you.", con:"When one does reach you it’s enormous, and it brings lawyers. Corporate collapses land here."},
+  marine:{name:"Marine", icon:"⚓", rate:1.1, freq:0.8, size:1.4, sue:0.8, mood:0.9,
+    swans:{canal:2.3, hurricane:1.3, solar:0.9, ash:0.6, outage:0.7, cancel:0.4, bank:0.5, rocket:0.4},
+    blurb:"Ships, cargo and the ports in between. The oldest trick in the London market: it started in a coffee house in 1688.",
+    pro:"Good premiums and fewer claims.", con:"One ship parked sideways in a canal and the whole fleet is late, and so is your profit."},
+  cyber:{name:"Cyber", icon:"💻", rate:1.3, freq:1.0, size:1.1, sue:0.9, mood:1.0,
+    swans:{outage:2.5, solar:1.5, bank:0.8, hurricane:0.5, ash:0.4, canal:0.5, cancel:0.4, rocket:0.6},
+    blurb:"Hackers, ransomware and the intern who clicked the link. Nobody fully understands it, so everyone pays a lot for it.",
+    pro:"High premiums, and they keep growing.", con:"One bad software update and every customer claims on the same morning."},
+  specialty:{name:"Specialty", icon:"🚀", rate:1.25, freq:0.7, size:1.5, sue:0.8, mood:0.9,
+    swans:{rocket:2.5, cancel:2.1, solar:1.2, ash:1.1, outage:0.8, hurricane:0.7, canal:0.6, bank:0.6},
+    blurb:"The odd stuff: satellite launches, film shoots, sports events and a concert pianist’s left hand.",
+    pro:"Unusual risks pay unusually well.", con:"Exploding rockets and mass cancellations land squarely on your desk."},
+  treaty:{name:"Treaty Reinsurance", icon:"🌐", rate:1.6, freq:0.3, size:3.2, sue:0.3, mood:0.35, unlock:3,
+    swans:{hurricane:1.9, canal:1.5, outage:1.5, ash:1.5, cancel:1.5, bank:1.5, rocket:1.5, solar:1.6},
+    blurb:"Insurance for insurance companies. You take a slice of their whole book, so their worst day becomes yours.",
+    pro:"The biggest premiums and very few claims. Your customers are other insurers, so public mood barely matters.", con:"Every black swan hits you harder, because you’ve insured the insurers."},
+};
+const ACT_SPECS = {
+  pricing:{name:"Pricing", icon:"🧮",
+    blurb:"They work out what every policy should cost, then explain it in a spreadsheet nobody opens.",
+    pro:"+6% premium per level (up to +40%).", con:"No help when disaster strikes."},
+  reserving:{name:"Reserving", icon:"🏦",
+    blurb:"They set money aside for claims that haven’t happened yet. When they’ve set aside too much, profit appears as if by magic.",
+    pro:"Claims cost 6% less per level (up to 40%), and over-cautious reserves sometimes release extra profit at earnings calls.", con:"No help with premiums or black swans."},
+  capital:{name:"Capital Modelling", icon:"🛡️",
+    blurb:"They simulate ten thousand disasters before breakfast to work out how much money you need to survive the real one.",
+    pro:"Black swan losses −8% per level (up to 50%), a lower capital requirement, and cheaper reinsurance.", con:"No help with everyday claims or premiums."},
+};
+/* Claims written for each line, so you pick up what each one covers just by reading them. */
+const LINE_INCIDENTS = {
+  property:[
+    "A burst pipe turned the ground floor into a koi pond. The koi were not insured.",
+    "Lightning struck the weathervane, then the chimney, then the weathervane again, out of spite.",
+    "A garden fire spread to the shed, which contained 400 litres of something the owner ‘can’t remember’.",
+    "Subsidence. The house is now slightly closer to the pub.",
+    "A neighbour’s oak tree fell through the conservatory during a very mild breeze.",
+    "Flooding from a river that the estate agent described as ‘a charming water feature’.",
+    "The roof blew off in a storm and landed on a different policyholder’s roof.",
+    "A chip pan fire. The chips survived.",
+    "Hail the size of satsumas dented every car in the car park and one very surprised pigeon.",
+    "Frozen pipes burst in an empty holiday home. Discovered three weeks later by the smell.",
+    "Squirrels chewed through the wiring and started a small but stylish fire.",
+    "The warehouse sprinkler system went off at 3am for no reason at all, which was the reason.",
+    "A delivery lorry reversed into the shop front while the driver was ‘just checking the map’.",
+    "Damp so bad the wallpaper has developed opinions.",
+    "A bath overflowed on the fourth floor. Floors three, two and one would like a word.",
+    "The new extension was built without foundations. It is now an exit.",
+    "A barbecue melted the patio furniture, the patio and a gazebo.",
+    "Storm damage to a restaurant sign that now reads ‘EAT HER’.",
+    "Arson by a rival florist. Allegedly.",
+    "The office server room flooded because the cleaner hosed it down ‘to cool it off’.",
+    "A crane dropped a pallet of bricks through a car showroom roof.",
+    "Smoke damage after a scented candle was left burning beside a curtain of exactly the wrong fabric.",
+    "A wall collapsed after the landlord removed it to ‘open up the space’. It was load-bearing.",
+    "Hurricane shutters were purchased, installed and left open.",
+    "The basement flooded. The basement contained the flood defences.",
+  ],
+  casualty:[
+    "A shopper slipped on a grape in aisle four and is suing the grape, the shop and the vineyard.",
+    "A customer claims the ‘extra hot’ coffee was hot.",
+    "Someone tripped over a ‘mind the step’ sign that had been placed on the step.",
+    "A ladder sold as ‘wobble-free’ wobbled.",
+    "A trampoline park visitor bounced further than the trampoline park was expecting.",
+    "A delivery driver was bitten by a dog named Biscuit. Biscuit denies everything.",
+    "A gym member injured themselves on a machine they were using as a coat rack.",
+    "A restaurant served a ‘mild’ curry that was, in the claimant’s words, ‘a war crime’.",
+    "A toaster with ambitions set fire to a kitchen, a cookbook and a perfectly good bagel.",
+    "Scaffolding fell on a parked car. The car was a hearse. Nobody was in it, yet.",
+    "A slippery floor at a dance studio. The tango was described as ‘unscheduled’.",
+    "A builder’s skip was left on a pavement and walked into by four people and a man on a phone.",
+    "A child’s toy marketed for ages 3 and up was swallowed by someone aged 41.",
+    "A hotel guest fell out of bed and blames the hotel for making the bed ‘too comfy’.",
+    "A self-checkout machine accused a pensioner of shoplifting a cucumber. Distress claim.",
+    "A café’s ‘wet floor’ sign has been wet for nine years. A customer finally slipped.",
+    "A golf ball went through a windscreen. The golfer says the ball ‘went rogue’.",
+    "A food truck’s gas bottle rolled into a wedding.",
+    "A security guard tackled the wrong man. The wrong man was the CEO.",
+    "Food poisoning from a sandwich labelled ‘best before: yesterday, ideally’.",
+    "A revolving door revolved faster than anyone thought possible.",
+    "A pothole repair crew created a new, larger pothole.",
+    "A garden centre’s cactus display ‘attacked’ a customer.",
+    "A spinning class instructor shouted encouragement so loudly a customer lost hearing in one ear.",
+    "An escalator went the wrong way during the rush hour.",
+  ],
+  excess:[
+    "A product recall on 2 million kettles. The first insurer has run out of money. Now it’s your turn.",
+    "A class action from 40,000 customers who were all overcharged by 3p, plus lawyers.",
+    "A chemical plant leak. The primary policy paid out in an afternoon. Your layer starts tomorrow.",
+    "A stadium roof collapse. Nobody was hurt, but the lawyers are injured by the excitement.",
+    "A pharmaceutical side effect turned out to be the main effect.",
+    "A trucking firm’s lorry hit a bridge, a train and a very expensive yacht on a trailer.",
+    "A jury awarded a record sum after a slip in a supermarket. The juror was the claimant’s aunt.",
+    "Hip replacements that made a clicking noise. In stereo. Across three countries.",
+    "A dam ‘mostly held’. The bit that didn’t is now your problem.",
+    "Asbestos found in a building insured since 1974. Everybody is very old and very litigious.",
+    "A ride at a theme park went round 11 times instead of 3.",
+    "A cosmetics brand promised ‘ten years younger’. Several customers now look 70.",
+    "A self-driving delivery robot drove itself into a canal, a café and a court case.",
+    "A fireworks factory had a quiet day. Then it didn’t.",
+    "A building contractor used the wrong concrete on 300 car parks.",
+    "A social media firm was sued by every user it ever had, simultaneously.",
+    "A bus company’s new ‘express’ timetable proved slightly too express.",
+    "A baby food recall with a 40-page apology and a 400-page lawsuit.",
+    "A crane fell into a shopping centre during the January sales.",
+    "An energy drink advertised ‘wings’. A customer tried to fly.",
+  ],
+  marine:[
+    "A container ship lost 300 containers overboard. 40,000 rubber ducks are now crossing the Atlantic.",
+    "Cargo of bananas arrived as cargo of banana bread.",
+    "A forklift was driven off the end of the quay. The driver says ‘the quay moved’.",
+    "A superyacht ran aground while the captain was taking a selfie.",
+    "A cargo of luxury handbags was stolen by pirates with excellent taste.",
+    "A shipment of frozen fish thawed when someone unplugged the fridge to charge a phone.",
+    "A tanker anchored on a broadband cable. Three countries lost their internet.",
+    "A ferry hit the harbour wall at 2mph. The repair bill was not 2mph.",
+    "A ship arrived in the wrong port. It was the wrong continent.",
+    "Rats ate a cargo of fine cheese and then, inexplicably, the cargo of fine crackers.",
+    "A tug boat pushed a cruise ship slightly too enthusiastically.",
+    "A cargo of grand pianos was loaded on top of a cargo of eggs.",
+    "A ship’s cat fell overboard. The crew turned the ship around. The cargo was perishable.",
+    "Storm damage to a cargo of umbrellas. Nobody sees the irony but you.",
+    "A port crane toppled onto a ship carrying more port cranes.",
+    "Contaminated fuel stopped a ship mid-ocean for nine days. The crew ate the cargo.",
+    "A yacht sank at its mooring. The owner was at a seminar on yacht safety.",
+    "A shipment of fireworks met a shipment of matches in a warm hold.",
+    "A cargo of designer trainers was ‘lost at sea’ and found at a market stall.",
+    "A lifeboat launched itself during a drill, with nobody in it, and set off for France.",
+  ],
+  cyber:[
+    "Ransomware. The hackers want £2 million in crypto and a positive review.",
+    "An intern clicked a link titled ‘Definitely Not A Virus.exe’.",
+    "The password was ‘password’. It has now been changed to ‘password2’.",
+    "A hacker stole 2 million customer records and then got bored and returned half of them.",
+    "A phishing email impersonated the CEO, convincingly, by being rude and asking for gift cards.",
+    "A smart fridge was used to hack a bank. The fridge is under arrest.",
+    "The company’s website was replaced with a picture of a goat. Business interruption claim.",
+    "A software update bricked every till in a chain of 400 shops on Black Friday.",
+    "Someone left a laptop on a train with the passwords taped to the lid.",
+    "A data breach exposed the HR department’s spreadsheet titled ‘who we actually like’.",
+    "The IT team paid the ransom. The hackers sent the files back, in Comic Sans.",
+    "A disgruntled ex-employee still had admin access. For six years.",
+    "Hackers locked a hospital car park’s barrier. Everyone is very stuck.",
+    "A cloud provider ‘misplaced’ a region.",
+    "A crypto exchange was hacked by a 15-year-old during double maths.",
+    "A deepfake of the finance director approved a transfer of £8 million.",
+    "The backup drive was stored next to the main drive. In the room that flooded.",
+    "A smart thermostat was hacked and set every office to 31 degrees.",
+    "Someone plugged in a USB stick found in the car park labelled ‘salaries’.",
+    "A denial-of-service attack took down a website that sells denial-of-service protection.",
+  ],
+  specialty:[
+    "A film shoot was delayed because the lead actor’s moustache fell off and was eaten by a goose.",
+    "A concert pianist sprained his left hand opening a jar of pickles.",
+    "A music festival was rained off. The headliner was rained off separately.",
+    "A satellite deployed its solar panels upside down.",
+    "A racehorse insured for £4 million developed a fear of other horses.",
+    "A world-record cake attempt collapsed on live television.",
+    "A celebrity chef lost their sense of taste on the opening night.",
+    "A blimp advertising a bank deflated over a rival bank.",
+    "A footballer insured his legs for £50 million and broke his nose.",
+    "A wedding was cancelled when the groom was found to be already married. Twice.",
+    "A space tourist got space sick and demanded a refund from the cosmos.",
+    "A priceless painting was damaged by a gallery visitor’s selfie stick.",
+    "An art shipment arrived with the sculpture’s arms in a separate box. They weren’t meant to come off.",
+    "A comedian’s tour was cancelled after a joke went ‘catastrophically’ well.",
+    "A stunt double was injured performing a stunt that turned out to be in the wrong film.",
+    "A whisky cask worth £1.2 million was sampled by the warehouse manager. Thoroughly.",
+    "A hot-air balloon race was won by a balloon that was supposed to be tethered.",
+    "A drone light show spelled out the sponsor’s name with one important letter missing.",
+    "A magician’s ‘sawn in half’ assistant has filed for damages, and a second opinion.",
+    "A rocket engine test was ‘a bit more test than planned’.",
+  ],
+  treaty:[
+    "A Florida insurer you reinsure has asked for its share of a hailstorm. It is a very large share.",
+    "A ceding insurer’s ‘small’ flood portfolio turned out to be the whole of Belgium.",
+    "A cedant claims under the hours clause that a 96-hour storm was ‘one event’. It was four.",
+    "An insurer you reinsure wrote 40,000 policies on the same hillside, which has now slid.",
+    "A cedant’s cyber book had 3,000 customers using the same software. It had a bad day.",
+    "A reinsured motor book has discovered that its drivers can’t drive.",
+    "A cedant forgot to mention it insures a fireworks factory next to a petrol station.",
+    "An insurer you back paid claims ‘generously’ during a promotional month called Yes-vember.",
+    "A quota share partner has sent a bordereau the length of a novel, and the ending is sad.",
+    "A cedant’s earthquake model assumed earthquakes were ‘unlikely’. One disagreed.",
+    "The insurer you reinsure has declared a frost a catastrophe. It was a nice frost.",
+    "A ceding company’s agricultural book has met a plague of locusts with a plague of claims.",
+    "An insurer you back has discovered its policy wording said ‘includes everything’.",
+    "A cedant’s windstorm losses have arrived, followed by the realisation that wind was covered.",
+    "A ceding insurer’s loss adjuster has lost the loss adjuster’s report.",
+  ],
+};
+/* More claimants, so names don't repeat as often. */
+const MORE_NAMES = ["Aisha","Bartholomew","Chiara","Dmitri","Esme","Fatima","Gwen","Hamish","Ines","Jasper","Keira","Lorcan","Mariam","Nikolai","Ottilie","Parveen","Quentin","Rosalind",
+  "Soren","Tamsin","Uma","Viktor","Winifred","Xander","Yasmin","Zeb","Abebe","Bronwen","Cosmo","Delphine","Eamon","Farah","Giles","Hyacinth","Idris","Juniper","Kofi","Lavinia",
+  "Mungo","Nkechi","Oswald","Petra","Ravi","Saoirse","Thaddeus","Ulrike","Vikram","Wilhelmina","Yusuf","Zinnia","Ade","Bea","Ciaran","Dolores","Errol","Flick","Gaz","Hermione",
+  "Ike","Jolene","Kwame","Lettice","Marcus","Niamh","Orla","Pip","Rufus","Shona","Tarquin","Una","Vera","Wes","Yolanda","Zara","Ahmed","Brenda","Clive","Dot","Enzo","Fern",
+  "Gloria","Hugo","Imogen","Jago","Kitty","Lenny","Maeve","Nigel","Olu","Peregrine","Rhiannon","Sid","Trudy","Valentina","Wendell","Agnes","Bilal","Carmen","Darius","Elspeth",
+  "Florian","Greta","Horace","Isadora","Jerome","Kemi","Ludmila","Mo","Nadia","Ophelia","Perpetua","Raj","Stanislav","Tilly","Ugo","Vivienne","Walter","Xiomara","Yuki","Zoltan",
+  "Aurelio","Blossom","Cyril","Dagny","Ebenezer","Fenella","Gideon","Honor","Ignatius","Jemima"];
+function lineIncident(line){
+  const pool = LINE_INCIDENTS[line] || LINE_INCIDENTS.property;
+  if ((line === "property" || line === "casualty") && Math.random() < 0.35) return pickFresh(INCIDENTS, "recentInc", 45);
+  return pickFresh(pool, "recentLine_" + line, Math.min(12, pool.length - 3));
+}
+
 /* art/palette.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 const SKINS = ["#FFDBAC","#F2C9A0","#E0A878","#C68650","#8D5524","#5C3A21"];
 const HAIRS = ["#2B1B10","#5A3825","#C9A227","#B5562E","#1C1C1C","#9A9AA8","#E86A92","#3E5CC4"];
@@ -1161,7 +1399,7 @@ const DESIGNS = {
         const cx = 118, cy = y+15, a = time*1.5;
         for (let arm = 0; arm < 3; arm++) for (let r = 1; r < 7; r++){ const t = a + arm*2.09 + r*0.5; R(Math.round(cx + Math.cos(t)*r), Math.round(cy + Math.sin(t)*r*0.7), 1, 1, "#E8EEF6"); }
         R(cx,cy,1,1,"#FF6B6B");
-        R(148,y+9,22,12,"#0B1226"); T("Cat 5", 159, y+14.5, 4.5, "#FF6B6B", "center", 700); T("probably", 159, y+19.5, 3.8, "#C9CCF5", "center", 600);
+        R(148,y+9,22,12,"#0B1226"); T("95%", 159, y+14.5, 4.5, "#FF6B6B", "center", 700); T("probably", 159, y+19.5, 3.8, "#C9CCF5", "center", 600);
       }},
     {name:"Monte Carlo", wall:"#2A1F45", trim:"#1A1230",
       decor:y => {
@@ -2006,7 +2244,7 @@ return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.key
 
 /* core/constants.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* VERSION and BUILD_DATE are filled in by build.js from package.json. */
-const VERSION = "0.5.0", BUILD_DATE = "2026-11-04";
+const VERSION = "0.5.0", BUILD_DATE = "2026-11-06";
 function intelSpread(n){ return Math.max(0, 36 - 6*n); }
 function intelText(n){
   if (n <= 0) return "No claim intel yet";
@@ -2044,6 +2282,20 @@ function ensureState(){
 }
 function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.v === 1) return s; }catch(e){} return null; }
 const PENTHOUSE_COST = 20, PENTHOUSE_UP = 6;
+function fSpec(f){ return f.spec || (f.type === "sales" ? "property" : f.type === "actuary" ? "capital" : null); }
+function lvSpec(type, spec){ let n = 0; for (const f of S.floors) if (f.type === type && fSpec(f) === spec) n += f.level; return n; }
+function floorName(f){ const sp = fSpec(f); if (f.type === "sales") return LINES[sp].name + " Underwriting"; if (f.type === "actuary") return ACT_SPECS[sp].name + " Actuaries"; return TYPES[f.type].name; }
+function bookMix(){ const m = {}; let tot = 0; for (const f of S.floors) if (f.type === "sales"){ const k = fSpec(f), w = salesFloorRate(f.level)*LINES[k].rate; m[k] = (m[k] || 0) + w; tot += w; } for (const k in m) m[k] /= tot || 1; return m; }
+function mixAvg(field){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*LINES[k][field]; any = true; } return any ? v : 1; }
+function swanExposure(kind){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*(LINES[k].swans[kind] != null ? LINES[k].swans[kind] : 0.8); any = true; } return any ? Math.max(0.3, v) : 1; }
+function swanCulprit(kind){ const m = bookMix(); let best = null, bv = -1; for (const k in m){ const v = m[k]*(LINES[k].swans[kind] || 0.8); if (v > bv){ bv = v; best = k; } } return best; }
+function lineUnlocked(k){ return !LINES[k].unlock || S.rankIdx >= LINES[k].unlock; }
+function autoSpec(type){
+  if (type === "sales"){ const own = k => S.floors.filter(f => f.type === "sales" && fSpec(f) === k).length; const opts = Object.keys(LINES).filter(lineUnlocked); return opts.sort((a, b) => own(a) - own(b) || Math.random() - 0.5)[0]; }
+  if (type === "actuary"){ const own = k => S.floors.filter(f => f.type === "actuary" && fSpec(f) === k).length; return Object.keys(ACT_SPECS).sort((a, b) => own(a) - own(b))[0]; }
+  return undefined;
+}
+function moodPct(){ return Math.round((happyMult() - 1)*100); }
 function hasPenthouse(){ return S.floors.some(f => f.type === "penthouse"); }
 function workFloors(){ return S.floors.length - (hasPenthouse() ? 1 : 0); }
 let lastAddedFloor = -1;
@@ -2070,7 +2322,7 @@ ensureState();
 /* ---------- Economy ---------- */
 function lv(t){ let s = 0; for (const f of S.floors) if (f.type === t) s += f.level; return s; }
 function morale(){ return (1 + 0.08*lv("breakroom") + 0.05*lv("hr") + (S.buffs.morale > 0 ? 0.3 : 0) + (perk("espresso") ? 0.05 : 0))*(S.hrSlump > 0 ? 0.75 : 1); }
-function happyMult(){ return 0.4 + S.happy/100*0.9; }
+function happyMult(){ const base = clamp(1 + (S.happy - 65)*0.016, 0.25, 1.6); return 1 + (base - 1)*mixAvg("mood"); }
 function salesFloorRate(level){ return 5.5*Math.pow(level,1.38); }
 function exposureRate(level){ return 5.5*Math.pow(level,1.27); }
 function exposure(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += exposureRate(f.level); return s*salesMult()*volume(); }
@@ -2081,7 +2333,8 @@ function priceIdx(){ return S.price == null ? 1 : S.price; }
 function marketRate(){ return PRICES[priceIdx()].p*(1 + 0.25*cycleVal()); }
 function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1)); }
 function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + (f.type === "penthouse" ? 0 : f.level), 0)/70); }
-function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level); return s*salesMult()*marketRate()*volume(); }
+function pricingBoost(){ return 1 + Math.min(0.4, 0.06*lvSpec("actuary", "pricing")); }
+function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level)*LINES[fSpec(f)].rate; return s*salesMult()*marketRate()*volume()*pricingBoost(); }
 function income(){ return baseIncome() * (S.buffs.sales > 0 ? 2 : 1) * (S.outage > 0 ? 0.5 : 1); }
 function salFactor(){ return 1 + 0.06*workFloors(); }
 function upkeep(){ let s = 0; for (const f of S.floors) s += (TYPES[f.type].sal || 0.6)*f.level; return s*salFactor() + execCost(); }
@@ -2101,7 +2354,7 @@ function checkUnlocks(){
 function capReq(){
   if (S.quarter < 6) return 0;
   const ramp = Math.min(1, (S.quarter - 5)/8), annual = Math.max(0, baseIncome())*Q_LEN*4;
-  const risk = (S.cover && S.cover.cat ? 0.8 : 1)*(1 - Math.min(0.3, 0.05*lv("actuary")))*(lv("invest") && S.invRisk === 2 ? 1.15 : 1)*(1 + 0.1*Math.max(0, S.diff - 1));
+  const risk = (S.cover && S.cover.cat ? 0.8 : 1)*(1 - Math.min(0.4, 0.06*lvSpec("actuary", "capital")))*(lv("invest") && S.invRisk === 2 ? 1.15 : 1)*(1 + 0.1*Math.max(0, S.diff - 1));
   return Math.round(annual*(0.08 + 0.32*maturity())*risk*ramp/10)*10;
 }
 function capRatio(){ const r = capReq(); return r ? Math.max(0, S.cash)/r : Infinity; }
@@ -2148,10 +2401,10 @@ function compGap(){ return compNeed() - compHave(); }
 function maxStrikes(){ return perk("lobbyist") ? 4 : 3; }
 function growthRate(){ return Math.max(0.01, (0.06 + 0.04*S.diff + 0.02*lv("ir") - (perk("dinners") ? 0.03 : 0))*(1 - 0.85*maturity())); }
 function mktName(){ return S.diff < 1.6 ? "Calm market" : S.diff < 2.3 ? "Choppy market" : S.diff < 3.1 ? "Stormy market" : S.diff < 4 ? "Brutal market" : S.diff < 5 ? "Cutthroat market" : "Feeding frenzy"; }
-function actRed(){ return Math.min(0.55, 0.07*lv("actuary")); }
+function actRed(){ return Math.min(0.4, 0.06*lvSpec("actuary", "reserving")); }
 function buildCost(){ const n = workFloors() - 1; return Math.round(100*Math.pow(1.6, Math.min(n, 13))*Math.pow(1.25, Math.max(0, n - 13))); }
 function upCost(f){ return Math.round(TYPES[f.type].up*Math.pow(1.9, f.level)); }
-function claimInterval(){ return Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))/volume() * (S.buffs.surge > 0 ? 0.35 : 1); }
+function claimInterval(){ return Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))/volume()/mixAvg("freq") * (S.buffs.surge > 0 ? 0.35 : 1); }
 function B(){ return Math.max(120, Math.round(baseIncome()*25/10)*10); }
 function canPay(a){ return S.cash - a >= -overdraft()*0.6; }
 function overdraft(){ return Math.max(1500, baseIncome()*90); }
@@ -2177,15 +2430,15 @@ function mood(d){ S.happy = clamp(S.happy + d, 0, 100); }
 function spend(a, cat){ S.cash -= a; S.q[cat] += a; }
 function gain(a){ S.cash += a; S.q.prem += a; S.earned = (S.earned || 0) + a; }
 
-function addClaim(name, desc, amount){
-  const nc = {id:S.claimId++, name, desc, amount:Math.max(25, Math.round(amount/5)*5), pat:40, max:40, stalls:0};
+function addClaim(name, desc, amount, line){
+  const nc = {id:S.claimId++, name, desc, line:line || "property", amount:Math.max(25, Math.round(amount/5)*5), pat:40, max:40, stalls:0};
   ensureIntel(nc); S.claims.push(nc);
   if (!S.tipClaim){ S.tipClaim = true; toast("A broker just walked into The Room with a claim. Tap them, or open Claims."); }
 }
-function typicalClaim(){ return Math.max(25, Math.max(3, exposure()/volume())*Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))*0.55*(1-actRed())*claimSizeMult()); }
+function typicalClaim(){ return Math.max(25, Math.max(3, exposure()/volume())*Math.max(3.5, 20/(1 + 0.12*lv("sales"))/(0.8 + 0.2*S.diff))*0.55*(1-actRed())*claimSizeMult()*mixAvg("size")); }
 function ensureIntel(c){
   if (c.sev != null) return;
-  const r = c.amount / typicalClaim();
+  const r = c.amount / (typicalClaim()*(c.line && LINES[c.line] ? LINES[c.line].size/Math.max(0.3, mixAvg("size")) : 1));
   c.sev = r < 0.8 ? 1 : r < 1.25 ? 2 : 3;
   c.lp = Math.random() < Math.max(0.45, 0.75 - 0.05*(S.diff - 1)) ? rand(0.68, 0.98) : rand(0.05, 0.45);
   c.legit = Math.random() < c.lp;
@@ -2195,7 +2448,7 @@ function ensureIntel(c){
 function estCenter(p, nz, sp){ return clamp(p*100 + nz*sp/2, 0, 100); }
 function legitEst(c){ ensureIntel(c); return estCenter(c.lp, c.nz1, intelSpread(lv("risk"))); }
 function legitFactor(lp){ return Math.pow(clamp((lp - 0.3)/0.65, 0, 1), 1.5); }
-function baseSue(c){ return clamp(0.02 + SEV_SUE[c.sev-1]*legitFactor(c.lp)*(0.85 + (c.lit || 0)) + 0.08*(c.stalls || 0), 0.02, 0.92); }
+function baseSue(c){ return clamp((0.02 + SEV_SUE[c.sev-1]*legitFactor(c.lp)*(0.85 + (c.lit || 0)))*(c.line && LINES[c.line] ? LINES[c.line].sue : 1) + 0.08*(c.stalls || 0), 0.02, 0.92); }
 function suePct(c){ return Math.min(0.92, baseSue(c)*Math.pow(0.85, lv("legal"))*(0.9 + 0.1*S.diff)); }
 function courtWin(c){ return c.legit ? clamp(0.85 - 0.06*lv("legal"), 0.4, 0.9) : clamp(0.15 - 0.02*lv("legal"), 0.03, 0.15); }
 function estText(p, nz, sp){
@@ -2219,8 +2472,11 @@ function intelHtml(c){
 function spawnClaim(){
   const inc = Math.max(3, exposure()*marketRate());
   const amt = inc*claimInterval()*0.55*rand(0.5,1.5)*(1-actRed())*claimSizeMult() / (S.buffs.surge > 0 ? 0.35 : 1) / marketRate();
-  if (Math.random() < 0.12){ const n = pickFresh(NAMED, "recentNamed", 6); addClaim(n[0], n[1], amt); }
-  else addClaim(pickFresh(NAMES, "recentNm", 20), pickFresh(INCIDENTS, "recentInc", 45), amt);
+  const mix = bookMix(), keys = Object.keys(mix); let line = "property";
+  if (keys.length){ let r = Math.random()*keys.reduce((t, k) => t + mix[k]*LINES[k].freq, 0); for (const k of keys){ r -= mix[k]*LINES[k].freq; if (r <= 0){ line = k; break; } line = k; } }
+  const lineAmt = amt*LINES[line].size;
+  if (Math.random() < 0.10){ const n = pickFresh(NAMED, "recentNamed", 6); addClaim(n[0], n[1], lineAmt, line); }
+  else addClaim(pickFresh(NAMES.concat(MORE_NAMES), "recentNm", 40), lineIncident(line), lineAmt, line);
 }
 
 /* game/claims.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
@@ -2776,6 +3032,21 @@ function skylineBermuda(L){
 function bermudaPalms(gy){ for (const x of [6, 54, 214]){ for (let i = 0; i < 22; i++) R(x + Math.sin(i*0.08)*3, gy - i, 1.6, 1, i % 3 ? "#A8824E" : "#8E6A3E"); for (let f = 0; f < 6; f++){ const a = f/6*Math.PI*2 + Math.sin(time*1.4 + x)*0.08; for (let k = 0; k < 9; k++) R(x + 2 + Math.cos(a)*k, gy - 22 + Math.sin(a)*k*0.5 + k*k*0.04, 1.4, 1.2, k < 5 ? "#3E8A3A" : "#5DB04A"); } } }
 function nycStreet(gy, night){ R(30, gy - 6, 3, 6, "#B23A3A"); R(29.5, gy - 7, 4, 1.5, "#B23A3A"); R(204, gy - 10, 14, 7, "#C0C4CC"); R(203, gy - 13, 16, 3, "#E39A2C"); R(205, gy - 3, 2, 3, "#2B2D3A"); R(214, gy - 3, 2, 3, "#2B2D3A"); for (let k = 0; k < 3; k++) R(120 + k*0.6, gy + 6 - ((time*0.6 + k*0.3) % 1)*12, 4, 3, "rgba(240,240,245,.35)"); }
 
+/* A small prop beside the last desk shows each room's line of business or specialism. */
+function drawSpecProp(f, y){
+  const sp = fSpec(f); if (!sp) return; const x = 164, b = y + 35;
+  if (sp === "property"){ R(x, b-7, 8, 7, "#F2EDE2"); ctx.fillStyle = "#B23A3A"; ctx.beginPath(); ctx.moveTo(x-1, b-7); ctx.lineTo(x+4, b-11); ctx.lineTo(x+9, b-7); ctx.fill(); R(x+3, b-4, 2, 4, "#8E5A30"); R(x+1, b-6, 1.5, 1.5, "#9CC9E6"); R(x+5.5, b-6, 1.5, 1.5, "#9CC9E6"); }
+  else if (sp === "casualty"){ ctx.fillStyle = "#F2C14E"; ctx.beginPath(); ctx.moveTo(x, b); ctx.lineTo(x+3.5, b-10); ctx.lineTo(x+7, b); ctx.fill(); R(x+3, b-7, 1, 3, "#1F2238"); R(x+3, b-3, 1, 1, "#1F2238"); }
+  else if (sp === "excess"){ R(x+1, b-2, 8, 2, "#5A3825"); R(x+2, b-8, 6, 3, "#8E5A30"); R(x+4.5, b-5, 1, 3, "#5A3825"); R(x+1.5, b-8, 1, 3, "#C9A54A"); R(x+7.5, b-8, 1, 3, "#C9A54A"); }
+  else if (sp === "marine"){ ctx.strokeStyle = "#8E5A30"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x+4, b-5, 3.5, 0, Math.PI*2); ctx.stroke(); for (let k = 0; k < 4; k++){ const a = k*Math.PI/4 + time*0.5; R(x+4 + Math.cos(a)*5 - 0.5, b-5 + Math.sin(a)*5 - 0.5, 1, 1, "#8E5A30"); R(x+4 - Math.cos(a)*5 - 0.5, b-5 - Math.sin(a)*5 - 0.5, 1, 1, "#8E5A30"); } R(x+3.5, b-5.5, 1, 1, "#C9A54A"); }
+  else if (sp === "cyber"){ R(x, b-12, 8, 12, "#1F2238"); for (let k = 0; k < 4; k++){ R(x+1, b-11 + k*3, 6, 2, "#2B3352"); R(x+5.5, b-10.5 + k*3, 1, 1, (Math.floor(time*3) + k) % 2 ? "#4BE39A" : "#E8705F"); } }
+  else if (sp === "specialty"){ R(x+3, b-11, 3, 9, "#F7F2E6"); ctx.fillStyle = "#B23A3A"; ctx.beginPath(); ctx.moveTo(x+3, b-11); ctx.lineTo(x+4.5, b-14); ctx.lineTo(x+6, b-11); ctx.fill(); R(x+1.5, b-4, 1.5, 3, "#B23A3A"); R(x+6, b-4, 1.5, 3, "#B23A3A"); R(x+3.5, b-8, 2, 2, "#9CC9E6"); }
+  else if (sp === "treaty"){ R(x+3.5, b-3, 2, 3, "#C9A54A"); R(x+1, b-1, 7, 1, "#C9A54A"); ctx.fillStyle = "#2F6FE4"; ctx.beginPath(); ctx.arc(x+4.5, b-7, 4, 0, Math.PI*2); ctx.fill(); R(x+2, b-9, 3, 2, "#3E9B4F"); R(x+5, b-6, 2, 2, "#3E9B4F"); }
+  else if (sp === "pricing"){ R(x+1, b-9, 7, 9, "#2B3352"); R(x+2, b-8, 5, 2, "#B8E0B0"); for (let r = 0; r < 2; r++) for (let k = 0; k < 3; k++) R(x+2 + k*1.8, b-5 + r*2, 1.2, 1.2, "#E9E2CF"); }
+  else if (sp === "reserving"){ R(x, b-9, 9, 9, "#4A5670"); R(x+1, b-8, 7, 7, "#6A768A"); ctx.strokeStyle = "#C9A54A"; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.arc(x+4.5, b-4.5, 2, 0, Math.PI*2); ctx.stroke(); R(x+8, b-6, 1, 3, "#C9A54A"); }
+  else if (sp === "capital"){ ctx.fillStyle = "#C9A54A"; ctx.beginPath(); ctx.moveTo(x, b-10); ctx.lineTo(x+9, b-10); ctx.lineTo(x+9, b-5); ctx.lineTo(x+4.5, b); ctx.lineTo(x, b-5); ctx.closePath(); ctx.fill(); ctx.fillStyle = "#1F2A44"; ctx.beginPath(); ctx.moveTo(x+1.5, b-8.5); ctx.lineTo(x+7.5, b-8.5); ctx.lineTo(x+7.5, b-5.5); ctx.lineTo(x+4.5, b-2); ctx.lineTo(x+1.5, b-5.5); ctx.closePath(); ctx.fill(); }
+}
+
 /* game/simulation.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* ---------- Animation (runs even when paused) ---------- */
 function animate(dt){
@@ -2967,17 +3238,18 @@ function intro(){
     <p><span>📈</span><span><b>The market fights back.</b> Success attracts competition: more claims, more fraud, higher targets. Meanwhile the insurance cycle swings between hard markets (high prices) and soft markets (price wars).</span></p>
     <p><span>🏷️</span><span><b>Set your pricing</b> in the Boardroom. Undercut for volume, charge a premium for margin, or gouge and risk the regulator. The best choice depends on the cycle.</span></p>
     <p><span>🤖</span><span><b>Autopilot.</b> Promotions unlock executives who run parts of the business for a salary: claims, insurance, compliance, pricing, even expansion. Your syndicate also earns while you’re away.</span></p>
-    <p><span>🏦</span><span><b>Capital rules.</b> From quarter 6 the regulator requires you to hold cash in proportion to the premiums you write. Fall short at an earnings call and you get a warning. Catastrophe reinsurance and Cat Modelling lower the requirement.</span></p>
+    <p><span>🏦</span><span><b>Capital rules.</b> From quarter 6 the regulator requires you to hold cash in proportion to the premiums you write. Fall short at an earnings call and you get a warning. Catastrophe reinsurance and Capital Modelling lower the requirement.</span></p>
     <p><span>🦈</span><span><b>Rivals.</b> Later on, rival syndicates try to poach your underwriters and brokers. Match their offer, take them to lunch, ask HR, or let them go.</span></p>
     <p><span>🛋️</span><span><b>Idle mode.</b> Prefer to watch? Turn on idle mode in the Boardroom and the board makes every decision. You can take back control any time, but a run that used idle mode isn’t scored.</span></p>
     <p><span>♾️</span><span><b>Play forever, if you can.</b> As your tower matures, the City expects less growth and “in line” results are fine. But regulation keeps piling up, and dividends keep the board sweet.</span></p>
     <p><span>⚖️</span><span><b>Compliance</b> must cover your floors. Fall short and the regulator issues warnings. Three warnings and you lose your licence.</span></p>
+    <p><span>📊</span><span><b>What you insure matters.</b> Each Underwriting floor writes a line of business, from Property to Treaty Reinsurance, and each earns, claims and suffers differently. Actuaries can make you more money, cheaper claims or a tougher hide. The Boardroom’s Book tab shows your mix.</span></p>
     <p><span>🦢</span><span><b>Black swans</b> are huge disasters based on real ones: hurricanes, a ship blocking a canal, a global IT meltdown, a bank collapse and more. They strike with no warning, roughly every 8 to 12 quarters from quarter 5. Without cover you pay the whole loss, which can sink you. Buy reinsurance and your other covers in the Boardroom: they pay 90%.</span></p>
     <p><span>⭐</span><span><b>Spend stars</b> on perks in the Boardroom, and unlock achievements for extra stars.</span></p>
     <p><span>💀</span><span><b>You lose</b> if you go bankrupt, the board’s confidence hits zero, or you lose your licence.</span></p>
     <h3 class="intro-h">The rooms you can build</h3>
     ${ORDER.map(t => `<p class="intro-room"><span class="isw" style="background:${TYPES[t].wall}"></span><span><b>${TYPES[t].name}.</b> ${TYPES[t].desc}<em class="pro">＋ ${TYPES[t].pro}</em><em class="con">− ${TYPES[t].con}</em>${UNLOCKS[t] ? `<em class="dim">🔓 ${UNLOCKS[t].text}</em>` : ""}</span></p>`).join("")}
-    <p class="intro-tip"><span>💡</span><span>Start with Underwriting Boxes for income, keep a cash buffer for big claims, and add Compliance before your 4th floor.</span></p>
+    <p class="intro-tip"><span>💡</span><span>Start with Underwritinges for income, keep a cash buffer for big claims, and add Compliance before your 4th floor.</span></p>
   </div>
   <div class="closeRow"><button class="btn blue" data-act="tutorial">Replay the tutorial</button><button class="btn" data-act="close">Back to the game</button></div>
   <p class="ver-line">Version ${VERSION}, built ${BUILD_DATE}</p>`, {cls:"intro"});
@@ -2994,7 +3266,7 @@ function effectText(type, l, d){
     case "invest": return `Invests up to ${fmt(Math.round(l*Math.max(300, income()*Q_LEN*0.3)))} of spare cash per quarter`;
     case "compliance": return `Covers ${3*l} floors for the regulator, scandal losses ${Math.min(60,15*l)}% smaller`;
     case "actuary": return `Claims cost ${Math.min(55,7*l)}% less`;
-    case "marketing": return `Underwriting Boxes write ${35*l}% more`;
+    case "marketing": return `Underwritinges write ${35*l}% more`;
     case "legal": return `Denials ${Math.min(70,12*l)}% less upsetting, fewer lawsuits`;
     case "breakroom": return `Everyone works ${8*l}% faster`;
     case "risk": return intelText(lv("risk") + (d || 0));
@@ -3007,10 +3279,10 @@ function openFloors(){
       <div class="sw" style="background:${TYPES[t].wall}"></div><b>${TYPES[t].name}</b><span class="pro">＋ ${TYPES[t].pro}</span><span class="con">− ${TYPES[t].con}</span>${!isUnlocked(t) ? `<span class="dim">🔒 ${UNLOCKS[t].text}</span>` : ""}</button>`).join("");
   const list = S.floors.map((f,i) => ({f,i})).reverse().map(({f,i}) => {
     const max = f.level >= MAXL, c = upCost(f), ph = f.type === "penthouse";
-    if (ph) return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div><div class="nm">${TYPES[f.type].name}${pips(f.level)}</div>
+    if (ph) return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div><div class="nm">${floorName(f)}${pips(f.level)}</div>
       <button class="btn ghost" data-act="floor:${i}">Manage</button><button class="btn" data-act="up:${i}:floors" ${max || S.favour < PENTHOUSE_UP ? "disabled" : ""}>${max ? "Maxed" : `Upgrade ${PENTHOUSE_UP} ★`}</button></div>`;
     return `<div class="frow"><div class="sw" style="background:${TYPES[f.type].wall}"></div>
-      <div class="nm">${TYPES[f.type].name}${pips(f.level)}</div>
+      <div class="nm">${floorName(f)}${pips(f.level)}</div>
       <button class="btn ghost" data-act="floor:${i}">Manage</button>
       <button class="btn" data-act="up:${i}:floors" ${max||S.cash<c?"disabled":""}>${max?"Maxed":"Upgrade "+fmt(c)}</button></div>`;
   }).join("");
@@ -3025,7 +3297,7 @@ function openPenthouse(i){
   openModal(`<div class="top"><h2>Penthouse</h2><button class="x" data-act="close" aria-label="Close">✕</button></div>
     <p>${TYPES.penthouse.desc}</p>
     <div class="goals"><ul>${feats.map((t, k) => `<li class="${k < f.level ? "ok" : ""}"><i>${k < f.level ? "✓" : k + 1}</i>${t}</li>`).join("")}</ul></div>
-    <p class="dim">${ceoN()} pops up here between visits to The Room. Tap them to open the Boardroom.</p>
+    <p class="dim">${ceoN()} has moved in for good, and runs the company from up here now. Tap them to open the Boardroom.</p>
     <button class="btn" style="width:100%" data-act="up:${i}:floor" ${max || S.favour < cost ? "disabled" : ""}>${max ? "Fully furnished" : `Upgrade for ${cost} ★`}${!max && S.favour < cost ? `<small>You have ${S.favour} ★</small>` : ""}</button>
     <p class="dim">The penthouse is yours for the rest of this company’s life.</p>`, {view:"floor" + i});
 }
@@ -3034,6 +3306,12 @@ function openFloor(i){
   const t = TYPES[f.type], max = f.level >= MAXL, c = upCost(f);
   const up = (TYPES[f.type].sal || 0.6)*salFactor();
   let extra = "";
+  if (specOptions(f.type)){
+    const opts = specOptions(f.type), cur = fSpec(f), sp = opts[cur], rc = retrainCost();
+    extra = `<div class="note"><b>${sp.icon} ${sp.name}.</b> ${sp.blurb}<br><span class="pos">＋ ${sp.pro}</span><br><span class="neg">− ${sp.con}</span></div>
+      <details class="achcat"><summary><b>Retrain this floor</b><span>${fmt(rc)}</span></summary><div class="types" style="padding:0 10px 10px">
+      ${Object.keys(opts).filter(k => k !== cur).map(k => specCard(f.type, k, `spec:${i}:${k}`, S.cash < rc ? `<span class="dim">You need ${fmt(rc)}</span>` : "")).join("")}</div></details>`;
+  }
   if (f.type === "pr"){
     const cost = prCost(), ready = S.prQ !== S.quarter;
     extra = `<h3>Damage control</h3><div class="action"><div><h3>Launch a campaign</h3><p>Apologies, a charity photo op and a heartfelt video. Customer mood +15, board confidence +6. Once per quarter.</p></div>
@@ -3053,7 +3331,7 @@ function openFloor(i){
     <div class="seg four">${[0, 0.6, 1, 2].map(m => `<button class="btn ${m ? "ghost" : ""}" data-act="lim:${i}:${m}" aria-pressed="${(f.lim || 0) === m}">${m ? "Up to " + fmt(typicalClaim()*m) : "No limit"}</button>`).join("")}</div>
     <p class="dim">Claims above the limit are left for you to decide. The limit grows with your business.</p>`;
   }
-  openModal(`<div class="top"><h2>${t.name}</h2>${xBtn}</div>
+  openModal(`<div class="top"><h2>${floorName(f)}</h2>${xBtn}</div>
     <p>${t.desc}</p><p class="joke">${t.joke}</p>
     <div class="pc"><p class="pro">＋ ${t.pro}</p><p class="con">− ${t.con}</p></div>
     ${f.type === "compliance" ? compHtml() : ""}
@@ -3076,16 +3354,35 @@ function openFloor(i){
       <button class="btn red" data-act="demo:${i}" ${S.floors.length <= 1 ? "disabled" : ""}>Demolish</button>
     </div>`, {view:"floor" + i});
 }
-function build(type){
+function specOptions(type){ return type === "sales" ? LINES : type === "actuary" ? ACT_SPECS : null; }
+function specCard(type, k, act, extraNote){
+  const sp = specOptions(type)[k], locked = type === "sales" && !lineUnlocked(k);
+  const owned = S.floors.filter(f => f.type === type && fSpec(f) === k).length;
+  return `<button class="type spec" data-act="${act}" ${locked ? "disabled" : ""}><b>${sp.icon} ${sp.name}${owned ? ` <span class="dim">(you have ${owned})</span>` : ""}</b>
+    <span class="blurb">${sp.blurb}</span><span class="pro">＋ ${sp.pro}</span><span class="con">− ${sp.con}</span>${locked ? `<span class="dim">🔒 Unlocks at ${RANKS[LINES[k].unlock].name}</span>` : ""}${extraNote || ""}</button>`;
+}
+function openSpecPick(type){
+  const cost = buildCost(), opts = specOptions(type);
+  openModal(`<div class="top"><h2>${type === "sales" ? "Which line of business?" : "Which kind of actuaries?"}</h2>${xBtn}</div>
+    <p>${type === "sales" ? "Every line earns, claims and suffers differently. A mixed book rides out more storms." : "Each specialism strengthens a different part of the business."} Building costs ${fmt(cost)}.</p>
+    <div class="types">${Object.keys(opts).map(k => specCard(type, k, `build:${type}:${k}`)).join("")}</div>
+    <div class="closeRow"><button class="btn ghost" data-act="floors">Back</button></div>`, {view:"spec-" + type});
+}
+function build(type, spec){
   const cost = buildCost();
   if (S.cash < cost || workFloors() >= MAXF) return;
   if (!isUnlocked(type)) return;
+  const opts = specOptions(type);
+  if (opts && !opts[spec]) return openSpecPick(type);
+  if (type === "sales" && !lineUnlocked(spec)) return;
   S.cash -= cost; discSpent += cost;
-  rebuildWorkers(addFloor({type, level:1, mode:"pay"}));
+  const nf = {type, level:1, mode:"pay"}; if (opts) nf.spec = spec;
+  rebuildWorkers(addFloor(nf));
   closeModal();
-  toast(`Built: ${TYPES[type].name}. ${TYPES[type].joke}`, "good");
+  toast(`Built: ${floorName(nf)}. ${opts ? opts[spec].blurb : TYPES[type].joke}`, "good");
   save();
 }
+function retrainCost(){ return Math.round(buildCost()*0.4/10)*10; }
 function upgrade(i, back){
   const f = S.floors[i];
   if (f && f.type === "penthouse"){ if (f.level >= MAXL || S.favour < PENTHOUSE_UP) return; S.favour -= PENTHOUSE_UP; f.level++; sfx("chime"); fxConfetti(); save(); return back === "floors" ? openFloors() : openPenthouse(i); }
@@ -3138,18 +3435,22 @@ function pricingIntroHtml(){
     <h3>Start here: choose your pricing</h3>
     <p>This is the Boardroom, your strategy room. Your first big decision is how to price your policies. Right now the market is <b>${cycleName().replace(" market", "").toLowerCase()}</b>: ${cycleName() === "Hard market" ? "prices are high, so Premium costs you fewer customers" : cycleName() === "Soft market" ? "rivals are cutting prices, so charging more loses customers" : "prices are normal"}.</p>
     ${PRICES.map((pr, k) => `<button class="type" style="width:100%;margin:0 0 6px;${priceIdx() === k ? "border-color:var(--gold)" : ""}" data-act="price:${k}"><b>${priceIdx() === k ? "✓ " : ""}${pr.name}</b><span>${pr.desc}</span></button>`).join("")}
-    <p class="dim">Market rate is the safe start. Everything else in the Boardroom (insurance, executives, perks and more) is below, and you can change pricing any time. Once you have spare cash, buy your own insurance too: black swans strike with no warning.</p>
+    <p class="dim">Market rate is the safe start. Everything else in the Boardroom (your book of business, insurance, executives, perks and more) is in the tabs above, and you can change pricing any time. Once you have spare cash, buy your own insurance in the Risk tab too: black swans strike with no warning.</p>
   </div>`;
 }
-function openBoard(confirmRestart, intro){
+function openBoard(confirmRestart, intro, tabArg){
   const r = S.rankIdx, next = RANKS[r+1];
   if (confirmRestart){
     openModal(`<h2>Start over?</h2><p>Your tower, your yachts and your share price all go away. Percy keeps his contract.</p>
       <div class="seg"><button class="btn ghost" data-act="board">Keep playing</button><button class="btn red" data-act="restart-yes">Start a new company</button></div>`, {view:"board"});
     return;
   }
+  const tab = intro ? "overview" : (tabArg || S.boardTab || "overview"); S.boardTab = tab;
+  const BTABS = [["overview","🏢 Overview"],["book","📊 Book"],["risk","🛡️ Risk"],["team","👔 Team"],["money","💷 Money"],["stars","⭐ Stars"],["company","⚙️ Company"]];
   openModal(`<div class="top"><h2>Boardroom</h2>${xBtn}</div>
     ${intro ? pricingIntroHtml() : ""}
+    <div class="btabs" role="tablist">${BTABS.map(([k, l]) => `<button class="btab" role="tab" data-act="btab:${k}" aria-selected="${tab === k}">${l}</button>`).join("")}</div>
+    ${tab === "overview" ? `
     <div class="ceo-card"><canvas id="ceoFace" width="48" height="48" aria-hidden="true"></canvas><div><b>${ceoN()}</b><span>CEO of ${coName()}</span><small>Your title: ${RANKS[r].name}</small></div></div>
     <div class="status">
       <div><span>Board confidence</span><b class="${S.conf < 30 ? "neg" : "pos"}">${Math.round(S.conf)}%</b></div>
@@ -3157,38 +3458,27 @@ function openBoard(confirmRestart, intro){
       <div><span>Competition</span><b>${mktName().replace(" market","")}</b></div>
       <div><span>Capital held</span><b class="${capReq() && S.cash < capReq() ? "neg" : "pos"}">${capReq() ? Math.round(capRatio()*100) + "% of required" : "Not required yet"}</b></div>
     </div>
-    ${execsHtml()}
-    <div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb">🏆 Leaderboard</button></div>
     <p class="dim" style="margin-top:12px">Score so far: <b>${scoreParts().total.toLocaleString("en-GB")}</b> (grade ${grade(scoreParts().total)})${S.idleMode || S.idleTainted ? ", not recorded because idle mode was used" : ""}. Personal best: ${bestScore().toLocaleString("en-GB")}.</p>
     ${goalsHtml(next)}
     <h3 style="margin-top:14px">Pricing</h3>
     <p class="dim"><b style="color:var(--ink)">${cycleName()}.</b> ${CYCLE_MSG[cycleName()].replace(/^The market has (hardened|softened|steadied)\. /, "")}</p>
     <div class="seg four">${PRICES.map((pr, k) => `<button class="btn" data-act="price:${k}" aria-pressed="${priceIdx() === k}">${pr.name}</button>`).join("")}</div>
-    <p class="dim">${PRICES[priceIdx()].desc} Right now: premium income ×${(marketRate()*volume()).toFixed(2)}, customers ×${volume().toFixed(2)}.</p>
-    <h3 style="margin-top:14px">Emergency funding</h3>
-    <p class="dim">Short of cash? These keep you alive, at a price.</p>
-    <div class="action"><div><h3>Cash call</h3><p>Ask your syndicate’s investors for ${fmt(cashCallAmt())}. Share price −15%, board confidence −12. Once every 2 quarters.</p></div>
-      <button class="btn" data-act="cashcall" ${S.quarter - S.lastCall < 2 ? "disabled" : ""}>${S.quarter - S.lastCall < 2 ? "Too soon" : "Raise " + fmt(cashCallAmt())}</button></div>
-    <div class="action"><div><h3>Bank loan</h3><p>${S.loan ? `You owe ${fmt(S.loan.left)}, repaid ${fmt(S.loan.per)} at each earnings call.` : `Borrow ${fmt(loanAmt())} now. Repay ${fmt(Math.round(loanAmt()*1.25))} over 4 earnings calls. One loan at a time.`}</p></div>
-      <button class="btn ghost" data-act="loan" ${S.loan ? "disabled" : ""}>${S.loan ? "In progress" : "Borrow " + fmt(loanAmt())}</button></div>
+    <p class="dim">${PRICES[priceIdx()].desc} Right now: premium income ×${(marketRate()*volume()).toFixed(2)}, customers ×${volume().toFixed(2)}.</p>` : ""}
+    ${tab === "book" ? bookHtml() : ""}
+    ${tab === "risk" ? `
+    <div class="status">
+      <div><span>Capital held</span><b class="${capReq() && S.cash < capReq() ? "neg" : "pos"}">${capReq() ? Math.round(capRatio()*100) + "% of required" : "Not required yet"}</b></div>
+      <div><span>Capital required</span><b>${capReq() ? fmt(capReq()) : "From quarter 6"}</b></div>
+    </div>
+    <p class="dim">The regulator wants enough cash on hand to survive a bad year. Capital Modelling actuaries and catastrophe reinsurance both lower the bar.</p>
     <h3 style="margin-top:14px">Your own insurance</h3>
     <p class="dim">Black swans strike with no warning, roughly every 8 to 12 quarters, and the longer it’s been since the last one, the closer the next. Without cover you pay the whole loss, which can sink the company. Cover renews at each earnings call.</p>
     ${Object.keys(COVERS).map(k => { const c = COVERS[k], on = S.cover[k], cost = coverCost(k, income()*Q_LEN);
       return `<div class="action"><div><h3>${on ? "🛡️ " : ""}${c.name}</h3><p>${c.desc} About ${fmt(cost)} per quarter.</p></div>
-        ${on ? `<button class="btn ghost" data-act="cover:${k}:off">Cancel</button>` : `<button class="btn green" data-act="cover:${k}:on" ${S.cash < cost ? "disabled" : ""}>Buy ${fmt(cost)}</button>`}</div>`; }).join("")}
-    <h3 style="margin-top:14px">Perks <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">You have ${S.favour} ★ to spend</span></h3>
-    ${PERKS.map(pk => { const own = perk(pk.id);
-      return `<div class="action"><div><h3>${own ? "✓ " : ""}${pk.name}</h3><p>${pk.desc}</p></div>
-        ${own ? `<button class="btn ghost" disabled>Owned</button>` : `<button class="btn" data-act="perk:${pk.id}" ${S.favour < pk.cost ? "disabled" : ""}>${pk.cost} ★</button>`}</div>`; }).join("")}
-    <h3 style="margin-top:14px">Star shop <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">Buy as often as you like</span></h3>
-    ${STAR_SHOP.map(it => { const ok = S.favour >= it.cost && (!it.can || it.can());
-      return `<div class="action"><div><h3>${it.name}</h3><p>${it.desc}</p></div><button class="btn" data-act="starshop:${it.id}" ${ok ? "" : "disabled"}>${it.cost} ★</button></div>`; }).join("")}
-    ${hasPenthouse() ? `<p class="dim">You own the penthouse. Tap it at the top of the tower to furnish it.</p>`
-      : `<div class="action"><div><h3>Build a penthouse</h3><p>A private top floor for ${ceoN()} to roam, with the best view in the city. One per company, and no business benefit whatsoever.</p></div><button class="btn" data-act="penthouse" ${S.favour < PENTHOUSE_COST ? "disabled" : ""}>${PENTHOUSE_COST} ★</button></div>`}
-    <h3 style="margin-top:14px">Achievements (${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length})</h3>
-    <p class="dim">Each one earns a ★. Tap a category to see what’s left.</p>
-    ${[...new Set(ACH.map(a => a.cat))].map(c => { const list = ACH.filter(a => a.cat === c), got = list.filter(a => S.ach[a.id]).length;
-      return `<details class="achcat"><summary><b>${c}</b><span>${got} of ${list.length}</span></summary><div class="achs">${list.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div></details>`; }).join("")}
+        ${on ? `<button class="btn ghost" data-act="cover:${k}:off">Cancel</button>` : `<button class="btn green" data-act="cover:${k}:on" ${S.cash < cost ? "disabled" : ""}>Buy ${fmt(cost)}</button>`}</div>`; }).join("")}` : ""}
+    ${tab === "team" ? `
+    ${execsHtml()}` : ""}
+    ${tab === "money" ? `
     <div class="big" style="margin-top:14px">${fmt2(S.stock)}</div>
     ${sparkline()}
     <p class="dim">Share price after each earnings call</p>
@@ -3210,12 +3500,12 @@ function openBoard(confirmRestart, intro){
     <div class="action"><div><h3>Pay yourself a bonus</h3><p>Buys a yacht. Share price down 1% for “optics.”</p></div>
       <button class="btn ghost" data-act="bonus" ${S.cash<bonusCost()?"disabled":""}>${fmt(bonusCost())}</button></div>
     <p class="dim" style="margin-top:12px">How the money works: premiums come in every second, salaries go out every second, and claims cost money when you pay them. Profit is whatever survives.</p>
-    <h3 style="margin-top:14px">Idle mode</h3>
-    ${S.idleMode ? `<p class="note">Idle mode is on. The board is making every decision, and this run’s score won’t be recorded.</p>
-      <button class="btn ghost" style="width:100%;margin-bottom:10px" data-act="idle-off">Take back control</button>
-      <h3>Watching speed</h3>
-      <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
-      <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
+    <h3 style="margin-top:14px">Emergency funding</h3>
+    <p class="dim">Short of cash? These keep you alive, at a price.</p>
+    <div class="action"><div><h3>Cash call</h3><p>Ask your syndicate’s investors for ${fmt(cashCallAmt())}. Share price −15%, board confidence −12. Once every 2 quarters.</p></div>
+      <button class="btn" data-act="cashcall" ${S.quarter - S.lastCall < 2 ? "disabled" : ""}>${S.quarter - S.lastCall < 2 ? "Too soon" : "Raise " + fmt(cashCallAmt())}</button></div>
+    <div class="action"><div><h3>Bank loan</h3><p>${S.loan ? `You owe ${fmt(S.loan.left)}, repaid ${fmt(S.loan.per)} at each earnings call.` : `Borrow ${fmt(loanAmt())} now. Repay ${fmt(Math.round(loanAmt()*1.25))} over 4 earnings calls. One loan at a time.`}</p></div>
+      <button class="btn ghost" data-act="loan" ${S.loan ? "disabled" : ""}>${S.loan ? "In progress" : "Borrow " + fmt(loanAmt())}</button></div>
     <h3 style="margin-top:14px">Exit strategy</h3>
     ${exitUnlocked() ? (() => { const v = exitValue(), tk = ticketFor(v);
       const req = (k, r) => { const row = (ok, txt) => `<li class="${ok ? "ok" : ""}"><i>${ok ? "✓" : "·"}</i>${txt}</li>`;
@@ -3223,9 +3513,33 @@ function openBoard(confirmRestart, intro){
       return `<p>Your company is valued at about <b class="pos">${fmt(v)}</b>, including ${Math.round(Math.min(40, 2*S.favour))}% for your unspent stars. Selling ends this run with a big score bonus and a <b>golden ticket</b>: your next company starts with about ${fmt(tk.seed)} and ${tk.stars} ★, and earns 5% more income for each ticket you hold (up to 4).</p>
       <div class="action"><div><h3>Sell to private equity</h3><p>A guaranteed price: ${fmt(v)}. Buyers only look at companies with serious cash and a strong share price.</p>${req("pe", EXIT_REQ.pe)}</div><button class="btn" data-act="exit:pe" ${exitReady("pe") && !S.idleMode ? "" : "disabled"}>Sell</button></div>
       <div class="action"><div><h3>Float on the stock exchange</h3><p>Anywhere from 0.8 to 1.6 times the valuation, depending on the market. The bar is higher than for a private sale.</p>${req("ipo", EXIT_REQ.ipo)}</div><button class="btn" data-act="exit:ipo" ${exitReady("ipo") && !S.idleMode ? "" : "disabled"}>IPO</button></div>`; })()
-      : `<p class="dim">Reach Thought Leader and quarter 8 to sell your company to private equity (needs ${fmt(EXIT_REQ.pe.cash)} cash and a ${fmt2(EXIT_REQ.pe.stock)} share price) or float it on the stock exchange (needs ${fmt(EXIT_REQ.ipo.cash)} and ${fmt2(EXIT_REQ.ipo.stock)}).</p>`}
+      : `<p class="dim">Reach Thought Leader and quarter 8 to sell your company to private equity (needs ${fmt(EXIT_REQ.pe.cash)} cash and a ${fmt2(EXIT_REQ.pe.stock)} share price) or float it on the stock exchange (needs ${fmt(EXIT_REQ.ipo.cash)} and ${fmt2(EXIT_REQ.ipo.stock)}).</p>`}` : ""}
+    ${tab === "stars" ? `
+    <h3 style="margin-top:14px">Perks <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">You have ${S.favour} ★ to spend</span></h3>
+    ${PERKS.map(pk => { const own = perk(pk.id);
+      return `<div class="action"><div><h3>${own ? "✓ " : ""}${pk.name}</h3><p>${pk.desc}</p></div>
+        ${own ? `<button class="btn ghost" disabled>Owned</button>` : `<button class="btn" data-act="perk:${pk.id}" ${S.favour < pk.cost ? "disabled" : ""}>${pk.cost} ★</button>`}</div>`; }).join("")}
+    <h3 style="margin-top:14px">Star shop <span class="dim" style="font-family:Rubik,sans-serif;font-size:14px">Buy as often as you like</span></h3>
+    ${STAR_SHOP.map(it => { const ok = S.favour >= it.cost && (!it.can || it.can());
+      return `<div class="action"><div><h3>${it.name}</h3><p>${it.desc}</p></div><button class="btn" data-act="starshop:${it.id}" ${ok ? "" : "disabled"}>${it.cost} ★</button></div>`; }).join("")}
+    ${hasPenthouse() ? `<p class="dim">You own the penthouse. Tap it at the top of the tower to furnish it.</p>`
+      : `<div class="action"><div><h3>Build a penthouse</h3><p>A private top floor for ${ceoN()} to roam, with the best view in the city. One per company, and no business benefit whatsoever.</p></div><button class="btn" data-act="penthouse" ${S.favour < PENTHOUSE_COST ? "disabled" : ""}>${PENTHOUSE_COST} ★</button></div>`}
+    <h3 style="margin-top:14px">Achievements (${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length})</h3>
+    <p class="dim">Each one earns a ★. Tap a category to see what’s left.</p>
+    ${[...new Set(ACH.map(a => a.cat))].map(c => { const list = ACH.filter(a => a.cat === c), got = list.filter(a => S.ach[a.id]).length;
+      return `<details class="achcat"><summary><b>${c}</b><span>${got} of ${list.length}</span></summary><div class="achs">${list.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div></details>`; }).join("")}` : ""}
+    ${tab === "company" ? `
+    <h3>Leaderboard</h3>
+    <div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb">🏆 Leaderboard</button></div>
+    <h3 style="margin-top:14px">Idle mode</h3>
+    ${S.idleMode ? `<p class="note">Idle mode is on. The board is making every decision, and this run’s score won’t be recorded.</p>
+      <button class="btn ghost" style="width:100%;margin-bottom:10px" data-act="idle-off">Take back control</button>
+      <h3>Watching speed</h3>
+      <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
+      <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
+    <h3 style="margin-top:14px">Start again</h3>
     <button class="btn red" style="width:100%" data-act="restart">Start a new company</button>
-    <p class="ver-line">${coName()}, version ${VERSION}</p>`, {view:"board", focus:false});
+    <p class="ver-line">${coName()}, version ${VERSION}</p>` : ""}`, {view:"board-" + tab, focus:false});
   drawCeoFace("#ceoFace");
 }
 function doBuyback(){ const c = buybackCost(); if (S.cash < c) return false; spend(c, "other"); discSpent += c; S.stock *= 1.04; checkRank(); return true; }
@@ -3306,7 +3620,10 @@ function earnings(){
     S.swan = {t:rand(12, 48), kind:pick(SWAN_POOL)};
   }
   if (qn % 8 === 0) notes.push("New regulations: a 400-page rulebook just landed. Compliance must now cover one more floor than before.");
-  if (qn === 5) notes.push("Coming next quarter: capital rules. The regulator will require you to hold cash in proportion to the premiums you write. Catastrophe reinsurance and Cat Modelling reduce how much.");
+  { const resLv = lvSpec("actuary", "reserving");
+    if (resLv && Math.random() < Math.min(0.4, 0.08*resLv)){ const rel = Math.round(baseIncome()*Q_LEN*0.05); S.cash += rel;
+      notes.push(`Your reserving actuaries set aside a little too much for old claims. ${fmt(rel)} has been released back into profit, and they are being insufferable about it.`); } }
+  if (qn === 5) notes.push("Coming next quarter: capital rules. The regulator will require you to hold cash in proportion to the premiums you write. Catastrophe reinsurance and Capital Modelling actuaries reduce how much.");
   const qLabel = `Q${((qn-1)%4)+1}, year ${Math.ceil(qn/4)}`;
   let lede, quote;
   if (profit < 0){ lede = "You lost money this quarter."; quote = pick(["“Is the building on fire? Asking for a client.”","“We’re downgrading you to ‘Hold your breath.’”","“Bold strategy. Incorrect, but bold.”"]); }
@@ -3421,6 +3738,27 @@ function finishSetup(){
   toast(`Welcome aboard, ${name}. ${company} is open for business.`, "good");
   const lg = loadLegacy(); lg.cities = Object.assign(lg.cities || {}, {[S.city]: true}); saveLegacy(lg);
   if (!S.seen) setTimeout(startTutorial, 400); else offlineCheck();
+}
+
+/* The Book tab: what you insure, and what that means when the weather turns. */
+function bookHtml(){
+  const mix = bookMix(), keys = Object.keys(mix).sort((a, b) => mix[b] - mix[a]), mp = moodPct();
+  const acts = Object.keys(ACT_SPECS).map(k => [k, lvSpec("actuary", k)]).filter(x => x[1] > 0);
+  const swanRows = Object.keys(SWANS).map(k => [k, swanExposure(k)]).sort((a, b) => b[1] - a[1]);
+  const bar = v => `<i style="display:inline-block;height:8px;width:${Math.round(Math.min(1, v/2.5)*100)}%;background:${v > 1.15 ? "var(--danger)" : v < 0.85 ? "var(--money)" : "var(--gold)"};border-radius:4px"></i>`;
+  return `<h3>Your book of business</h3>
+    ${keys.length ? `<table class="ledger">${keys.map(k => `<tr><td>${LINES[k].icon} ${LINES[k].name}</td><td>${Math.round(mix[k]*100)}% of premium</td></tr>`).join("")}</table>`
+      : `<p class="dim">You don’t underwrite anything yet. Build an Underwriting floor and pick a line.</p>`}
+    <p class="dim">${keys.length === 1 ? "All your eggs are in one basket. It’s a lovely basket, right up until someone drops it." : keys.length >= 4 ? "A nicely mixed book: when one line has a terrible year, the others pay for the biscuits." : "A mixed book rides out more storms. Retrain or build floors to spread your bets."}</p>
+    <h3 style="margin-top:14px">Customers and premiums</h3>
+    <div class="status"><div><span>Customer mood</span><b>${Math.round(S.happy)}%</b></div><div><span>Effect on premiums</span><b class="${mp < 0 ? "neg" : "pos"}">${mp >= 0 ? "+" : "−"}${Math.abs(mp)}%</b></div></div>
+    <p class="dim">Happy customers buy more policies; unhappy ones take their business elsewhere. ${mix.treaty > 0.3 ? "Your Treaty clients are other insurers, so they care less about the headlines." : "Pay claims fairly and keep prices sensible to keep them coming back."}</p>
+    <h3 style="margin-top:14px">Your actuaries</h3>
+    ${acts.length ? `<table class="ledger">${acts.map(([k, n]) => `<tr><td>${ACT_SPECS[k].icon} ${ACT_SPECS[k].name}</td><td>${k === "pricing" ? `+${Math.round((pricingBoost() - 1)*100)}% premium` : k === "reserving" ? `−${Math.round(actRed()*100)}% claim costs` : `−${Math.round(Math.min(0.5, 0.08*n)*100)}% black swan losses`}</td></tr>`).join("")}</table>`
+      : `<p class="dim">No actuaries yet. Pricing earns more, Reserving makes claims cheaper, and Capital Modelling softens disasters.</p>`}
+    <h3 style="margin-top:14px">How exposed you are to black swans</h3>
+    <p class="dim">Compared with an average insurer. Over 1× means this disaster would hit you harder.</p>
+    <table class="ledger">${swanRows.map(([k, v]) => `<tr><td>${SWANS[k].title}</td><td style="width:42%">${bar(v)} <b>${v.toFixed(1)}×</b></td></tr>`).join("")}</table>`;
 }
 
 /* game/score.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
@@ -3658,7 +3996,7 @@ function autopilot(dt){
       else {
       const odd = S.idleMode && S.quarter > 4 && need !== "compliance" && Math.random() < 0.12;
       const kind = odd ? pick(ORDER.filter(t => isUnlocked(t) && t !== need)) || need : need;
-      const c = buildCost(); S.cash -= c; discSpent += c; rebuildWorkers(addFloor({type:kind, level:1, mode:"pay"})); if (S.idleMode) S.cooCd = 20;
+      const c = buildCost(); S.cash -= c; discSpent += c; rebuildWorkers(addFloor(Object.assign({type:kind, level:1, mode:"pay"}, autoSpec(kind) ? {spec:autoSpec(kind)} : {}))); if (S.idleMode) S.cooCd = 20;
       toast(odd ? `The board built a ${TYPES[kind].name} nobody asked for. Someone’s nephew runs it.` : `Your COO built a new ${TYPES[kind].name}.`, odd ? "bad" : "");
       }
     } else {
@@ -3704,7 +4042,7 @@ function offlineCheck(){
   for (let q = 0; q < whole; q++){
     if (S.quarter < 5 || q - lastQ < 3 || Math.random() >= 0.1) continue;
     lastQ = q;
-    const kind = pick(SWAN_POOL), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
+    const kind = pick(SWAN_POOL), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*swanExposure(kind)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
     const covered = !!(S.cover && S.cover[sw.cover]), net = covered ? gross*0.1 : gross;
     swanNet += net; swanCover += covered ? gross*0.9 : 0; swans.push({title:sw.title, covered, net});
   }
@@ -3845,7 +4183,7 @@ function gameOver(reason){
       : res.skipped === "sent" ? "This run is already on the global leaderboard."
       : res.error ? `The global leaderboard didn’t accept this run (${res.error}).` : ""; });
 }
-function coverCost(k, prem){ return Math.round(Math.max(60, prem*COVERS[k].rate)*(perk("reinsdisc") ? 0.75 : 1)); }
+function coverCost(k, prem){ return Math.round(Math.max(60, prem*COVERS[k].rate)*(perk("reinsdisc") ? 0.75 : 1)*(1 - Math.min(0.25, 0.05*lvSpec("actuary", "capital")))); }
 function blackSwan(kind){ if (!SWANS[kind]) kind = pick(SWAN_POOL); S.swanDone = true; S.cyc = Math.PI/2; playCutscene(kind, () => swanResolve(kind)); }
 function swanResolve(kind){
   const sw = SWANS[kind];
@@ -3856,7 +4194,7 @@ function swanResolve(kind){
     const il = lv("invest") ? Math.round(invCapital()*INV[S.invRisk || 0].crash) : 0; if (il){ S.cash -= il; S.q.other += il; }
     body = `<p>Your share price fell ${Math.round(drop*100)}%. ${lv("ir") ? "Capital Relations softened the blow." : "Capital Relations could have softened the blow."} Board confidence fell.${il ? ` Your ${INV[S.invRisk || 0].name.toLowerCase()} investments lost ${fmt(il)}.` : ""}</p>`;
   } else {
-    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, workFloors() - 10))*(1 + 0.1*Math.max(0, S.diff - 2))));
+    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, workFloors() - 10))*(1 + 0.1*Math.max(0, S.diff - 2))*swanExposure(kind)));
     const mit = sw.mit(), afterMit = Math.round(gross*(1 - mit)), riskCut = Math.min(0.2, 0.04*lv("risk")), net = Math.round(afterMit*(1 - riskCut));
     const covered = S.cover[sw.cover];
     const loss = covered ? Math.round(net*0.1) : net;
@@ -3867,6 +4205,7 @@ function swanResolve(kind){
       <tr><td>Total loss</td><td class="neg">−${fmt(gross)}</td></tr>
       ${mit ? `<tr><td>Saved by ${sw.mitName}</td><td class="pos">+${fmt(gross - afterMit)}</td></tr>` : ""}
       ${riskCut ? `<tr><td>Saved by your Risk Dept</td><td class="pos">+${fmt(afterMit - net)}</td></tr>` : ""}
+      ${(() => { const ex = swanExposure(kind), cul = swanCulprit(kind); return cul && Math.abs(ex - 1) > 0.15 ? `<tr><td colspan="2" class="dim">${ex > 1 ? `Your ${LINES[cul].name} book took the worst of it, so this hit you ${ex.toFixed(1)}× harder than an average insurer.` : `Not much of what you insure was in the way: you took ${ex.toFixed(1)}× the usual hit.`}</td></tr>` : ""; })()}
       ${covered ? `<tr><td>Paid by your ${COVERS[sw.cover].name.toLowerCase()}</td><td class="pos">+${fmt(net - loss)}</td></tr>` : ""}
       <tr class="total"><td>You pay</td><td class="neg">−${fmt(loss)}</td></tr></table>
       <p>${covered ? "Your cover held. You paid only the 10% retention." : `You had no ${COVERS[sw.cover].name.toLowerCase()}, so you paid the lot. Board confidence −25.`}</p>
@@ -4010,7 +4349,7 @@ function fireEvent(){
 $("#sheet").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
   const [a, p, q] = b.dataset.act.split(":");
-  if (S.idleMode && ["build","up","mode","lim","exit","exit-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
+  if (S.idleMode && ["build","up","mode","lim","spec","exit","exit-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
   if (a === "idle"){
     openModal(`<h2>Hand over the keys?</h2><p>The board will make every decision from now on: claims, pricing, insurance, compliance, building, upgrades and events. You can keep watching.</p>
       <p class="dim">Be warned: the board is not you. It makes mistakes, blunders on vanity projects, is slow to buy insurance, and idle companies attract more black swans. It may not last forever.</p>
@@ -4020,7 +4359,13 @@ $("#sheet").addEventListener("click", e => {
   }
   if (a === "idle-yes"){ S.preIdleExecs = Object.assign({}, S.execs); S.idleTainted = true; S.idleMode = true; S.idleSpeed = 0.5; for (const x of EXECS) S.execs[x.id] = true; save(); closeModal(); toast("Idle mode is on. Sit back. The board has it from here.", "good"); return; }
   if (a === "close") closeModal();
-  else if (a === "build") build(p);
+  else if (a === "build") build(p, q);
+  else if (a === "spec"){
+    const i = +p, f = S.floors[i], opts = f && specOptions(f.type), rc = retrainCost();
+    if (!opts || !opts[q] || fSpec(f) === q || S.cash < rc || (f.type === "sales" && !lineUnlocked(q))) return;
+    S.cash -= rc; f.spec = q; rebuildWorkers(i); sfx("chime");
+    toast(`Retrained: the floor is now ${floorName(f)}. The old team has been sent on a course.`, "good"); save(); openFloor(i);
+  }
   else if (a === "up") upgrade(+p, q);
   else if (a === "floor") openFloor(+p);
   else if (a === "mv"){
@@ -4031,7 +4376,7 @@ $("#sheet").addEventListener("click", e => {
   }
   else if (a === "demo"){
     const i = +p, f = S.floors[i]; if (!f || S.floors.length <= 1 || f.type === "penthouse") return;
-    openModal(`<h2>Demolish ${TYPES[f.type].name}?</h2><p>This floor (level ${f.level}) and everyone in it will be gone for good. The builders will salvage about ${fmt(demoRefund(f))} of fixtures and fittings.</p>
+    openModal(`<h2>Demolish ${floorName(f)}?</h2><p>This floor (level ${f.level}) and everyone in it will be gone for good. The builders will salvage about ${fmt(demoRefund(f))} of fixtures and fittings.</p>
       ${f.type === "compliance" ? `<p class="note">Removing Compliance may leave the regulator uncovered.</p>` : ""}
       <div class="seg"><button class="btn ghost" data-act="floor:${i}">Keep it</button><button class="btn red" data-act="demo-yes:${i}">Demolish</button></div>`, {view:"demo" + i});
   }
@@ -4041,7 +4386,7 @@ $("#sheet").addEventListener("click", e => {
     S.floors.splice(i, 1); W.splice(i, 1); popT.splice(i, 1);
     prevLevels = S.floors.map(x => x.level); prevCount = S.floors.length;
     if (scene) scene.cameras.main.shake(250, 0.004); sfx("stamp");
-    toast(`${TYPES[f.type].name} demolished. You salvaged ${fmt(refund)}${f.type === "compliance" ? ". Check your Compliance cover." : "."}`, f.type === "compliance" ? "bad" : "good");
+    toast(`${floorName(f)} demolished. You salvaged ${fmt(refund)}${f.type === "compliance" ? ". Check your Compliance cover." : "."}`, f.type === "compliance" ? "bad" : "good");
     save(); closeModal();
   }
   else if (a === "exec"){ const x = EXECS.find(x => x.id === p); if (!x || S.rankIdx < x.rank) return; S.execs[p] = q === "on"; toast(q === "on" ? `You hired a ${x.name}. ${x.joke}` : `Your ${x.name} has left to “spend more time with their yacht.”`, q === "on" ? "good" : ""); save(); openBoard(); }
@@ -4082,6 +4427,7 @@ $("#sheet").addEventListener("click", e => {
     S.favour -= PENTHOUSE_COST; S.penthouseBought = true; S.floors.push({type:"penthouse", level:1, mode:"pay", skin:0}); rebuildWorkers(S.floors.length - 1); lastAddedFloor = S.floors.length - 1;
     sfx("chime"); fxConfetti(); toast(`The penthouse is ready. ${ceoName()} has already put their feet up.`, "good"); save(); closeModal();
   }
+  else if (a === "btab"){ S.boardTab = p; openBoard(false, false, p); }
   else if (a === "starshop"){
     const it = STAR_SHOP.find(x => x.id === p); if (!it || S.favour < it.cost || (it.can && !it.can())) return;
     S.favour -= it.cost; S.shopBuys = (S.shopBuys || 0) + 1; const msg = it.run(); sfx("chime"); toast(msg, "good"); save(); openBoard();
@@ -4139,7 +4485,7 @@ $("#sheet").addEventListener("click", e => {
     sfx("paper"); toast(`Settled out of court for ${fmt(cost)}. Nobody admits anything.`, "good"); save();
     if (S.lawsuits.length) openLawsuits(); else closeModal();
   }
-  else if (a === "restart") openBoard(true);
+  else if (a === "restart"){ S.boardTab = "company"; openBoard(true); }
   else if (a === "restart-yes") restart();
 });
 $("#btnFloors").addEventListener("click", openFloors);
@@ -4172,7 +4518,7 @@ function hud(){
   $("#rank").textContent = nx ? `${RANKS[S.rankIdx].name} (${nx.goals.filter(goalMet).length}/${nx.goals.length})` : RANKS[S.rankIdx].name;
   if (S.idleMode) $("#rank").textContent = "🛋️ Idle mode"; else if (S.idleTainted) $("#rank").textContent += " (unranked)";
   $("#happyBar").style.width = S.happy + "%";
-  $("#happyTxt").textContent = MOODS.find(m => S.happy >= m[0])[1];
+  { const mp = moodPct(); $("#happyTxt").textContent = MOODS.find(m => S.happy >= m[0])[1] + ` (${mp >= 0 ? "+" : "−"}${Math.abs(mp)}% premiums)`; }
   const qn = S.quarter;
   $("#qLabel").textContent = `Q${((qn-1)%4)+1} earnings call in ${Math.ceil((Q_LEN - S.qt)/(S.idleMode ? (S.idleSpeed || 0.5) : 1))}s`;
   $("#qBar").style.width = (S.qt/Q_LEN*100) + "%";
@@ -4282,6 +4628,7 @@ function drawRoomBG(f, ws, y){
   R(28,y+26,146,9,"rgba(31,42,68,.30)"); R(28,y+26,146,1,"#C9A54A"); R(28,y+27,146,0.6,"rgba(20,26,46,.5)");
   for (let x = 31; x < 172; x += 16){ R(x, y+29, 13, 5, "rgba(255,230,190,.08)"); R(x, y+33.4, 13, 0.6, "rgba(20,26,46,.35)"); }
   v.decor(y);
+  if (f.type === "sales" || f.type === "actuary") drawSpecProp(f, y);
   roomLighting(y, v.trim);
   for (const w of ws) if (w.mode === "sit"){ const sx = 34 + w.slot*28; R(sx-1,y+25,1.4,9,"#6E4424"); R(sx-1,y+25,1.4,0.6,"#46526E"); R(sx-1,y+32,6,1,"#2E3B5E"); R(sx+1,y+33,1,2,"#6E4424"); R(sx+4,y+33,1,2,"#6E4424"); }
 }
@@ -4319,7 +4666,7 @@ function paintTall(prefix, w, yTop, yBot, fn, tx, imgX, depth, create){
   }
 }
 function addImg(key, x, y, depth){ const im = scene.add.image(x, y, key).setOrigin(0,0).setScale(1/RS).setDepth(depth); objs.push(im); return im; }
-function towerKey(){ return `${RS}|${cssW}|${cssH}|${cityId()}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}${f.lim || 0}`).join(","); }
+function towerKey(){ return `${RS}|${cssW}|${cssH}|${cityId()}|` + S.floors.map(f => `${f.type}${f.level}${f.mode}${f.skin}${f.lim || 0}${fSpec(f) || ""}`).join(","); }
 function viewH(){ return scene.cameras.main.height/scene.cameras.main.zoom; }
 function clampScroll(y){ const vh = viewH(); const mn = Math.min(0, LH - vh), mx = Math.max(mn, LH - vh); return clamp(y, mn, mx); }
 
@@ -4335,7 +4682,7 @@ function buildFloorObjs(L, i){
     objs.push(im); return {w, im};
   });
   const fs = Math.max(pxL(11.5), 6.6), pad = Math.max(pxL(5), 2.6), ps = Math.max(pxL(5), 2.8), gap = Math.max(pxL(2), 1);
-  o.lt = scene.add.text(0, 0, TYPES[f.type].name, {fontFamily:FONT, fontSize:fs+"px", fontStyle:"600", color:"#FFF1D0", resolution:Math.ceil(cz)}).setDepth(20.2);
+  o.lt = scene.add.text(0, 0, floorName(f), {fontFamily:FONT, fontSize:fs+"px", fontStyle:"600", color:"#FFF1D0", resolution:Math.ceil(cz)}).setDepth(20.2);
   objs.push(o.lt);
   o.ln = scene.add.text(0, 0, f.type === "penthouse" ? "PH" : String(i + 1), {fontFamily:FONT, fontSize:fs+"px", fontStyle:"700", color:"#E3C064", resolution:Math.ceil(cz)}).setDepth(20.2); objs.push(o.ln);
   o.numW = o.ln.width + pxL(6);

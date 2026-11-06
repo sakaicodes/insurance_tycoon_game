@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.6.1
+- Tutorial: "Build floors" now covers choosing a line of business or actuarial specialism and retraining; "The Boardroom" describes the tabs; "Black swans" points to the Risk tab and notes that your mix of business changes how hard disasters hit.
+- How to play has a new entry on lines of business and actuaries, and the Boardroom's first-time pricing intro points to the tabs.
+- Boardroom tabs wrap onto extra rows and fill each row evenly, instead of overflowing in a single scrolling line.
+
+## 0.6.0
+- **Lines of business.** Underwriting floors pick a line when built: Property, Casualty, Excess Casualty (from Synergy Whisperer), Marine, Cyber, Specialty or Treaty Reinsurance (from Thought Leader). Each has its own premium rate, claim frequency, claim size, lawsuit appetite, sensitivity to customer mood and exposure to each black swan (in `src/data/lines.js`). Claims are drawn from the lines you write, weighted by premium and frequency, with 145 line-specific claim texts.
+- **Actuarial specialisms.** Cat Modelling is renamed Actuarial. Pricing: +6% premium per level (max +40%). Reserving: −6% claim costs per level (max 40%) plus a chance of a reserve release (5% of a quarter's premium) at each earnings call. Capital Modelling: −8% black swan losses per level (max 50%), −6% capital requirement per level (max 40%), −5% cover costs per level (max 25%). Existing floors default to Property and Capital Modelling.
+- **Retraining.** Any Underwriting or Actuarial floor can switch line or specialism for 40% of the current build cost. Executives building on autopilot pick the least-held line or specialism.
+- **Black swan exposure.** Losses scale with how exposed your book is to that disaster (for example, Treaty and Property feel hurricanes hardest, Marine the canal, Cyber the IT meltdown), and the damage report says which line took the worst of it.
+- **Customer mood and premiums.** The mood multiplier is now neutral at 65% mood, from −75% at 0% to +56% at 100%, scaled by each line's sensitivity (Treaty clients barely notice). The HUD shows the current effect.
+- **Boardroom tabs:** Overview, Book, Risk, Team, Money, Stars and Company. The new Book tab shows the mix of business, mood effect, actuaries and exposure to every black swan.
+- **Rooms** show their line or specialism in the name plate (for example, "Marine Underwriting") and with a small prop.
+- 130 new claimant names.
+
 ## 0.5.0
 - **Global leaderboard (Supabase).** At game over, runs are posted to the `submit-score` Edge Function, which checks plausibility, recomputes the score with the game's formula, rate-limits by hashed IP and rejects duplicates. The leaderboard has Global and This device tabs, with All, London, New York and Bermuda filters. Offline submissions are queued and retried on the next visit. Idle mode runs are never sent. Config lives in `src/data/online.js`; the table and function are in `supabase/`.
 - **Penthouse locked to the top:** it sits directly under the roof, with the build slot beneath it, so new floors always appear below it.

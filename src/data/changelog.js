@@ -1,6 +1,18 @@
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.6.1", notes:[
+    "The tutorial now covers lines of business, actuarial specialisms, retraining and the new Boardroom tabs.",
+    "The Boardroom tabs now wrap onto a second row instead of scrolling sideways.",
+  ]},
+  {v:"0.6.0", notes:[
+    "Underwriting floors now write a line of business: Property, Casualty, Excess Casualty, Marine, Cyber, Specialty or Treaty Reinsurance. Each earns, claims and suffers differently, and each feels different black swans.",
+    "Cat Modelling is now Actuarial, with three specialisms: Pricing (more premium), Reserving (cheaper claims, and the odd reserve release) and Capital Modelling (softer black swans, lower capital needs, cheaper reinsurance).",
+    "Retrain a floor to a different line or specialism at any time, for a fee.",
+    "Customer mood now clearly drives premiums: the HUD shows the effect, from −75% when customers are miserable to +56% when they love you.",
+    "The Boardroom is now split into tabs, including a new Book tab showing your mix of business and which disasters you’re most exposed to.",
+    "145 new claims written for each line of business, and 130 new claimant names.",
+  ]},
   {v:"0.5.0", notes:[
     "A global leaderboard: your finished runs are sent automatically and you can compare scores with everyone, filtered by city. Your company and CEO names appear there publicly. Idle mode runs aren’t included.",
     "If you finish a run offline, your score is sent the next time you play online.",
