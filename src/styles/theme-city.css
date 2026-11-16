@@ -88,4 +88,35 @@ blockquote{background:rgba(201,165,74,.12)}
 .expo{overflow:hidden}
 .expo ul{margin:4px 0 0;padding:0;list-style:none;font-size:13px;color:var(--ink-dim)}
 .expo li{margin:2px 0}
+/* global leaderboard: a monospaced trading-screen table */
+.lb{font-family:"VT323",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;font-size:20px;line-height:1.05}
+.lb th{font-family:"VT323",ui-monospace,monospace;font-size:17px;letter-spacing:.04em;text-transform:uppercase}
+.lb td{padding:6px 6px}
+.lb td:first-child,.lb th:first-child,.lb .rk{text-align:right;width:2.6em;white-space:nowrap}
+.lb .num,.lb td.num,.lb th.num,.lb:not(.global) td:nth-child(3),.lb:not(.global) td:nth-child(5),.lb:not(.global) th:nth-child(3),.lb:not(.global) th:nth-child(5){text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-family:"VT323",ui-monospace,monospace}
+.lb:not(.global) td:nth-child(4),.lb:not(.global) th:nth-child(4){text-align:center}
+.lb td small{font-family:"VT323",ui-monospace,monospace;font-size:16px}
+.lb-stats{margin:10px 0 4px;font-family:"VT323",ui-monospace,monospace;font-size:21px;color:#23305A;text-align:center}
+.lb-pager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0 2px}
+.lb-pager span{text-align:center;font-family:"VT323",ui-monospace,monospace;font-size:19px;line-height:1}
+.lb-pager small{display:block;font-size:15px;color:var(--ink-dim)}
+.lb-pager .btn{padding:6px 10px;min-height:0;font-size:14px}
+.lb tr.celebrate{animation:lbSlide .8s cubic-bezier(.2,.9,.3,1.2) both, lbGlow 1.2s ease-in-out .8s 3}
+.lb tr.found{animation:lbGlow 1.2s ease-in-out 3}
+.lb tr.shove{animation:lbShove .5s ease-out both}
+@keyframes lbSlide{from{transform:translateX(70%);opacity:0}to{transform:none;opacity:1}}
+@keyframes lbShove{from{transform:translateY(-100%);opacity:.4}to{transform:none;opacity:1}}
+@keyframes lbGlow{0%,100%{background:transparent}50%{background:rgba(227,192,100,.55);box-shadow:inset 0 0 0 2px #C9A54A}}
+/* the rank reveal on the game-over screen */
+.rank-reveal{position:relative;overflow:hidden;text-align:center;margin:8px 0;padding:10px 0 6px;border:3px solid #1F2A44;border-radius:10px;background:linear-gradient(#FFF6DC,#F7F2E6)}
+.rr-medal{font-size:54px;line-height:1;transform:translateY(-160%);opacity:0;animation:rrDrop .6s cubic-bezier(.3,1.6,.5,1) 1.3s forwards}
+.rr-num{font-family:"VT323",ui-monospace,monospace;font-size:64px;line-height:.9;color:#1F2A44}
+.rank-reveal.landed .rr-num{animation:rrPop .5s ease-out}
+.rr-txt{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-weight:700;color:#8A6A16;font-size:18px}
+.rr-confetti i{position:absolute;top:-8px;width:6px;height:9px;opacity:0;animation:rrFall 1.8s ease-in forwards}
+@keyframes rrDrop{to{transform:none;opacity:1}}
+@keyframes rrPop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes rrFall{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--dx),190px) rotate(540deg)}}
+.podium-cv{display:block;width:100%;max-width:480px;margin:8px auto 0;image-rendering:pixelated;border:3px solid #1F2A44;border-radius:8px;box-shadow:0 0 0 2px var(--brass)}
+@media (prefers-reduced-motion: reduce){ .lb tr.celebrate,.lb tr.found,.lb tr.shove,.rr-medal,.rr-confetti i,.rank-reveal.landed .rr-num{animation:none;opacity:1;transform:none} }
 

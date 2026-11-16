@@ -6,7 +6,7 @@
 <title>Fine Print Syndicate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=VT323&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&text=0123456789&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -411,6 +411,37 @@ blockquote{background:rgba(201,165,74,.12)}
 .expo{overflow:hidden}
 .expo ul{margin:4px 0 0;padding:0;list-style:none;font-size:13px;color:var(--ink-dim)}
 .expo li{margin:2px 0}
+/* global leaderboard: a monospaced trading-screen table */
+.lb{font-family:"VT323",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;font-size:20px;line-height:1.05}
+.lb th{font-family:"VT323",ui-monospace,monospace;font-size:17px;letter-spacing:.04em;text-transform:uppercase}
+.lb td{padding:6px 6px}
+.lb td:first-child,.lb th:first-child,.lb .rk{text-align:right;width:2.6em;white-space:nowrap}
+.lb .num,.lb td.num,.lb th.num,.lb:not(.global) td:nth-child(3),.lb:not(.global) td:nth-child(5),.lb:not(.global) th:nth-child(3),.lb:not(.global) th:nth-child(5){text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-family:"VT323",ui-monospace,monospace}
+.lb:not(.global) td:nth-child(4),.lb:not(.global) th:nth-child(4){text-align:center}
+.lb td small{font-family:"VT323",ui-monospace,monospace;font-size:16px}
+.lb-stats{margin:10px 0 4px;font-family:"VT323",ui-monospace,monospace;font-size:21px;color:#23305A;text-align:center}
+.lb-pager{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0 2px}
+.lb-pager span{text-align:center;font-family:"VT323",ui-monospace,monospace;font-size:19px;line-height:1}
+.lb-pager small{display:block;font-size:15px;color:var(--ink-dim)}
+.lb-pager .btn{padding:6px 10px;min-height:0;font-size:14px}
+.lb tr.celebrate{animation:lbSlide .8s cubic-bezier(.2,.9,.3,1.2) both, lbGlow 1.2s ease-in-out .8s 3}
+.lb tr.found{animation:lbGlow 1.2s ease-in-out 3}
+.lb tr.shove{animation:lbShove .5s ease-out both}
+@keyframes lbSlide{from{transform:translateX(70%);opacity:0}to{transform:none;opacity:1}}
+@keyframes lbShove{from{transform:translateY(-100%);opacity:.4}to{transform:none;opacity:1}}
+@keyframes lbGlow{0%,100%{background:transparent}50%{background:rgba(227,192,100,.55);box-shadow:inset 0 0 0 2px #C9A54A}}
+/* the rank reveal on the game-over screen */
+.rank-reveal{position:relative;overflow:hidden;text-align:center;margin:8px 0;padding:10px 0 6px;border:3px solid #1F2A44;border-radius:10px;background:linear-gradient(#FFF6DC,#F7F2E6)}
+.rr-medal{font-size:54px;line-height:1;transform:translateY(-160%);opacity:0;animation:rrDrop .6s cubic-bezier(.3,1.6,.5,1) 1.3s forwards}
+.rr-num{font-family:"VT323",ui-monospace,monospace;font-size:64px;line-height:.9;color:#1F2A44}
+.rank-reveal.landed .rr-num{animation:rrPop .5s ease-out}
+.rr-txt{font-family:"Chakra Petch","Pixelify Sans",sans-serif;font-weight:700;color:#8A6A16;font-size:18px}
+.rr-confetti i{position:absolute;top:-8px;width:6px;height:9px;opacity:0;animation:rrFall 1.8s ease-in forwards}
+@keyframes rrDrop{to{transform:none;opacity:1}}
+@keyframes rrPop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes rrFall{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--dx),190px) rotate(540deg)}}
+.podium-cv{display:block;width:100%;max-width:480px;margin:8px auto 0;image-rendering:pixelated;border:3px solid #1F2A44;border-radius:8px;box-shadow:0 0 0 2px var(--brass)}
+@media (prefers-reduced-motion: reduce){ .lb tr.celebrate,.lb tr.found,.lb tr.shove,.rr-medal,.rr-confetti i,.rank-reveal.landed .rr-num{animation:none;opacity:1;transform:none} }
 
 
 </style>
@@ -1040,6 +1071,12 @@ const TUT = [
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.6.4", notes:[
+    "The global leaderboard now shows every score, 20 to a page, with a button to jump straight to your best run.",
+    "See how many runs have been played, worldwide, at the top of the global leaderboard.",
+    "Leaderboards now use a monospaced trading-screen font, with scores and quarters lined up on the right.",
+    "Finish in the world’s top 5 and you get a rank reveal with a medal and confetti, and your row slides in and glows on the leaderboard. Number one also gets a podium cutscene.",
+  ]},
   {v:"0.6.3", notes:[
     "Step down: end a run whenever you like (from quarter 4) from the Boardroom’s Company tab, and your score is recorded on your device and the global leaderboard.",
     "A farewell party cutscene for stepping down, with bunting, a very long speech, a carriage clock and a pigeon eating the cake.",
@@ -2303,6 +2340,30 @@ SCENES2.retire = function(t){
   P(cx + 2, 98, 7, 8, "#C9A54A"); P(cx + 3, 99, 5, 5, "#FFF6D0"); px(cx + 5, 101, "#1F2238"); px(cx + 6, 100, "#1F2238"); P(cx + 1, 106, 9, 1, "#8E7228");
 };
 LINES2.retire = {name:"", line:""};
+SCENES2.podium = function(t){
+  hallBackdrop(); spotlight(120, 40);
+  P(40, 10, 160, 18, "#C9A54A"); P(42, 12, 156, 14, "#1F2A44"); bigText("WORLD NO.1", 120, 15, "#E3C064", "#0E1222");
+  // the podium: you on top, two disappointed rivals either side
+  P(98, 84, 44, 18, "#E3C064"); P(98, 84, 44, 2, "#F2DC8E"); text("1", 118, 90, "#1F2238", 2);
+  P(56, 92, 40, 10, "#C8CCD6"); P(56, 92, 40, 2, "#E8ECF2"); text("2", 73, 94, "#1F2238");
+  P(144, 95, 40, 7, "#C98A52"); P(144, 95, 40, 2, "#E2AC6E"); text("3", 161, 96, "#1F2238");
+  blit(chibi({skin:"#C68650", hair:"#1C1C1C", shirt:"#6A6A72"}, "stand", "rival2"), 76, 82);
+  blit(chibi({skin:"#F2C9A0", hair:"#C9A227", shirt:"#6A6A72", long:true}, "stand", "rival3"), 164, 85);
+  const jump = Math.abs(Math.sin(t*Math.PI*6))*5;
+  blit(ceoSpr(0), 120, 74 - jump);
+  // Percy flies in with the medal
+  const fly = Math.min(1, t/0.4), px0 = 230 - ease(fly)*102, py0 = 24 + Math.sin(fly*Math.PI)*-14 + fly*36;
+  const percy = makeSprite("percy4", 10, 10, () => { oval(5, 6, 4, 3, "#9AA3B5"); disc(7, 3, 2.5, "#9AA3B5"); P(9, 3, 2, 1, "#E39A2C"); px(7, 2, "#1F2238"); P(3, 0, 6, 2, "#E3C064"); P(1, 4, 3, 2, "#C3CAD8"); });
+  if (fly < 1){ blit(percy, px0, py0, 0, true); disc(px0 - 2, py0 + 7, 2, "#E3C064"); }
+  else { blit(percy, 140, 58 - jump*0.5, 0, true); disc(120, 66 - jump, 2.5, "#E3C064"); line(117, 61 - jump, 120, 64 - jump, "#B23A3A"); line(123, 61 - jump, 120, 64 - jump, "#B23A3A"); }
+  // the newspaper spins in
+  if (t > 0.3){ const u = Math.min(1, (t - 0.3)/0.25);
+    c.save(); c.translate(198, 54); c.rotate((1 - u)*6); c.scale(0.3 + u*0.7, 0.3 + u*0.7);
+    P(-24, -16, 48, 32, "#F7F2E6"); P(-24, -16, 48, 6, "#1F2A44"); text("DAILY", -10, -15, "#E3C064");
+    text("TOP OF", -12, -6, "#1F2238"); text("THE WORLD", -18, 1, "#B23A3A"); P(-20, 9, 40, 1, "#C9C3B0"); P(-20, 12, 30, 1, "#C9C3B0"); c.restore(); }
+  crowd(124, 14, t, true);
+  confetti(t, 70, 0);
+};
 LINES2.pe = {name:"Rupert, Private Equity", line:"We’ll add some debt, cut some costs and sell it on in three years. Welcome to the family."};
 
 return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.keys(SCENES2),
@@ -2319,7 +2380,7 @@ return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.key
 
 /* core/constants.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* VERSION and BUILD_DATE are filled in by build.js from package.json. */
-const VERSION = "0.6.3", BUILD_DATE = "2026-11-06";
+const VERSION = "0.6.4", BUILD_DATE = "2026-11-16";
 function intelSpread(n){ return Math.max(0, 36 - 6*n); }
 function intelText(n){
   if (n <= 0) return "No claim intel yet";
@@ -3818,7 +3879,7 @@ function finishSetup(){
   const leg = loadLegacy();
   if (leg.tickets && !S.tickets){ S.tickets = leg.tickets; if (leg.seed || leg.stars){ S.cash += leg.seed || 0; S.favour = (S.favour || 0) + (leg.stars || 0); leg.seed = 0; leg.stars = 0; saveLegacy(leg); } }
   S.ceo = {name, set:d.set, skin:d.skin, hair:d.hair, hairStyle:d.hairStyle, outfit:d.outfit, attire:d.attire, facial:d.set === "m" ? d.facial : "none", makeup:mk, lashes:mk === "lashes" || mk === "both", lipstick:mk === "lipstick" || mk === "both", earrings:!!d.earrings, glasses:!!d.glasses, freckles:!!d.freckles}; S.companyName = company; S.city = d.city || "london"; setCity(S.city); S.setupDone = true; setupDraft = null;
-  document.title = company; save(); closeModal(); sfx("chime");
+  document.title = company; save(); closeModal(); sfx("chime"); trackPlay();
   toast(`Welcome aboard, ${name}. ${company} is open for business.`, "good");
   const lg = loadLegacy(); lg.cities = Object.assign(lg.cities || {}, {[S.city]: true}); saveLegacy(lg);
   if (!S.seen) setTimeout(startTutorial, 400); else offlineCheck();
@@ -4176,23 +4237,42 @@ function lbTable(hl){
   if (!runs.length) return `<div class="empty"><p>No finished runs yet. Your first one will appear here.</p></div>`;
   return `<table class="lb"><tr><th>#</th><th>Syndicate</th><th>Score</th><th>Grade</th><th>Qtrs</th></tr>${runs.map((r, k) => `<tr class="${r.id === hl ? "me" : ""}"><td>${k + 1}</td><td>${esc(r.name)}<small>${esc(r.title)}</small>${r.ceo ? `<small style="display:block;color:var(--ink-dim)">led by ${esc(r.ceo)}</small>` : ""}</td><td>${r.score.toLocaleString("en-GB")}</td><td>${r.grade}</td><td>${r.quarters}</td></tr>`).join("")}</table>`;
 }
-function openLeaderboard(tab, city){
-  tab = tab === "global" && onlineOk() ? "global" : (tab || (onlineOk() ? "global" : "local")); city = city || "all";
+function openLeaderboard(tab, city, page){
+  tab = tab === "global" && onlineOk() ? "global" : (tab || (onlineOk() ? "global" : "local")); city = city || "all"; page = Math.max(0, +page || 0);
   const tabs = onlineOk() ? `<div class="seg two">${[["global","🌍 Global"],["local","📱 This device"]].map(([k, l]) => `<button class="btn" data-act="lb:${k}" aria-pressed="${tab === k}">${l}</button>`).join("")}</div>` : "";
   const cities = tab === "global" ? `<div class="seg four" style="margin-top:6px">${[["all","All"],["london","London"],["nyc","New York"],["bermuda","Bermuda"]].map(([k, l]) => `<button class="btn" data-act="lb:global:${k}" aria-pressed="${city === k}">${l}</button>`).join("")}</div>` : "";
+  const mine = myGlobalBest(city);
   openModal(`<div class="top"><h2>Leaderboard</h2>${xBtn}</div>${tabs}${cities}
-    ${tab === "global" ? `<div id="lbGlobal"><p class="dim">Loading the global leaderboard…</p></div><p class="dim">Company and CEO names on the global leaderboard are public. Idle mode runs aren’t included.</p>` : `<p class="dim">Your 10 best runs on this device.</p>${lbTable()}`}`, {view:"lb" + tab + city});
-  if (tab === "global"){ const want = "lb" + tab + city;
-    fetchGlobal(city).then(rows => { if (view !== want) return; const el = $("#lbGlobal"); if (el) el.innerHTML = globalTable(rows); })
-      .catch(() => { if (view !== want) return; const el = $("#lbGlobal"); if (el) el.innerHTML = `<p class="note">Couldn’t reach the global leaderboard right now. Check your connection, or look at your runs on this device.</p>`; }); }
+    ${tab === "global" ? `<p class="lb-stats" id="lbStats">&nbsp;</p>
+      <div id="lbGlobal"><p class="dim">Loading the global leaderboard…</p></div>
+      <div class="lb-pager" id="lbPager"></div>
+      ${mine ? `<button class="btn ghost" style="width:100%;margin-top:6px" data-act="lbme:${city}">⭐ Find my best run${city === "all" ? "" : " here"} (${Number(mine.score).toLocaleString("en-GB")})</button>` : ""}
+      <p class="dim">Company and CEO names on the global leaderboard are public. Idle mode runs aren’t included.</p>`
+    : `<p class="dim">Your 10 best runs on this device.</p>${lbTable()}`}`, {view:`lb${tab}${city}${page}`});
+  if (tab !== "global") return;
+  const want = `lb${tab}${city}${page}`;
+  fetchStats().then(s => { if (view !== want || !s) return; const el = $("#lbStats"); if (el) el.textContent = `${Number(s.runs).toLocaleString("en-GB")} run${s.runs === 1 ? "" : "s"} played so far`; }).catch(() => {});
+  fetchGlobal(city, page).then(({rows, total}) => { if (view !== want) return;
+      const el = $("#lbGlobal"); if (el) el.innerHTML = globalTable(rows, page*LB_PAGE);
+      const pages = Math.max(1, Math.ceil(total/LB_PAGE)), pg = $("#lbPager");
+      if (pg) pg.innerHTML = total ? `<button class="btn ghost" data-act="lbp:${city}:${page - 1}" ${page <= 0 ? "disabled" : ""}>‹ Previous</button>
+        <span>Showing ${page*LB_PAGE + 1}–${Math.min(total, (page + 1)*LB_PAGE)} of ${total.toLocaleString("en-GB")}<small>Page ${page + 1} of ${pages}</small></span>
+        <button class="btn ghost" data-act="lbp:${city}:${page + 1}" ${page >= pages - 1 ? "disabled" : ""}>Next ›</button>` : "";
+      const glow = document.querySelector("#lbGlobal tr.celebrate, #lbGlobal tr.found"); if (glow) glow.scrollIntoView({block:"center", behavior:"smooth"}); })
+    .catch(() => { if (view !== want) return; const el = $("#lbGlobal"); if (el) el.innerHTML = `<p class="note">Couldn’t reach the global leaderboard right now. Check your connection, or look at your runs on this device.</p>`; });
 }
 
 /* ---------- global leaderboard (Supabase) ---------- */
-const PENDING_KEY = "fineprint-pending-scores";
+const PENDING_KEY = "fineprint-pending-scores", PLAYER_KEY = "fineprint-player-id", MINE_KEY = "fineprint-my-global", CELEBRATE_KEY = "fineprint-celebrate", LB_PAGE = 20;
+let lbFind = null;   // a run to highlight after "Find my best run"
 function onlineOk(){ return !!(typeof ONLINE !== "undefined" && ONLINE.enabled && ONLINE.url && ONLINE.key && typeof fetch === "function"); }
 function withTimeout(p, ms){ return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]); }
+function playerId(){
+  try { let id = localStorage.getItem(PLAYER_KEY); if (!id || !/^p_[a-z0-9]{6,40}$/.test(id)){ id = "p_" + (Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)).slice(0, 26); localStorage.setItem(PLAYER_KEY, id); } return id; }
+  catch(e){ return "p_" + Math.random().toString(36).slice(2, 14); }
+}
 function runPayload(sp){
-  return {runId:S.globalId, name:companyName(), ceo:ceoName(), city:cityId(), quarters:Math.max(1, S.quarter - 1), days:daysSurvived(),
+  return {runId:S.globalId, playerId:playerId(), name:companyName(), ceo:ceoName(), city:cityId(), quarters:Math.max(1, S.quarter - 1), days:daysSurvived(),
     earned:Math.round(S.earned || 0), stars:S.stars || 0, achievements:sp.achN, rankIdx:S.rankIdx, avgMood:Math.round(sp.rep),
     exitBonus:S.exit ? Math.round(Math.sqrt(S.exit.value)*15) : 0, version:VERSION};
 }
@@ -4201,32 +4281,85 @@ async function postScore(p){
   if (!r.ok){ const err = new Error((await r.text().catch(() => "")) || String(r.status)); err.status = r.status; throw err; }
   return r.json();
 }
+/* Someone started a run. Counted privately (you can see it in Supabase); not shown in the game. */
+function trackPlay(){ if (!onlineOk()) return; postScore({type:"play", playerId:playerId(), city:cityId(), version:VERSION}).catch(() => {}); }
 function loadPending(){ try { return JSON.parse(localStorage.getItem(PENDING_KEY)) || []; } catch(e){ return []; } }
 function savePending(list){ try { localStorage.setItem(PENDING_KEY, JSON.stringify(list.slice(-5))); } catch(e){} }
 async function flushPending(){
   if (!onlineOk()) return; const list = loadPending(); if (!list.length) return; const keep = [];
-  for (const p of list){ try { await postScore(p); } catch(e){ if (!e.status || e.status >= 500 || e.status === 429) keep.push(p); } }
+  for (const p of list){ try { const res = await postScore(p); rememberMine(p, res); } catch(e){ if (!e.status || e.status >= 500 || e.status === 429) keep.push(p); } }
   savePending(keep);
 }
+function loadMine(){ try { return JSON.parse(localStorage.getItem(MINE_KEY)) || []; } catch(e){ return []; } }
+function rememberMine(p, res){
+  if (!res || res.score == null) return;
+  const list = loadMine().filter(x => x.runId !== p.runId); list.push({runId:p.runId, name:p.name, ceo:p.ceo, city:p.city, score:res.score});
+  list.sort((a, b) => b.score - a.score); try { localStorage.setItem(MINE_KEY, JSON.stringify(list.slice(0, 50))); } catch(e){}
+}
+function myGlobalBest(city){ return loadMine().filter(x => !city || city === "all" || x.city === city)[0] || null; }
 async function submitGlobal(sp){
   if (!onlineOk()) return {skipped:"off"};
   if (S.idleMode || S.idleTainted) return {skipped:"idle"};
   if (S.globalSent) return {skipped:"sent"};
   const p = runPayload(sp);
-  try { const res = await postScore(p); S.globalSent = true; save(); return res; }
+  try {
+    const res = await postScore(p); S.globalSent = true; save(); rememberMine(p, res);
+    if (res.rank && res.rank <= 5){ try { localStorage.setItem(CELEBRATE_KEY, JSON.stringify({name:p.name, ceo:p.ceo, score:res.score, until:Date.now() + 15*60e3})); } catch(e){} }
+    return res;
+  }
   catch(e){ if (!e.status || e.status >= 500 || e.status === 429){ queuePending(p); return {queued:true}; } if (/already submitted/.test(e.message)){ S.globalSent = true; save(); return {skipped:"sent"}; } return {error:e.message}; }
 }
 function queuePending(p){ const list = loadPending().filter(x => x.runId !== p.runId); list.push(p); savePending(list); }
-async function fetchGlobal(city){
-  const q = `${ONLINE.url}/rest/v1/scores?select=name,ceo,city,score,quarters,rank_idx,created_at&order=score.desc&limit=20${city && city !== "all" ? `&city=eq.${encodeURIComponent(city)}` : ""}`;
-  const r = await withTimeout(fetch(q, {headers:{apikey:ONLINE.key}}), 9000);
-  if (!r.ok) throw new Error(String(r.status));
-  return r.json();
+async function fetchGlobal(city, page){
+  const from = (page || 0)*LB_PAGE, to = from + LB_PAGE - 1;
+  const q = `${ONLINE.url}/rest/v1/scores?select=name,ceo,city,score,quarters,rank_idx,created_at&order=score.desc,created_at.asc${city && city !== "all" ? `&city=eq.${encodeURIComponent(city)}` : ""}`;
+  const r = await withTimeout(fetch(q, {headers:{apikey:ONLINE.key, "Range-Unit":"items", Range:`${from}-${to}`, Prefer:"count=exact"}}), 9000);
+  if (!r.ok && r.status !== 206) throw new Error(String(r.status));
+  const rows = await r.json(), cr = r.headers.get("content-range") || "", total = +(cr.split("/")[1] || 0) || (from + rows.length);
+  return {rows, total};
 }
-function globalTable(rows){
+async function fetchStats(){
+  const r = await withTimeout(fetch(`${ONLINE.url}/rest/v1/leaderboard_stats?select=runs`, {headers:{apikey:ONLINE.key}}), 9000);
+  if (!r.ok) throw new Error(String(r.status)); const j = await r.json(); return j && j[0];
+}
+async function countAbove(score, city){
+  const q = `${ONLINE.url}/rest/v1/scores?select=score&score=gt.${score}${city && city !== "all" ? `&city=eq.${encodeURIComponent(city)}` : ""}`;
+  const r = await withTimeout(fetch(q, {headers:{apikey:ONLINE.key, "Range-Unit":"items", Range:"0-0", Prefer:"count=exact"}}), 9000);
+  const cr = r.headers.get("content-range") || ""; return +(cr.split("/")[1] || 0) || 0;
+}
+async function findMyBest(city){
+  const mine = myGlobalBest(city); if (!mine) return;
+  try { const above = await countAbove(mine.score, city); lbFind = {name:mine.name, ceo:mine.ceo, score:mine.score}; openLeaderboard("global", city, Math.floor(above/LB_PAGE)); }
+  catch(e){ toast("Couldn’t reach the global leaderboard right now."); }
+}
+function globalTable(rows, offset){
   if (!rows || !rows.length) return `<div class="empty"><p>No scores here yet. Finish a run to claim the top spot.</p></div>`;
-  const flag = {london:"🇬🇧", nyc:"🇺🇸", bermuda:"🇧🇲"}, mine = companyName();
-  return `<table class="lb"><tr><th>#</th><th>Syndicate</th><th>Score</th><th>Qtrs</th></tr>${rows.map((r, k) => `<tr class="${r.name === mine && r.ceo === ceoName() ? "me" : ""}"><td>${k + 1}</td><td>${flag[r.city] || ""} ${esc(r.name)}<small>${RANKS[clamp(r.rank_idx || 0, 0, RANKS.length - 1)].name}${r.ceo ? `, led by ${esc(r.ceo)}` : ""}</small></td><td>${Number(r.score).toLocaleString("en-GB")}</td><td>${r.quarters}</td></tr>`).join("")}</table>`;
+  const flag = {london:"🇬🇧", nyc:"🇺🇸", bermuda:"🇧🇲"}, medal = ["🥇","🥈","🥉"];
+  let cel = null; try { cel = JSON.parse(localStorage.getItem(CELEBRATE_KEY)); if (cel && cel.until < Date.now()) cel = null; } catch(e){}
+  const same = (a, r) => a && r.name === a.name && r.ceo === a.ceo && Number(r.score) === Number(a.score);
+  let hit = -1;
+  const body = rows.map((r, k) => { const n = offset + k + 1, isCel = same(cel, r), isFound = !isCel && same(lbFind, r);
+    if ((isCel || isFound) && hit < 0) hit = k;
+    const cls = [isCel ? "celebrate" : "", isFound ? "found" : "", hit >= 0 && k > hit && isCel !== true && cel && same(cel, rows[hit]) ? "shove" : ""].filter(Boolean).join(" ");
+    return `<tr class="${cls}" style="${cls.includes("shove") ? `animation-delay:${(k - hit)*40}ms` : ""}"><td class="rk">${n <= 3 ? medal[n - 1] : n}</td><td class="nm">${flag[r.city] || ""} ${esc(r.name)}<small>${RANKS[clamp(r.rank_idx || 0, 0, RANKS.length - 1)].name}${r.ceo ? `, led by ${esc(r.ceo)}` : ""}</small></td><td class="num">${Number(r.score).toLocaleString("en-GB")}</td><td class="num">${r.quarters}</td></tr>`; }).join("");
+  if (cel && hit >= 0){ try { localStorage.removeItem(CELEBRATE_KEY); } catch(e){} }
+  lbFind = null;
+  return `<table class="lb global"><tr><th class="rk">#</th><th>Syndicate</th><th class="num">Score</th><th class="num">Qtrs</th></tr>${body}</table>`;
+}
+/* A top-5 finish: count down to the rank, drop a medal, throw confetti; a podium cutscene for #1. */
+function celebrateRank(rank){
+  const el = $("#globalCelebrate"); if (!el || !(rank >= 1 && rank <= 5)) return;
+  const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : "🏵️";
+  const bits = Array.from({length:28}, (_, k) => `<i style="left:${(k*37)%100}%;background:${["#E3C064","#B23A3A","#2F6FE4","#3E9B4F","#C8507A"][k % 5]};animation-delay:${1.3 + (k % 7)*0.06}s;--dx:${((k*53)%60) - 30}px"></i>`).join("");
+  el.innerHTML = `<div class="rank-reveal"><div class="rr-confetti">${bits}</div><div class="rr-medal">${medal}</div>
+    <div class="rr-num">#<span id="rrN">${Math.max(rank + 20, 40)}</span></div>
+    <div class="rr-txt">${rank === 1 ? "Number one in the world!" : rank <= 3 ? "On the podium, worldwide!" : "Top five in the world!"}</div></div>
+    ${rank === 1 ? `<canvas id="podiumCv" width="240" height="135" class="podium-cv" aria-label="Your CEO on the winner’s podium"></canvas>` : ""}`;
+  const start = Math.max(rank + 20, 40), t0 = performance.now(), dur = 1300;
+  const tick = () => { const u = Math.min(1, (performance.now() - t0)/dur), ez = 1 - Math.pow(1 - u, 3), s = $("#rrN"); if (!s) return;
+    s.textContent = Math.round(start - (start - rank)*ez); if (u < 1) requestAnimationFrame(tick); else { el.querySelector(".rank-reveal").classList.add("landed"); sfx("fanfare"); } };
+  requestAnimationFrame(tick);
+  if (rank === 1){ const cv = $("#podiumCv"), p0 = performance.now(); const frame = () => { if (!cv || !cv.isConnected) return; CUT.drawScene(cv.getContext("2d"), "podium", ((performance.now() - p0)/5000) % 1); requestAnimationFrame(frame); }; requestAnimationFrame(frame); }
 }
 
 /* game/endings.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
@@ -4262,13 +4395,14 @@ function gameOver(reason){
       <div class="fact"><span>Achievements</span><b>${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length}</b></div>
     </div>
     ${S.idleMode || S.idleTainted || !run ? `<p class="note">This run used idle mode, so the board made some of the decisions and the score isn’t recorded.</p>` : `<h3>Leaderboard</h3>
-    ${onlineOk() ? `<p class="dim" id="globalStatus">Sending your score to the global leaderboard…</p>` : ""}
+    ${onlineOk() ? `<p class="dim" id="globalStatus">Sending your score to the global leaderboard…</p><div id="globalCelebrate"></div>` : ""}
     <div class="lbname"><input id="lbName" maxlength="24" placeholder="Name your syndicate" value="${esc(run.name)}" aria-label="Your name on the leaderboard"><button class="btn ghost" data-act="lbname:${run.id}">Save name</button></div>
     <div id="lbArea">${lbTable(run.id)}</div>`}
     ${onlineOk() && run ? `<div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb:global">🌍 Global leaderboard</button></div>` : ""}
     <button class="btn" style="width:100%;margin-top:12px" data-act="restart-yes">Start a new company</button>`, {locked:true});
   if (run && onlineOk()) submitGlobal(sp).then(res => { const el = $("#globalStatus"); if (!el) return;
-    el.textContent = res.score != null ? `Your score is on the global leaderboard as ${companyName()}, led by ${ceoName()}. Names there are public.`
+    if (res.rank) celebrateRank(res.rank);
+    el.textContent = res.score != null ? `Your score is on the global leaderboard as ${companyName()}, led by ${ceoName()}${res.rank ? `, at number ${res.rank.toLocaleString("en-GB")} in the world${res.cityRank && cityId() ? ` and number ${res.cityRank.toLocaleString("en-GB")} in ${cityName()}` : ""}` : ""}. Names there are public.`
       : res.queued ? "Couldn’t reach the global leaderboard. Your score will be sent next time you play online."
       : res.skipped === "sent" ? "This run is already on the global leaderboard."
       : res.error ? `The global leaderboard didn’t accept this run (${res.error}).` : ""; });
@@ -4495,6 +4629,8 @@ $("#sheet").addEventListener("click", e => {
     save(); const k = S.floors.findIndex(f => f.type === "pr"); if (k >= 0) openFloor(k); else closeModal();
   }
   else if (a === "lb") openLeaderboard(p, q);
+  else if (a === "lbp") openLeaderboard("global", p, +q);
+  else if (a === "lbme") findMyBest(p);
   else if (a === "lbname"){
     const inp = $("#lbName"); const name = (inp ? inp.value : "").replace(/[<>]/g, "").trim().slice(0, 24) || companyName();
     try { localStorage.setItem(NAME_KEY, name); } catch(e){}

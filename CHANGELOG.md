@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.4
+- **Paging:** the global leaderboard loads 20 scores per page using range requests with an exact count, showing "Showing 21–40 of 273" and Previous/Next buttons. Ranks continue across pages and the city filters still apply. "Find my best run" works out your best run's rank and opens its page with the row highlighted.
+- **Run count:** the leaderboard shows the total number of recorded runs, including those from before this update (`runs` in the `leaderboard_stats` view). A random anonymous player ID (stored in the browser, no personal data) is also sent with each score, and run starts are recorded privately in a new `plays` table (see `play_stats` in the SQL editor) when a CEO is created.
+- **Monospaced leaderboards:** all leaderboard tables use VT323, with rank, score and quarters right-aligned in tabular figures.
+- **Top-5 celebrations:** the Edge Function returns the new run's world and city rank. A top-5 finish shows a counting rank reveal with a medal (gold, silver, bronze or a rosette) and confetti on the game-over screen, and the row slides in and glows on the leaderboard while the rows below shuffle down. Rank 1 also plays a podium cutscene. Motion is reduced for players who prefer it.
+- **Supabase:** new migration `20261116000000_players_and_stats.sql` (player_id column, plays table, stats views, and public reads restricted to the leaderboard columns so `ip_hash`, `run_id` and `player_id` stay private). The `submit-score` function records run starts, returns ranks, and hashes IPs with an optional `IP_SALT` secret.
+
 ## 0.6.3
 - **Step down:** a new ending in the Boardroom's Company tab, available from quarter 4, with a confirmation step. It records the run like any other ending (on the device and, unless idle mode was used, on the global leaderboard) with no sale bonus or golden ticket. The golden parachute perk doesn't intervene.
 - **Farewell cutscene:** a leaving do with sagging bunting, a "SO LONG …" banner using the CEO's name, colleagues in party hats (one asleep), the Chair's endless speech, Percy eating the cake, one limp party popper, and the CEO leaving with a carriage clock. The CEO's portrait delivers one of three parting lines.

@@ -659,6 +659,30 @@ SCENES2.retire = function(t){
   P(cx + 2, 98, 7, 8, "#C9A54A"); P(cx + 3, 99, 5, 5, "#FFF6D0"); px(cx + 5, 101, "#1F2238"); px(cx + 6, 100, "#1F2238"); P(cx + 1, 106, 9, 1, "#8E7228");
 };
 LINES2.retire = {name:"", line:""};
+SCENES2.podium = function(t){
+  hallBackdrop(); spotlight(120, 40);
+  P(40, 10, 160, 18, "#C9A54A"); P(42, 12, 156, 14, "#1F2A44"); bigText("WORLD NO.1", 120, 15, "#E3C064", "#0E1222");
+  // the podium: you on top, two disappointed rivals either side
+  P(98, 84, 44, 18, "#E3C064"); P(98, 84, 44, 2, "#F2DC8E"); text("1", 118, 90, "#1F2238", 2);
+  P(56, 92, 40, 10, "#C8CCD6"); P(56, 92, 40, 2, "#E8ECF2"); text("2", 73, 94, "#1F2238");
+  P(144, 95, 40, 7, "#C98A52"); P(144, 95, 40, 2, "#E2AC6E"); text("3", 161, 96, "#1F2238");
+  blit(chibi({skin:"#C68650", hair:"#1C1C1C", shirt:"#6A6A72"}, "stand", "rival2"), 76, 82);
+  blit(chibi({skin:"#F2C9A0", hair:"#C9A227", shirt:"#6A6A72", long:true}, "stand", "rival3"), 164, 85);
+  const jump = Math.abs(Math.sin(t*Math.PI*6))*5;
+  blit(ceoSpr(0), 120, 74 - jump);
+  // Percy flies in with the medal
+  const fly = Math.min(1, t/0.4), px0 = 230 - ease(fly)*102, py0 = 24 + Math.sin(fly*Math.PI)*-14 + fly*36;
+  const percy = makeSprite("percy4", 10, 10, () => { oval(5, 6, 4, 3, "#9AA3B5"); disc(7, 3, 2.5, "#9AA3B5"); P(9, 3, 2, 1, "#E39A2C"); px(7, 2, "#1F2238"); P(3, 0, 6, 2, "#E3C064"); P(1, 4, 3, 2, "#C3CAD8"); });
+  if (fly < 1){ blit(percy, px0, py0, 0, true); disc(px0 - 2, py0 + 7, 2, "#E3C064"); }
+  else { blit(percy, 140, 58 - jump*0.5, 0, true); disc(120, 66 - jump, 2.5, "#E3C064"); line(117, 61 - jump, 120, 64 - jump, "#B23A3A"); line(123, 61 - jump, 120, 64 - jump, "#B23A3A"); }
+  // the newspaper spins in
+  if (t > 0.3){ const u = Math.min(1, (t - 0.3)/0.25);
+    c.save(); c.translate(198, 54); c.rotate((1 - u)*6); c.scale(0.3 + u*0.7, 0.3 + u*0.7);
+    P(-24, -16, 48, 32, "#F7F2E6"); P(-24, -16, 48, 6, "#1F2A44"); text("DAILY", -10, -15, "#E3C064");
+    text("TOP OF", -12, -6, "#1F2238"); text("THE WORLD", -18, 1, "#B23A3A"); P(-20, 9, 40, 1, "#C9C3B0"); P(-20, 12, 30, 1, "#C9C3B0"); c.restore(); }
+  crowd(124, 14, t, true);
+  confetti(t, 70, 0);
+};
 LINES2.pe = {name:"Rupert, Private Equity", line:"We’ll add some debt, cut some costs and sell it on in three years. Welcome to the family."};
 
 return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.keys(SCENES2),

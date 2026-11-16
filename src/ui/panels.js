@@ -540,7 +540,7 @@ function finishSetup(){
   const leg = loadLegacy();
   if (leg.tickets && !S.tickets){ S.tickets = leg.tickets; if (leg.seed || leg.stars){ S.cash += leg.seed || 0; S.favour = (S.favour || 0) + (leg.stars || 0); leg.seed = 0; leg.stars = 0; saveLegacy(leg); } }
   S.ceo = {name, set:d.set, skin:d.skin, hair:d.hair, hairStyle:d.hairStyle, outfit:d.outfit, attire:d.attire, facial:d.set === "m" ? d.facial : "none", makeup:mk, lashes:mk === "lashes" || mk === "both", lipstick:mk === "lipstick" || mk === "both", earrings:!!d.earrings, glasses:!!d.glasses, freckles:!!d.freckles}; S.companyName = company; S.city = d.city || "london"; setCity(S.city); S.setupDone = true; setupDraft = null;
-  document.title = company; save(); closeModal(); sfx("chime");
+  document.title = company; save(); closeModal(); sfx("chime"); trackPlay();
   toast(`Welcome aboard, ${name}. ${company} is open for business.`, "good");
   const lg = loadLegacy(); lg.cities = Object.assign(lg.cities || {}, {[S.city]: true}); saveLegacy(lg);
   if (!S.seen) setTimeout(startTutorial, 400); else offlineCheck();

@@ -31,13 +31,14 @@ function gameOver(reason){
       <div class="fact"><span>Achievements</span><b>${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length}</b></div>
     </div>
     ${S.idleMode || S.idleTainted || !run ? `<p class="note">This run used idle mode, so the board made some of the decisions and the score isn’t recorded.</p>` : `<h3>Leaderboard</h3>
-    ${onlineOk() ? `<p class="dim" id="globalStatus">Sending your score to the global leaderboard…</p>` : ""}
+    ${onlineOk() ? `<p class="dim" id="globalStatus">Sending your score to the global leaderboard…</p><div id="globalCelebrate"></div>` : ""}
     <div class="lbname"><input id="lbName" maxlength="24" placeholder="Name your syndicate" value="${esc(run.name)}" aria-label="Your name on the leaderboard"><button class="btn ghost" data-act="lbname:${run.id}">Save name</button></div>
     <div id="lbArea">${lbTable(run.id)}</div>`}
     ${onlineOk() && run ? `<div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb:global">🌍 Global leaderboard</button></div>` : ""}
     <button class="btn" style="width:100%;margin-top:12px" data-act="restart-yes">Start a new company</button>`, {locked:true});
   if (run && onlineOk()) submitGlobal(sp).then(res => { const el = $("#globalStatus"); if (!el) return;
-    el.textContent = res.score != null ? `Your score is on the global leaderboard as ${companyName()}, led by ${ceoName()}. Names there are public.`
+    if (res.rank) celebrateRank(res.rank);
+    el.textContent = res.score != null ? `Your score is on the global leaderboard as ${companyName()}, led by ${ceoName()}${res.rank ? `, at number ${res.rank.toLocaleString("en-GB")} in the world${res.cityRank && cityId() ? ` and number ${res.cityRank.toLocaleString("en-GB")} in ${cityName()}` : ""}` : ""}. Names there are public.`
       : res.queued ? "Couldn’t reach the global leaderboard. Your score will be sent next time you play online."
       : res.skipped === "sent" ? "This run is already on the global leaderboard."
       : res.error ? `The global leaderboard didn’t accept this run (${res.error}).` : ""; });

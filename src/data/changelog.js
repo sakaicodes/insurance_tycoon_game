@@ -1,6 +1,12 @@
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.6.4", notes:[
+    "The global leaderboard now shows every score, 20 to a page, with a button to jump straight to your best run.",
+    "See how many runs have been played, worldwide, at the top of the global leaderboard.",
+    "Leaderboards now use a monospaced trading-screen font, with scores and quarters lined up on the right.",
+    "Finish in the world’s top 5 and you get a rank reveal with a medal and confetti, and your row slides in and glows on the leaderboard. Number one also gets a podium cutscene.",
+  ]},
   {v:"0.6.3", notes:[
     "Step down: end a run whenever you like (from quarter 4) from the Boardroom’s Company tab, and your score is recorded on your device and the global leaderboard.",
     "A farewell party cutscene for stepping down, with bunting, a very long speech, a carriage clock and a pigeon eating the cake.",

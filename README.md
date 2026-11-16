@@ -7,11 +7,11 @@ A satirical London-market insurance tower game. You write the source as separate
 Needs Node.js (any recent version). No packages to install.
 
 ```
-node build.js           # writes dist/fine-print-syndicate.html
+node build.js           # writes dist/index.html
 node build.js --check   # same, then checks the bundled script parses
 ```
 
-Open `dist/fine-print-syndicate.html` in a browser to play. Phaser 3.80.1 and the fonts load from a CDN.
+Open `dist/index.html` in a browser to play. Phaser 3.80.1 and the fonts load from a CDN.
 
 ## Releasing a new version
 
@@ -67,6 +67,8 @@ The game reads and submits scores using the URL and publishable key in `src/data
 
 - `supabase/migrations/..._create_scores.sql` creates the table and its read-only policy. Run it with `npx supabase db push --linked`, or paste it into the dashboard's SQL Editor.
 - `supabase/functions/submit-score/index.ts` is the only way scores get written. Deploy it with `npx supabase functions deploy submit-score --no-verify-jwt --use-api`. Its `ALLOWED` list must include the site the game is served from.
+- `supabase/migrations/20261116000000_players_and_stats.sql` adds the anonymous `player_id`, the private `plays` table (run starts), the public `leaderboard_stats` view (players and runs shown in the game), a private `play_stats` view, and restricts public reads to the leaderboard columns.
+- Set an `IP_SALT` secret for the function (`npx supabase secrets set IP_SALT=...`) so the stored IP hashes can't be reversed.
 - The score formula is duplicated in the function so the server can recompute it. If you change `scoreParts()` in `src/game/score.js`, change the function to match and redeploy.
 
 Free Supabase projects pause after about a week without activity. Restore yours from the dashboard if the Global tab stops loading.

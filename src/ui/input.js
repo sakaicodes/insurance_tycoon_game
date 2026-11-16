@@ -52,6 +52,8 @@ $("#sheet").addEventListener("click", e => {
     save(); const k = S.floors.findIndex(f => f.type === "pr"); if (k >= 0) openFloor(k); else closeModal();
   }
   else if (a === "lb") openLeaderboard(p, q);
+  else if (a === "lbp") openLeaderboard("global", p, +q);
+  else if (a === "lbme") findMyBest(p);
   else if (a === "lbname"){
     const inp = $("#lbName"); const name = (inp ? inp.value : "").replace(/[<>]/g, "").trim().slice(0, 24) || companyName();
     try { localStorage.setItem(NAME_KEY, name); } catch(e){}

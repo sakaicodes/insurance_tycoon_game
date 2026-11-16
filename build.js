@@ -3,7 +3,7 @@
   Fine Print Syndicate build script.
   Bundles every file listed in src/manifest.json into one self-contained HTML file.
   Usage:
-    node build.js            build dist/fine-print-syndicate.html
+    node build.js            build dist/index.html
     node build.js --check    build, then check the bundled script parses
 */
 const fs = require("fs"), path = require("path");
