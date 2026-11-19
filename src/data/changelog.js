@@ -1,6 +1,27 @@
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.6.8", notes:[
+    "Two new black swans, only in Zurich: the Franc Shock, where the franc leaps overnight and every foreign claim costs a fortune, and the Gotthard blockage, where a derailed freight train shuts the main rail route under the Alps.",
+    "Treaty Reinsurance feels the Franc Shock hardest; Marine cargo feels the Gotthard. Each has its own cutscene, character and achievement.",
+    "In Zurich, a cuckoo clock announces every earnings call, precisely on time.",
+  ]},
+  {v:"0.6.7", notes:[
+    "New city: Zurich. Run your syndicate from a sandstone lakeside headquarters with a green copper roof, beneath the Alps and beside Lake Zurich, in Swiss francs.",
+    "Zurich has its own risks and strengths: bank collapses and IT meltdowns hit harder, hurricanes barely register, and Treaty Reinsurance and Property earn a little extra.",
+    "New achievement: Swiss precision. Globetrotter now needs companies in all four cities.",
+    "The global leaderboard has a Zurich filter.",
+  ]},
+  {v:"0.6.6", notes:[
+    "London now has the Tube: a station entrance beside your tower, and tube trains rumbling through a tunnel under the road.",
+    "New York now has the subway: an entrance with green globe lamps, and subway trains running through a tunnel under the street.",
+    "Fixed: buses and cabs from your previous city no longer follow you to a new one (no more pink Bermuda buses in London).",
+  ]},
+  {v:"0.6.5", notes:[
+    "Exit interviews: when a run ends you can rate it, tick a few quick tags and leave a comment before seeing your score. It’s optional and anonymous, and it never affects your score.",
+    "Don’t want to be asked? From your second run you can turn exit interviews off, and back on again in the Boardroom’s Company tab.",
+    "Fixed: reloading the game on the ending screen now shows the right ending.",
+  ]},
   {v:"0.6.4", notes:[
     "The global leaderboard now shows every score, 20 to a page, with a button to jump straight to your best run.",
     "See how many runs have been played, worldwide, at the top of the global leaderboard.",

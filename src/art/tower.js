@@ -102,7 +102,7 @@ function drawSky(L){
   }
 }
 function drawSkyline(L){
-  if (cityId() === "nyc") return skylineNYC(L); if (cityId() === "bermuda") return skylineBermuda(L);
+  if (cityId() === "nyc") return skylineNYC(L); if (cityId() === "bermuda") return skylineBermuda(L); if (cityId() === "zurich") return skylineZurich(L, true);
   const gy = L.groundY, night = isNight();
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#161B38" : "#73849B";
   const lit = "#FFE88A";
@@ -135,6 +135,7 @@ function drawSkyline(L){
 function drawSkylineFiller(L){
   const gy = L.groundY, night = isNight();
   if (cityId() === "bermuda"){ skylineBermuda(L); return; }
+  if (cityId() === "zurich"){ skylineZurich(L, false); return; }
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#181D3B" : "#7C8DA4", lit = "#FFE88A";
   for (let x = 0, k = 0; x < 256; k++){ const w = 6 + Math.floor(hash(k + 40, 11)*10), h = 12 + Math.floor(hash(k + 40, 12)*30); R(x, gy-h, w, h, far); if (night && hash(k + 40, 13) > .5) R(x+2, gy-h+3, 1, 1, lit); x += w; }
   for (let x = 2, k = 0; x < 250; k++){
@@ -165,7 +166,8 @@ function drawGround(L){
   for (let x = 2; x < LW; x += 12) R(x, gy+14, 6, 1, "#F2E6C8");
   R(12,gy-26,1,26,"#1F2A44"); R(9,gy-28,7,2,"#1F2A44"); R(10,gy-26,5,1, night ? "#FFE88A" : "#E6D2AE");
   if (night){ ctx.globalAlpha = .22; R(4,gy-25,17,25,"#FFE88A"); ctx.globalAlpha = 1; }
-  if (cityId() === "bermuda") bermudaPalms(gy); else if (cityId() === "nyc") nycStreet(gy, night);
+  if (cityId() === "bermuda") bermudaPalms(gy); else if (cityId() === "nyc") nycStreet(gy, night); else if (cityId() === "zurich") zurichStreet(gy, night);
+  if (tunnelH()) drawMetro(gy, night);
   for (const c of cars){
     if (c.wait > 0) continue; const x = Math.round(c.x);
     if (c.kind === "bus"){ const y = gy+6;
@@ -212,7 +214,7 @@ function facadeRows(L){
   }
 }
 function drawRoof(L){
-  if (cityId() === "nyc") return roofNYC(L); if (cityId() === "bermuda") return roofBermuda(L);
+  if (cityId() === "nyc") return roofNYC(L); if (cityId() === "bermuda") return roofBermuda(L); if (cityId() === "zurich") return roofZurich(L);
   const base = TOP, night = isNight();
   const tf = flareAt(L, TOP) + 2, x0 = 24 - tf, x1 = 196 + tf, w = x1 - x0;
   for (let x = x0; x < x1; x++){
@@ -403,19 +405,21 @@ function roofBermuda(L){
   roofSign(base, x0, w, night);
 }
 function facadeAlt(L){
-  const night = isNight(), top = TOP, bot = L.groundY, ny = cityId() === "nyc";
-  const wall = ny ? (night ? "#B4B0A8" : "#ECE8DE") : (night ? "#C68C9C" : "#F4B8C4"), wallD = ny ? (night ? "#8E8A82" : "#CFC9BB") : (night ? "#A87080" : "#E49AAA");
+  const night = isNight(), top = TOP, bot = L.groundY, ny = cityId() === "nyc", zh = cityId() === "zurich";
+  const wall = zh ? (night ? "#B8AE95" : "#E6D9BC") : ny ? (night ? "#B4B0A8" : "#ECE8DE") : (night ? "#C68C9C" : "#F4B8C4");
+  const wallD = zh ? (night ? "#97896C" : "#C9B48E") : ny ? (night ? "#8E8A82" : "#CFC9BB") : (night ? "#A87080" : "#E49AAA");
   for (const [x0, x1] of [[10, 24], [196, 210]]){
     R(x0, top, x1 - x0, bot - top, wall);
-    if (ny){ R(x0 + 2, top, 1.5, bot - top, wallD); R(x1 - 3.5, top, 1.5, bot - top, wallD); }
+    if (ny || zh){ R(x0 + 2, top, 1.5, bot - top, wallD); R(x1 - 3.5, top, 1.5, bot - top, wallD); }
     else { for (let y = top; y < bot; y += 6){ R(x0, y, 3, 3, "#FBFBF6"); R(x1 - 3, y + 3, 3, 3, "#FBFBF6"); } }
     for (let i = 0; i < L.n; i++){ const y = floorY(L, i); const lit = night && hash(i, x0) > 0.35;
       if (ny){ R(x0 + 5, y + 10, 4, 12, wallD); R(x0 + 5.5, y + 11, 3, 10.5, lit ? "#FFE18A" : "#7FA3C0"); ctx.fillStyle = wallD; ctx.beginPath(); ctx.arc(x0 + 7, y + 11, 2, Math.PI, 0); ctx.fill(); if (i % 4 === 3) R(x0, y + 1, x1 - x0, 1.2, "#C9A54A"); }
+      else if (zh){ R(x0 + 4, y + 9, 6, 15, wallD); R(x0 + 5, y + 10, 4, 13, lit ? "#FFE18A" : "#7FA3C0"); R(x0 + 5, y + 16, 4, 0.6, wallD); R(x0, y + 1, x1 - x0, 1.2, wallD); R(x0 + 3.5, y + 24, 7, 1, wallD); }
       else { R(x0 + 4, y + 12, 6, 12, "#FBFBF6"); R(x0 + 5, y + 13, 4, 10, lit ? "#FFE18A" : "#7FB8D0"); R(x0 + 2.5, y + 12, 1.5, 12, "#3E9B6A"); R(x0 + 10, y + 12, 1.5, 12, "#3E9B6A"); } }
-    R(x0, L.lobbyY, x1 - x0, bot - L.lobbyY, ny ? wallD : "#FBFBF6");
-    if (ny) for (let y = L.lobbyY + 3; y < bot; y += 5) R(x0, y, x1 - x0, 0.6, "rgba(0,0,0,.12)");
+    R(x0, L.lobbyY, x1 - x0, bot - L.lobbyY, ny || zh ? wallD : "#FBFBF6");
+    if (ny || zh) for (let y = L.lobbyY + 3; y < bot; y += 5) R(x0, y, x1 - x0, 0.6, "rgba(0,0,0,.12)");
   }
-  for (let i = 0; i < L.n; i++){ const y = floorY(L, i); R(24, y + 38, 172, 2, ny ? "#D2CDC0" : "#FBFBF6"); }
+  for (let i = 0; i < L.n; i++){ const y = floorY(L, i); R(24, y + 38, 172, 2, zh ? "#C9B48E" : ny ? "#D2CDC0" : "#FBFBF6"); }
 }
 function skylineNYC(L){
   const gy = L.groundY, night = isNight(), far = night ? "#272D52" : "#A9B6C8", mid = night ? "#1E2446" : "#8A9AB2", near = night ? "#161B38" : "#6E809A", lit = "#FFE88A";
@@ -471,3 +475,107 @@ function drawSpecProp(f, y){
   else if (sp === "capital"){ ctx.fillStyle = "#C9A54A"; ctx.beginPath(); ctx.moveTo(x, b-10); ctx.lineTo(x+9, b-10); ctx.lineTo(x+9, b-5); ctx.lineTo(x+4.5, b); ctx.lineTo(x, b-5); ctx.closePath(); ctx.fill(); ctx.fillStyle = "#1F2A44"; ctx.beginPath(); ctx.moveTo(x+1.5, b-8.5); ctx.lineTo(x+7.5, b-8.5); ctx.lineTo(x+7.5, b-5.5); ctx.lineTo(x+4.5, b-2); ctx.lineTo(x+1.5, b-5.5); ctx.closePath(); ctx.fill(); }
 }
 
+/* London's Tube and New York's subway: a station entrance on the pavement and a cutaway tunnel under the road. */
+function drawMetro(gy, night){
+  const ny = cityId() === "nyc", top = gy + GROUND, h = tunnelH();
+  // the ground the tunnel is dug through
+  R(0, top, LW, h, ny ? "#5E5650" : "#6B5E50");
+  for (let x = 0, k = 0; x < LW; x += 7, k++) R(x + (k % 3), top + 1 + (k % 4)*4, 3, 1, ny ? "#4E4842" : "#5A4E42");
+  if (ny){
+    // a cut-and-cover tunnel: flat roof, steel columns, a strip of lamps
+    R(0, top + 3, LW, h - 4, "#2A2C34"); R(0, top + 3, LW, 1, "#4A4E5A");
+    for (let x = 10; x < LW; x += 22){ R(x, top + 4, 2, h - 6, "#3E6BA8"); R(x - 1, top + 4, 4, 1, "#5A86C0"); }
+    for (let x = 4; x < LW; x += 22) R(x, top + 5, 3, 1, night ? "#FFF2A8" : "#E9E2CF");
+  } else {
+    // a deep-level tube tunnel: a round bore with a tiled band
+    R(0, top + 4, LW, h - 5, "#2A2C34"); R(0, top + 4, LW, 2, "#3A3E48");
+    for (let x = 0; x < LW; x += 4) R(x, top + 3, 3, 1, "#3A3E48");
+    for (let x = 6; x < LW; x += 30) R(x, top + 7, 8, 2, night ? "#FFF2A8" : "#C9C3B0");
+  }
+  R(0, top + h - 2, LW, 1, "#8A8A90"); R(0, top + h - 1, LW, 1, "#4A4A52");
+  // the station entrance, in the gap to the right of the tower
+  const ex = 218, w = 13;
+  R(ex, gy + 2.6, w, 3.6, "#1F2238");
+  for (let k = 0; k < 4; k++) R(ex + 2 + k*3, gy + 3 + k*0.7, 2, 0.6, "#5A5A64");
+  R(ex, gy - 6, 1, 8, "#2B2D3A"); R(ex + w - 1, gy - 6, 1, 8, "#2B2D3A"); R(ex, gy - 6, w, 1, "#2B2D3A"); R(ex, gy - 3, w, 0.6, "#2B2D3A");
+  if (ny){
+    for (const lx of [ex - 1, ex + w]){ R(lx, gy - 14, 1, 14, "#2B4A2E"); ctx.fillStyle = night ? "#8FF2A8" : "#3E9B4F"; ctx.beginPath(); ctx.arc(lx + 0.5, gy - 15, 1.8, 0, Math.PI*2); ctx.fill(); }
+    R(ex, gy - 10, w, 4, "#141418"); T("SUBWAY", ex + w/2, gy - 7.4, 2.3, "#FFFFFF", "center", 700);
+  } else {
+    R(ex, gy - 11, w, 5, "#1F2A44"); R(ex, gy - 11, w, 0.6, "#C9A54A"); T("TUBE", ex + w/2, gy - 7.6, 3, "#FFFFFF", "center", 700);
+  }
+}
+function drawTrain(ny){
+  for (let car = 0; car < 2; car++){
+    const x = car*42;
+    if (ny){
+      R(x, 1, 40, 10, "#B9BEC8"); R(x, 1, 40, 1, "#DDE1E8");
+      for (let k = 2; k < 40; k += 3) R(x + k, 7, 0.6, 3, "#9CA2AE");
+      for (let k = 0; k < 5; k++) R(x + 3 + k*7.5, 3, 5, 3, isNight() ? "#FFE9A8" : "#2A3040");
+      R(x + 18, 2, 4, 8, "#8E94A0");
+    } else {
+      R(x + 2, 0, 36, 1, "#F2F2EE"); R(x + 1, 1, 38, 1, "#F2F2EE"); R(x, 2, 40, 8, "#F2F2EE"); R(x, 9, 40, 2, "#2F4A9A");
+      for (let k = 0; k < 4; k++){ R(x + 4 + k*9, 3, 6, 3, isNight() ? "#FFE9A8" : "#2A3040"); R(x + 2 + k*9, 2, 1.5, 7, "#D7262E"); }
+    }
+    R(x + 4, 11, 4, 1, "#1B1B22"); R(x + 32, 11, 4, 1, "#1B1B22");
+  }
+  R(82, 5, 2, 2, "#FFE88A");
+}
+
+/* ---------- Zurich ---------- */
+/* a Mythenquai-style lakeside headquarters: sandstone, a green copper mansard, a gilded lantern and the Swiss flag */
+function roofZurich(L){
+  const base = TOP, night = isNight(), x0 = 10, x1 = 210, w = x1 - x0;
+  const stone = night ? "#B8AE95" : "#E6D9BC", copper = night ? "#3E6E5E" : "#5DAE88", copperD = night ? "#2E5446" : "#4E9A7A";
+  R(x0, base - 14, w, 5, stone); R(x0 - 2, base - 15, w + 4, 2, night ? "#9E9479" : "#C9B48E");
+  ctx.fillStyle = copper; ctx.beginPath(); ctx.moveTo(x0 + 2, base - 15); ctx.lineTo(x0 + 16, base - 36); ctx.lineTo(x1 - 16, base - 36); ctx.lineTo(x1 - 2, base - 15); ctx.closePath(); ctx.fill();
+  for (let x = x0 + 20; x < x1 - 20; x += 6) R(x, base - 35, 0.8, 20, copperD);
+  R(x0 + 16, base - 37, w - 32, 1.4, night ? "#5A8A78" : "#8FD0B0");
+  for (const dx of [34, 70, 106, 142]){ R(x0 + dx, base - 30, 10, 12, stone); ctx.fillStyle = stone; ctx.beginPath(); ctx.moveTo(x0 + dx - 1, base - 30); ctx.lineTo(x0 + dx + 5, base - 35); ctx.lineTo(x0 + dx + 11, base - 30); ctx.fill(); R(x0 + dx + 2, base - 28, 6, 8, night ? "#FFE18A" : "#7FA3C0"); }
+  R(106, base - 43, 8, 7, "#E3C064"); R(108, base - 46, 4, 3, "#F2DC8E"); R(109.5, base - 48, 1, 2, "#C9A54A");
+  R(186, base - 48, 1.2, 14, "#3A3A48"); R(187.2, base - 48, 9, 9, "#D52B1E"); R(191, base - 46.5, 1.6, 6, "#FFFFFF"); R(188.8, base - 44.3, 6, 1.6, "#FFFFFF");
+  roofSign(base, x0, w, night);
+}
+function skylineZurich(L, landmarks){
+  const gy = L.groundY, night = isNight(), alp = night ? "#323B5E" : "#93A7C0", snow = night ? "#B8C0D8" : "#FFFFFF";
+  const peaks = [[0,58],[22,74],[44,60],[70,86],[96,64],[124,80],[150,62],[176,90],[204,66],[230,82],[256,60]];
+  ctx.fillStyle = alp; ctx.beginPath(); ctx.moveTo(0, gy - 36); for (const [x, h] of peaks) ctx.lineTo(x, gy - h); ctx.lineTo(256, gy - 36); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = snow;
+  for (let k = 1; k < peaks.length - 1; k++){ const [x, h] = peaks[k]; if (h < 70) continue; ctx.beginPath(); ctx.moveTo(x, gy - h); ctx.lineTo(x - 7, gy - h + 9); ctx.lineTo(x - 2, gy - h + 7); ctx.lineTo(x + 2, gy - h + 10); ctx.lineTo(x + 7, gy - h + 8); ctx.closePath(); ctx.fill(); }
+  // Lake Zurich, with a paddle steamer and swans: all white but one
+  R(0, gy - 38, 256, 10, night ? "#24406A" : "#4E9CC9"); R(0, gy - 38, 256, 1, night ? "#3A5A86" : "#8FC8E8");
+  const sx = landmarks ? 150 : 90; R(sx, gy - 34, 22, 3, "#F7F2E6"); R(sx + 4, gy - 37, 12, 3, "#F7F2E6"); R(sx + 9, gy - 41, 2, 4, "#D52B1E"); R(sx, gy - 31, 22, 1, "#1F2A44");
+  for (const [x, black] of [[60, 0], [72, 0], [landmarks ? 214 : 190, landmarks ? 1 : 0]]){ const c = black ? "#1B1B22" : "#FFFFFF"; R(x, gy - 31, 4, 2, c); R(x + 3, gy - 34, 1, 3, c); R(x + 3.5, gy - 34.5, 1.2, 0.8, black ? "#D9443A" : "#E39A2C"); }
+  // the old town
+  const houses = ["#E9DCC0", "#D8C8A8", "#E6D2D0", "#D4DCC8", "#EADFC8"];
+  for (let x = 0, k = 0; x < 256; k++){
+    const w = 12 + Math.floor(hash(k, 61)*8), h = 14 + Math.floor(hash(k, 62)*12);
+    R(x, gy - h, w, h, night ? "#4A4A62" : houses[k % 5]);
+    ctx.fillStyle = night ? "#3A2E2A" : "#9A5A3E"; ctx.beginPath(); ctx.moveTo(x - 1, gy - h); ctx.lineTo(x + w/2, gy - h - 7); ctx.lineTo(x + w + 1, gy - h); ctx.fill();
+    for (let yy = gy - h + 3; yy < gy - 3; yy += 5) for (let xx = x + 2; xx < x + w - 2; xx += 4) R(xx, yy, 1.6, 2, night ? (hash(xx, yy) > .5 ? "#FFE18A" : "#2A2A3A") : "#7FA3C0");
+    x += w + 1;
+  }
+  if (landmarks){
+    const stone = night ? "#6A6478" : "#D9CDB4", stoneD = night ? "#4E4A5C" : "#BBA98A", green = night ? "#2E5446" : "#4E9A7A";
+    // the Grossmünster's twin towers
+    for (const tx of [1, 11]){ R(tx, gy - 66, 8, 66, stone); R(tx, gy - 66, 8, 1, stoneD); ctx.fillStyle = night ? "#3E4A5A" : "#5E5A50"; ctx.beginPath(); ctx.moveTo(tx - 1, gy - 66); ctx.lineTo(tx + 4, gy - 75); ctx.lineTo(tx + 9, gy - 66); ctx.fill(); R(tx + 2.5, gy - 58, 3, 6, night ? "#FFE18A" : "#3A3A48"); }
+    R(0, gy - 38, 20, 38, stone);
+    // the Fraumünster's slender green spire
+    R(84, gy - 62, 8, 62, stone); ctx.fillStyle = green; ctx.beginPath(); ctx.moveTo(83, gy - 62); ctx.lineTo(88, gy - 96); ctx.lineTo(93, gy - 62); ctx.fill(); R(70, gy - 34, 30, 34, stone);
+    // St Peter's, with one of Europe's largest church clock faces (showing the real time)
+    const px = 240; R(px, gy - 60, 14, 60, stone); ctx.fillStyle = green; ctx.beginPath(); ctx.moveTo(px - 1, gy - 60); ctx.lineTo(px + 7, gy - 80); ctx.lineTo(px + 15, gy - 60); ctx.fill();
+    ctx.fillStyle = "#1F2A44"; ctx.beginPath(); ctx.arc(px + 7, gy - 50, 5.6, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = night ? "#FFF2C8" : "#E3C064"; ctx.beginPath(); ctx.arc(px + 7, gy - 50, 4.6, 0, Math.PI*2); ctx.fill();
+    const now = new Date(), hr = (now.getHours() % 12 + now.getMinutes()/60)/12*Math.PI*2, mn = now.getMinutes()/60*Math.PI*2;
+    ctx.strokeStyle = "#1F2A44"; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(px + 7, gy - 50); ctx.lineTo(px + 7 + Math.sin(hr)*2.6, gy - 50 - Math.cos(hr)*2.6); ctx.moveTo(px + 7, gy - 50); ctx.lineTo(px + 7 + Math.sin(mn)*3.8, gy - 50 - Math.cos(mn)*3.8); ctx.stroke();
+  }
+  ctx.globalCompositeOperation = "source-atop"; const hz = ctx.createLinearGradient(0, gy - 160, 0, gy); hz.addColorStop(0, "rgba(255,255,255,0)"); hz.addColorStop(1, night ? "rgba(30,36,80,.3)" : "rgba(226,233,241,.35)"); ctx.fillStyle = hz; ctx.fillRect(0, gy - 160, 256, 160); ctx.globalCompositeOperation = "source-over";
+}
+function zurichStreet(gy, night){
+  // a public drinking fountain, and a bicycle that has been locked to it for years
+  R(218, gy - 5, 12, 5, "#B8B2A6"); R(218, gy - 5, 12, 1, "#D8D2C6"); R(223, gy - 13, 2, 8, "#8E887C"); R(222, gy - 14, 4, 1.5, "#8E887C");
+  R(226, gy - 11, 1, 1, "#9CC9E6"); R(227, gy - 10, 1, 1, "#9CC9E6"); R(227.5, gy - 8, 0.8, 3, "#9CC9E6");
+  ctx.strokeStyle = night ? "#6A6A7A" : "#1F2238"; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.arc(205, gy - 2.5, 2.4, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(213, gy - 2.5, 2.4, 0, Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(205, gy - 2.5); ctx.lineTo(208.5, gy - 6); ctx.lineTo(213, gy - 2.5); ctx.moveTo(208.5, gy - 6); ctx.lineTo(211.5, gy - 6); ctx.stroke();
+}

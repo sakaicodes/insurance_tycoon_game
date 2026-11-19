@@ -31,6 +31,9 @@ const LINES = {
     blurb:"Insurance for insurance companies. You take a slice of their whole book, so their worst day becomes yours.",
     pro:"The biggest premiums and very few claims. Your customers are other insurers, so public mood barely matters.", con:"Every black swan hits you harder, because you’ve insured the insurers."},
 };
+{ const SWISS = {franc:{property:0.7, casualty:0.8, excess:1.0, marine:1.2, cyber:0.8, specialty:1.1, treaty:1.7},
+                gotthard:{property:1.0, casualty:0.6, excess:0.7, marine:1.9, cyber:0.4, specialty:1.3, treaty:1.3}};
+  for (const k in SWISS) for (const line in SWISS[k]) LINES[line].swans[k] = SWISS[k][line]; }
 const ACT_SPECS = {
   pricing:{name:"Pricing", icon:"🧮",
     blurb:"They work out what every policy should cost, then explain it in a spreadsheet nobody opens.",

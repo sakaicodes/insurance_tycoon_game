@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.6.8
+- **Zurich-only black swans.** `SWANS` entries can now carry `city`; such swans are added to the draw (weight 1.5) only in that city, and the Book tab lists only the swans that can happen where you are (`citySwans()`).
+  - **The Franc Shock** (financial lines cover, softened by Capital Modelling): the rate board crashes from 1.20 to 0.85 as a cuckoo clock pops, banknotes flee and a chocolatier's bars slide off the tray. Ueli from the treasury desk explains. Exposure: Treaty 1.7×, Marine 1.2×, Specialty 1.1×, Property 0.7×.
+  - **The Gotthard gets blocked** (catastrophe cover, softened by Capital Modelling): derailed wagons at the tunnel portal, freight queuing on the approach, a recovery crane, and a goat carrying cheese over the pass. Reto from rail logistics explains. Exposure: Marine 1.9×, Specialty and Treaty 1.3×, Cyber 0.4×.
+  - New achievements: "Strong currency, weak knees" and "The long way round". "Seen it all" still covers the original eight swans, so it stays achievable in every city.
+- **Cuckoo clock:** in Zurich, each earnings call opens with a two-note cuckoo (new `cuckoo` sound) and a toast.
+- No Supabase changes are needed.
+
+## 0.6.7
+- **New city: Zurich** (currency CHF). A Mythenquai-style headquarters: sandstone sides with stone string courses, a green copper mansard roof with dormers, a gilded lantern and the Swiss flag. Skyline: the Alps, Lake Zurich with a paddle steamer and swans (one black), old-town houses, the Grossmünster's twin towers, the Fraumünster's green spire and St Peter's clock (showing the real time). Street: blue-and-white trams, dark taxis, a fountain and a bicycle. Wide screens fill out with Alps, lake and old town.
+- **Zurich's risk profile:** bank collapse 1.4×, IT meltdown and ash 1.2×, canal 0.8×, hurricane 0.6×; home-market bonuses on Treaty Reinsurance (1.12×) and Property (1.08×).
+- **Achievements:** new "Swiss precision" (Thought Leader in Zurich); "Globetrotter" now requires all four cities (players who already earned it keep it).
+- **Leaderboard:** Zurich filter and flag.
+- **Supabase:** `20261120000000_zurich.sql` adds `zurich` to the allowed cities on `scores` and `plays` (no data changes), and `submit-score` accepts it. Both are needed before Zurich runs can reach the global leaderboard.
+
+## 0.6.6
+- **London Tube and New York subway:** a 20-pixel cutaway under the road (`tunnelH()`, London and New York only) showing a tunnel: a round tube bore with wall lamps in London, a cut-and-cover tunnel with blue steel columns in New York. A two-car train (white, red and blue tube stock in London; stainless steel in New York) runs through it periodically, like the street traffic. Each city gets a station entrance on the pavement beside the tower: a "TUBE" sign over the stairs in London, and green globe lamps with a "SUBWAY" sign in New York. Official logos aren't used. Bermuda is unchanged.
+- Fixed: bus and cab sprites were painted once at load, so after starting a company in a different city in the same session, the previous city's vehicles (for example, pink Bermuda buses) appeared until the page was reloaded. They are now repainted on every tower rebuild, which happens whenever the city changes.
+
+## 0.6.5
+- **Exit interview:** after the ending cutscene and before the ending screen, an optional card asks for a 1–5 star rating, quick tags (Made me laugh, Too easy, Too hard, Confusing, Found a bug, Want more content) and a comment of up to 500 characters. Skip is always available, and the score is recorded either way. Only shown when the global leaderboard is reachable.
+- **Opting out:** from a player's second run the card includes "Don't ask me again"; the Boardroom's Company tab has an On/Off toggle to change it at any time.
+- **Supabase:** new private `feedback` table (`20261118000000_feedback.sql`) with no run or player ID, only rating, tags, comment, ending, quarters, city and version. `submit-score` accepts `type: "feedback"`, keeps only known tags, strips HTML from comments, ignores empty feedback and rate-limits to 10 per hour per connection.
+- Fixed: reloading on the ending screen always showed "Bankrupt"; the ending reason is now saved.
+
 ## 0.6.4
 - **Paging:** the global leaderboard loads 20 scores per page using range requests with an exact count, showing "Showing 21–40 of 273" and Previous/Next buttons. Ranks continue across pages and the city filters still apply. "Find my best run" works out your best run's rank and opens its page with the row highlighted.
 - **Run count:** the leaderboard shows the total number of recorded runs, including those from before this update (`runs` in the `leaderboard_stats` view). A random anonymous player ID (stored in the browser, no personal data) is also sent with each score, and run starts are recorded privately in a new `plays` table (see `play_stats` in the SQL editor) when a CEO is created.

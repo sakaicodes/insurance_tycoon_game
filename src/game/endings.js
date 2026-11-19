@@ -14,6 +14,8 @@ function gameOver(reason){
     const cc = CAREER_CUTS[reason]; playCutscene(typeof cc.kind === "function" ? cc.kind() : cc.kind, () => gameOver(reason), Object.assign({}, cc.opts(), {}));
     return;
   }
+  S.overReason = reason;
+  if (!S.fbAsked && !window.__bot && feedbackWanted()){ S.fbAsked = true; S.over = true; save(); if (modalOpen){ modalLocked = false; closeModal(); } openFeedback(reason, () => gameOver(reason)); return; }
   const e = ENDINGS[reason]; if (reason !== "exit") sfx("lose");
   const spR = scoreParts(); let run = S.runId ? loadRuns().find(r => r.id === S.runId) : null;
   if (!run && !S.idleMode && !S.idleTainted){ run = recordRun(spR, reason); S.runId = run.id; }

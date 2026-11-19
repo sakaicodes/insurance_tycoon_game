@@ -442,6 +442,28 @@ blockquote{background:rgba(201,165,74,.12)}
 @keyframes rrFall{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--dx),190px) rotate(540deg)}}
 .podium-cv{display:block;width:100%;max-width:480px;margin:8px auto 0;image-rendering:pixelated;border:3px solid #1F2A44;border-radius:8px;box-shadow:0 0 0 2px var(--brass)}
 @media (prefers-reduced-motion: reduce){ .lb tr.celebrate,.lb tr.found,.lb tr.shove,.rr-medal,.rr-confetti i,.rank-reveal.landed .rr-num{animation:none;opacity:1;transform:none} }
+/* the exit interview */
+.fb-kicker{margin:0;font:700 12px "Chakra Petch","Pixelify Sans",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#8A6A16}
+.fb h2{margin-top:2px}
+.fb-stars{display:flex;gap:4px;margin:8px 0 0}
+.fb-star{font-size:34px;line-height:1;color:#B8AE95;background:none;border:none;padding:0 3px;cursor:pointer;text-shadow:0 2px 0 #1F2A44}
+.fb-star.on{color:#E3C064}
+.fb-star:focus-visible{outline:3px solid #E3C064;outline-offset:2px;border-radius:6px}
+.fb-word{margin:2px 0 10px;font:700 14px "Chakra Petch","Pixelify Sans",sans-serif;color:#5A6380;min-height:18px}
+.fb-tags{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 10px}
+.fb-tag{font:600 14px "Chakra Petch","Pixelify Sans",sans-serif;color:#1F2A44;background:#E9E4D6;border:2px solid #1F2A44;border-radius:999px;padding:6px 12px;cursor:pointer}
+.fb-tag[aria-pressed="true"]{background:#E3C064;box-shadow:0 2px 0 #1F2A44}
+.fb-label{display:block;margin:4px 0 4px;font:700 15px "Chakra Petch","Pixelify Sans",sans-serif;color:#23305A}
+.fb textarea{width:100%;box-sizing:border-box;font:16px Rubik,system-ui,sans-serif;color:var(--ink);background:#FFFFFF;border:3px solid #1F2A44;border-radius:6px;padding:8px 9px;resize:vertical}
+.fb textarea:focus-visible{outline:3px solid #E3C064}
+.fb-meta{display:flex;justify-content:space-between;gap:8px;margin:4px 0 10px;font-size:13px;color:var(--ink-dim)}
+.fb-mute{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:14px;color:var(--ink-dim);cursor:pointer}
+.fb-mute input{width:18px;height:18px;accent-color:#1F2A44}
+.fb-btns{display:flex;gap:10px}
+.fb-btns .btn{flex:1}
+.fb-btns .btn:last-child{flex:1.6}
+.seg.lb-cities{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.seg.lb-cities .btn{font-size:13px;padding-left:2px;padding-right:2px}
 
 
 </style>
@@ -850,7 +872,10 @@ const ACH = [
   {cat:"Cities", id:"city_london", name:"Square Mile", desc:"Become a Thought Leader in London.", test:() => cityId() === "london" && S.rankIdx >= 3},
   {cat:"Cities", id:"city_nyc", name:"Empire State of mind", desc:"Become a Thought Leader in New York.", test:() => cityId() === "nyc" && S.rankIdx >= 3},
   {cat:"Cities", id:"city_bermuda", name:"Island time", desc:"Become a Thought Leader in Bermuda.", test:() => cityId() === "bermuda" && S.rankIdx >= 3},
-  {cat:"Cities", id:"globe", name:"Globetrotter", desc:"Found companies in all three cities.", test:() => { const c = loadLegacy().cities || {}; return !!(c.london && c.nyc && c.bermuda); }},
+  {cat:"Cities", id:"city_zurich", name:"Swiss precision", desc:"Become a Thought Leader in Zurich.", test:() => cityId() === "zurich" && S.rankIdx >= 3},
+  {cat:"Black swans", id:"sw_franc", name:"Strong currency, weak knees", desc:"Survive the Franc Shock in Zurich.", test:() => survived("franc")},
+  {cat:"Black swans", id:"sw_gotthard", name:"The long way round", desc:"Survive the Gotthard blockage in Zurich.", test:() => survived("gotthard")},
+  {cat:"Cities", id:"globe", name:"Globetrotter", desc:"Found companies in all four cities.", test:() => { const c = loadLegacy().cities || {}; return !!(c.london && c.nyc && c.bermuda && c.zurich); }},
   // exits
   {cat:"Exits", id:"pe", name:"Cashing out", desc:"Sell a company to private equity.", test:() => S.exitKind === "pe"},
   {cat:"Exits", id:"ipo", name:"Ring the bell", desc:"Float a company on the stock exchange.", test:() => S.exitKind === "ipo"},
@@ -1047,6 +1072,9 @@ const SWANS = {
   rocket:{title:"Rocket launch goes boom", text:"A rocket carrying satellites you insured exploded 40 seconds after launch. The satellites are now very expensive confetti.", cover:"cat", mit:actMit, mitName:"Capital Modelling"},
   solar:{title:"The solar superstorm", text:"The biggest solar storm since 1859 lit up the sky over London and fried satellites, power grids and every sat-nav in the country.", cover:"cat", mit:actMit, mitName:"Capital Modelling"},
 };
+/* Zurich-only black swans: they never appear in other cities. */
+SWANS.franc = {city:"zurich", title:"The Franc Shock", text:"At half past ten on a Thursday the central bank stopped holding the franc down. It jumped thirty per cent before lunch, and every claim you owe in euros and dollars now costs a small fortune in francs.", cover:"dno", mit:actMit, mitName:"Capital Modelling"};
+SWANS.gotthard = {city:"zurich", title:"The Gotthard gets blocked", text:"A freight train derailed deep inside the tunnel under the Alps. Europe’s main north–south rail route is shut for months, and every cargo, supply chain and business interruption policy you wrote is taking the very long way round.", cover:"cat", mit:actMit, mitName:"Capital Modelling"};
 const SWAN_POOL = ["hurricane","hurricane","canal","canal","outage","outage","ash","cancel","bank","bank","rocket","rocket","solar"];
 
 /* data/tutorial.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
@@ -1071,6 +1099,27 @@ const TUT = [
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.6.8", notes:[
+    "Two new black swans, only in Zurich: the Franc Shock, where the franc leaps overnight and every foreign claim costs a fortune, and the Gotthard blockage, where a derailed freight train shuts the main rail route under the Alps.",
+    "Treaty Reinsurance feels the Franc Shock hardest; Marine cargo feels the Gotthard. Each has its own cutscene, character and achievement.",
+    "In Zurich, a cuckoo clock announces every earnings call, precisely on time.",
+  ]},
+  {v:"0.6.7", notes:[
+    "New city: Zurich. Run your syndicate from a sandstone lakeside headquarters with a green copper roof, beneath the Alps and beside Lake Zurich, in Swiss francs.",
+    "Zurich has its own risks and strengths: bank collapses and IT meltdowns hit harder, hurricanes barely register, and Treaty Reinsurance and Property earn a little extra.",
+    "New achievement: Swiss precision. Globetrotter now needs companies in all four cities.",
+    "The global leaderboard has a Zurich filter.",
+  ]},
+  {v:"0.6.6", notes:[
+    "London now has the Tube: a station entrance beside your tower, and tube trains rumbling through a tunnel under the road.",
+    "New York now has the subway: an entrance with green globe lamps, and subway trains running through a tunnel under the street.",
+    "Fixed: buses and cabs from your previous city no longer follow you to a new one (no more pink Bermuda buses in London).",
+  ]},
+  {v:"0.6.5", notes:[
+    "Exit interviews: when a run ends you can rate it, tick a few quick tags and leave a comment before seeing your score. It’s optional and anonymous, and it never affects your score.",
+    "Don’t want to be asked? From your second run you can turn exit interviews off, and back on again in the Boardroom’s Company tab.",
+    "Fixed: reloading the game on the ending screen now shows the right ending.",
+  ]},
   {v:"0.6.4", notes:[
     "The global leaderboard now shows every score, 20 to a page, with a button to jump straight to your best run.",
     "See how many runs have been played, worldwide, at the top of the global leaderboard.",
@@ -1175,6 +1224,10 @@ const CITIES = {
     building:"A Front Street office with a white stepped roof", blurb:"The world’s reinsurance capital: pastel offices, hurricane-proof roofs and a lot of very large cheques.",
     risk:"The reinsurance capital. Hurricanes and solar storms hit hardest here; City collapses and IT meltdowns less so.",
     swans:{hurricane:1.7, canal:1.0, outage:0.8, ash:0.6, cancel:0.8, bank:0.8, rocket:0.9, solar:1.2}, lines:{treaty:1.15, property:1.08}},
+  zurich:{name:"Zurich", country:"Switzerland", flag:"🇨🇭", cur:"CHF ", market:"Zurich’s reinsurance market",
+    building:"A lakeside headquarters on Mythenquai", blurb:"Home to some of the world’s biggest insurers and reinsurers: sandstone, green copper roofs and absolute discretion.",
+    risk:"Precision, discretion and very large reinsurance treaties. Bank collapses hit harder here; hurricanes are someone else’s problem.",
+    swans:{hurricane:0.6, canal:0.8, outage:1.2, ash:1.2, cancel:1.0, bank:1.4, rocket:0.9, solar:1.0}, lines:{treaty:1.12, property:1.08}},
 };
 function setCity(id){ CUR = (CITIES[id] || CITIES.london).cur; }
 function cityRisk(kind){ const c = CITIES[cityId()] || CITIES.london; return (c.swans && c.swans[kind]) || 1; }
@@ -1222,6 +1275,9 @@ const LINES = {
     blurb:"Insurance for insurance companies. You take a slice of their whole book, so their worst day becomes yours.",
     pro:"The biggest premiums and very few claims. Your customers are other insurers, so public mood barely matters.", con:"Every black swan hits you harder, because you’ve insured the insurers."},
 };
+{ const SWISS = {franc:{property:0.7, casualty:0.8, excess:1.0, marine:1.2, cyber:0.8, specialty:1.1, treaty:1.7},
+                gotthard:{property:1.0, casualty:0.6, excess:0.7, marine:1.9, cyber:0.4, specialty:1.3, treaty:1.3}};
+  for (const k in SWISS) for (const line in SWISS[k]) LINES[line].swans[k] = SWISS[k][line]; }
 const ACT_SPECS = {
   pricing:{name:"Pricing", icon:"🧮",
     blurb:"They work out what every policy should cost, then explain it in a spreadsheet nobody opens.",
@@ -2340,6 +2396,62 @@ SCENES2.retire = function(t){
   P(cx + 2, 98, 7, 8, "#C9A54A"); P(cx + 3, 99, 5, 5, "#FFF6D0"); px(cx + 5, 101, "#1F2238"); px(cx + 6, 100, "#1F2238"); P(cx + 1, 106, 9, 1, "#8E7228");
 };
 LINES2.retire = {name:"", line:""};
+/* ---------- Zurich-only black swans ---------- */
+SCENES2.franc = function(t){
+  P(0, 0, SW, SH, "#1F2A44"); for (let x = 0; x < SW; x += 12) P(x, 0, 1, 90, "rgba(255,255,255,.04)");
+  P(0, 90, SW, 45, "#3A3F55"); P(0, 90, SW, 2, "#C9A54A");
+  // the rate board, mid-meltdown
+  P(14, 10, 156, 66, "#0B0F1E"); P(14, 10, 156, 2, "#C9A54A"); text("FX RATES", 20, 14, "#E3C064"); text("LIVE", 146, 14, fr(t*3) < 0.5 ? "#FF6B6B" : "#5A2A2A");
+  [["EUR/CHF", 1.20, 0.85], ["USD/CHF", 1.02, 0.86], ["GBP/CHF", 1.55, 1.30]].forEach(([pair, a, b], k) => {
+    const y = 27 + k*15, u = Math.min(1, Math.max(0, (t - 0.08 - k*0.05)/0.35));
+    const jitter = u > 0 && u < 1 ? (hs(Math.floor(t*30), k) - 0.5)*0.25 : 0, v = a - (a - b)*u + jitter;
+    text(pair, 20, y + 2, "#DCE9FF"); text(v.toFixed(2), 74, y, u > 0.02 ? "#FF6B6B" : "#4BE39A", 2);
+    if (u > 0.02){ tri(140, y + 1, 150, y + 1, 145, y + 9, "#FF6B6B"); text("-" + Math.round((a - b)/a*100*u) + "%", 154, y + 2, "#FF6B6B"); }
+  });
+  // a cuckoo clock that has seen enough
+  P(184, 18, 30, 34, "#8E5A30"); tri(180, 20, 218, 20, 199, 6, "#5A3825"); disc(199, 36, 9, "#F7F2E6"); disc(199, 36, 1, "#1F2238");
+  P(198.5, 29, 1, 7, "#1F2238"); c.save(); c.translate(199, 36); c.rotate(t*40); P(0, -0.5, 6, 1, "#1F2238"); c.restore();
+  P(195, 21, 8, 6, "#1F2238"); const pop = Math.max(0, Math.sin(fr(t*1.5)*Math.PI))*7;
+  if (pop > 1){ P(193 - pop, 22, 7, 4, "#E3C064"); px(193 - pop, 23, "#1F2238"); P(191 - pop, 23.5, 2, 1, "#E39A2C"); }
+  P(190, 52, 1, 10, "#C9A54A"); P(208, 52, 1, 14, "#C9A54A"); disc(190.5, 63, 2, "#C9A54A"); disc(208.5, 67, 2, "#C9A54A");
+  // banknotes fleeing the building
+  for (let k = 0; k < 10; k++){ const u = fr(t*0.8 + k/10), x = 10 + hs(k, 5)*200 + u*30, y = 100 - u*90 + Math.sin(u*9 + k)*4; P(x, y, 7, 4, "#B8D8A8"); P(x + 2, y + 1, 3, 2, "#7FA86A"); }
+  // traders, and a chocolatier whose export prices just went up by a third
+  for (const [x, k] of [[30, 1], [56, 3], [150, 4]]){ blit(chibi(PEOPLE[k], "stand", "fx" + k), x, 120); const hy = 108 + Math.round(Math.sin(t*14 + k)*1); P(x - 6, hy, 2, 6, PEOPLE[k].skin || "#F2C9A0"); P(x + 5, hy, 2, 6, PEOPLE[k].skin || "#F2C9A0"); }
+  const cx = 108; blit(chibi({skin:"#F2C9A0", hair:"#6B4A2B", shirt:"#F7F2E6"}, "stand", "choc"), cx, 120);
+  P(cx - 4, 109, 9, 2, "#FFFFFF"); P(cx - 3, 104, 7, 5, "#FFFFFF"); P(cx - 9, 112, 18, 2, "#C9C3B0");
+  for (let k = 0; k < 4; k++){ const fall = Math.max(0, (t - 0.3 - k*0.08)*120); P(cx - 8 + k*4, 106 + Math.min(fall, 22), 4, 6, "#5A3420"); P(cx - 8 + k*4, 106 + Math.min(fall, 22), 4, 1, "#7A4A30"); }
+  P(0, 0, SW, 3, "#D52B1E");
+};
+SCENES2.gotthard = function(t){
+  bands(0, 70, ["#7FB6E0", "#9CC8EA", "#BBDAF2", "#D6E9F6"]);
+  // the Alps
+  c.fillStyle = "#8C9AB0"; c.beginPath(); c.moveTo(0, 96); c.lineTo(30, 40); c.lineTo(60, 62); c.lineTo(120, 14); c.lineTo(180, 58); c.lineTo(214, 36); c.lineTo(SW, 70); c.lineTo(SW, 96); c.closePath(); c.fill();
+  c.fillStyle = "#FFFFFF";
+  for (const [x, y] of [[30, 40], [120, 14], [214, 36]]){ c.beginPath(); c.moveTo(x, y); c.lineTo(x - 12, y + 14); c.lineTo(x - 4, y + 11); c.lineTo(x + 3, y + 15); c.lineTo(x + 11, y + 12); c.closePath(); c.fill(); }
+  P(0, 96, SW, 39, "#6E8A5A"); P(0, 96, SW, 2, "#8AA872");
+  P(0, 104, SW, 1, "#5A4E42"); P(0, 108, SW, 1, "#5A4E42"); for (let x = 0; x < SW; x += 5) P(x, 103, 2, 7, "#7A6A58");
+  // the tunnel portal, with a train that went in and didn't come out straight
+  P(84, 58, 72, 47, "#9E978A"); for (let y = 60; y < 104; y += 6) P(84, y, 72, 1, "#8A8378");
+  c.fillStyle = "#14141A"; c.beginPath(); c.moveTo(100, 105); c.lineTo(100, 80); c.arc(120, 80, 20, Math.PI, 0); c.lineTo(140, 105); c.closePath(); c.fill();
+  P(96, 60, 48, 9, "#5A5A64"); text("GOTTHARD", 100, 62, "#F7F2E6");
+  c.save(); c.translate(150, 100); c.rotate(0.28); P(-16, -9, 30, 10, "#B23A3A"); P(-16, -9, 30, 1, "#D25A5A"); P(-12, 1, 4, 3, "#1B1B22"); P(6, 1, 4, 3, "#1B1B22"); c.restore();
+  c.save(); c.translate(176, 112); c.rotate(-0.5); P(-12, -6, 26, 9, "#2F6FE4"); P(-12, -6, 26, 1, "#5A8FF0"); c.restore();
+  for (const [x, y, col] of [[190, 116, "#E39A2C"], [200, 121, "#3E9B4F"], [168, 124, "#7A4FBF"]]){ P(x, y, 9, 5, col); P(x, y, 9, 1, "rgba(255,255,255,.3)"); }
+  // the queue on the approach, and a recovery crane doing its best
+  for (let k = 0; k < 5; k++){ P(4 + k*15, 98, 13, 6, ["#5A6380", "#8E5A30", "#3E6E5E"][k % 3]); P(4 + k*15, 104, 3, 2, "#1B1B22"); P(13 + k*15, 104, 3, 2, "#1B1B22"); }
+  P(214, 82, 4, 22, "#E3C064"); P(214, 82, 30, 3, "#E3C064"); P(238, 85, 1, 10 + Math.sin(t*6)*3, "#3A3A48"); P(208, 102, 16, 5, "#E3C064");
+  // meanwhile, the cheese goes over the pass by goat
+  const g = Math.min(1, t*1.1), gx = 40 + g*70, gy = 84 - g*52 + Math.abs(Math.sin(t*20))*1;
+  const goat = makeSprite("goat", 12, 10, () => { oval(6, 5, 5, 3, "#F2EDE2"); disc(10, 3, 2, "#F2EDE2"); P(9, 0, 1, 2, "#8E7228"); P(11, 0, 1, 2, "#8E7228"); P(2, 7, 1, 3, "#8A8378"); P(8, 7, 1, 3, "#8A8378"); px(11, 3, "#1F2238"); });
+  blit(goat, gx, gy); disc(gx - 1, gy - 6, 3, "#E9C46A"); P(gx - 3, gy - 7, 4, 1, "#C9A54A");
+};
+TITLES2.franc = "The Franc Shock"; TITLES2.gotthard = "The Gotthard gets blocked";
+PORTRAITS2.franc = t => portrait2({t, skin:"#F2C9A0", hair:"#C8C8C8", shirt:"#1F2A44", tie:"#D52B1E", eyes:"wide", brows:"worried", mouth:"grit", glasses:true, sweat:true, bg:"#8E2A2A"});
+PORTRAITS2.gotthard = t => portrait2({t, skin:"#E0B590", hair:"#6B4A2B", hairStyle:"cap", shirt:"#F2A03A", collar:"#F2DC8E", eyes:"normal", brows:"flat", mouth:"talk", bg:"#5E7088", look:1});
+LINES2.franc = {name:"Ueli, Treasury Desk", line:"The franc went up thirty per cent before my coffee cooled. Every claim we owe in euros now costs a fortune."};
+LINES2.gotthard = {name:"Reto, Rail Logistics", line:"The tunnel’s shut until spring. The cheese is going over the pass by goat."};
+
 SCENES2.podium = function(t){
   hallBackdrop(); spotlight(120, 40);
   P(40, 10, 160, 18, "#C9A54A"); P(42, 12, 156, 14, "#1F2A44"); bigText("WORLD NO.1", 120, 15, "#E3C064", "#0E1222");
@@ -2380,7 +2492,7 @@ return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.key
 
 /* core/constants.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* VERSION and BUILD_DATE are filled in by build.js from package.json. */
-const VERSION = "0.6.4", BUILD_DATE = "2026-11-16";
+const VERSION = "0.6.8", BUILD_DATE = "2026-11-19";
 function intelSpread(n){ return Math.max(0, 36 - 6*n); }
 function intelText(n){
   if (n <= 0) return "No claim intel yet";
@@ -2425,7 +2537,8 @@ function bookMix(){ const m = {}; let tot = 0; for (const f of S.floors) if (f.t
 function mixAvg(field){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*LINES[k][field]; any = true; } return any ? v : 1; }
 function bookExposure(kind){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*(LINES[k].swans[kind] != null ? LINES[k].swans[kind] : 0.8); any = true; } return any ? Math.max(0.3, v) : 1; }
 function swanExposure(kind){ return bookExposure(kind)*cityRisk(kind); }
-function pickSwan(){ const w = {}; for (const k of SWAN_POOL) w[k] = (w[k] || 0) + 1; let tot = 0; for (const k in w){ w[k] *= cityRisk(k); tot += w[k]; }
+function citySwans(){ return Object.keys(SWANS).filter(k => !SWANS[k].city || SWANS[k].city === cityId()); }
+function pickSwan(){ const w = {}; for (const k of SWAN_POOL) w[k] = (w[k] || 0) + 1; for (const k in SWANS) if (SWANS[k].city === cityId()) w[k] = 1.5; let tot = 0; for (const k in w){ w[k] *= cityRisk(k); tot += w[k]; }
   let r = Math.random()*tot; for (const k in w){ r -= w[k]; if (r <= 0) return k; } return SWAN_POOL[0]; }
 function swanCulprit(kind){ const m = bookMix(); let best = null, bv = -1; for (const k in m){ const v = m[k]*(LINES[k].swans[kind] || 0.8); if (v > bv){ bv = v; best = k; } } return best; }
 function lineUnlocked(k){ return !LINES[k].unlock || S.rankIdx >= LINES[k].unlock; }
@@ -2705,13 +2818,14 @@ S.floors.forEach((f,i) => rebuildWorkers(i));
 
 /* ---------- Layout ---------- */
 const LW = 232, OX = 6, FH = 40, TOP = 82, LOBBY_H = 44, GROUND = 24;
+function tunnelH(){ const c = cityId(); return c === "london" || c === "nyc" ? 20 : 0; }
 function layout(){
   const n = S.floors.length, can = workFloors() < MAXF, ph = n > 0 && S.floors[n-1].type === "penthouse", nw = n - (ph ? 1 : 0);
   const slotY = TOP + (ph ? FH : 0);            // the penthouse sits directly under the roof, above the build slot
   const floorsTop = slotY + (can ? FH : 0);
   const lobbyY = floorsTop + nw*FH;
   const groundY = lobbyY + LOBBY_H;
-  return {n, nw, ph, slotY, can, floorsTop, lobbyY, groundY, LH:groundY + GROUND};
+  return {n, nw, ph, slotY, can, floorsTop, lobbyY, groundY, LH:groundY + GROUND + tunnelH()};
 }
 function floorY(L, i){ return L.ph && i === L.n - 1 ? TOP : L.floorsTop + (L.nw-1-i)*FH; }
 
@@ -2819,7 +2933,7 @@ function drawSky(L){
   }
 }
 function drawSkyline(L){
-  if (cityId() === "nyc") return skylineNYC(L); if (cityId() === "bermuda") return skylineBermuda(L);
+  if (cityId() === "nyc") return skylineNYC(L); if (cityId() === "bermuda") return skylineBermuda(L); if (cityId() === "zurich") return skylineZurich(L, true);
   const gy = L.groundY, night = isNight();
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#161B38" : "#73849B";
   const lit = "#FFE88A";
@@ -2852,6 +2966,7 @@ function drawSkyline(L){
 function drawSkylineFiller(L){
   const gy = L.groundY, night = isNight();
   if (cityId() === "bermuda"){ skylineBermuda(L); return; }
+  if (cityId() === "zurich"){ skylineZurich(L, false); return; }
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#181D3B" : "#7C8DA4", lit = "#FFE88A";
   for (let x = 0, k = 0; x < 256; k++){ const w = 6 + Math.floor(hash(k + 40, 11)*10), h = 12 + Math.floor(hash(k + 40, 12)*30); R(x, gy-h, w, h, far); if (night && hash(k + 40, 13) > .5) R(x+2, gy-h+3, 1, 1, lit); x += w; }
   for (let x = 2, k = 0; x < 250; k++){
@@ -2882,7 +2997,8 @@ function drawGround(L){
   for (let x = 2; x < LW; x += 12) R(x, gy+14, 6, 1, "#F2E6C8");
   R(12,gy-26,1,26,"#1F2A44"); R(9,gy-28,7,2,"#1F2A44"); R(10,gy-26,5,1, night ? "#FFE88A" : "#E6D2AE");
   if (night){ ctx.globalAlpha = .22; R(4,gy-25,17,25,"#FFE88A"); ctx.globalAlpha = 1; }
-  if (cityId() === "bermuda") bermudaPalms(gy); else if (cityId() === "nyc") nycStreet(gy, night);
+  if (cityId() === "bermuda") bermudaPalms(gy); else if (cityId() === "nyc") nycStreet(gy, night); else if (cityId() === "zurich") zurichStreet(gy, night);
+  if (tunnelH()) drawMetro(gy, night);
   for (const c of cars){
     if (c.wait > 0) continue; const x = Math.round(c.x);
     if (c.kind === "bus"){ const y = gy+6;
@@ -2929,7 +3045,7 @@ function facadeRows(L){
   }
 }
 function drawRoof(L){
-  if (cityId() === "nyc") return roofNYC(L); if (cityId() === "bermuda") return roofBermuda(L);
+  if (cityId() === "nyc") return roofNYC(L); if (cityId() === "bermuda") return roofBermuda(L); if (cityId() === "zurich") return roofZurich(L);
   const base = TOP, night = isNight();
   const tf = flareAt(L, TOP) + 2, x0 = 24 - tf, x1 = 196 + tf, w = x1 - x0;
   for (let x = x0; x < x1; x++){
@@ -3120,19 +3236,21 @@ function roofBermuda(L){
   roofSign(base, x0, w, night);
 }
 function facadeAlt(L){
-  const night = isNight(), top = TOP, bot = L.groundY, ny = cityId() === "nyc";
-  const wall = ny ? (night ? "#B4B0A8" : "#ECE8DE") : (night ? "#C68C9C" : "#F4B8C4"), wallD = ny ? (night ? "#8E8A82" : "#CFC9BB") : (night ? "#A87080" : "#E49AAA");
+  const night = isNight(), top = TOP, bot = L.groundY, ny = cityId() === "nyc", zh = cityId() === "zurich";
+  const wall = zh ? (night ? "#B8AE95" : "#E6D9BC") : ny ? (night ? "#B4B0A8" : "#ECE8DE") : (night ? "#C68C9C" : "#F4B8C4");
+  const wallD = zh ? (night ? "#97896C" : "#C9B48E") : ny ? (night ? "#8E8A82" : "#CFC9BB") : (night ? "#A87080" : "#E49AAA");
   for (const [x0, x1] of [[10, 24], [196, 210]]){
     R(x0, top, x1 - x0, bot - top, wall);
-    if (ny){ R(x0 + 2, top, 1.5, bot - top, wallD); R(x1 - 3.5, top, 1.5, bot - top, wallD); }
+    if (ny || zh){ R(x0 + 2, top, 1.5, bot - top, wallD); R(x1 - 3.5, top, 1.5, bot - top, wallD); }
     else { for (let y = top; y < bot; y += 6){ R(x0, y, 3, 3, "#FBFBF6"); R(x1 - 3, y + 3, 3, 3, "#FBFBF6"); } }
     for (let i = 0; i < L.n; i++){ const y = floorY(L, i); const lit = night && hash(i, x0) > 0.35;
       if (ny){ R(x0 + 5, y + 10, 4, 12, wallD); R(x0 + 5.5, y + 11, 3, 10.5, lit ? "#FFE18A" : "#7FA3C0"); ctx.fillStyle = wallD; ctx.beginPath(); ctx.arc(x0 + 7, y + 11, 2, Math.PI, 0); ctx.fill(); if (i % 4 === 3) R(x0, y + 1, x1 - x0, 1.2, "#C9A54A"); }
+      else if (zh){ R(x0 + 4, y + 9, 6, 15, wallD); R(x0 + 5, y + 10, 4, 13, lit ? "#FFE18A" : "#7FA3C0"); R(x0 + 5, y + 16, 4, 0.6, wallD); R(x0, y + 1, x1 - x0, 1.2, wallD); R(x0 + 3.5, y + 24, 7, 1, wallD); }
       else { R(x0 + 4, y + 12, 6, 12, "#FBFBF6"); R(x0 + 5, y + 13, 4, 10, lit ? "#FFE18A" : "#7FB8D0"); R(x0 + 2.5, y + 12, 1.5, 12, "#3E9B6A"); R(x0 + 10, y + 12, 1.5, 12, "#3E9B6A"); } }
-    R(x0, L.lobbyY, x1 - x0, bot - L.lobbyY, ny ? wallD : "#FBFBF6");
-    if (ny) for (let y = L.lobbyY + 3; y < bot; y += 5) R(x0, y, x1 - x0, 0.6, "rgba(0,0,0,.12)");
+    R(x0, L.lobbyY, x1 - x0, bot - L.lobbyY, ny || zh ? wallD : "#FBFBF6");
+    if (ny || zh) for (let y = L.lobbyY + 3; y < bot; y += 5) R(x0, y, x1 - x0, 0.6, "rgba(0,0,0,.12)");
   }
-  for (let i = 0; i < L.n; i++){ const y = floorY(L, i); R(24, y + 38, 172, 2, ny ? "#D2CDC0" : "#FBFBF6"); }
+  for (let i = 0; i < L.n; i++){ const y = floorY(L, i); R(24, y + 38, 172, 2, zh ? "#C9B48E" : ny ? "#D2CDC0" : "#FBFBF6"); }
 }
 function skylineNYC(L){
   const gy = L.groundY, night = isNight(), far = night ? "#272D52" : "#A9B6C8", mid = night ? "#1E2446" : "#8A9AB2", near = night ? "#161B38" : "#6E809A", lit = "#FFE88A";
@@ -3186,6 +3304,111 @@ function drawSpecProp(f, y){
   else if (sp === "pricing"){ R(x+1, b-9, 7, 9, "#2B3352"); R(x+2, b-8, 5, 2, "#B8E0B0"); for (let r = 0; r < 2; r++) for (let k = 0; k < 3; k++) R(x+2 + k*1.8, b-5 + r*2, 1.2, 1.2, "#E9E2CF"); }
   else if (sp === "reserving"){ R(x, b-9, 9, 9, "#4A5670"); R(x+1, b-8, 7, 7, "#6A768A"); ctx.strokeStyle = "#C9A54A"; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.arc(x+4.5, b-4.5, 2, 0, Math.PI*2); ctx.stroke(); R(x+8, b-6, 1, 3, "#C9A54A"); }
   else if (sp === "capital"){ ctx.fillStyle = "#C9A54A"; ctx.beginPath(); ctx.moveTo(x, b-10); ctx.lineTo(x+9, b-10); ctx.lineTo(x+9, b-5); ctx.lineTo(x+4.5, b); ctx.lineTo(x, b-5); ctx.closePath(); ctx.fill(); ctx.fillStyle = "#1F2A44"; ctx.beginPath(); ctx.moveTo(x+1.5, b-8.5); ctx.lineTo(x+7.5, b-8.5); ctx.lineTo(x+7.5, b-5.5); ctx.lineTo(x+4.5, b-2); ctx.lineTo(x+1.5, b-5.5); ctx.closePath(); ctx.fill(); }
+}
+
+/* London's Tube and New York's subway: a station entrance on the pavement and a cutaway tunnel under the road. */
+function drawMetro(gy, night){
+  const ny = cityId() === "nyc", top = gy + GROUND, h = tunnelH();
+  // the ground the tunnel is dug through
+  R(0, top, LW, h, ny ? "#5E5650" : "#6B5E50");
+  for (let x = 0, k = 0; x < LW; x += 7, k++) R(x + (k % 3), top + 1 + (k % 4)*4, 3, 1, ny ? "#4E4842" : "#5A4E42");
+  if (ny){
+    // a cut-and-cover tunnel: flat roof, steel columns, a strip of lamps
+    R(0, top + 3, LW, h - 4, "#2A2C34"); R(0, top + 3, LW, 1, "#4A4E5A");
+    for (let x = 10; x < LW; x += 22){ R(x, top + 4, 2, h - 6, "#3E6BA8"); R(x - 1, top + 4, 4, 1, "#5A86C0"); }
+    for (let x = 4; x < LW; x += 22) R(x, top + 5, 3, 1, night ? "#FFF2A8" : "#E9E2CF");
+  } else {
+    // a deep-level tube tunnel: a round bore with a tiled band
+    R(0, top + 4, LW, h - 5, "#2A2C34"); R(0, top + 4, LW, 2, "#3A3E48");
+    for (let x = 0; x < LW; x += 4) R(x, top + 3, 3, 1, "#3A3E48");
+    for (let x = 6; x < LW; x += 30) R(x, top + 7, 8, 2, night ? "#FFF2A8" : "#C9C3B0");
+  }
+  R(0, top + h - 2, LW, 1, "#8A8A90"); R(0, top + h - 1, LW, 1, "#4A4A52");
+  // the station entrance, in the gap to the right of the tower
+  const ex = 218, w = 13;
+  R(ex, gy + 2.6, w, 3.6, "#1F2238");
+  for (let k = 0; k < 4; k++) R(ex + 2 + k*3, gy + 3 + k*0.7, 2, 0.6, "#5A5A64");
+  R(ex, gy - 6, 1, 8, "#2B2D3A"); R(ex + w - 1, gy - 6, 1, 8, "#2B2D3A"); R(ex, gy - 6, w, 1, "#2B2D3A"); R(ex, gy - 3, w, 0.6, "#2B2D3A");
+  if (ny){
+    for (const lx of [ex - 1, ex + w]){ R(lx, gy - 14, 1, 14, "#2B4A2E"); ctx.fillStyle = night ? "#8FF2A8" : "#3E9B4F"; ctx.beginPath(); ctx.arc(lx + 0.5, gy - 15, 1.8, 0, Math.PI*2); ctx.fill(); }
+    R(ex, gy - 10, w, 4, "#141418"); T("SUBWAY", ex + w/2, gy - 7.4, 2.3, "#FFFFFF", "center", 700);
+  } else {
+    R(ex, gy - 11, w, 5, "#1F2A44"); R(ex, gy - 11, w, 0.6, "#C9A54A"); T("TUBE", ex + w/2, gy - 7.6, 3, "#FFFFFF", "center", 700);
+  }
+}
+function drawTrain(ny){
+  for (let car = 0; car < 2; car++){
+    const x = car*42;
+    if (ny){
+      R(x, 1, 40, 10, "#B9BEC8"); R(x, 1, 40, 1, "#DDE1E8");
+      for (let k = 2; k < 40; k += 3) R(x + k, 7, 0.6, 3, "#9CA2AE");
+      for (let k = 0; k < 5; k++) R(x + 3 + k*7.5, 3, 5, 3, isNight() ? "#FFE9A8" : "#2A3040");
+      R(x + 18, 2, 4, 8, "#8E94A0");
+    } else {
+      R(x + 2, 0, 36, 1, "#F2F2EE"); R(x + 1, 1, 38, 1, "#F2F2EE"); R(x, 2, 40, 8, "#F2F2EE"); R(x, 9, 40, 2, "#2F4A9A");
+      for (let k = 0; k < 4; k++){ R(x + 4 + k*9, 3, 6, 3, isNight() ? "#FFE9A8" : "#2A3040"); R(x + 2 + k*9, 2, 1.5, 7, "#D7262E"); }
+    }
+    R(x + 4, 11, 4, 1, "#1B1B22"); R(x + 32, 11, 4, 1, "#1B1B22");
+  }
+  R(82, 5, 2, 2, "#FFE88A");
+}
+
+/* ---------- Zurich ---------- */
+/* a Mythenquai-style lakeside headquarters: sandstone, a green copper mansard, a gilded lantern and the Swiss flag */
+function roofZurich(L){
+  const base = TOP, night = isNight(), x0 = 10, x1 = 210, w = x1 - x0;
+  const stone = night ? "#B8AE95" : "#E6D9BC", copper = night ? "#3E6E5E" : "#5DAE88", copperD = night ? "#2E5446" : "#4E9A7A";
+  R(x0, base - 14, w, 5, stone); R(x0 - 2, base - 15, w + 4, 2, night ? "#9E9479" : "#C9B48E");
+  ctx.fillStyle = copper; ctx.beginPath(); ctx.moveTo(x0 + 2, base - 15); ctx.lineTo(x0 + 16, base - 36); ctx.lineTo(x1 - 16, base - 36); ctx.lineTo(x1 - 2, base - 15); ctx.closePath(); ctx.fill();
+  for (let x = x0 + 20; x < x1 - 20; x += 6) R(x, base - 35, 0.8, 20, copperD);
+  R(x0 + 16, base - 37, w - 32, 1.4, night ? "#5A8A78" : "#8FD0B0");
+  for (const dx of [34, 70, 106, 142]){ R(x0 + dx, base - 30, 10, 12, stone); ctx.fillStyle = stone; ctx.beginPath(); ctx.moveTo(x0 + dx - 1, base - 30); ctx.lineTo(x0 + dx + 5, base - 35); ctx.lineTo(x0 + dx + 11, base - 30); ctx.fill(); R(x0 + dx + 2, base - 28, 6, 8, night ? "#FFE18A" : "#7FA3C0"); }
+  R(106, base - 43, 8, 7, "#E3C064"); R(108, base - 46, 4, 3, "#F2DC8E"); R(109.5, base - 48, 1, 2, "#C9A54A");
+  R(186, base - 48, 1.2, 14, "#3A3A48"); R(187.2, base - 48, 9, 9, "#D52B1E"); R(191, base - 46.5, 1.6, 6, "#FFFFFF"); R(188.8, base - 44.3, 6, 1.6, "#FFFFFF");
+  roofSign(base, x0, w, night);
+}
+function skylineZurich(L, landmarks){
+  const gy = L.groundY, night = isNight(), alp = night ? "#323B5E" : "#93A7C0", snow = night ? "#B8C0D8" : "#FFFFFF";
+  const peaks = [[0,58],[22,74],[44,60],[70,86],[96,64],[124,80],[150,62],[176,90],[204,66],[230,82],[256,60]];
+  ctx.fillStyle = alp; ctx.beginPath(); ctx.moveTo(0, gy - 36); for (const [x, h] of peaks) ctx.lineTo(x, gy - h); ctx.lineTo(256, gy - 36); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = snow;
+  for (let k = 1; k < peaks.length - 1; k++){ const [x, h] = peaks[k]; if (h < 70) continue; ctx.beginPath(); ctx.moveTo(x, gy - h); ctx.lineTo(x - 7, gy - h + 9); ctx.lineTo(x - 2, gy - h + 7); ctx.lineTo(x + 2, gy - h + 10); ctx.lineTo(x + 7, gy - h + 8); ctx.closePath(); ctx.fill(); }
+  // Lake Zurich, with a paddle steamer and swans: all white but one
+  R(0, gy - 38, 256, 10, night ? "#24406A" : "#4E9CC9"); R(0, gy - 38, 256, 1, night ? "#3A5A86" : "#8FC8E8");
+  const sx = landmarks ? 150 : 90; R(sx, gy - 34, 22, 3, "#F7F2E6"); R(sx + 4, gy - 37, 12, 3, "#F7F2E6"); R(sx + 9, gy - 41, 2, 4, "#D52B1E"); R(sx, gy - 31, 22, 1, "#1F2A44");
+  for (const [x, black] of [[60, 0], [72, 0], [landmarks ? 214 : 190, landmarks ? 1 : 0]]){ const c = black ? "#1B1B22" : "#FFFFFF"; R(x, gy - 31, 4, 2, c); R(x + 3, gy - 34, 1, 3, c); R(x + 3.5, gy - 34.5, 1.2, 0.8, black ? "#D9443A" : "#E39A2C"); }
+  // the old town
+  const houses = ["#E9DCC0", "#D8C8A8", "#E6D2D0", "#D4DCC8", "#EADFC8"];
+  for (let x = 0, k = 0; x < 256; k++){
+    const w = 12 + Math.floor(hash(k, 61)*8), h = 14 + Math.floor(hash(k, 62)*12);
+    R(x, gy - h, w, h, night ? "#4A4A62" : houses[k % 5]);
+    ctx.fillStyle = night ? "#3A2E2A" : "#9A5A3E"; ctx.beginPath(); ctx.moveTo(x - 1, gy - h); ctx.lineTo(x + w/2, gy - h - 7); ctx.lineTo(x + w + 1, gy - h); ctx.fill();
+    for (let yy = gy - h + 3; yy < gy - 3; yy += 5) for (let xx = x + 2; xx < x + w - 2; xx += 4) R(xx, yy, 1.6, 2, night ? (hash(xx, yy) > .5 ? "#FFE18A" : "#2A2A3A") : "#7FA3C0");
+    x += w + 1;
+  }
+  if (landmarks){
+    const stone = night ? "#6A6478" : "#D9CDB4", stoneD = night ? "#4E4A5C" : "#BBA98A", green = night ? "#2E5446" : "#4E9A7A";
+    // the Grossmünster's twin towers
+    for (const tx of [1, 11]){ R(tx, gy - 66, 8, 66, stone); R(tx, gy - 66, 8, 1, stoneD); ctx.fillStyle = night ? "#3E4A5A" : "#5E5A50"; ctx.beginPath(); ctx.moveTo(tx - 1, gy - 66); ctx.lineTo(tx + 4, gy - 75); ctx.lineTo(tx + 9, gy - 66); ctx.fill(); R(tx + 2.5, gy - 58, 3, 6, night ? "#FFE18A" : "#3A3A48"); }
+    R(0, gy - 38, 20, 38, stone);
+    // the Fraumünster's slender green spire
+    R(84, gy - 62, 8, 62, stone); ctx.fillStyle = green; ctx.beginPath(); ctx.moveTo(83, gy - 62); ctx.lineTo(88, gy - 96); ctx.lineTo(93, gy - 62); ctx.fill(); R(70, gy - 34, 30, 34, stone);
+    // St Peter's, with one of Europe's largest church clock faces (showing the real time)
+    const px = 240; R(px, gy - 60, 14, 60, stone); ctx.fillStyle = green; ctx.beginPath(); ctx.moveTo(px - 1, gy - 60); ctx.lineTo(px + 7, gy - 80); ctx.lineTo(px + 15, gy - 60); ctx.fill();
+    ctx.fillStyle = "#1F2A44"; ctx.beginPath(); ctx.arc(px + 7, gy - 50, 5.6, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = night ? "#FFF2C8" : "#E3C064"; ctx.beginPath(); ctx.arc(px + 7, gy - 50, 4.6, 0, Math.PI*2); ctx.fill();
+    const now = new Date(), hr = (now.getHours() % 12 + now.getMinutes()/60)/12*Math.PI*2, mn = now.getMinutes()/60*Math.PI*2;
+    ctx.strokeStyle = "#1F2A44"; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(px + 7, gy - 50); ctx.lineTo(px + 7 + Math.sin(hr)*2.6, gy - 50 - Math.cos(hr)*2.6); ctx.moveTo(px + 7, gy - 50); ctx.lineTo(px + 7 + Math.sin(mn)*3.8, gy - 50 - Math.cos(mn)*3.8); ctx.stroke();
+  }
+  ctx.globalCompositeOperation = "source-atop"; const hz = ctx.createLinearGradient(0, gy - 160, 0, gy); hz.addColorStop(0, "rgba(255,255,255,0)"); hz.addColorStop(1, night ? "rgba(30,36,80,.3)" : "rgba(226,233,241,.35)"); ctx.fillStyle = hz; ctx.fillRect(0, gy - 160, 256, 160); ctx.globalCompositeOperation = "source-over";
+}
+function zurichStreet(gy, night){
+  // a public drinking fountain, and a bicycle that has been locked to it for years
+  R(218, gy - 5, 12, 5, "#B8B2A6"); R(218, gy - 5, 12, 1, "#D8D2C6"); R(223, gy - 13, 2, 8, "#8E887C"); R(222, gy - 14, 4, 1.5, "#8E887C");
+  R(226, gy - 11, 1, 1, "#9CC9E6"); R(227, gy - 10, 1, 1, "#9CC9E6"); R(227.5, gy - 8, 0.8, 3, "#9CC9E6");
+  ctx.strokeStyle = night ? "#6A6A7A" : "#1F2238"; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.arc(205, gy - 2.5, 2.4, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(213, gy - 2.5, 2.4, 0, Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(205, gy - 2.5); ctx.lineTo(208.5, gy - 6); ctx.lineTo(213, gy - 2.5); ctx.moveTo(208.5, gy - 6); ctx.lineTo(211.5, gy - 6); ctx.stroke();
 }
 
 /* game/simulation.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
@@ -3678,6 +3901,9 @@ function openBoard(confirmRestart, intro, tabArg){
       <h3>Watching speed</h3>
       <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
       <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
+    ${onlineOk() ? `<h3 style="margin-top:14px">Exit interviews</h3>
+    <p>Ask for quick, anonymous feedback when a run ends. It never affects your score.</p>
+    <div class="seg two"><button class="btn" data-act="fbpref:on" aria-pressed="${feedbackOn()}">On</button><button class="btn" data-act="fbpref:off" aria-pressed="${!feedbackOn()}">Off</button></div>` : ""}
     <h3 style="margin-top:14px">Step down</h3>
     <p>End this run now and record your score as it stands, on this device${onlineOk() ? " and the global leaderboard" : ""}. There’s no sale bonus or golden ticket: those are for selling the company. You do get a carriage clock.</p>
     ${S.idleMode || S.idleTainted ? `<p class="note">This run used idle mode, so stepping down won’t record a score.</p>` : ""}
@@ -3691,6 +3917,7 @@ function doBuyback(){ const c = buybackCost(); if (S.cash < c) return false; spe
 
 /* Earnings */
 function earnings(){
+  if (cityId() === "zurich"){ sfx("cuckoo"); toast("Cuckoo! Cuckoo! The earnings call starts precisely on time."); }
   const q = S.q;
   const notes = [];
   q.cover = 0;
@@ -3889,7 +4116,7 @@ function finishSetup(){
 function bookHtml(){
   const mix = bookMix(), keys = Object.keys(mix).sort((a, b) => mix[b] - mix[a]), mp = moodPct();
   const acts = Object.keys(ACT_SPECS).map(k => [k, lvSpec("actuary", k)]).filter(x => x[1] > 0);
-  const swanRows = Object.keys(SWANS).map(k => [k, swanExposure(k)]).sort((a, b) => b[1] - a[1]);
+  const swanRows = citySwans().map(k => [k, swanExposure(k)]).sort((a, b) => b[1] - a[1]);
   const bar = v => `<i style="display:inline-block;height:8px;flex:0 1 ${Math.round(Math.min(1, v/2.5)*100)}%;background:${v > 1.15 ? "var(--danger)" : v < 0.85 ? "var(--money)" : "var(--gold)"};border-radius:4px"></i>`;
   return `<h3>Your book of business</h3>
     ${keys.length ? `<table class="ledger">${keys.map(k => `<tr><td>${LINES[k].icon} ${LINES[k].name}</td><td>${Math.round(mix[k]*100)}% of premium</td></tr>`).join("")}</table>`
@@ -4063,6 +4290,7 @@ function sfx(name, n){
     case "stamp": noise(t,0.12,0.35,420); tone(110,t,0.12,"sine",0.25,0.5); break;
     case "paper": noise(t,0.2,0.12,3000,"bandpass"); break;
     case "gavel": noise(t,0.07,0.4,500); tone(150,t,0.1,"triangle",0.25,0.6); noise(t+0.22,0.07,0.4,500); tone(150,t+0.22,0.1,"triangle",0.25,0.6); break;
+    case "cuckoo": for (const s of [0, 0.62]){ tone(784, t + s, 0.2, "sine", 0.13); tone(622, t + s + 0.24, 0.3, "sine", 0.13); } break;
     case "chime": [784,988,1175].forEach((f,k) => tone(f,t+k*0.08,0.25,"triangle",0.08)); break;
     case "bell": for (let k = 0; k < (n || 1); k++){ const tt = t + k*0.55; tone(660,tt,1.4,"sine",0.16); tone(1650,tt,0.7,"sine",0.05); tone(990,tt,1.0,"triangle",0.04); } break;
     case "build": noise(t,0.25,0.3,300); tone(196,t,0.2,"triangle",0.2,0.7); [523,659,784].forEach((f,k) => tone(f,t+0.3+k*0.07,0.15,"square",0.05)); break;
@@ -4240,7 +4468,7 @@ function lbTable(hl){
 function openLeaderboard(tab, city, page){
   tab = tab === "global" && onlineOk() ? "global" : (tab || (onlineOk() ? "global" : "local")); city = city || "all"; page = Math.max(0, +page || 0);
   const tabs = onlineOk() ? `<div class="seg two">${[["global","🌍 Global"],["local","📱 This device"]].map(([k, l]) => `<button class="btn" data-act="lb:${k}" aria-pressed="${tab === k}">${l}</button>`).join("")}</div>` : "";
-  const cities = tab === "global" ? `<div class="seg four" style="margin-top:6px">${[["all","All"],["london","London"],["nyc","New York"],["bermuda","Bermuda"]].map(([k, l]) => `<button class="btn" data-act="lb:global:${k}" aria-pressed="${city === k}">${l}</button>`).join("")}</div>` : "";
+  const cities = tab === "global" ? `<div class="seg lb-cities" style="margin-top:6px">${[["all","All"],["london","London"],["nyc","New York"],["bermuda","Bermuda"],["zurich","Zurich"]].map(([k, l]) => `<button class="btn" data-act="lb:global:${k}" aria-pressed="${city === k}">${l}</button>`).join("")}</div>` : "";
   const mine = myGlobalBest(city);
   openModal(`<div class="top"><h2>Leaderboard</h2>${xBtn}</div>${tabs}${cities}
     ${tab === "global" ? `<p class="lb-stats" id="lbStats">&nbsp;</p>
@@ -4334,7 +4562,7 @@ async function findMyBest(city){
 }
 function globalTable(rows, offset){
   if (!rows || !rows.length) return `<div class="empty"><p>No scores here yet. Finish a run to claim the top spot.</p></div>`;
-  const flag = {london:"🇬🇧", nyc:"🇺🇸", bermuda:"🇧🇲"}, medal = ["🥇","🥈","🥉"];
+  const flag = {london:"🇬🇧", nyc:"🇺🇸", bermuda:"🇧🇲", zurich:"🇨🇭"}, medal = ["🥇","🥈","🥉"];
   let cel = null; try { cel = JSON.parse(localStorage.getItem(CELEBRATE_KEY)); if (cel && cel.until < Date.now()) cel = null; } catch(e){}
   const same = (a, r) => a && r.name === a.name && r.ceo === a.ceo && Number(r.score) === Number(a.score);
   let hit = -1;
@@ -4362,6 +4590,48 @@ function celebrateRank(rank){
   if (rank === 1){ const cv = $("#podiumCv"), p0 = performance.now(); const frame = () => { if (!cv || !cv.isConnected) return; CUT.drawScene(cv.getContext("2d"), "podium", ((performance.now() - p0)/5000) % 1); requestAnimationFrame(frame); }; requestAnimationFrame(frame); }
 }
 
+/* ui/feedback.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
+/* The exit interview: optional feedback when a run ends, before the score screen.
+   Sent anonymously (no run or player ID) to a private Supabase table. Players can turn it off after their first run. */
+const FB_OFF_KEY = "fineprint-feedback-off", FB_SEEN_KEY = "fineprint-feedback-seen";
+const FB_TAGS = ["Made me laugh", "Too easy", "Too hard", "Confusing", "Found a bug", "Want more content"];
+const FB_WORDS = ["Tap a star", "Rough", "Not for me", "Decent", "Really good", "Brilliant"];
+let fbDraft = null;
+function feedbackOn(){ try { return localStorage.getItem(FB_OFF_KEY) !== "1"; } catch(e){ return true; } }
+function setFeedbackOn(on){ try { if (on) localStorage.removeItem(FB_OFF_KEY); else localStorage.setItem(FB_OFF_KEY, "1"); } catch(e){} }
+function feedbackSeen(){ try { return +(localStorage.getItem(FB_SEEN_KEY) || 0); } catch(e){ return 0; } }
+function feedbackWanted(){ return onlineOk() && feedbackOn(); }
+function openFeedback(reason, next){
+  if (!fbDraft || fbDraft.reason !== reason) fbDraft = {reason, rating:0, tags:[], text:"", mute:false};
+  fbDraft.next = next;
+  const d = fbDraft, canMute = feedbackSeen() >= 1;
+  openModal(`<div class="fb"><p class="fb-kicker">Exit interview</p><h2>How was this run?</h2>
+    <p class="dim">Before ${ceoN()} leaves the building, HR would like a quick word. It’s optional, and your score is recorded either way.</p>
+    <div class="fb-stars" role="radiogroup" aria-label="Your rating">${[1,2,3,4,5].map(v => `<button class="fb-star ${v <= d.rating ? "on" : ""}" data-act="fbstar:${v}" role="radio" aria-checked="${v === d.rating}" aria-label="${v} star${v > 1 ? "s" : ""}">★</button>`).join("")}</div>
+    <p class="fb-word">${FB_WORDS[d.rating]}</p>
+    <h3>Anything stand out?</h3>
+    <div class="fb-tags">${FB_TAGS.map((t, k) => `<button class="fb-tag" data-act="fbtag:${k}" aria-pressed="${d.tags.includes(t)}">${t}</button>`).join("")}</div>
+    <label class="fb-label" for="fbText">Anything else?</label>
+    <textarea id="fbText" maxlength="500" rows="3" placeholder="The pigeon deserves a promotion">${esc(d.text)}</textarea>
+    <p class="fb-meta"><span>Sent anonymously with your game version and city</span><span id="fbCount">${d.text.length}/500</span></p>
+    ${canMute ? `<label class="fb-mute"><input type="checkbox" id="fbMute" ${d.mute ? "checked" : ""}> Don’t ask me again</label>` : ""}
+    <div class="fb-btns"><button class="btn ghost" data-act="fbskip">Skip</button><button class="btn" data-act="fbsend">Send and see my score</button></div></div>`, {locked:true, view:"feedback", focus:false});
+  const ta = $("#fbText"); if (ta) ta.addEventListener("input", () => { d.text = ta.value; const c = $("#fbCount"); if (c) c.textContent = ta.value.length + "/500"; });
+}
+function fbRead(){ if (!fbDraft) return; const ta = $("#fbText"), m = $("#fbMute"); if (ta) fbDraft.text = ta.value; if (m) fbDraft.mute = m.checked; }
+function finishFeedback(send){
+  fbRead(); const d = fbDraft; if (!d) return;
+  try { localStorage.setItem(FB_SEEN_KEY, String(feedbackSeen() + 1)); } catch(e){}
+  if (d.mute){ setFeedbackOn(false); }
+  const has = d.rating || d.tags.length || d.text.trim();
+  if (send && has){
+    postScore({type:"feedback", rating:d.rating, tags:d.tags, comment:d.text.trim().slice(0, 500), reason:d.reason, quarters:Math.max(1, S.quarter - 1), city:cityId(), version:VERSION}).catch(() => {});
+    toast("Thanks for the feedback. Percy has filed it under “urgent”.", "good");
+  }
+  if (d.mute) toast("Got it, no more exit interviews. You can turn them back on in the Boardroom’s Company tab.");
+  const next = d.next; fbDraft = null; modalLocked = false; closeModal(); if (next) next();
+}
+
 /* game/endings.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 function gameOver(reason){
   reason = reason || "bankrupt";
@@ -4378,6 +4648,8 @@ function gameOver(reason){
     const cc = CAREER_CUTS[reason]; playCutscene(typeof cc.kind === "function" ? cc.kind() : cc.kind, () => gameOver(reason), Object.assign({}, cc.opts(), {}));
     return;
   }
+  S.overReason = reason;
+  if (!S.fbAsked && !window.__bot && feedbackWanted()){ S.fbAsked = true; S.over = true; save(); if (modalOpen){ modalLocked = false; closeModal(); } openFeedback(reason, () => gameOver(reason)); return; }
   const e = ENDINGS[reason]; if (reason !== "exit") sfx("lose");
   const spR = scoreParts(); let run = S.runId ? loadRuns().find(r => r.id === S.runId) : null;
   if (!run && !S.idleMode && !S.idleTainted){ run = recordRun(spR, reason); S.runId = run.id; }
@@ -4629,6 +4901,11 @@ $("#sheet").addEventListener("click", e => {
     save(); const k = S.floors.findIndex(f => f.type === "pr"); if (k >= 0) openFloor(k); else closeModal();
   }
   else if (a === "lb") openLeaderboard(p, q);
+  else if (a === "fbstar"){ fbRead(); if (fbDraft){ fbDraft.rating = fbDraft.rating === +p ? 0 : +p; openFeedback(fbDraft.reason, fbDraft.next); } }
+  else if (a === "fbtag"){ fbRead(); if (fbDraft){ const t = FB_TAGS[+p]; fbDraft.tags = fbDraft.tags.includes(t) ? fbDraft.tags.filter(x => x !== t) : fbDraft.tags.concat(t); openFeedback(fbDraft.reason, fbDraft.next); } }
+  else if (a === "fbsend") finishFeedback(true);
+  else if (a === "fbskip") finishFeedback(false);
+  else if (a === "fbpref"){ setFeedbackOn(p === "on"); sfx("tick"); openBoard(); }
   else if (a === "lbp") openLeaderboard("global", p, +q);
   else if (a === "lbme") findMyBest(p);
   else if (a === "lbname"){
@@ -4846,18 +5123,7 @@ function ensureStatic(){
   paint(SK("moon"), 8, 8, () => { R(1,0,6,8,"#F4F1FF"); R(0,1,8,6,"#F4F1FF"); ctx.clearRect(4,1,3,5); }, 0, 0);
   paint(SK("bell"), 14, 8, () => { R(62,7,5,1,"#E0B43A"); R(61,8,7,3,"#FFD23F"); R(60,11,9,1,"#E0B43A"); R(64,12,1,1,"#6B4A2B"); }, -58, -5);
   paint(SK("elev"), 14, 22, () => { R(0,0,14,22,"#1F2A44"); R(1,1,12,20,"#C9A54A"); R(2,2,4,18,"#E8D08A"); R(8,2,4,18,"#E8D08A"); R(6,1,2,20,"#8E7228"); R(3,9,2,1,"#FFF6D0"); R(9,9,2,1,"#FFF6D0"); R(0,21,14,1,"#161B2E"); }, 0, 0);
-  paint(SK("bus"), 32, 17, () => {
-    ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.beginPath(); ctx.ellipse(16, 16, 16, 1, 0, 0, Math.PI*2); ctx.fill();
-    const bc = cityId() === "nyc" ? ["#F2F2EE","#2F6FE4","#FFFFFF"] : ["#D7262E","#A51C22","#E8545A"];
-    if (cityId() === "bermuda"){ R(0,0,32,7,"#F28AB0"); R(0,0,32,1,"#F7B6CE"); R(0,7,32,7,"#2F6FE4"); R(0,6.4,32,1.2,"#FFFFFF"); R(0,13,32,1,"#1F4FB4"); }
-    else { R(0,0,32,14,bc[0]); R(0,6,32,1,bc[1]); R(0,0,32,1,bc[2]); }
-    for (let k = 0; k < 5; k++){ R(2+k*6,2,4,3,"#BFD9EA"); R(2+k*6,8,4,3,"#BFD9EA"); }
-    R(4,13,4,3,"#1B1B2F"); R(23,13,4,3,"#1B1B2F"); R(31,10,1,2,"#FFE88A");
-  }, 0, 0);
-  paint(SK("cab"), 19, 10, () => {
-    const y = 1, cc = cityId() === "nyc" ? "#F2C11E" : cityId() === "bermuda" ? "#F7F2E6" : "#1B1B2F"; R(0,y+3,19,5,cc); R(4,y,11,4,cc); if (cityId() === "nyc") for (let k = 0; k < 4; k++) R(2 + k*4,y+5,2,1,"#1B1B2F"); if (cityId() === "bermuda") R(15,y-2,3,2,"#2F6FE4"); R(5,y+1,4,2,"#9DB8CC"); R(10,y+1,4,2,"#9DB8CC");
-    R(8,y-1,3,1,"#FFD23F"); R(2,y+7,3,2,"#555"); R(14,y+7,3,2,"#555"); R(18,y+4,1,1,"#FFE88A");
-  }, 0, 0);
+
   framesTex(SK("percy2"), 13, 20, [["p0", () => percy(6,18,0,1)], ["p1", () => percy(6,18,1,1)]], {outline:true, shadow:[6,18.1,4]});
   ["wait","low","happy","angry","confused"].forEach(k => paint(SK("bub_"+k), 9, 11, () => drawBub(k), 0, 0));
 }
@@ -4964,8 +5230,24 @@ function placeFloor(o){
   }
 }
 
+function paintVehicles(){
+  paint(SK("bus"), 32, 17, () => {
+    ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.beginPath(); ctx.ellipse(16, 16, 16, 1, 0, 0, Math.PI*2); ctx.fill();
+    const bc = cityId() === "nyc" ? ["#F2F2EE","#2F6FE4","#FFFFFF"] : ["#D7262E","#A51C22","#E8545A"];
+    if (cityId() === "zurich"){ R(0,3,32,11,"#2F6FE4"); R(0,3,32,4,"#F2F2EE"); R(0,3,32,0.6,"#FFFFFF"); R(0,13,32,1,"#1F4FB4"); R(13,0,7,1,"#3A3A48"); R(14,1,1,2,"#3A3A48"); R(18,1,1,2,"#3A3A48"); R(1,6,30,0.6,"#D52B1E"); }
+    else if (cityId() === "bermuda"){ R(0,0,32,7,"#F28AB0"); R(0,0,32,1,"#F7B6CE"); R(0,7,32,7,"#2F6FE4"); R(0,6.4,32,1.2,"#FFFFFF"); R(0,13,32,1,"#1F4FB4"); }
+    else { R(0,0,32,14,bc[0]); R(0,6,32,1,bc[1]); R(0,0,32,1,bc[2]); }
+    for (let k = 0; k < 5; k++){ R(2+k*6,2,4,3,"#BFD9EA"); R(2+k*6,8,4,3,"#BFD9EA"); }
+    R(4,13,4,3,"#1B1B2F"); R(23,13,4,3,"#1B1B2F"); R(31,10,1,2,"#FFE88A");
+  }, 0, 0);
+  paint(SK("cab"), 19, 10, () => {
+    const y = 1, cc = cityId() === "nyc" ? "#F2C11E" : cityId() === "bermuda" ? "#F7F2E6" : cityId() === "zurich" ? "#3A3D4A" : "#1B1B2F"; R(0,y+3,19,5,cc); R(4,y,11,4,cc); if (cityId() === "nyc") for (let k = 0; k < 4; k++) R(2 + k*4,y+5,2,1,"#1B1B2F"); if (cityId() === "bermuda") R(15,y-2,3,2,"#2F6FE4"); R(5,y+1,4,2,"#9DB8CC"); R(10,y+1,4,2,"#9DB8CC");
+    R(8,y-1,3,1,"#FFD23F"); R(2,y+7,3,2,"#555"); R(14,y+7,3,2,"#555"); R(18,y+4,1,1,"#FFE88A");
+  }, 0, 0);
+}
 function rebuildAll(){
   const cam = scene.cameras.main; cam.scrollX = -padX;
+  paintVehicles();
   const oldLH = LH, fromBottom = oldLH ? oldLH - (cam.scrollY + viewH()) : 0;
   for (const o of objs){ scene.tweens.killTweensOf(o); o.destroy(); }
   for (const o of floorObjs) if (o) scene.tweens.killTweensOf(o.anim);
@@ -4991,11 +5273,18 @@ function rebuildAll(){
     lifespan:(LH - skyTop + 10)/90*1000, frequency:28, quantity:1, scale:1/RS, alpha:.5, tint:0xE8EEF6, emitting:false
   }).setDepth(1.5);
   objs.push(rainEm); rainOn = null;
-  imgGround = addImg(paint("ground", LW, GROUND+34, () => drawGround(L), 0, -(L.groundY-34)), 0, L.groundY-34, 2);
+  imgGround = addImg(paint("ground", LW, GROUND+34+tunnelH(), () => drawGround(L), 0, -(L.groundY-34)), 0, L.groundY-34, 2);
   for (const k of [-4,-3,-2,-1,1,2,3,4]) if (needCopy(k)) addImg("ground", k*LW, L.groundY-34, 2).setFlipX(k % 2 !== 0);
   const bus = scene.add.image(-40, L.groundY+6, SK("bus")).setOrigin(0,0).setScale(1/RS).setDepth(3); objs.push(bus);
   const cab = scene.add.image(-40, L.groundY+10, SK("cab")).setOrigin(0,0).setScale(1/RS).setDepth(3.1); objs.push(cab);
+  let trainImg = null;
+  if (tunnelH()){
+    const ny = cityId() === "nyc";
+    paint(SK("train" + (ny ? "nyc" : "ldn")), 84, 12, () => drawTrain(ny), 0, 0);
+    trainImg = scene.add.image(-200, L.groundY + GROUND + 6, SK("train" + (ny ? "nyc" : "ldn"))).setOrigin(0,0).setScale(1/RS).setDepth(2.5); objs.push(trainImg);
+  }
   const drive = (im, sp, d0) => { im.x = -padX - 40; scene.tweens.add({targets:im, x:LW + padX + 10, duration:(LW + 2*padX + 50)/sp*1000, delay:d0 != null ? d0 : rand(4000, 16000), onComplete:() => drive(im, sp)}); };
+  if (trainImg) drive(trainImg, 70, rand(1500, 5000));
   drive(bus, 20, 1500); drive(cab, 34, 7000);
   paintTall("facade", LW, TOP, L.groundY, () => facadeRows(L), OX, 0, 4, true);
   lastNight = isNight();
@@ -5098,7 +5387,7 @@ function redrawSlow(){
   if (lastNight !== isNight()){
     lastNight = isNight();
     paintTall("facade", LW, TOP, L.groundY, () => facadeRows(L), OX, 0, 4, false);
-    paint("ground", LW, GROUND+34, () => drawGround(L), 0, -(L.groundY-34));
+    paint("ground", LW, GROUND+34+tunnelH(), () => drawGround(L), 0, -(L.groundY-34));
     if (padX > 0) paint("skylineF", LW, 164, () => { ctx.save(); ctx.transform(LW/256,0,0,1,0,0); drawSkylineFiller(L); ctx.restore(); }, 0, -(L.groundY-162));
   }
   redrawSky();
@@ -5237,7 +5526,7 @@ fontReady.then(() => {
   document.title = companyName();
   if (S.lastVersion && S.lastVersion !== VERSION && S.seen && !S.over) setTimeout(() => toast(`Updated to v${VERSION}. Tap ? to see what’s new.`, "good"), 1500);
   S.lastVersion = VERSION;
-  if (S.over) gameOver(); else if (!S.setupDone) openSetup(); else if (!S.seen) startTutorial(); else offlineCheck();
+  if (S.over) gameOver(S.overReason); else if (!S.setupDone) openSetup(); else if (!S.seen) startTutorial(); else offlineCheck();
 });
 })();
 </script>

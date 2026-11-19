@@ -119,4 +119,26 @@ blockquote{background:rgba(201,165,74,.12)}
 @keyframes rrFall{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--dx),190px) rotate(540deg)}}
 .podium-cv{display:block;width:100%;max-width:480px;margin:8px auto 0;image-rendering:pixelated;border:3px solid #1F2A44;border-radius:8px;box-shadow:0 0 0 2px var(--brass)}
 @media (prefers-reduced-motion: reduce){ .lb tr.celebrate,.lb tr.found,.lb tr.shove,.rr-medal,.rr-confetti i,.rank-reveal.landed .rr-num{animation:none;opacity:1;transform:none} }
+/* the exit interview */
+.fb-kicker{margin:0;font:700 12px "Chakra Petch","Pixelify Sans",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#8A6A16}
+.fb h2{margin-top:2px}
+.fb-stars{display:flex;gap:4px;margin:8px 0 0}
+.fb-star{font-size:34px;line-height:1;color:#B8AE95;background:none;border:none;padding:0 3px;cursor:pointer;text-shadow:0 2px 0 #1F2A44}
+.fb-star.on{color:#E3C064}
+.fb-star:focus-visible{outline:3px solid #E3C064;outline-offset:2px;border-radius:6px}
+.fb-word{margin:2px 0 10px;font:700 14px "Chakra Petch","Pixelify Sans",sans-serif;color:#5A6380;min-height:18px}
+.fb-tags{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 10px}
+.fb-tag{font:600 14px "Chakra Petch","Pixelify Sans",sans-serif;color:#1F2A44;background:#E9E4D6;border:2px solid #1F2A44;border-radius:999px;padding:6px 12px;cursor:pointer}
+.fb-tag[aria-pressed="true"]{background:#E3C064;box-shadow:0 2px 0 #1F2A44}
+.fb-label{display:block;margin:4px 0 4px;font:700 15px "Chakra Petch","Pixelify Sans",sans-serif;color:#23305A}
+.fb textarea{width:100%;box-sizing:border-box;font:16px Rubik,system-ui,sans-serif;color:var(--ink);background:#FFFFFF;border:3px solid #1F2A44;border-radius:6px;padding:8px 9px;resize:vertical}
+.fb textarea:focus-visible{outline:3px solid #E3C064}
+.fb-meta{display:flex;justify-content:space-between;gap:8px;margin:4px 0 10px;font-size:13px;color:var(--ink-dim)}
+.fb-mute{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:14px;color:var(--ink-dim);cursor:pointer}
+.fb-mute input{width:18px;height:18px;accent-color:#1F2A44}
+.fb-btns{display:flex;gap:10px}
+.fb-btns .btn{flex:1}
+.fb-btns .btn:last-child{flex:1.6}
+.seg.lb-cities{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.seg.lb-cities .btn{font-size:13px;padding-left:2px;padding-right:2px}
 

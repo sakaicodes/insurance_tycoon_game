@@ -17,7 +17,7 @@ function lbTable(hl){
 function openLeaderboard(tab, city, page){
   tab = tab === "global" && onlineOk() ? "global" : (tab || (onlineOk() ? "global" : "local")); city = city || "all"; page = Math.max(0, +page || 0);
   const tabs = onlineOk() ? `<div class="seg two">${[["global","🌍 Global"],["local","📱 This device"]].map(([k, l]) => `<button class="btn" data-act="lb:${k}" aria-pressed="${tab === k}">${l}</button>`).join("")}</div>` : "";
-  const cities = tab === "global" ? `<div class="seg four" style="margin-top:6px">${[["all","All"],["london","London"],["nyc","New York"],["bermuda","Bermuda"]].map(([k, l]) => `<button class="btn" data-act="lb:global:${k}" aria-pressed="${city === k}">${l}</button>`).join("")}</div>` : "";
+  const cities = tab === "global" ? `<div class="seg lb-cities" style="margin-top:6px">${[["all","All"],["london","London"],["nyc","New York"],["bermuda","Bermuda"],["zurich","Zurich"]].map(([k, l]) => `<button class="btn" data-act="lb:global:${k}" aria-pressed="${city === k}">${l}</button>`).join("")}</div>` : "";
   const mine = myGlobalBest(city);
   openModal(`<div class="top"><h2>Leaderboard</h2>${xBtn}</div>${tabs}${cities}
     ${tab === "global" ? `<p class="lb-stats" id="lbStats">&nbsp;</p>
@@ -111,7 +111,7 @@ async function findMyBest(city){
 }
 function globalTable(rows, offset){
   if (!rows || !rows.length) return `<div class="empty"><p>No scores here yet. Finish a run to claim the top spot.</p></div>`;
-  const flag = {london:"🇬🇧", nyc:"🇺🇸", bermuda:"🇧🇲"}, medal = ["🥇","🥈","🥉"];
+  const flag = {london:"🇬🇧", nyc:"🇺🇸", bermuda:"🇧🇲", zurich:"🇨🇭"}, medal = ["🥇","🥈","🥉"];
   let cel = null; try { cel = JSON.parse(localStorage.getItem(CELEBRATE_KEY)); if (cel && cel.until < Date.now()) cel = null; } catch(e){}
   const same = (a, r) => a && r.name === a.name && r.ceo === a.ceo && Number(r.score) === Number(a.score);
   let hit = -1;

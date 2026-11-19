@@ -18,4 +18,7 @@ const SWANS = {
   rocket:{title:"Rocket launch goes boom", text:"A rocket carrying satellites you insured exploded 40 seconds after launch. The satellites are now very expensive confetti.", cover:"cat", mit:actMit, mitName:"Capital Modelling"},
   solar:{title:"The solar superstorm", text:"The biggest solar storm since 1859 lit up the sky over London and fried satellites, power grids and every sat-nav in the country.", cover:"cat", mit:actMit, mitName:"Capital Modelling"},
 };
+/* Zurich-only black swans: they never appear in other cities. */
+SWANS.franc = {city:"zurich", title:"The Franc Shock", text:"At half past ten on a Thursday the central bank stopped holding the franc down. It jumped thirty per cent before lunch, and every claim you owe in euros and dollars now costs a small fortune in francs.", cover:"dno", mit:actMit, mitName:"Capital Modelling"};
+SWANS.gotthard = {city:"zurich", title:"The Gotthard gets blocked", text:"A freight train derailed deep inside the tunnel under the Alps. Europe’s main north–south rail route is shut for months, and every cargo, supply chain and business interruption policy you wrote is taking the very long way round.", cover:"cat", mit:actMit, mitName:"Capital Modelling"};
 const SWAN_POOL = ["hurricane","hurricane","canal","canal","outage","outage","ash","cancel","bank","bank","rocket","rocket","solar"];

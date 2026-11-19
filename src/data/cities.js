@@ -13,6 +13,10 @@ const CITIES = {
     building:"A Front Street office with a white stepped roof", blurb:"The world’s reinsurance capital: pastel offices, hurricane-proof roofs and a lot of very large cheques.",
     risk:"The reinsurance capital. Hurricanes and solar storms hit hardest here; City collapses and IT meltdowns less so.",
     swans:{hurricane:1.7, canal:1.0, outage:0.8, ash:0.6, cancel:0.8, bank:0.8, rocket:0.9, solar:1.2}, lines:{treaty:1.15, property:1.08}},
+  zurich:{name:"Zurich", country:"Switzerland", flag:"🇨🇭", cur:"CHF ", market:"Zurich’s reinsurance market",
+    building:"A lakeside headquarters on Mythenquai", blurb:"Home to some of the world’s biggest insurers and reinsurers: sandstone, green copper roofs and absolute discretion.",
+    risk:"Precision, discretion and very large reinsurance treaties. Bank collapses hit harder here; hurricanes are someone else’s problem.",
+    swans:{hurricane:0.6, canal:0.8, outage:1.2, ash:1.2, cancel:1.0, bank:1.4, rocket:0.9, solar:1.0}, lines:{treaty:1.12, property:1.08}},
 };
 function setCity(id){ CUR = (CITIES[id] || CITIES.london).cur; }
 function cityRisk(kind){ const c = CITIES[cityId()] || CITIES.london; return (c.swans && c.swans[kind]) || 1; }

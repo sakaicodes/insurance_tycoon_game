@@ -73,18 +73,7 @@ function ensureStatic(){
   paint(SK("moon"), 8, 8, () => { R(1,0,6,8,"#F4F1FF"); R(0,1,8,6,"#F4F1FF"); ctx.clearRect(4,1,3,5); }, 0, 0);
   paint(SK("bell"), 14, 8, () => { R(62,7,5,1,"#E0B43A"); R(61,8,7,3,"#FFD23F"); R(60,11,9,1,"#E0B43A"); R(64,12,1,1,"#6B4A2B"); }, -58, -5);
   paint(SK("elev"), 14, 22, () => { R(0,0,14,22,"#1F2A44"); R(1,1,12,20,"#C9A54A"); R(2,2,4,18,"#E8D08A"); R(8,2,4,18,"#E8D08A"); R(6,1,2,20,"#8E7228"); R(3,9,2,1,"#FFF6D0"); R(9,9,2,1,"#FFF6D0"); R(0,21,14,1,"#161B2E"); }, 0, 0);
-  paint(SK("bus"), 32, 17, () => {
-    ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.beginPath(); ctx.ellipse(16, 16, 16, 1, 0, 0, Math.PI*2); ctx.fill();
-    const bc = cityId() === "nyc" ? ["#F2F2EE","#2F6FE4","#FFFFFF"] : ["#D7262E","#A51C22","#E8545A"];
-    if (cityId() === "bermuda"){ R(0,0,32,7,"#F28AB0"); R(0,0,32,1,"#F7B6CE"); R(0,7,32,7,"#2F6FE4"); R(0,6.4,32,1.2,"#FFFFFF"); R(0,13,32,1,"#1F4FB4"); }
-    else { R(0,0,32,14,bc[0]); R(0,6,32,1,bc[1]); R(0,0,32,1,bc[2]); }
-    for (let k = 0; k < 5; k++){ R(2+k*6,2,4,3,"#BFD9EA"); R(2+k*6,8,4,3,"#BFD9EA"); }
-    R(4,13,4,3,"#1B1B2F"); R(23,13,4,3,"#1B1B2F"); R(31,10,1,2,"#FFE88A");
-  }, 0, 0);
-  paint(SK("cab"), 19, 10, () => {
-    const y = 1, cc = cityId() === "nyc" ? "#F2C11E" : cityId() === "bermuda" ? "#F7F2E6" : "#1B1B2F"; R(0,y+3,19,5,cc); R(4,y,11,4,cc); if (cityId() === "nyc") for (let k = 0; k < 4; k++) R(2 + k*4,y+5,2,1,"#1B1B2F"); if (cityId() === "bermuda") R(15,y-2,3,2,"#2F6FE4"); R(5,y+1,4,2,"#9DB8CC"); R(10,y+1,4,2,"#9DB8CC");
-    R(8,y-1,3,1,"#FFD23F"); R(2,y+7,3,2,"#555"); R(14,y+7,3,2,"#555"); R(18,y+4,1,1,"#FFE88A");
-  }, 0, 0);
+
   framesTex(SK("percy2"), 13, 20, [["p0", () => percy(6,18,0,1)], ["p1", () => percy(6,18,1,1)]], {outline:true, shadow:[6,18.1,4]});
   ["wait","low","happy","angry","confused"].forEach(k => paint(SK("bub_"+k), 9, 11, () => drawBub(k), 0, 0));
 }
@@ -191,8 +180,24 @@ function placeFloor(o){
   }
 }
 
+function paintVehicles(){
+  paint(SK("bus"), 32, 17, () => {
+    ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.beginPath(); ctx.ellipse(16, 16, 16, 1, 0, 0, Math.PI*2); ctx.fill();
+    const bc = cityId() === "nyc" ? ["#F2F2EE","#2F6FE4","#FFFFFF"] : ["#D7262E","#A51C22","#E8545A"];
+    if (cityId() === "zurich"){ R(0,3,32,11,"#2F6FE4"); R(0,3,32,4,"#F2F2EE"); R(0,3,32,0.6,"#FFFFFF"); R(0,13,32,1,"#1F4FB4"); R(13,0,7,1,"#3A3A48"); R(14,1,1,2,"#3A3A48"); R(18,1,1,2,"#3A3A48"); R(1,6,30,0.6,"#D52B1E"); }
+    else if (cityId() === "bermuda"){ R(0,0,32,7,"#F28AB0"); R(0,0,32,1,"#F7B6CE"); R(0,7,32,7,"#2F6FE4"); R(0,6.4,32,1.2,"#FFFFFF"); R(0,13,32,1,"#1F4FB4"); }
+    else { R(0,0,32,14,bc[0]); R(0,6,32,1,bc[1]); R(0,0,32,1,bc[2]); }
+    for (let k = 0; k < 5; k++){ R(2+k*6,2,4,3,"#BFD9EA"); R(2+k*6,8,4,3,"#BFD9EA"); }
+    R(4,13,4,3,"#1B1B2F"); R(23,13,4,3,"#1B1B2F"); R(31,10,1,2,"#FFE88A");
+  }, 0, 0);
+  paint(SK("cab"), 19, 10, () => {
+    const y = 1, cc = cityId() === "nyc" ? "#F2C11E" : cityId() === "bermuda" ? "#F7F2E6" : cityId() === "zurich" ? "#3A3D4A" : "#1B1B2F"; R(0,y+3,19,5,cc); R(4,y,11,4,cc); if (cityId() === "nyc") for (let k = 0; k < 4; k++) R(2 + k*4,y+5,2,1,"#1B1B2F"); if (cityId() === "bermuda") R(15,y-2,3,2,"#2F6FE4"); R(5,y+1,4,2,"#9DB8CC"); R(10,y+1,4,2,"#9DB8CC");
+    R(8,y-1,3,1,"#FFD23F"); R(2,y+7,3,2,"#555"); R(14,y+7,3,2,"#555"); R(18,y+4,1,1,"#FFE88A");
+  }, 0, 0);
+}
 function rebuildAll(){
   const cam = scene.cameras.main; cam.scrollX = -padX;
+  paintVehicles();
   const oldLH = LH, fromBottom = oldLH ? oldLH - (cam.scrollY + viewH()) : 0;
   for (const o of objs){ scene.tweens.killTweensOf(o); o.destroy(); }
   for (const o of floorObjs) if (o) scene.tweens.killTweensOf(o.anim);
@@ -218,11 +223,18 @@ function rebuildAll(){
     lifespan:(LH - skyTop + 10)/90*1000, frequency:28, quantity:1, scale:1/RS, alpha:.5, tint:0xE8EEF6, emitting:false
   }).setDepth(1.5);
   objs.push(rainEm); rainOn = null;
-  imgGround = addImg(paint("ground", LW, GROUND+34, () => drawGround(L), 0, -(L.groundY-34)), 0, L.groundY-34, 2);
+  imgGround = addImg(paint("ground", LW, GROUND+34+tunnelH(), () => drawGround(L), 0, -(L.groundY-34)), 0, L.groundY-34, 2);
   for (const k of [-4,-3,-2,-1,1,2,3,4]) if (needCopy(k)) addImg("ground", k*LW, L.groundY-34, 2).setFlipX(k % 2 !== 0);
   const bus = scene.add.image(-40, L.groundY+6, SK("bus")).setOrigin(0,0).setScale(1/RS).setDepth(3); objs.push(bus);
   const cab = scene.add.image(-40, L.groundY+10, SK("cab")).setOrigin(0,0).setScale(1/RS).setDepth(3.1); objs.push(cab);
+  let trainImg = null;
+  if (tunnelH()){
+    const ny = cityId() === "nyc";
+    paint(SK("train" + (ny ? "nyc" : "ldn")), 84, 12, () => drawTrain(ny), 0, 0);
+    trainImg = scene.add.image(-200, L.groundY + GROUND + 6, SK("train" + (ny ? "nyc" : "ldn"))).setOrigin(0,0).setScale(1/RS).setDepth(2.5); objs.push(trainImg);
+  }
   const drive = (im, sp, d0) => { im.x = -padX - 40; scene.tweens.add({targets:im, x:LW + padX + 10, duration:(LW + 2*padX + 50)/sp*1000, delay:d0 != null ? d0 : rand(4000, 16000), onComplete:() => drive(im, sp)}); };
+  if (trainImg) drive(trainImg, 70, rand(1500, 5000));
   drive(bus, 20, 1500); drive(cab, 34, 7000);
   paintTall("facade", LW, TOP, L.groundY, () => facadeRows(L), OX, 0, 4, true);
   lastNight = isNight();
@@ -325,7 +337,7 @@ function redrawSlow(){
   if (lastNight !== isNight()){
     lastNight = isNight();
     paintTall("facade", LW, TOP, L.groundY, () => facadeRows(L), OX, 0, 4, false);
-    paint("ground", LW, GROUND+34, () => drawGround(L), 0, -(L.groundY-34));
+    paint("ground", LW, GROUND+34+tunnelH(), () => drawGround(L), 0, -(L.groundY-34));
     if (padX > 0) paint("skylineF", LW, 164, () => { ctx.save(); ctx.transform(LW/256,0,0,1,0,0); drawSkylineFiller(L); ctx.restore(); }, 0, -(L.groundY-162));
   }
   redrawSky();
@@ -464,6 +476,6 @@ fontReady.then(() => {
   document.title = companyName();
   if (S.lastVersion && S.lastVersion !== VERSION && S.seen && !S.over) setTimeout(() => toast(`Updated to v${VERSION}. Tap ? to see what’s new.`, "good"), 1500);
   S.lastVersion = VERSION;
-  if (S.over) gameOver(); else if (!S.setupDone) openSetup(); else if (!S.seen) startTutorial(); else offlineCheck();
+  if (S.over) gameOver(S.overReason); else if (!S.setupDone) openSetup(); else if (!S.seen) startTutorial(); else offlineCheck();
 });
 

@@ -40,7 +40,7 @@ src/
     market.js            pricing strategies, market cycle messages, investment strategies
     tutorial.js          tutorial steps
     changelog.js         What's new notes, newest first
-    cities.js            London, New York and Bermuda: names, buildings, currency
+    cities.js            London, New York, Bermuda and Zurich: names, buildings, currency, risks
     lines.js             lines of business, actuarial specialisms, line-specific claims, extra names
     online.js            global leaderboard URL and publishable key
   art/                   all graphics (drawn in code, so there are no image files to load)
@@ -68,6 +68,7 @@ The game reads and submits scores using the URL and publishable key in `src/data
 - `supabase/migrations/..._create_scores.sql` creates the table and its read-only policy. Run it with `npx supabase db push --linked`, or paste it into the dashboard's SQL Editor.
 - `supabase/functions/submit-score/index.ts` is the only way scores get written. Deploy it with `npx supabase functions deploy submit-score --no-verify-jwt --use-api`. Its `ALLOWED` list must include the site the game is served from.
 - `supabase/migrations/20261116000000_players_and_stats.sql` adds the anonymous `player_id`, the private `plays` table (run starts), the public `leaderboard_stats` view (players and runs shown in the game), a private `play_stats` view, and restricts public reads to the leaderboard columns.
+- `supabase/migrations/20261118000000_feedback.sql` adds the private `feedback` table for exit interviews. Read it with `select * from feedback order by created_at desc;`.
 - Set an `IP_SALT` secret for the function (`npx supabase secrets set IP_SALT=...`) so the stored IP hashes can't be reversed.
 - The score formula is duplicated in the function so the server can recompute it. If you change `scoreParts()` in `src/game/score.js`, change the function to match and redeploy.
 

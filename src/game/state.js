@@ -32,7 +32,8 @@ function bookMix(){ const m = {}; let tot = 0; for (const f of S.floors) if (f.t
 function mixAvg(field){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*LINES[k][field]; any = true; } return any ? v : 1; }
 function bookExposure(kind){ const m = bookMix(); let v = 0, any = false; for (const k in m){ v += m[k]*(LINES[k].swans[kind] != null ? LINES[k].swans[kind] : 0.8); any = true; } return any ? Math.max(0.3, v) : 1; }
 function swanExposure(kind){ return bookExposure(kind)*cityRisk(kind); }
-function pickSwan(){ const w = {}; for (const k of SWAN_POOL) w[k] = (w[k] || 0) + 1; let tot = 0; for (const k in w){ w[k] *= cityRisk(k); tot += w[k]; }
+function citySwans(){ return Object.keys(SWANS).filter(k => !SWANS[k].city || SWANS[k].city === cityId()); }
+function pickSwan(){ const w = {}; for (const k of SWAN_POOL) w[k] = (w[k] || 0) + 1; for (const k in SWANS) if (SWANS[k].city === cityId()) w[k] = 1.5; let tot = 0; for (const k in w){ w[k] *= cityRisk(k); tot += w[k]; }
   let r = Math.random()*tot; for (const k in w){ r -= w[k]; if (r <= 0) return k; } return SWAN_POOL[0]; }
 function swanCulprit(kind){ const m = bookMix(); let best = null, bv = -1; for (const k in m){ const v = m[k]*(LINES[k].swans[kind] || 0.8); if (v > bv){ bv = v; best = k; } } return best; }
 function lineUnlocked(k){ return !LINES[k].unlock || S.rankIdx >= LINES[k].unlock; }

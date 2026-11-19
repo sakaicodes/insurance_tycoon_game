@@ -128,7 +128,10 @@ const ACH = [
   {cat:"Cities", id:"city_london", name:"Square Mile", desc:"Become a Thought Leader in London.", test:() => cityId() === "london" && S.rankIdx >= 3},
   {cat:"Cities", id:"city_nyc", name:"Empire State of mind", desc:"Become a Thought Leader in New York.", test:() => cityId() === "nyc" && S.rankIdx >= 3},
   {cat:"Cities", id:"city_bermuda", name:"Island time", desc:"Become a Thought Leader in Bermuda.", test:() => cityId() === "bermuda" && S.rankIdx >= 3},
-  {cat:"Cities", id:"globe", name:"Globetrotter", desc:"Found companies in all three cities.", test:() => { const c = loadLegacy().cities || {}; return !!(c.london && c.nyc && c.bermuda); }},
+  {cat:"Cities", id:"city_zurich", name:"Swiss precision", desc:"Become a Thought Leader in Zurich.", test:() => cityId() === "zurich" && S.rankIdx >= 3},
+  {cat:"Black swans", id:"sw_franc", name:"Strong currency, weak knees", desc:"Survive the Franc Shock in Zurich.", test:() => survived("franc")},
+  {cat:"Black swans", id:"sw_gotthard", name:"The long way round", desc:"Survive the Gotthard blockage in Zurich.", test:() => survived("gotthard")},
+  {cat:"Cities", id:"globe", name:"Globetrotter", desc:"Found companies in all four cities.", test:() => { const c = loadLegacy().cities || {}; return !!(c.london && c.nyc && c.bermuda && c.zurich); }},
   // exits
   {cat:"Exits", id:"pe", name:"Cashing out", desc:"Sell a company to private equity.", test:() => S.exitKind === "pe"},
   {cat:"Exits", id:"ipo", name:"Ring the bell", desc:"Float a company on the stock exchange.", test:() => S.exitKind === "ipo"},

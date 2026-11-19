@@ -659,6 +659,62 @@ SCENES2.retire = function(t){
   P(cx + 2, 98, 7, 8, "#C9A54A"); P(cx + 3, 99, 5, 5, "#FFF6D0"); px(cx + 5, 101, "#1F2238"); px(cx + 6, 100, "#1F2238"); P(cx + 1, 106, 9, 1, "#8E7228");
 };
 LINES2.retire = {name:"", line:""};
+/* ---------- Zurich-only black swans ---------- */
+SCENES2.franc = function(t){
+  P(0, 0, SW, SH, "#1F2A44"); for (let x = 0; x < SW; x += 12) P(x, 0, 1, 90, "rgba(255,255,255,.04)");
+  P(0, 90, SW, 45, "#3A3F55"); P(0, 90, SW, 2, "#C9A54A");
+  // the rate board, mid-meltdown
+  P(14, 10, 156, 66, "#0B0F1E"); P(14, 10, 156, 2, "#C9A54A"); text("FX RATES", 20, 14, "#E3C064"); text("LIVE", 146, 14, fr(t*3) < 0.5 ? "#FF6B6B" : "#5A2A2A");
+  [["EUR/CHF", 1.20, 0.85], ["USD/CHF", 1.02, 0.86], ["GBP/CHF", 1.55, 1.30]].forEach(([pair, a, b], k) => {
+    const y = 27 + k*15, u = Math.min(1, Math.max(0, (t - 0.08 - k*0.05)/0.35));
+    const jitter = u > 0 && u < 1 ? (hs(Math.floor(t*30), k) - 0.5)*0.25 : 0, v = a - (a - b)*u + jitter;
+    text(pair, 20, y + 2, "#DCE9FF"); text(v.toFixed(2), 74, y, u > 0.02 ? "#FF6B6B" : "#4BE39A", 2);
+    if (u > 0.02){ tri(140, y + 1, 150, y + 1, 145, y + 9, "#FF6B6B"); text("-" + Math.round((a - b)/a*100*u) + "%", 154, y + 2, "#FF6B6B"); }
+  });
+  // a cuckoo clock that has seen enough
+  P(184, 18, 30, 34, "#8E5A30"); tri(180, 20, 218, 20, 199, 6, "#5A3825"); disc(199, 36, 9, "#F7F2E6"); disc(199, 36, 1, "#1F2238");
+  P(198.5, 29, 1, 7, "#1F2238"); c.save(); c.translate(199, 36); c.rotate(t*40); P(0, -0.5, 6, 1, "#1F2238"); c.restore();
+  P(195, 21, 8, 6, "#1F2238"); const pop = Math.max(0, Math.sin(fr(t*1.5)*Math.PI))*7;
+  if (pop > 1){ P(193 - pop, 22, 7, 4, "#E3C064"); px(193 - pop, 23, "#1F2238"); P(191 - pop, 23.5, 2, 1, "#E39A2C"); }
+  P(190, 52, 1, 10, "#C9A54A"); P(208, 52, 1, 14, "#C9A54A"); disc(190.5, 63, 2, "#C9A54A"); disc(208.5, 67, 2, "#C9A54A");
+  // banknotes fleeing the building
+  for (let k = 0; k < 10; k++){ const u = fr(t*0.8 + k/10), x = 10 + hs(k, 5)*200 + u*30, y = 100 - u*90 + Math.sin(u*9 + k)*4; P(x, y, 7, 4, "#B8D8A8"); P(x + 2, y + 1, 3, 2, "#7FA86A"); }
+  // traders, and a chocolatier whose export prices just went up by a third
+  for (const [x, k] of [[30, 1], [56, 3], [150, 4]]){ blit(chibi(PEOPLE[k], "stand", "fx" + k), x, 120); const hy = 108 + Math.round(Math.sin(t*14 + k)*1); P(x - 6, hy, 2, 6, PEOPLE[k].skin || "#F2C9A0"); P(x + 5, hy, 2, 6, PEOPLE[k].skin || "#F2C9A0"); }
+  const cx = 108; blit(chibi({skin:"#F2C9A0", hair:"#6B4A2B", shirt:"#F7F2E6"}, "stand", "choc"), cx, 120);
+  P(cx - 4, 109, 9, 2, "#FFFFFF"); P(cx - 3, 104, 7, 5, "#FFFFFF"); P(cx - 9, 112, 18, 2, "#C9C3B0");
+  for (let k = 0; k < 4; k++){ const fall = Math.max(0, (t - 0.3 - k*0.08)*120); P(cx - 8 + k*4, 106 + Math.min(fall, 22), 4, 6, "#5A3420"); P(cx - 8 + k*4, 106 + Math.min(fall, 22), 4, 1, "#7A4A30"); }
+  P(0, 0, SW, 3, "#D52B1E");
+};
+SCENES2.gotthard = function(t){
+  bands(0, 70, ["#7FB6E0", "#9CC8EA", "#BBDAF2", "#D6E9F6"]);
+  // the Alps
+  c.fillStyle = "#8C9AB0"; c.beginPath(); c.moveTo(0, 96); c.lineTo(30, 40); c.lineTo(60, 62); c.lineTo(120, 14); c.lineTo(180, 58); c.lineTo(214, 36); c.lineTo(SW, 70); c.lineTo(SW, 96); c.closePath(); c.fill();
+  c.fillStyle = "#FFFFFF";
+  for (const [x, y] of [[30, 40], [120, 14], [214, 36]]){ c.beginPath(); c.moveTo(x, y); c.lineTo(x - 12, y + 14); c.lineTo(x - 4, y + 11); c.lineTo(x + 3, y + 15); c.lineTo(x + 11, y + 12); c.closePath(); c.fill(); }
+  P(0, 96, SW, 39, "#6E8A5A"); P(0, 96, SW, 2, "#8AA872");
+  P(0, 104, SW, 1, "#5A4E42"); P(0, 108, SW, 1, "#5A4E42"); for (let x = 0; x < SW; x += 5) P(x, 103, 2, 7, "#7A6A58");
+  // the tunnel portal, with a train that went in and didn't come out straight
+  P(84, 58, 72, 47, "#9E978A"); for (let y = 60; y < 104; y += 6) P(84, y, 72, 1, "#8A8378");
+  c.fillStyle = "#14141A"; c.beginPath(); c.moveTo(100, 105); c.lineTo(100, 80); c.arc(120, 80, 20, Math.PI, 0); c.lineTo(140, 105); c.closePath(); c.fill();
+  P(96, 60, 48, 9, "#5A5A64"); text("GOTTHARD", 100, 62, "#F7F2E6");
+  c.save(); c.translate(150, 100); c.rotate(0.28); P(-16, -9, 30, 10, "#B23A3A"); P(-16, -9, 30, 1, "#D25A5A"); P(-12, 1, 4, 3, "#1B1B22"); P(6, 1, 4, 3, "#1B1B22"); c.restore();
+  c.save(); c.translate(176, 112); c.rotate(-0.5); P(-12, -6, 26, 9, "#2F6FE4"); P(-12, -6, 26, 1, "#5A8FF0"); c.restore();
+  for (const [x, y, col] of [[190, 116, "#E39A2C"], [200, 121, "#3E9B4F"], [168, 124, "#7A4FBF"]]){ P(x, y, 9, 5, col); P(x, y, 9, 1, "rgba(255,255,255,.3)"); }
+  // the queue on the approach, and a recovery crane doing its best
+  for (let k = 0; k < 5; k++){ P(4 + k*15, 98, 13, 6, ["#5A6380", "#8E5A30", "#3E6E5E"][k % 3]); P(4 + k*15, 104, 3, 2, "#1B1B22"); P(13 + k*15, 104, 3, 2, "#1B1B22"); }
+  P(214, 82, 4, 22, "#E3C064"); P(214, 82, 30, 3, "#E3C064"); P(238, 85, 1, 10 + Math.sin(t*6)*3, "#3A3A48"); P(208, 102, 16, 5, "#E3C064");
+  // meanwhile, the cheese goes over the pass by goat
+  const g = Math.min(1, t*1.1), gx = 40 + g*70, gy = 84 - g*52 + Math.abs(Math.sin(t*20))*1;
+  const goat = makeSprite("goat", 12, 10, () => { oval(6, 5, 5, 3, "#F2EDE2"); disc(10, 3, 2, "#F2EDE2"); P(9, 0, 1, 2, "#8E7228"); P(11, 0, 1, 2, "#8E7228"); P(2, 7, 1, 3, "#8A8378"); P(8, 7, 1, 3, "#8A8378"); px(11, 3, "#1F2238"); });
+  blit(goat, gx, gy); disc(gx - 1, gy - 6, 3, "#E9C46A"); P(gx - 3, gy - 7, 4, 1, "#C9A54A");
+};
+TITLES2.franc = "The Franc Shock"; TITLES2.gotthard = "The Gotthard gets blocked";
+PORTRAITS2.franc = t => portrait2({t, skin:"#F2C9A0", hair:"#C8C8C8", shirt:"#1F2A44", tie:"#D52B1E", eyes:"wide", brows:"worried", mouth:"grit", glasses:true, sweat:true, bg:"#8E2A2A"});
+PORTRAITS2.gotthard = t => portrait2({t, skin:"#E0B590", hair:"#6B4A2B", hairStyle:"cap", shirt:"#F2A03A", collar:"#F2DC8E", eyes:"normal", brows:"flat", mouth:"talk", bg:"#5E7088", look:1});
+LINES2.franc = {name:"Ueli, Treasury Desk", line:"The franc went up thirty per cent before my coffee cooled. Every claim we owe in euros now costs a fortune."};
+LINES2.gotthard = {name:"Reto, Rail Logistics", line:"The tunnel’s shut until spring. The cheese is going over the pass by goat."};
+
 SCENES2.podium = function(t){
   hallBackdrop(); spotlight(120, 40);
   P(40, 10, 160, 18, "#C9A54A"); P(42, 12, 156, 14, "#1F2A44"); bigText("WORLD NO.1", 120, 15, "#E3C064", "#0E1222");

@@ -339,6 +339,9 @@ function openBoard(confirmRestart, intro, tabArg){
       <h3>Watching speed</h3>
       <div class="seg three">${[[0.3,"Very relaxed"],[0.5,"Relaxed"],[1,"Normal"]].map(([v, n]) => `<button class="btn" data-act="ispeed:${v}" aria-pressed="${(S.idleSpeed || 0.5) === v}">${n}</button>`).join("")}</div>
       <p class="dim">Relaxed means an earnings call every 2 minutes. The staff, traffic and elevator keep moving at normal speed either way.</p>` : `<div class="action"><div><h3>Let the board run everything</h3><p>Every executive takes over: claims, pricing, insurance, compliance, building, upgrades and events. You can watch, but you can’t switch back, and this run’s score won’t be recorded.</p></div><button class="btn ghost" data-act="idle">Turn on</button></div>`}
+    ${onlineOk() ? `<h3 style="margin-top:14px">Exit interviews</h3>
+    <p>Ask for quick, anonymous feedback when a run ends. It never affects your score.</p>
+    <div class="seg two"><button class="btn" data-act="fbpref:on" aria-pressed="${feedbackOn()}">On</button><button class="btn" data-act="fbpref:off" aria-pressed="${!feedbackOn()}">Off</button></div>` : ""}
     <h3 style="margin-top:14px">Step down</h3>
     <p>End this run now and record your score as it stands, on this device${onlineOk() ? " and the global leaderboard" : ""}. There’s no sale bonus or golden ticket: those are for selling the company. You do get a carriage clock.</p>
     ${S.idleMode || S.idleTainted ? `<p class="note">This run used idle mode, so stepping down won’t record a score.</p>` : ""}
@@ -352,6 +355,7 @@ function doBuyback(){ const c = buybackCost(); if (S.cash < c) return false; spe
 
 /* Earnings */
 function earnings(){
+  if (cityId() === "zurich"){ sfx("cuckoo"); toast("Cuckoo! Cuckoo! The earnings call starts precisely on time."); }
   const q = S.q;
   const notes = [];
   q.cover = 0;
@@ -550,7 +554,7 @@ function finishSetup(){
 function bookHtml(){
   const mix = bookMix(), keys = Object.keys(mix).sort((a, b) => mix[b] - mix[a]), mp = moodPct();
   const acts = Object.keys(ACT_SPECS).map(k => [k, lvSpec("actuary", k)]).filter(x => x[1] > 0);
-  const swanRows = Object.keys(SWANS).map(k => [k, swanExposure(k)]).sort((a, b) => b[1] - a[1]);
+  const swanRows = citySwans().map(k => [k, swanExposure(k)]).sort((a, b) => b[1] - a[1]);
   const bar = v => `<i style="display:inline-block;height:8px;flex:0 1 ${Math.round(Math.min(1, v/2.5)*100)}%;background:${v > 1.15 ? "var(--danger)" : v < 0.85 ? "var(--money)" : "var(--gold)"};border-radius:4px"></i>`;
   return `<h3>Your book of business</h3>
     ${keys.length ? `<table class="ledger">${keys.map(k => `<tr><td>${LINES[k].icon} ${LINES[k].name}</td><td>${Math.round(mix[k]*100)}% of premium</td></tr>`).join("")}</table>`

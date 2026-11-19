@@ -1,11 +1,11 @@
-// Fine Print Syndicate: records run starts and finished runs.
+// Fine Print Syndicate: records run starts, finished runs and exit-interview feedback.
 // Deploy: npx supabase functions deploy submit-score --no-verify-jwt --use-api
 // Optional secret (recommended): npx supabase secrets set IP_SALT=some-long-random-string
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 // Where the game is allowed to submit from. Add a localhost address here if you test locally.
 const ALLOWED = ["https://sakaicodes.github.io", "http://localhost:8080", "http://127.0.0.1:8080"];
-const CITIES = ["london", "nyc", "bermuda"];
+const CITIES = ["london", "nyc", "bermuda", "zurich"];
 
 function corsFor(req: Request) {
   const origin = req.headers.get("origin") ?? "";
@@ -44,6 +44,24 @@ Deno.serve(async (req) => {
     if (!playerId) return bad("bad player id");
     if (await recent("plays") >= 30) return bad("too many plays, try again later", 429);
     const { error } = await db.from("plays").insert({ player_id: playerId, city: CITIES.includes(r.city) ? r.city : null, version: clean(r.version, 12), ip_hash: hash });
+    if (error) return bad(error.message);
+    return ok({ ok: true });
+  }
+
+  // ---- exit-interview feedback (anonymous: no run or player ID) ----
+  if (r.type === "feedback") {
+    const TAGS = ["Made me laugh", "Too easy", "Too hard", "Confusing", "Found a bug", "Want more content"];
+    const REASONS = ["bankrupt", "fired", "licence", "exit", "retire", "win"];
+    const rating = Number.isInteger(r.rating) && r.rating >= 0 && r.rating <= 5 ? r.rating : 0;
+    const tags = Array.isArray(r.tags) ? [...new Set(r.tags.filter((t: unknown) => typeof t === "string" && TAGS.includes(t)))] : [];
+    const comment = clean(r.comment, 500);
+    if (!rating && !tags.length && !comment) return bad("empty feedback");
+    if (await recent("feedback") >= 10) return bad("too much feedback, try again later", 429);
+    const { error } = await db.from("feedback").insert({
+      rating, tags, comment: comment || null, reason: REASONS.includes(r.reason) ? r.reason : null,
+      quarters: typeof r.quarters === "number" && r.quarters >= 0 && r.quarters <= 500 ? Math.round(r.quarters) : null,
+      city: CITIES.includes(r.city) ? r.city : null, version: clean(r.version, 12), ip_hash: hash,
+    });
     if (error) return bad(error.message);
     return ok({ ok: true });
   }

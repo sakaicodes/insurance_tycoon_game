@@ -52,6 +52,11 @@ $("#sheet").addEventListener("click", e => {
     save(); const k = S.floors.findIndex(f => f.type === "pr"); if (k >= 0) openFloor(k); else closeModal();
   }
   else if (a === "lb") openLeaderboard(p, q);
+  else if (a === "fbstar"){ fbRead(); if (fbDraft){ fbDraft.rating = fbDraft.rating === +p ? 0 : +p; openFeedback(fbDraft.reason, fbDraft.next); } }
+  else if (a === "fbtag"){ fbRead(); if (fbDraft){ const t = FB_TAGS[+p]; fbDraft.tags = fbDraft.tags.includes(t) ? fbDraft.tags.filter(x => x !== t) : fbDraft.tags.concat(t); openFeedback(fbDraft.reason, fbDraft.next); } }
+  else if (a === "fbsend") finishFeedback(true);
+  else if (a === "fbskip") finishFeedback(false);
+  else if (a === "fbpref"){ setFeedbackOn(p === "on"); sfx("tick"); openBoard(); }
   else if (a === "lbp") openLeaderboard("global", p, +q);
   else if (a === "lbme") findMyBest(p);
   else if (a === "lbname"){
