@@ -2,10 +2,17 @@
 /* Black swans are based on real reinsurance events, with a satirical twist. Each one names the cover that pays for it
    and the floor that softens it. Scenes, portraits and lines live in src/art/cutscenes.js under the same keys. */
 const COVERS = {
-  cat:{name:"Catastrophe reinsurance", rate:0.06, desc:"Pays 90% of hurricanes, volcanoes, marine disasters, space losses and solar storms."},
-  cyber:{name:"Cyber cover", rate:0.03, desc:"Pays 90% of a global IT meltdown."},
-  dno:{name:"Directors’ and officers’ cover", rate:0.025, desc:"Pays 90% when a big corporate collapse lands on your D&O book."},
-  event:{name:"Event cancellation cover", rate:0.02, desc:"Pays 90% if a global outbreak cancels every event you insure."},
+  cat:{name:"Catastrophe reinsurance", rate:0.06, desc:"Covers hurricanes, volcanoes, marine disasters, space losses, solar storms and blocked Alpine tunnels."},
+  cyber:{name:"Cyber cover", rate:0.03, desc:"Covers a global IT meltdown."},
+  dno:{name:"Financial lines cover", rate:0.025, desc:"Covers big corporate and financial collapses, including currency shocks."},
+  event:{name:"Event cancellation cover", rate:0.02, desc:"Covers the day everything gets cancelled at once."},
+};
+/* Protection levels, measured in quarters of premium so they grow with the company:
+   you pay the first `ret`, the reinsurer pays the next `lim`, and anything above comes back to you. */
+const PROTECTION = {
+  light:{name:"Light", ret:1.5, lim:2.0, blurb:"Cheap. Covers the middle of a disaster."},
+  balanced:{name:"Balanced", ret:0.6, lim:3.0, blurb:"Most syndicates pick this."},
+  strong:{name:"Strong", ret:0.25, lim:4.5, blurb:"Pricey. Sleep soundly."},
 };
 const actMit = () => Math.min(0.5, 0.08*lvSpec("actuary", "capital"));
 const SWANS = {

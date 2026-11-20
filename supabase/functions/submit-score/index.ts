@@ -1,4 +1,4 @@
-// Fine Print Syndicate: records run starts, finished runs and exit-interview feedback.
+// Fine Print Syndicate: records run starts, finished runs, daily challenge results and exit-interview feedback.
 // Deploy: npx supabase functions deploy submit-score --no-verify-jwt --use-api
 // Optional secret (recommended): npx supabase secrets set IP_SALT=some-long-random-string
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -66,7 +66,45 @@ Deno.serve(async (req) => {
     return ok({ ok: true });
   }
 
+  // ---- a daily challenge result: keep each player's best attempt for the day ----
+  if (r.type === "daily") {
+    const num = (v: unknown) => typeof v === "number" && Number.isFinite(v);
+    const FORMATS = ["fixed", "race", "objective"];
+    const today = new Date(), dayOk = [0, 1].map(k => new Date(today.getTime() - k*864e5).toISOString().slice(0, 10));
+    if (!playerId) return bad("bad player id");
+    if (typeof r.day !== "string" || !dayOk.includes(r.day)) return bad("not today's challenge");
+    if (!CITIES.includes(r.city) || !FORMATS.includes(r.format)) return bad("bad challenge");
+    if (![r.quarters, r.days, r.earned, r.stars, r.achievements, r.rankIdx, r.avgMood, r.progress].every(num)) return bad("missing fields");
+    if (r.quarters < 1 || r.quarters > 12 || r.progress < 0 || r.progress > 1) return bad("implausible");
+    if (r.stars > (r.quarters + 1) * 3 || r.earned > (r.quarters + 1) * 5e7 || r.days > (r.quarters + 1) * 92) return bad("implausible");
+    const money = Math.round(Math.sqrt(Math.max(0, r.earned)) * 8), days = Math.max(0, Math.round(r.days)) * 4;
+    const bonus = Math.round(r.stars) * 40 + Math.min(150, Math.round(r.achievements)) * 150 + Math.round(r.rankIdx) * 400;
+    const met = r.format === "objective" && r.objectiveMet === true, finished = r.format === "race" && r.finished === true;
+    const score = Math.round((money + days + bonus) * (0.5 + Math.min(100, Math.max(0, r.avgMood)) / 100) * (met ? 1.5 : 1));
+    const quarters = Math.round(r.quarters);
+    const rankKey = r.format === "race" ? (finished ? 1e9 - quarters * 1e6 + score : r.progress * 1e6) : score;
+    if ((await db.from("daily_scores").select("*", { count: "exact", head: true }).eq("ip_hash", hash)
+      .gte("updated_at", new Date(Date.now() - 3600e3).toISOString())).count! >= 30) return bad("too many attempts, try again later", 429);
+    const { data: prev } = await db.from("daily_scores").select("id, rank_key, attempts").eq("day", r.day).eq("player_id", playerId).maybeSingle();
+    const row = { name: clean(r.name, 28) || "Anonymous Syndicate", ceo: clean(r.ceo, 20), city: r.city, format: r.format, score, quarters, finished,
+      progress: Math.round(r.progress * 1000) / 1000, objective_met: met, rank_key: rankKey, version: clean(r.version, 12), ip_hash: hash, updated_at: new Date().toISOString() };
+    const best = !prev || rankKey > prev.rank_key;
+    const { error } = prev
+      ? await db.from("daily_scores").update(best ? { ...row, attempts: prev.attempts + 1 } : { attempts: prev.attempts + 1, updated_at: row.updated_at, ip_hash: hash }).eq("id", prev.id)
+      : await db.from("daily_scores").insert({ ...row, day: r.day, player_id: playerId });
+    if (error) return bad(error.message);
+    const myKey = best ? rankKey : prev!.rank_key;
+    const above = (await db.from("daily_scores").select("id", { count: "exact", head: true }).eq("day", r.day).gt("rank_key", myKey)).count ?? 0;
+    const players = (await db.from("daily_scores").select("id", { count: "exact", head: true }).eq("day", r.day)).count ?? 1;
+    return ok({ score, best, rank: above + 1, players });
+  }
+
   // ---- a finished run ----
+  // refuse scores from outdated versions: set the MIN_VERSION secret to raise the bar without redeploying
+  const minVersion = Deno.env.get("MIN_VERSION") ?? "0.0.0";
+  const verParts = (v: string) => String(v).split(".").map(n => parseInt(n, 10) || 0);
+  const older = (a: string, b: string) => { const x = verParts(a), y = verParts(b); for (let i = 0; i < 3; i++) { if ((x[i] ?? 0) !== (y[i] ?? 0)) return (x[i] ?? 0) < (y[i] ?? 0); } return false; };
+  if (older(clean(r.version, 12), minVersion)) return bad("update required", 426);
   const num = (v: unknown) => typeof v === "number" && Number.isFinite(v);
   if (!r.runId || typeof r.runId !== "string" || r.runId.length > 64) return bad("bad run id");
   if (!CITIES.includes(r.city)) return bad("bad city");

@@ -4,6 +4,7 @@ $("#sheet").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
   const [a, p, q] = b.dataset.act.split(":");
   if (S.idleMode && ["build","up","mode","lim","spec","exit","exit-go","stepdown","stepdown-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
+  if (a === "idle" && S.daily){ toast("Idle mode is off during daily challenges.", "bad"); return; }
   if (a === "idle"){
     openModal(`<h2>Hand over the keys?</h2><p>The board will make every decision from now on: claims, pricing, insurance, compliance, building, upgrades and events. You can keep watching.</p>
       <p class="dim">Be warned: the board is not you. It makes mistakes, blunders on vanity projects, is slow to buy insurance, and idle companies attract more black swans. It may not last forever.</p>
@@ -13,6 +14,8 @@ $("#sheet").addEventListener("click", e => {
   }
   if (a === "idle-yes"){ S.preIdleExecs = Object.assign({}, S.execs); S.idleTainted = true; S.idleMode = true; S.idleSpeed = 0.5; for (const x of EXECS) S.execs[x.id] = true; save(); closeModal(); toast("Idle mode is on. Sit back. The board has it from here.", "good"); return; }
   if (a === "close") closeModal();
+  else if (a === "daily"){ if (p === "exit") exitDaily(); else startDaily(p === "resume"); }
+  else if (a === "gz-read"){ gazAfterCall = true; closeModal(); }
   else if (a === "build") build(p, q);
   else if (a === "spec"){
     const i = +p, f = S.floors[i], opts = f && specOptions(f.type), rc = retrainCost();
@@ -52,6 +55,9 @@ $("#sheet").addEventListener("click", e => {
     save(); const k = S.floors.findIndex(f => f.type === "pr"); if (k >= 0) openFloor(k); else closeModal();
   }
   else if (a === "lb") openLeaderboard(p, q);
+  else if (a === "gz"){ const n = (S.gazette || []).length; S.gazIdx = clamp((S.gazIdx || 0) + (p === "older" ? 1 : -1), 0, Math.max(0, n - 1)); sfx("paper"); openBoard(false, false, "gazette"); }
+  else if (a === "cvsel"){ S.coverPick = S.coverPick || {}; S.coverPick[p] = q; sfx("tick"); openBoard(); }
+  else if (a === "upd-reload") reloadToVersion(b.dataset.ver);
   else if (a === "fbstar"){ fbRead(); if (fbDraft){ fbDraft.rating = fbDraft.rating === +p ? 0 : +p; openFeedback(fbDraft.reason, fbDraft.next); } }
   else if (a === "fbtag"){ fbRead(); if (fbDraft){ const t = FB_TAGS[+p]; fbDraft.tags = fbDraft.tags.includes(t) ? fbDraft.tags.filter(x => x !== t) : fbDraft.tags.concat(t); openFeedback(fbDraft.reason, fbDraft.next); } }
   else if (a === "fbsend") finishFeedback(true);
@@ -128,8 +134,10 @@ $("#sheet").addEventListener("click", e => {
     toast(`You bought yacht #${S.yachts}: “${YACHTS[(S.yachts-1)%YACHTS.length]}.”`, "good"); openBoard();
   }
   else if (a === "cover"){
-    if (q === "on"){ const c = coverCost(p, income()*Q_LEN); if (S.cash < c) return; S.cash -= c; discSpent += c; S.q.other += c; S.cover[p] = true; toast(`You bought ${COVERS[p].name.toLowerCase()}. It renews each earnings call.`, "good"); }
-    else { S.cover[p] = false; toast(`${COVERS[p].name} cancelled. Good luck.`, "bad"); }
+    if (q === "on"){ const sel = coverSel(p), c = coverCost(p, income()*Q_LEN, layerOf(sel)); if (S.cash < c) return; S.cash -= c; discSpent += c; S.q.other += c; S.cover[p] = sel;
+      if (S.coverPick) delete S.coverPick[p]; sfx("chime"); toast(`${COVERS[p].name} bought: ${layerOf(sel).name.toLowerCase()} protection.`, "good"); }
+    else if (q === "switch"){ S.cover[p] = coverSel(p); if (S.coverPick) delete S.coverPick[p]; sfx("tick"); toast(`Switched to ${coverLayer(p).name.toLowerCase()} protection. The new price applies from the next earnings call.`, "good"); }
+    else { S.cover[p] = false; if (S.coverPick) delete S.coverPick[p]; toast(`${COVERS[p].name} cancelled. Good luck.`, "bad"); }
     save(); openBoard();
   }
   else if (a === "perk"){

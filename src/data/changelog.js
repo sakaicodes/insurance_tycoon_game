@@ -1,6 +1,25 @@
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.8.3", notes:["The daily challenge now lives only in the Boardroom, at the top of the Company tab. Creating your CEO is back to just that, and the tutorial tells you where to find the daily challenge."]},
+  {v:"0.8.2", notes:["The tutorial and How to play now cover the Gazette, daily challenges, stepping down, the four cities, the leaderboards and the new insurance protection levels."]},
+  {v:"0.8.1", notes:["Fixed: pop-up messages (like denied claims) no longer cover the daily challenge progress bar. Messages now stack neatly below it, and below the update banner."]},
+  {v:"0.8.0", notes:[
+    "Daily challenges: a new challenge every day, the same for every player, with a city, a twist and one of three goals: survive 12 quarters, race to a profit target, or complete a daily objective for a score bonus.",
+    "Retry as often as you like: your best attempt of the day counts on the new 📅 Today leaderboard.",
+    "Your main company is paused and kept safe while you play a daily challenge. Find it in the Boardroom’s Company tab or on the setup screen.",
+  ]},
+  {v:"0.7.1", notes:[
+    "Read all about it: the Fine Print Gazette is a new Boardroom tab, with a fresh edition after every earnings call.",
+    "Each edition reports on your real results, plus market moves, rival gossip, Percy’s corner and the classifieds. Flip back through the last eight editions.",
+    "A red dot on the Boardroom button tells you a new edition is out.",
+    "Jump straight to the new edition with “Read the Gazette” on the earnings call.",
+  ]},
+  {v:"0.7.0", notes:[
+    "Your own insurance now comes in Light, Balanced or Strong protection, with a picture of who pays what when disaster strikes.",
+    "Cover is priced on how exposed you are: what you insure, where you are, and how recently disaster struck. Tap “Why this price?” to see the sums.",
+    "The game now tells you when a new version is out, so you’re never stuck on an old one. Your run is always saved first.",
+  ]},
   {v:"0.6.8", notes:[
     "Two new black swans, only in Zurich: the Franc Shock, where the franc leaps overnight and every foreign claim costs a fortune, and the Gotthard blockage, where a derailed freight train shuts the main rail route under the Alps.",
     "Treaty Reinsurance feels the Franc Shock hardest; Marine cargo feels the Gotthard. Each has its own cutscene, character and achievement.",
