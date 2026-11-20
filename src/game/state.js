@@ -36,7 +36,7 @@ function citySwans(){ return Object.keys(SWANS).filter(k => !SWANS[k].city || SW
 function pickSwan(){ const w = {}; for (const k of SWAN_POOL) w[k] = (w[k] || 0) + 1; for (const k in SWANS) if (SWANS[k].city === cityId()) w[k] = 1.5; let tot = 0; for (const k in w){ w[k] *= cityRisk(k); tot += w[k]; }
   let r = Math.random()*tot; for (const k in w){ r -= w[k]; if (r <= 0) return k; } return SWAN_POOL[0]; }
 function swanCulprit(kind){ const m = bookMix(); let best = null, bv = -1; for (const k in m){ const v = m[k]*(LINES[k].swans[kind] || 0.8); if (v > bv){ bv = v; best = k; } } return best; }
-function lineUnlocked(k){ return !LINES[k].unlock || S.rankIdx >= LINES[k].unlock; }
+function lineUnlocked(k){ if (S.daily && S.daily.twist === "treaty") return k === "treaty"; return !LINES[k].unlock || S.rankIdx >= LINES[k].unlock; }
 function autoSpec(type){
   if (type === "sales"){ const own = k => S.floors.filter(f => f.type === "sales" && fSpec(f) === k).length; const opts = Object.keys(LINES).filter(lineUnlocked); return opts.sort((a, b) => own(a) - own(b) || Math.random() - 0.5)[0]; }
   if (type === "actuary"){ const own = k => S.floors.filter(f => f.type === "actuary" && fSpec(f) === k).length; return Object.keys(ACT_SPECS).sort((a, b) => own(a) - own(b))[0]; }
@@ -61,6 +61,6 @@ function ceoLook(c){
     tie:at === "tie" || at === "three" ? "#F2C14E" : null, blouse:["blouse","skirt","trouser","open"].includes(at), earrings:!!c.earrings, glasses:!!c.glasses, hat:c.hairStyle === "cap",
     scarf:c.hairStyle === "scarf" ? shade(outfit, -0.15) : null, beard:c.facial === "beard" ? (c.hair || HAIRS[0]) : null, mo:c.facial === "moustache" ? (c.hair || HAIRS[0]) : null};
 }
-function save(){ try{ S.savedAt = Date.now(); localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function save(){ try{ S.savedAt = Date.now(); localStorage.setItem(S.daily ? DAILY_KEY : KEY, JSON.stringify(S)); }catch(e){} }
 let S = load() || newState();
 ensureState();

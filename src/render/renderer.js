@@ -74,6 +74,7 @@ function ensureStatic(){
   paint(SK("bell"), 14, 8, () => { R(62,7,5,1,"#E0B43A"); R(61,8,7,3,"#FFD23F"); R(60,11,9,1,"#E0B43A"); R(64,12,1,1,"#6B4A2B"); }, -58, -5);
   paint(SK("elev"), 14, 22, () => { R(0,0,14,22,"#1F2A44"); R(1,1,12,20,"#C9A54A"); R(2,2,4,18,"#E8D08A"); R(8,2,4,18,"#E8D08A"); R(6,1,2,20,"#8E7228"); R(3,9,2,1,"#FFF6D0"); R(9,9,2,1,"#FFF6D0"); R(0,21,14,1,"#161B2E"); }, 0, 0);
 
+
   framesTex(SK("percy2"), 13, 20, [["p0", () => percy(6,18,0,1)], ["p1", () => percy(6,18,1,1)]], {outline:true, shadow:[6,18.1,4]});
   ["wait","low","happy","angry","confused"].forEach(k => paint(SK("bub_"+k), 9, 11, () => drawBub(k), 0, 0));
 }
@@ -472,6 +473,8 @@ fontReady.then(() => {
   boot();
   setCity(cityId());
   setTimeout(() => flushPending().catch(() => {}), 4000);
+  startUpdateChecks();
+  gazetteBadge();
   $("#verTag").textContent = "v" + VERSION;
   document.title = companyName();
   if (S.lastVersion && S.lastVersion !== VERSION && S.seen && !S.over) setTimeout(() => toast(`Updated to v${VERSION}. Tap ? to see what’s new.`, "good"), 1500);

@@ -14,9 +14,14 @@ const read = f => fs.readFileSync(path.join(src, f), "utf8");
 
 const styles = manifest.styles.map(read).join("\n");
 const scripts = manifest.scripts.map(f => read(f).trimEnd()).join("\n\n");
-const stamp = s => s.replace(/__VERSION__/g, pkg.version).replace(/__BUILD_DATE__/g, new Date().toISOString().slice(0, 10));
+const releaseNotes = new Function(read("data/changelog.js") + "; return CHANGELOG;")()[0]?.notes || [];
+const buildMeta = `<script type="application/json" id="app-release-notes">${JSON.stringify(releaseNotes.slice(0, 3)).replace(/</g, "\\u003c")}</script>`;
+const stamp = s => s.replace(/__VERSION__/g, pkg.version)
+  .replace(/__MIN_VERSION__/g, pkg.minVersion || "0.0.0")
+  .replace(/__BUILD_DATE__/g, new Date().toISOString().slice(0, 10));
 
 let html = read("index.html")
+  .replace("<!-- @build-meta -->", () => buildMeta)
   .replace("<!-- @styles -->", () => styles)
   .replace("<!-- @scripts -->", () => scripts);
 html = stamp(html);

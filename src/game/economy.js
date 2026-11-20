@@ -16,7 +16,7 @@ function divBonus(){ const n = Object.keys(bookMix()).length; return 1 + Math.mi
 function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1))*businessScale(); }
 function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + (f.type === "penthouse" ? 0 : f.level), 0)/70); }
 function pricingBoost(){ return 1 + Math.min(0.4, 0.06*lvSpec("actuary", "pricing")); }
-function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level)*LINES[fSpec(f)].rate*cityLine(fSpec(f)); return s*salesMult()*marketRate()*volume()*pricingBoost()*divBonus(); }
+function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level)*LINES[fSpec(f)].rate*cityLine(fSpec(f)); return s*salesMult()*marketRate()*volume()*pricingBoost()*divBonus()*dailyMod("prem"); }
 function income(){ return baseIncome() * (S.buffs.sales > 0 ? 2 : 1) * (S.outage > 0 ? 0.5 : 1); }
 function salFactor(){ return 1 + 0.06*workFloors(); }
 function upkeep(){ let s = 0; for (const f of S.floors) s += (TYPES[f.type].sal || 0.6)*f.level; return s*salFactor() + execCost(); }
@@ -130,7 +130,7 @@ function ensureIntel(c){
 function estCenter(p, nz, sp){ return clamp(p*100 + nz*sp/2, 0, 100); }
 function legitEst(c){ ensureIntel(c); return estCenter(c.lp, c.nz1, intelSpread(lv("risk"))); }
 function legitFactor(lp){ return Math.pow(clamp((lp - 0.3)/0.65, 0, 1), 1.5); }
-function baseSue(c){ return clamp((0.02 + SEV_SUE[c.sev-1]*legitFactor(c.lp)*(0.85 + (c.lit || 0)))*(c.line && LINES[c.line] ? LINES[c.line].sue : 1) + 0.08*(c.stalls || 0), 0.02, 0.92); }
+function baseSue(c){ return clamp((0.02 + SEV_SUE[c.sev-1]*legitFactor(c.lp)*(0.85 + (c.lit || 0)))*(c.line && LINES[c.line] ? LINES[c.line].sue : 1)*dailyMod("sue") + 0.08*(c.stalls || 0), 0.02, 0.92); }
 function suePct(c){ return Math.min(0.92, baseSue(c)*Math.pow(0.85, lv("legal"))*(0.9 + 0.1*S.diff)); }
 function courtWin(c){ return c.legit ? clamp(0.85 - 0.06*lv("legal"), 0.4, 0.9) : clamp(0.15 - 0.02*lv("legal"), 0.03, 0.15); }
 function estText(p, nz, sp){

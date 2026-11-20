@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.8.3
+- The daily challenge card is no longer shown on the Create your CEO screen; it's only in the Boardroom, now as the first section of the Company tab.
+- The tutorial's Boardroom step says the daily challenge lives in the Company tab (the mention in "How it ends" was removed so it's explained once).
+
+## 0.8.2
+- Tutorial: "The Boardroom" now mentions the Gazette tab and daily challenges; "How it ends" covers selling, stepping down from quarter 4 and the daily challenge.
+- How to play: the black swans entry describes Light, Balanced and Strong protection and exposure-based prices (it still described the old flat cover), and there are new entries for the Gazette, the four cities, the three leaderboards and ending your run on your own terms.
+- README: merged the two "Releasing a new version" sections; added the new files to the project structure; new "Features and where they live" section (lines of business, your own insurance, the Gazette, daily challenges, endings, leaderboards); the cities section covers Zurich, the metro and city-only black swans.
+
+## 0.8.1
+- Fixed: toasts appeared at a fixed position that overlapped the daily challenge progress bar (and the update banner). A new `layoutOverlays()` stacks everything floating under the HUD in order (daily bar, update banner, then toasts), re-run every second, whenever a toast appears, and when the banner is shown or dismissed. Outside dailies, toasts stay in their usual place.
+
+## 0.8.0
+- **Daily challenges** (`src/data/daily.js`, `src/ui/daily.js`). Each UTC day's challenge is generated from the date: format (fixed length, race to a profit target of 40K, 55K or 70K, or a daily objective worth a 1.5× bonus), city, one of eight twists (early hurricane, litigation boom, cheap reinsurance, soft market, tight-fisted board, generous backers, customers love you, Treaty only), the objective, and when one or two black swans strike. Every player gets the same challenge; nothing needs publishing.
+- Runs last at most 12 quarters (race runs end as soon as the target is hit), idle mode and away-time progress are off, and the run saves to its own slot (`fineprint-daily-run`), so the main company is untouched and its clock is paused. Daily runs never touch the main leaderboard or exit interviews.
+- **Where:** a daily card on the setup screen and in the Boardroom's Company tab (with your best today, attempts and the top three), a progress bar under the HUD during the run, a results screen with Try again and Back to my company, and a 📅 Today leaderboard view.
+- **Supabase:** `20261122000000_daily.sql` adds `daily_scores` (one row per player per day, holding their best; public reads limited to leaderboard columns). `submit-score` accepts `type: "daily"`, recomputes the score, only accepts today's or yesterday's date, keeps the better attempt, counts attempts, and returns today's rank and number of players.
+- How to play has a Daily challenge entry. The main company's clock is paused during dailies, so time spent in one doesn't count as time away.
+
+## 0.7.1
+- **The Fine Print Gazette** (`src/ui/gazette.js`): an edition is written at every earnings call and read in a new 📰 Gazette tab in the Boardroom (never as a pop-up). The headline and lead story react to the quarter: a black swan that quarter (covered or not), a loss, a big beat, an in-line or modest beat, or a miss, with the real profit and the City's expectation; regulator warnings get a mention. Also: Markets (your share price with direction, a rival's move, and a city index: Biscuit, Bagel, Rum futures or Franc-o-meter), Rival gossip, Percy's corner and Classifieds, drawn from pools without quick repeats.
+- The last 8 editions are kept with the run; arrows flip between them. A red dot on the Boardroom button and the tab marks an unread edition.
+- The earnings call has a "📰 Read the Gazette" button beside "Hang up". It closes the call through the usual checks (game over, board patience, promotion), then opens the Gazette tab, unless a promotion or ending screen needs to show first.
+- Black swans are now recorded (`S.lastSwanEvent`) so the next edition can lead with them.
+- No Supabase changes.
+
+## 0.7.0
+- **Update check.** The build embeds `version` and `minVersion` metadata in the single `dist/index.html` file. The game checks the deployed HTML on load, every 10 minutes and when the tab regains focus (skipped on claude.ai and when opened as a local file). A newer version shows a dismissible banner; a current version below `minVersion` shows a blocking "Update required" screen. Both save first and reload with `?v=<version>` to bypass caches.
+- **Server-side minimum version.** `submit-score` rejects finished runs older than the `MIN_VERSION` secret (default `0.0.0`) with status 426. The game queues the score, shows the update screen, and sends it after updating (queued scores are re-stamped with the new version).
+- **Reinsurance layers.** Each cover is a layer: you pay a retention, the reinsurer pays up to a limit, and anything above comes back to you. Presets: Light (retention 1.5, limit 2.0), Balanced (0.6, 3.0) and Strong (0.25, 4.5), in quarters of premium scaled by your exposure to the disasters that cover pays for. "Customise the layer" offers retention and limit sliders. Existing covers become Balanced.
+- **Exposure-based pricing.** Price = base rate × protection factor × exposure (your book and city, averaged over the disasters the cover pays for) × market (+35% after a disaster of that type, easing 30% per quarter) × Capital Modelling discount × reinsurance perk. "Why this price?" shows each factor. Switching level takes effect immediately; the new price applies from the next renewal.
+- Damage reports show what the layer paid, when a loss fell within the retention, and anything above the limit. Cover descriptions no longer mention a flat 90%, and D&O cover is now "Financial lines cover".
+
 ## 0.6.8
 - **Zurich-only black swans.** `SWANS` entries can now carry `city`; such swans are added to the draw (weight 1.5) only in that city, and the Book tab lists only the swans that can happen where you are (`citySwans()`).
   - **The Franc Shock** (financial lines cover, softened by Capital Modelling): the rate board crashes from 1.20 to 0.85 as a cuckoo clock pops, banknotes flee and a chocolatier's bars slide off the tray. Ueli from the treasury desk explains. Exposure: Treaty 1.7×, Marine 1.2×, Specialty 1.1×, Property 0.7×.

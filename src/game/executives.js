@@ -71,7 +71,7 @@ function execsHtml(){
         ${locked ? `<button class="btn ghost" disabled>🔒 ${RANKS[x.rank].name}</button>` : on ? `<button class="btn ghost" data-act="exec:${x.id}:off">Let go</button>` : `<button class="btn green" data-act="exec:${x.id}:on">Hire</button>`}</div>`; }).join("")}`;
 }
 function offlineCheck(){
-  if (!S.savedAt || S.over || !S.seen || !S.setupDone) return;
+  if (!S.savedAt || S.over || !S.seen || !S.setupDone || S.daily) return;
   const away = (Date.now() - S.savedAt)/1000;
   if (away < 120) return;
   const quarters = Math.min(12, away/Q_LEN), whole = Math.floor(quarters);
@@ -95,8 +95,9 @@ function offlineCheck(){
     if (S.quarter < 5 || q - lastQ < 3 || Math.random() >= 0.1) continue;
     lastQ = q;
     const kind = pickSwan(), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*swanExposure(kind)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
-    const covered = !!(S.cover && S.cover[sw.cover]), net = covered ? gross*0.1 : gross;
-    swanNet += net; swanCover += covered ? gross*0.9 : 0; swans.push({title:sw.title, covered, net});
+    const CL = coverLayer(sw.cover), covered = !!CL, paid = CL ? clamp(gross - CL.ret*qPrem*coverExposure(sw.cover), 0, CL.lim*qPrem*coverExposure(sw.cover)) : 0, net = gross - paid;
+    S.reMkt = S.reMkt || {}; S.reMkt[sw.cover] = Math.min(2, reMarket(sw.cover) + 0.35);
+    swanNet += net; swanCover += paid; swans.push({title:sw.title, covered, net});
   }
   const total = Math.round(prem - legit - fraud - wages - covers - swanNet);
   const limit = -overdraft()*0.8, applied = Math.max(total, Math.min(0, limit - S.cash));

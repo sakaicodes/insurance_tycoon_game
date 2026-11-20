@@ -22,5 +22,6 @@ function toast(msg, kind){
   const box = $("#toasts");
   const el = document.createElement("div"); el.className = "toast " + (kind || ""); el.textContent = msg;
   box.appendChild(el); while (box.children.length > 3) box.firstChild.remove();
+  if (typeof layoutOverlays === "function") layoutOverlays();
   setTimeout(() => el.remove(), 5000);
 }

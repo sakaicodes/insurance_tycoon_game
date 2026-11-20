@@ -15,8 +15,9 @@ function lbTable(hl){
   return `<table class="lb"><tr><th>#</th><th>Syndicate</th><th>Score</th><th>Grade</th><th>Qtrs</th></tr>${runs.map((r, k) => `<tr class="${r.id === hl ? "me" : ""}"><td>${k + 1}</td><td>${esc(r.name)}<small>${esc(r.title)}</small>${r.ceo ? `<small style="display:block;color:var(--ink-dim)">led by ${esc(r.ceo)}</small>` : ""}</td><td>${r.score.toLocaleString("en-GB")}</td><td>${r.grade}</td><td>${r.quarters}</td></tr>`).join("")}</table>`;
 }
 function openLeaderboard(tab, city, page){
-  tab = tab === "global" && onlineOk() ? "global" : (tab || (onlineOk() ? "global" : "local")); city = city || "all"; page = Math.max(0, +page || 0);
-  const tabs = onlineOk() ? `<div class="seg two">${[["global","🌍 Global"],["local","📱 This device"]].map(([k, l]) => `<button class="btn" data-act="lb:${k}" aria-pressed="${tab === k}">${l}</button>`).join("")}</div>` : "";
+  tab = (tab === "global" || tab === "daily") && onlineOk() ? tab : (tab || (onlineOk() ? "global" : "local")); city = city || "all"; page = Math.max(0, +page || 0);
+  if (tab === "daily") return openDailyBoard();
+  const tabs = onlineOk() ? `<div class="seg three">${[["global","🌍 Global"],["daily","📅 Today"],["local","📱 This device"]].map(([k, l]) => `<button class="btn" data-act="lb:${k}" aria-pressed="${tab === k}">${l}</button>`).join("")}</div>` : "";
   const cities = tab === "global" ? `<div class="seg lb-cities" style="margin-top:6px">${[["all","All"],["london","London"],["nyc","New York"],["bermuda","Bermuda"],["zurich","Zurich"]].map(([k, l]) => `<button class="btn" data-act="lb:global:${k}" aria-pressed="${city === k}">${l}</button>`).join("")}</div>` : "";
   const mine = myGlobalBest(city);
   openModal(`<div class="top"><h2>Leaderboard</h2>${xBtn}</div>${tabs}${cities}
@@ -64,7 +65,7 @@ function loadPending(){ try { return JSON.parse(localStorage.getItem(PENDING_KEY
 function savePending(list){ try { localStorage.setItem(PENDING_KEY, JSON.stringify(list.slice(-5))); } catch(e){} }
 async function flushPending(){
   if (!onlineOk()) return; const list = loadPending(); if (!list.length) return; const keep = [];
-  for (const p of list){ try { const res = await postScore(p); rememberMine(p, res); } catch(e){ if (!e.status || e.status >= 500 || e.status === 429) keep.push(p); } }
+  for (const p of list){ p.version = VERSION; try { const res = await postScore(p); rememberMine(p, res); } catch(e){ if (!e.status || e.status >= 500 || e.status === 429 || e.status === 426) keep.push(p); } }
   savePending(keep);
 }
 function loadMine(){ try { return JSON.parse(localStorage.getItem(MINE_KEY)) || []; } catch(e){ return []; } }
@@ -84,7 +85,8 @@ async function submitGlobal(sp){
     if (res.rank && res.rank <= 5){ try { localStorage.setItem(CELEBRATE_KEY, JSON.stringify({name:p.name, ceo:p.ceo, score:res.score, until:Date.now() + 15*60e3})); } catch(e){} }
     return res;
   }
-  catch(e){ if (!e.status || e.status >= 500 || e.status === 429){ queuePending(p); return {queued:true}; } if (/already submitted/.test(e.message)){ S.globalSent = true; save(); return {skipped:"sent"}; } return {error:e.message}; }
+  catch(e){ if (e.status === 426){ queuePending(p); checkForUpdate(); return {update:true}; }
+    if (!e.status || e.status >= 500 || e.status === 429){ queuePending(p); return {queued:true}; } if (/already submitted/.test(e.message)){ S.globalSent = true; save(); return {skipped:"sent"}; } return {error:e.message}; }
 }
 function queuePending(p){ const list = loadPending().filter(x => x.runId !== p.runId); list.push(p); savePending(list); }
 async function fetchGlobal(city, page){
@@ -137,4 +139,32 @@ function celebrateRank(rank){
     s.textContent = Math.round(start - (start - rank)*ez); if (u < 1) requestAnimationFrame(tick); else { el.querySelector(".rank-reveal").classList.add("landed"); sfx("fanfare"); } };
   requestAnimationFrame(tick);
   if (rank === 1){ const cv = $("#podiumCv"), p0 = performance.now(); const frame = () => { if (!cv || !cv.isConnected) return; CUT.drawScene(cv.getContext("2d"), "podium", ((performance.now() - p0)/5000) % 1); requestAnimationFrame(frame); }; requestAnimationFrame(frame); }
+}
+
+/* ---------- the daily leaderboard ---------- */
+async function fetchDaily(day, offset, limit){
+  const q = `${ONLINE.url}/rest/v1/daily_scores?select=name,ceo,city,format,score,quarters,finished,progress,objective_met,attempts&day=eq.${day}&order=rank_key.desc,created_at.asc`;
+  const r = await withTimeout(fetch(q, {headers:{apikey:ONLINE.key, "Range-Unit":"items", Range:`${offset || 0}-${(offset || 0) + (limit || 50) - 1}`, Prefer:"count=exact"}}), 9000);
+  if (!r.ok && r.status !== 206) throw new Error(String(r.status));
+  const rows = await r.json(), cr = r.headers.get("content-range") || ""; return {rows, total:+(cr.split("/")[1] || 0) || rows.length};
+}
+async function submitDaily(res){
+  const d = S.daily, sp = scoreParts();
+  const p = {type:"daily", day:d.day, playerId:playerId(), name:companyName(), ceo:ceoName(), city:d.city, format:d.format,
+    quarters:res.quarters, days:daysSurvived(), earned:Math.round(S.earned || 0), stars:S.stars || 0, achievements:sp.achN, rankIdx:S.rankIdx, avgMood:Math.round(sp.rep),
+    finished:res.finished, progress:Math.round(res.progress*1000)/1000, objectiveMet:res.objectiveMet, version:VERSION};
+  try { return await postScore(p); } catch(e){ if (e.status === 426){ checkForUpdate(); return {error:"update the game first"}; } return !e.status || e.status >= 500 ? {queued:true} : {error:e.message}; }
+}
+function openDailyBoard(){
+  const spec = dailySpec(dailyDate()), f = DAILY_FORMATS[spec.format];
+  openModal(`<div class="top"><h2>Leaderboard</h2>${xBtn}</div>
+    <div class="seg three">${[["global","🌍 Global"],["daily","📅 Today"],["local","📱 This device"]].map(([k, l]) => `<button class="btn" data-act="lb:${k}" aria-pressed="${k === "daily"}">${l}</button>`).join("")}</div>
+    <p class="lb-stats"><span class="dc-tag ${f.cls}">${f.name}</span> ${CITIES[spec.city].flag} ${CITIES[spec.city].name}: ${f.ranks.toLowerCase()}</p>
+    <div id="lbDaily"><p class="dim">Loading today’s leaderboard…</p></div>
+    <p class="dim">Each player’s best attempt today. A new challenge starts in ${nextDailyIn()}.</p>`, {view:"lbdaily"});
+  fetchDaily(spec.day, 0, 50).then(({rows, total}) => { if (view !== "lbdaily") return; const el = $("#lbDaily"); if (!el) return;
+    if (!rows.length){ el.innerHTML = `<div class="empty"><p>No results yet today. Take on the challenge to claim first place.</p></div>`; return; }
+    const medal = ["🥇","🥈","🥉"], mine = companyName();
+    el.innerHTML = `<p class="dim" style="text-align:center">${total} player${total === 1 ? "" : "s"} today</p><table class="lb global"><tr><th class="rk">#</th><th>Syndicate</th><th class="num">${spec.format === "race" ? "Result" : "Score"}</th><th class="num">Tries</th></tr>${rows.map((r, k) => `<tr class="${r.name === mine && r.ceo === ceoName() ? "me" : ""}"><td class="rk">${k < 3 ? medal[k] : k + 1}</td><td class="nm">${esc(r.name)}<small>led by ${esc(r.ceo || "")}</small></td><td class="num">${spec.format === "race" ? (r.finished ? `${r.quarters} qtrs` : `${Math.round(r.progress*100)}%`) : Number(r.score).toLocaleString("en-GB") + (r.objective_met ? " ✓" : "")}</td><td class="num">${r.attempts}</td></tr>`).join("")}</table>`; })
+  .catch(() => { if (view !== "lbdaily") return; const el = $("#lbDaily"); if (el) el.innerHTML = `<p class="note">Couldn’t reach the leaderboard right now.</p>`; });
 }

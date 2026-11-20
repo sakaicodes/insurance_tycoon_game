@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="app-version" content="0.8.3">
+<meta name="app-min-version" content="0.6.0">
+<script type="application/json" id="app-release-notes">["The daily challenge now lives only in the Boardroom, at the top of the Company tab. Creating your CEO is back to just that, and the tutorial tells you where to find the daily challenge."]</script>
 <title>Fine Print Syndicate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -464,6 +467,78 @@ blockquote{background:rgba(201,165,74,.12)}
 .fb-btns .btn:last-child{flex:1.6}
 .seg.lb-cities{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
 .seg.lb-cities .btn{font-size:13px;padding-left:2px;padding-right:2px}
+/* update banner and required-update screen */
+.upd-banner{position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 16px));z-index:40;display:flex;align-items:center;gap:8px;background:#FFF1C4;color:#3A2E0A;border:2px solid #1F2A44;border-radius:8px;padding:6px 8px 6px 12px;font-size:14px;box-shadow:0 3px 0 #1F2A44}
+.upd-banner span{flex:1}
+.upd-banner .btn{padding:5px 12px;min-height:0;font-size:14px}
+.upd-x{background:none;border:none;font-size:20px;line-height:1;color:#3A2E0A;cursor:pointer;padding:2px 6px}
+.upd-notes{margin:4px 0 10px;padding-left:20px;line-height:1.6}
+/* your own insurance */
+.cv{border:2px solid var(--line);border-radius:10px;background:#FFFDF7;padding:10px 12px;margin:10px 0}
+.cv.on{border-color:#2E7D4F}
+.cv-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.cv-top h3{margin:0}
+.cv-state{font-size:13px;color:var(--ink-dim);white-space:nowrap}
+.cv.on .cv-state{color:#2E7D4F;font-weight:600}
+.cv-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.cv-opt{text-align:left;background:#FFFFFF;border:2px solid var(--line);border-radius:8px;padding:6px 7px;cursor:pointer;color:var(--ink)}
+.cv-opt b{display:block;font:700 14px "Chakra Petch","Pixelify Sans",sans-serif}
+.cv-opt small{display:block;font-size:12px;color:var(--ink-dim);line-height:1.3}
+.cv-opt[aria-pressed="true"]{border-color:#1F2A44;background:#FFF1C4}
+.cv-cap{margin:8px 0 3px;font-size:13px;color:#23305A}
+.cv-bar{display:flex;height:22px;border:2px solid #1F2A44;border-radius:6px;overflow:hidden;background:#FFFFFF}
+.cv-bar i{display:flex;align-items:center;justify-content:center;font:600 11px Rubik,sans-serif;font-style:normal;color:#FFFFFF;white-space:nowrap;overflow:hidden}
+.cv-price{display:flex;justify-content:space-between;align-items:baseline;background:#E9E4D6;border-radius:8px;padding:6px 10px;margin:8px 0 4px}
+.cv-price span{font-size:13px;color:var(--ink-dim)} .cv-price b{font-size:18px}
+.cv-why{margin:4px 0} .cv-why summary{cursor:pointer;font-size:13px;color:#23305A;font-weight:600;padding:3px 0}
+.cv-chip{display:inline-block;background:#E9E4D6;border-radius:999px;padding:2px 9px;font-size:12px;color:#1F2A44;margin:2px 4px 3px 0}
+.cv-range{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;font-size:13px;color:#23305A;margin:6px 0}
+.cv-range input{grid-column:1/3;width:100%;accent-color:#1F2A44}
+.cv-range output{grid-row:1;grid-column:2;font-family:"VT323",ui-monospace,monospace;font-size:17px}
+.cv-act{display:flex;gap:8px;margin-top:8px} .cv-act .btn{flex:1}
+/* the Fine Print Gazette */
+.gz-dot{display:inline-block;width:8px;height:8px;margin-left:5px;border-radius:50%;background:#B23A3A;vertical-align:2px}
+#btnBoard.has-news{position:relative}
+#btnBoard.has-news::after{content:"";position:absolute;top:6px;right:8px;width:10px;height:10px;border-radius:50%;background:#B23A3A;border:2px solid #FFFDF7}
+.gz-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px}
+.gz-nav span{font:600 14px "Chakra Petch","Pixelify Sans",sans-serif;color:#23305A}
+.gz-nav .btn{min-height:0;padding:4px 14px;font-size:18px}
+.gz{background:#F4EEDD;color:#1F2238;border:2px solid #8A8370;border-radius:4px;padding:12px 14px;font-family:Georgia,"Times New Roman",serif}
+.gz header{text-align:center;border-bottom:3px double #1F2238;padding-bottom:5px}
+.sheet .gz .gz-mast{margin:0;font:700 24px Georgia,"Times New Roman",serif;color:#1F2238;letter-spacing:.01em}
+.gz-meta{display:flex;justify-content:space-between;gap:6px;font:11px Rubik,sans-serif;color:#4A4E5A;margin-top:2px}
+.gz-head{margin:10px 0 4px;font:700 20px/1.25 Georgia,"Times New Roman",serif;color:#1F2238}
+.gz-lede{margin:0 0 10px;font-size:15px;line-height:1.55}
+.gz-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;border-top:1px solid #8A8370;padding-top:8px}
+.gz-cols h5{margin:0 0 2px;font:700 11px Rubik,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8A2A2A}
+.gz-cols p{margin:0;font-size:13px;line-height:1.45}
+.gz-row{display:flex;justify-content:space-between;gap:6px;font:16px/1.5 "VT323",ui-monospace,monospace}
+.gz-ad{border:1.5px dashed #8A8370;border-radius:4px;padding:6px 8px}
+@media (max-width:360px){ .gz-cols{grid-template-columns:1fr} }
+/* daily challenges */
+.seg.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.seg.three .btn{font-size:14px;padding-left:4px;padding-right:4px}
+.dc-card{border:3px solid #1F2A44;border-radius:10px;background:#FFFDF7;padding:10px 12px;margin:0 0 14px;box-shadow:0 0 0 2px var(--brass)}
+.dc-card h3{margin:2px 0 6px}
+.dc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dc-kicker{font:700 12px "Chakra Petch","Pixelify Sans",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#8A6A16}
+.dc-dim{font-size:13px;color:var(--ink-dim)}
+.dc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.dc-tag{display:inline-block;border:1.5px solid #1F2A44;border-radius:999px;padding:2px 10px;font-size:13px;background:#E9E4D6;color:#1F2A44}
+.dc-tag.dc-fixed{background:#DCE8F7;color:#0C447C;border-color:#0C447C} .dc-tag.dc-race{background:#FCE3C8;color:#5E300A;border-color:#8A4A16}
+.dc-tag.dc-objective{background:#DFF0E3;color:#27500A;border-color:#3B6D11} .dc-tag.dc-twist{background:#F3E7F5;color:#4A1D52;border-color:#4A1D52}
+.dc-goal{margin:4px 0 8px;font-size:14px;line-height:1.5}
+.dc-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:8px}
+.dc-stats div{background:#E9E4D6;border-radius:8px;padding:6px 10px}
+.dc-stats span{display:block;font-size:12px;color:var(--ink-dim)} .dc-stats b{font-family:"VT323",ui-monospace,monospace;font-size:19px;font-weight:400}
+.dc-mini{border-top:1.5px dashed var(--line);margin-top:8px;padding-top:6px}
+.dc-mini-head,.dc-mini-row{display:flex;justify-content:space-between;gap:8px}
+.dc-mini-head{font:600 13px "Chakra Petch","Pixelify Sans",sans-serif;color:#23305A;margin-bottom:2px}
+.dc-mini-row{font:17px/1.4 "VT323",ui-monospace,monospace}
+.dc-result{text-align:center;border:3px solid #1F2A44;border-radius:10px;background:#FFF6DC;padding:10px;margin:6px 0 8px}
+.dc-result b{display:block;font:48px/1 "VT323",ui-monospace,monospace;color:#1F2A44} .dc-result span{font-size:14px;color:var(--ink-dim)}
+.daily-bar{position:fixed;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 16px));z-index:30;display:flex;justify-content:space-between;gap:8px;background:#1F2A44;color:#F2EDE0;border:2px solid #C9A54A;border-radius:8px;padding:4px 10px 7px;font:600 13px "Chakra Petch","Pixelify Sans",sans-serif;overflow:hidden;pointer-events:none}
+.daily-bar i{position:absolute;left:0;bottom:0;height:3px;background:#E3C064}
 
 
 </style>
@@ -1056,10 +1131,17 @@ const EVENTS = [
 /* Black swans are based on real reinsurance events, with a satirical twist. Each one names the cover that pays for it
    and the floor that softens it. Scenes, portraits and lines live in src/art/cutscenes.js under the same keys. */
 const COVERS = {
-  cat:{name:"Catastrophe reinsurance", rate:0.06, desc:"Pays 90% of hurricanes, volcanoes, marine disasters, space losses and solar storms."},
-  cyber:{name:"Cyber cover", rate:0.03, desc:"Pays 90% of a global IT meltdown."},
-  dno:{name:"Directors’ and officers’ cover", rate:0.025, desc:"Pays 90% when a big corporate collapse lands on your D&O book."},
-  event:{name:"Event cancellation cover", rate:0.02, desc:"Pays 90% if a global outbreak cancels every event you insure."},
+  cat:{name:"Catastrophe reinsurance", rate:0.06, desc:"Covers hurricanes, volcanoes, marine disasters, space losses, solar storms and blocked Alpine tunnels."},
+  cyber:{name:"Cyber cover", rate:0.03, desc:"Covers a global IT meltdown."},
+  dno:{name:"Financial lines cover", rate:0.025, desc:"Covers big corporate and financial collapses, including currency shocks."},
+  event:{name:"Event cancellation cover", rate:0.02, desc:"Covers the day everything gets cancelled at once."},
+};
+/* Protection levels, measured in quarters of premium so they grow with the company:
+   you pay the first `ret`, the reinsurer pays the next `lim`, and anything above comes back to you. */
+const PROTECTION = {
+  light:{name:"Light", ret:1.5, lim:2.0, blurb:"Cheap. Covers the middle of a disaster."},
+  balanced:{name:"Balanced", ret:0.6, lim:3.0, blurb:"Most syndicates pick this."},
+  strong:{name:"Strong", ret:0.25, lim:4.5, blurb:"Pricey. Sleep soundly."},
 };
 const actMit = () => Math.min(0.5, 0.08*lvSpec("actuary", "capital"));
 const SWANS = {
@@ -1090,15 +1172,34 @@ const TUT = [
   {el:"#game", title:"Your tower", text:"Drag to scroll. Tap a floor to upgrade it or change its design. Brokers with a “!” in The Room at the bottom are claims waiting for you. Tap them."},
   {el:"#btnFloors", title:"Build floors", text:"Every room has an upside and a downside, and each new floor raises all salaries by 6%. When you build Underwriting you choose what to insure, from houses to rockets, and Actuarial floors choose a specialism. Each plays differently, and a mixed book rides out more storms. Tap a floor later to retrain it. After your first 3 floors, Compliance must cover the rest or the regulator will warn you."},
   {el:"#btnClaims", title:"Handle claims", text:"Pay, deny or stall with paperwork. Serious claims that look genuine are the most likely to sue, and to win. A Risk Dept shows you the odds."},
-  {el:"#btnBoard", title:"The Boardroom", text:"Your strategy room, split into tabs. Overview has your promotion targets and pricing, Book shows what you insure and what could hurt you, Risk is your own insurance, and the rest cover executives, money, stars and the leaderboard. It opens for you as soon as this tour ends."},
+  {el:"#btnBoard", title:"The Boardroom", text:"Your strategy room, split into tabs. Overview has your promotion targets and pricing, Book shows what you insure and what could hurt you, Risk is your own insurance, and Gazette is the newspaper written after every earnings call. The rest cover executives, money, stars and the leaderboard. Fancy a quick game? The daily challenge lives in the Company tab: a new one every day, the same for everyone. The Boardroom opens for you as soon as this tour ends."},
   {el:"#btnBoard", title:"Pricing strategy", text:"Your first Boardroom decision. Undercut wins customers but thins margins. Market rate is the safe middle. Premium earns more per policy but loses customers in a soft market. Gouge makes a fortune until the regulator notices. Match it to the market cycle shown in the top bar."},
-  {el:"#btnBoard", title:"Black swans", text:"Every so often a huge disaster hits: a hurricane, a global IT meltdown, a bank collapse. There’s no warning, and what you insure decides how badly it hurts. Without your own insurance you pay the whole loss. Buy cover in the Boardroom’s Risk tab: it renews at each earnings call and pays 90% when disaster strikes."},
-  {el:null, title:"How it ends", text:"You lose if you go bankrupt, get fired, or lose your licence after three warnings. Your final score combines the money you generate, the days you survive and your reputation. Prefer to just watch? Idle mode in the Boardroom lets the board run everything, but that run’s score won’t count."},
+  {el:"#btnBoard", title:"Black swans", text:"Every so often a huge disaster hits: a hurricane, a global IT meltdown, a bank collapse. There’s no warning, and what you insure decides how badly it hurts. Without your own insurance you pay the whole loss. Buy cover in the Boardroom’s Risk tab and pick Light, Balanced or Strong protection. It renews at each earnings call."},
+  {el:null, title:"How it ends", text:"You lose if you go bankrupt, get fired, or lose your licence after three warnings. Grow big enough and you can sell the company for a bonus, or step down whenever you like from quarter 4 to record your score. Your score combines the money you generate, the days you survive and your reputation."},
 ];
 
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.8.3", notes:["The daily challenge now lives only in the Boardroom, at the top of the Company tab. Creating your CEO is back to just that, and the tutorial tells you where to find the daily challenge."]},
+  {v:"0.8.2", notes:["The tutorial and How to play now cover the Gazette, daily challenges, stepping down, the four cities, the leaderboards and the new insurance protection levels."]},
+  {v:"0.8.1", notes:["Fixed: pop-up messages (like denied claims) no longer cover the daily challenge progress bar. Messages now stack neatly below it, and below the update banner."]},
+  {v:"0.8.0", notes:[
+    "Daily challenges: a new challenge every day, the same for every player, with a city, a twist and one of three goals: survive 12 quarters, race to a profit target, or complete a daily objective for a score bonus.",
+    "Retry as often as you like: your best attempt of the day counts on the new 📅 Today leaderboard.",
+    "Your main company is paused and kept safe while you play a daily challenge. Find it in the Boardroom’s Company tab or on the setup screen.",
+  ]},
+  {v:"0.7.1", notes:[
+    "Read all about it: the Fine Print Gazette is a new Boardroom tab, with a fresh edition after every earnings call.",
+    "Each edition reports on your real results, plus market moves, rival gossip, Percy’s corner and the classifieds. Flip back through the last eight editions.",
+    "A red dot on the Boardroom button tells you a new edition is out.",
+    "Jump straight to the new edition with “Read the Gazette” on the earnings call.",
+  ]},
+  {v:"0.7.0", notes:[
+    "Your own insurance now comes in Light, Balanced or Strong protection, with a picture of who pays what when disaster strikes.",
+    "Cover is priced on how exposed you are: what you insure, where you are, and how recently disaster struck. Tap “Why this price?” to see the sums.",
+    "The game now tells you when a new version is out, so you’re never stuck on an old one. Your run is always saved first.",
+  ]},
   {v:"0.6.8", notes:[
     "Two new black swans, only in Zurich: the Franc Shock, where the franc leaps overnight and every foreign claim costs a fortune, and the Gotthard blockage, where a derailed freight train shuts the main rail route under the Alps.",
     "Treaty Reinsurance feels the Franc Shock hardest; Marine cargo feels the Gotthard. Each has its own cutscene, character and achievement.",
@@ -1464,6 +1565,52 @@ function lineIncident(line){
   if ((line === "property" || line === "casualty") && Math.random() < 0.35) return pickFresh(INCIDENTS, "recentInc", 45);
   return pickFresh(pool, "recentLine_" + line, Math.min(12, pool.length - 3));
 }
+
+/* data/daily.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
+/* Daily challenges: everything about a day's challenge comes from the UTC date, so every player gets the same one
+   and nothing needs to be published. Add twists or objectives here and they join the rotation automatically. */
+const DAILY_Q = 12, DAILY_KEY = "fineprint-daily-run", DAILY_BEST_KEY = "fineprint-daily-best";
+const DAILY_FORMATS = {
+  fixed:{name:"Fixed length", cls:"dc-fixed", goal:"Survive 12 quarters and finish with the highest score.", ranks:"Ranked by final score"},
+  race:{name:"Race to a target", cls:"dc-race", goal:"Make {target} in total profit as fast as you can, within 12 quarters.", ranks:"Ranked by fewest quarters"},
+  objective:{name:"Daily objective", cls:"dc-objective", goal:"12 quarters, highest score wins. Objective: {objective} for a 1.5× score bonus.", ranks:"Ranked by score, with bonus"},
+};
+const DAILY_TWISTS = {
+  hurricanes:{name:"Hurricane season starts early", desc:"A hurricane is on its way in the first year."},
+  litigation:{name:"Litigation boom", desc:"Claimants sue twice as often.", mods:{sue:2}},
+  cheapre:{name:"Cheap reinsurance", desc:"Your own insurance costs half as much, but disasters hit 30% harder.", mods:{cover:0.5, swan:1.3}},
+  softmarket:{name:"Soft market", desc:"Premiums are 15% lower all game.", mods:{prem:0.85}},
+  tightboard:{name:"Tight-fisted board", desc:"The City expects 25% more profit every quarter.", mods:{expect:1.25}},
+  richstart:{name:"Generous backers", desc:"You start with three times the cash."},
+  happy:{name:"Customers love you", desc:"Customer mood starts at 90%."},
+  treaty:{name:"Treaty only", desc:"Your underwriters may only write Treaty Reinsurance."},
+};
+const DAILY_OBJECTIVES = {
+  mood:{name:"finish with customer mood above 70%", test:() => S.happy >= 70},
+  lines:{name:"write at least three different lines of business", test:() => Object.keys(bookMix()).length >= 3},
+  clean:{name:"finish without a single regulator warning", test:() => !(S.strikesEver > 0)},
+  covers:{name:"hold at least two of your own covers at the end", test:() => Object.keys(COVERS).filter(k => S.cover && S.cover[k]).length >= 2},
+  floors:{name:"end with at least six floors", test:() => workFloors() >= 6},
+};
+const DAILY_TARGETS = [40000, 55000, 70000];
+function dailyDate(d){ return (d || new Date()).toISOString().slice(0, 10); }
+function dailyRng(str){ let h = 2166136261; for (let i = 0; i < str.length; i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0)/4294967296; }; }
+function dailySpec(day){
+  const r = dailyRng("fine-print-daily:" + day), pickR = a => a[Math.floor(r()*a.length)];
+  const format = pickR(Object.keys(DAILY_FORMATS)), city = pickR(Object.keys(CITIES)), twist = pickR(Object.keys(DAILY_TWISTS));
+  let objective = pickR(Object.keys(DAILY_OBJECTIVES));
+  if (twist === "treaty" && objective === "lines") objective = "mood";
+  if (twist === "happy" && objective === "mood") objective = "clean";
+  const target = pickR(DAILY_TARGETS);
+  const pool = SWAN_POOL.concat(Object.keys(SWANS).filter(k => SWANS[k].city === city));
+  const swans = [{q:twist === "hurricanes" ? 3 : 4 + Math.floor(r()*3), kind:twist === "hurricanes" ? "hurricane" : pickR(pool), t:12 + Math.round(r()*30)}];
+  if (r() < 0.6) swans.push({q:8 + Math.floor(r()*3), kind:pickR(pool), t:12 + Math.round(r()*30)});
+  return {day, format, city, twist, objective, target, swans};
+}
+function dailyMod(k){ const t = S.daily && DAILY_TWISTS[S.daily.twist]; return (t && t.mods && t.mods[k]) || 1; }
+function dailyGoalText(spec){ return DAILY_FORMATS[spec.format].goal.replace("{target}", fmtCity(spec.target, spec.city)).replace("{objective}", DAILY_OBJECTIVES[spec.objective].name); }
+function fmtCity(n, city){ const c = (CITIES[city] || CITIES.london).cur || "£", v = n >= 1e6 ? (n/1e6).toFixed(1) + "M" : n >= 1e3 ? Math.round(n/1e3) + "K" : n; return c + v; }
 
 /* art/palette.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 const SKINS = ["#FFDBAC","#F2C9A0","#E0A878","#C68650","#8D5524","#5C3A21"];
@@ -2492,7 +2639,7 @@ return {SW, SH, TITLES:TITLES2, REPORTS:REPORTS2, LINES:LINES2, kinds:Object.key
 
 /* core/constants.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* VERSION and BUILD_DATE are filled in by build.js from package.json. */
-const VERSION = "0.6.8", BUILD_DATE = "2026-11-19";
+const VERSION = "0.8.3", BUILD_DATE = "2026-11-20";
 function intelSpread(n){ return Math.max(0, 36 - 6*n); }
 function intelText(n){
   if (n <= 0) return "No claim intel yet";
@@ -2541,7 +2688,7 @@ function citySwans(){ return Object.keys(SWANS).filter(k => !SWANS[k].city || SW
 function pickSwan(){ const w = {}; for (const k of SWAN_POOL) w[k] = (w[k] || 0) + 1; for (const k in SWANS) if (SWANS[k].city === cityId()) w[k] = 1.5; let tot = 0; for (const k in w){ w[k] *= cityRisk(k); tot += w[k]; }
   let r = Math.random()*tot; for (const k in w){ r -= w[k]; if (r <= 0) return k; } return SWAN_POOL[0]; }
 function swanCulprit(kind){ const m = bookMix(); let best = null, bv = -1; for (const k in m){ const v = m[k]*(LINES[k].swans[kind] || 0.8); if (v > bv){ bv = v; best = k; } } return best; }
-function lineUnlocked(k){ return !LINES[k].unlock || S.rankIdx >= LINES[k].unlock; }
+function lineUnlocked(k){ if (S.daily && S.daily.twist === "treaty") return k === "treaty"; return !LINES[k].unlock || S.rankIdx >= LINES[k].unlock; }
 function autoSpec(type){
   if (type === "sales"){ const own = k => S.floors.filter(f => f.type === "sales" && fSpec(f) === k).length; const opts = Object.keys(LINES).filter(lineUnlocked); return opts.sort((a, b) => own(a) - own(b) || Math.random() - 0.5)[0]; }
   if (type === "actuary"){ const own = k => S.floors.filter(f => f.type === "actuary" && fSpec(f) === k).length; return Object.keys(ACT_SPECS).sort((a, b) => own(a) - own(b))[0]; }
@@ -2566,7 +2713,7 @@ function ceoLook(c){
     tie:at === "tie" || at === "three" ? "#F2C14E" : null, blouse:["blouse","skirt","trouser","open"].includes(at), earrings:!!c.earrings, glasses:!!c.glasses, hat:c.hairStyle === "cap",
     scarf:c.hairStyle === "scarf" ? shade(outfit, -0.15) : null, beard:c.facial === "beard" ? (c.hair || HAIRS[0]) : null, mo:c.facial === "moustache" ? (c.hair || HAIRS[0]) : null};
 }
-function save(){ try{ S.savedAt = Date.now(); localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function save(){ try{ S.savedAt = Date.now(); localStorage.setItem(S.daily ? DAILY_KEY : KEY, JSON.stringify(S)); }catch(e){} }
 let S = load() || newState();
 ensureState();
 
@@ -2588,7 +2735,7 @@ function divBonus(){ const n = Object.keys(bookMix()).length; return 1 + Math.mi
 function volume(){ const e = 1.0 - 0.4*cycleVal(); return Math.max(0.35, 1 - e*(PRICES[priceIdx()].p - 1))*businessScale(); }
 function maturity(){ return Math.min(1, S.floors.reduce((a, f) => a + (f.type === "penthouse" ? 0 : f.level), 0)/70); }
 function pricingBoost(){ return 1 + Math.min(0.4, 0.06*lvSpec("actuary", "pricing")); }
-function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level)*LINES[fSpec(f)].rate*cityLine(fSpec(f)); return s*salesMult()*marketRate()*volume()*pricingBoost()*divBonus(); }
+function baseIncome(){ let s = 0; for (const f of S.floors) if (f.type === "sales") s += salesFloorRate(f.level)*LINES[fSpec(f)].rate*cityLine(fSpec(f)); return s*salesMult()*marketRate()*volume()*pricingBoost()*divBonus()*dailyMod("prem"); }
 function income(){ return baseIncome() * (S.buffs.sales > 0 ? 2 : 1) * (S.outage > 0 ? 0.5 : 1); }
 function salFactor(){ return 1 + 0.06*workFloors(); }
 function upkeep(){ let s = 0; for (const f of S.floors) s += (TYPES[f.type].sal || 0.6)*f.level; return s*salFactor() + execCost(); }
@@ -2702,7 +2849,7 @@ function ensureIntel(c){
 function estCenter(p, nz, sp){ return clamp(p*100 + nz*sp/2, 0, 100); }
 function legitEst(c){ ensureIntel(c); return estCenter(c.lp, c.nz1, intelSpread(lv("risk"))); }
 function legitFactor(lp){ return Math.pow(clamp((lp - 0.3)/0.65, 0, 1), 1.5); }
-function baseSue(c){ return clamp((0.02 + SEV_SUE[c.sev-1]*legitFactor(c.lp)*(0.85 + (c.lit || 0)))*(c.line && LINES[c.line] ? LINES[c.line].sue : 1) + 0.08*(c.stalls || 0), 0.02, 0.92); }
+function baseSue(c){ return clamp((0.02 + SEV_SUE[c.sev-1]*legitFactor(c.lp)*(0.85 + (c.lit || 0)))*(c.line && LINES[c.line] ? LINES[c.line].sue : 1)*dailyMod("sue") + 0.08*(c.stalls || 0), 0.02, 0.92); }
 function suePct(c){ return Math.min(0.92, baseSue(c)*Math.pow(0.85, lv("legal"))*(0.9 + 0.1*S.diff)); }
 function courtWin(c){ return c.legit ? clamp(0.85 - 0.06*lv("legal"), 0.4, 0.9) : clamp(0.15 - 0.02*lv("legal"), 0.03, 0.15); }
 function estText(p, nz, sp){
@@ -3557,6 +3704,7 @@ function toast(msg, kind){
   const box = $("#toasts");
   const el = document.createElement("div"); el.className = "toast " + (kind || ""); el.textContent = msg;
   box.appendChild(el); while (box.children.length > 3) box.firstChild.remove();
+  if (typeof layoutOverlays === "function") layoutOverlays();
   setTimeout(() => el.remove(), 5000);
 }
 
@@ -3607,9 +3755,14 @@ function intro(){
     <p><span>🛋️</span><span><b>Idle mode.</b> Prefer to watch? Turn on idle mode in the Boardroom and the board makes every decision. You can take back control any time, but a run that used idle mode isn’t scored.</span></p>
     <p><span>♾️</span><span><b>Play forever, if you can.</b> As your tower matures, the City expects less growth and “in line” results are fine. But regulation keeps piling up, and dividends keep the board sweet.</span></p>
     <p><span>⚖️</span><span><b>Compliance</b> must cover your floors. Fall short and the regulator issues warnings. Three warnings and you lose your licence.</span></p>
+    <p><span>📅</span><span><b>Daily challenge.</b> A new challenge every day, the same for everyone: a city, a twist, and one of three goals. You get 12 quarters, and your best attempt counts. Find it in the Boardroom’s Company tab. Your main company waits safely while you play.</span></p>
     <p><span>📊</span><span><b>What you insure matters.</b> Each Underwriting floor writes a line of business, from Property to Treaty Reinsurance, and each earns, claims and suffers differently. Actuaries can make you more money, cheaper claims or a tougher hide. The Boardroom’s Book tab shows your mix.</span></p>
-    <p><span>🦢</span><span><b>Black swans</b> are huge disasters based on real ones: hurricanes, a ship blocking a canal, a global IT meltdown, a bank collapse and more. They strike with no warning, roughly every 8 to 12 quarters from quarter 5. Without cover you pay the whole loss, which can sink you. Buy reinsurance and your other covers in the Boardroom: they pay 90%.</span></p>
+    <p><span>🦢</span><span><b>Black swans</b> are huge disasters based on real ones: hurricanes, a ship blocking a canal, a global IT meltdown, a bank collapse and more. They strike with no warning. Buy your own insurance in the Boardroom’s Risk tab and pick Light, Balanced or Strong protection: you pay the first slice of a disaster and the reinsurer pays the next. Prices depend on what you insure and where, and rise after any disaster.</span></p>
     <p><span>⭐</span><span><b>Spend stars</b> on perks in the Boardroom, and unlock achievements for extra stars.</span></p>
+    <p><span>📰</span><span><b>The Fine Print Gazette.</b> A satirical newspaper is written after every earnings call, reporting on your results, your rivals and Percy. Read it in the Boardroom’s Gazette tab, or straight from the earnings call.</span></p>
+    <p><span>🌍</span><span><b>Four cities.</b> London, New York, Bermuda and Zurich each have their own skyline, currency, risks and favourite lines of business. Zurich even has two black swans of its own.</span></p>
+    <p><span>🏆</span><span><b>Leaderboards.</b> Finished runs go on the global leaderboard (company and CEO names are public), daily challenges have their own Today board, and This device keeps your personal bests.</span></p>
+    <p><span>🚪</span><span><b>Ending on your terms.</b> Sell the company once it’s big enough for a bonus and a golden ticket, or step down whenever you like from quarter 4 to record your score. You may be asked a few quick, optional questions on the way out.</span></p>
     <p><span>💀</span><span><b>You lose</b> if you go bankrupt, the board’s confidence hits zero, or you lose your licence.</span></p>
     <h3 class="intro-h">The rooms you can build</h3>
     ${ORDER.map(t => `<p class="intro-room"><span class="isw" style="background:${TYPES[t].wall}"></span><span><b>${TYPES[t].name}.</b> ${TYPES[t].desc}<em class="pro">＋ ${TYPES[t].pro}</em><em class="con">− ${TYPES[t].con}</em>${UNLOCKS[t] ? `<em class="dim">🔓 ${UNLOCKS[t].text}</em>` : ""}</span></p>`).join("")}
@@ -3810,10 +3963,11 @@ function openBoard(confirmRestart, intro, tabArg){
     return;
   }
   const tab = intro ? "overview" : (tabArg || S.boardTab || "overview"); S.boardTab = tab;
-  const BTABS = [["overview","🏢 Overview"],["book","📊 Book"],["risk","🛡️ Risk"],["team","👔 Team"],["money","💷 Money"],["stars","⭐ Stars"],["company","⚙️ Company"]];
+  const BTABS = [["overview","🏢 Overview"],["book","📊 Book"],["risk","🛡️ Risk"],["team","👔 Team"],["money","💷 Money"],["gazette","📰 Gazette"],["stars","⭐ Stars"],["company","⚙️ Company"]];
+  if (tab === "gazette" && S.gazUnread){ S.gazUnread = false; gazetteBadge(); save(); }
   openModal(`<div class="top"><h2>Boardroom</h2>${xBtn}</div>
     ${intro ? pricingIntroHtml() : ""}
-    <div class="btabs" role="tablist">${BTABS.map(([k, l]) => `<button class="btab" role="tab" data-act="btab:${k}" aria-selected="${tab === k}">${l}</button>`).join("")}</div>
+    <div class="btabs" role="tablist">${BTABS.map(([k, l]) => `<button class="btab" role="tab" data-act="btab:${k}" aria-selected="${tab === k}">${l}${k === "gazette" && S.gazUnread ? `<i class="gz-dot" aria-label="New edition"></i>` : ""}</button>`).join("")}</div>
     ${tab === "overview" ? `
     <div class="ceo-card"><canvas id="ceoFace" width="48" height="48" aria-hidden="true"></canvas><div><b>${ceoN()}</b><span>CEO of ${coName()}</span><small>Your title: ${RANKS[r].name}</small></div></div>
     <div class="status">
@@ -3829,6 +3983,7 @@ function openBoard(confirmRestart, intro, tabArg){
     <div class="seg four">${PRICES.map((pr, k) => `<button class="btn" data-act="price:${k}" aria-pressed="${priceIdx() === k}">${pr.name}</button>`).join("")}</div>
     <p class="dim">${PRICES[priceIdx()].desc} Right now: premium income ×${(marketRate()*volume()).toFixed(2)}, customers ×${volume().toFixed(2)}.</p>` : ""}
     ${tab === "book" ? bookHtml() : ""}
+    ${tab === "gazette" ? gazetteHtml() : ""}
     ${tab === "risk" ? `
     <div class="status">
       <div><span>Capital held</span><b class="${capReq() && S.cash < capReq() ? "neg" : "pos"}">${capReq() ? Math.round(capRatio()*100) + "% of required" : "Not required yet"}</b></div>
@@ -3836,10 +3991,8 @@ function openBoard(confirmRestart, intro, tabArg){
     </div>
     <p class="dim">The regulator wants enough cash on hand to survive a bad year. Capital Modelling actuaries and catastrophe reinsurance both lower the bar.</p>
     <h3 style="margin-top:14px">Your own insurance</h3>
-    <p class="dim">Black swans strike with no warning, roughly every 8 to 12 quarters, and the longer it’s been since the last one, the closer the next. Without cover you pay the whole loss, which can sink the company. Cover renews at each earnings call.</p>
-    ${Object.keys(COVERS).map(k => { const c = COVERS[k], on = S.cover[k], cost = coverCost(k, income()*Q_LEN);
-      return `<div class="action"><div><h3>${on ? "🛡️ " : ""}${c.name}</h3><p>${c.desc} About ${fmt(cost)} per quarter.</p></div>
-        ${on ? `<button class="btn ghost" data-act="cover:${k}:off">Cancel</button>` : `<button class="btn green" data-act="cover:${k}:on" ${S.cash < cost ? "disabled" : ""}>Buy ${fmt(cost)}</button>`}</div>`; }).join("")}` : ""}
+    <p class="dim">Black swans strike with no warning, roughly every 8 to 12 quarters. Your own insurance pays part of the loss: you pay the first slice, the reinsurer pays the next, up to a limit. Prices depend on how exposed you are, and they rise for a while after any disaster. Cover renews at each earnings call.</p>
+    ${Object.keys(COVERS).map(k => coverCardHtml(k)).join("")}` : ""}
     ${tab === "team" ? `
     ${execsHtml()}` : ""}
     ${tab === "money" ? `
@@ -3893,7 +4046,9 @@ function openBoard(confirmRestart, intro, tabArg){
     ${[...new Set(ACH.map(a => a.cat))].map(c => { const list = ACH.filter(a => a.cat === c), got = list.filter(a => S.ach[a.id]).length;
       return `<details class="achcat"><summary><b>${c}</b><span>${got} of ${list.length}</span></summary><div class="achs">${list.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div></details>`; }).join("")}` : ""}
     ${tab === "company" ? `
-    <h3>Leaderboard</h3>
+    <h3>Daily challenge</h3>
+    ${S.daily ? `<p>You’re playing today’s daily challenge. Leave whenever you like: your main company is exactly where you left it.</p><button class="btn ghost" style="width:100%" data-act="daily:exit">Leave and return to my company</button>` : dailyCardHtml()}
+    <h3 style="margin-top:14px">Leaderboard</h3>
     <div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb">🏆 Leaderboard</button></div>
     <h3 style="margin-top:14px">Idle mode</h3>
     ${S.idleMode ? `<p class="note">Idle mode is on. The board is making every decision, and this run’s score won’t be recorded.</p>
@@ -3912,6 +4067,8 @@ function openBoard(confirmRestart, intro, tabArg){
     <button class="btn red" style="width:100%" data-act="restart">Start a new company</button>
     <p class="ver-line">${coName()}, version ${VERSION}</p>` : ""}`, {view:"board-" + tab, focus:false});
   drawCeoFace("#ceoFace");
+  if (tab === "risk") wireCoverSliders();
+  if (tab === "company") loadDailyMini();
 }
 function doBuyback(){ const c = buybackCost(); if (S.cash < c) return false; spend(c, "other"); discSpent += c; S.stock *= 1.04; checkRank(); return true; }
 
@@ -3921,6 +4078,7 @@ function earnings(){
   const q = S.q;
   const notes = [];
   q.cover = 0;
+  if (S.reMkt) for (const k in S.reMkt){ S.reMkt[k] = 1 + (S.reMkt[k] - 1)*0.7; if (S.reMkt[k] < 1.02) delete S.reMkt[k]; }
   for (const k of Object.keys(COVERS)) if (S.cover[k]){
     const c = coverCost(k, q.prem);
     if (S.cash >= c){ S.cash -= c; q.cover += c; }
@@ -3938,7 +4096,7 @@ function earnings(){
   const profit = q.prem - q.paid - q.sal - q.other - q.cover - q.loan + q.inv;
   const hist = (S.profHist || []).slice(-3), g = growthRate();
   const avg = hist.length ? hist.reduce((a, b) => a + b, 0)/hist.length : 0;
-  const expected = avg > 0 ? Math.max(40, avg*(1+g)) : 40;
+  const expected = (avg > 0 ? Math.max(40, avg*(1+g)) : 40)*dailyMod("expect");
   const basis = avg > 0 && avg*(1+g) > 40 ? `Your average profit over the last ${hist.length === 1 ? "quarter" : hist.length + " quarters"} (${fmt(avg)}), plus ${Math.round(g*100)}%.` : `Their minimum. They never accept less than ${fmt(40)}.`;
   const surprise = (profit - expected)/Math.max(Math.abs(expected), 40);
   const inLine = profit >= 0 && surprise < 0 && surprise >= -0.05;
@@ -3952,7 +4110,7 @@ function earnings(){
   const capShort = capReq() > 0 && S.cash < capReq()*0.8;
   if (!capShort && capReq() > 0 && S.cash < capReq()) notes.push(`Your capital is ${Math.round(capRatio()*100)}% of what the regulator requires. That’s within tolerance, but below 80% you’ll get a warning.`);
   if (gap > 0 || S.happy < 20 || gouged || capShort){
-    strike = true; S.strikes++; S.cleanQ = 0; S.cleanRun = 0;
+    strike = true; S.strikes++; S.strikesEver = (S.strikesEver || 0) + 1; S.cleanQ = 0; S.cleanRun = 0;
     const fine = Math.round(Math.max(100, Math.max(0, S.cash)*0.1)*(perk("lobbyist") ? 0.6 : 1)*prDamp()); S.cash -= fine;
     notes.push(`Regulator warning ${S.strikes} of ${maxStrikes()}: ${gap > 0 ? `Compliance only covers ${compHave()} of the ${compNeed()} floors it needs to` : capShort ? `you hold ${fmt(Math.max(0, S.cash))} but must hold ${fmt(capReq())} in capital` : S.happy < 20 ? "customers are miserable" : "your prices failed the fair-value test"}. Fine: ${fmt(fine)}.${S.strikes >= maxStrikes() ? "" : " Two clean quarters remove a warning."}`);
   } else {
@@ -3987,7 +4145,8 @@ function earnings(){
   if (lv("hr") && S.hrAt == null && Math.random() < Math.min(0.4, 0.08*lv("hr"))) S.hrAt = rand(8, 50);
   if (lv("it") > 0 && S.outageAt == null && Math.random() < Math.min(0.4, 0.06*lv("it"))) S.outageAt = rand(8, 50);
   const sinceSwan = qn - (S.lastSwanQ || 1);
-  if (qn >= 4 && !S.swan && sinceSwan >= 3 && (sinceSwan >= 10 || Math.random() < Math.min(0.6, (0.03*sinceSwan + 0.005*(S.diff - 1))*(S.idleMode ? 1.3 : 1)))){
+  if (S.daily){ const pl = (S.daily.swans || []).find(x => x.q === qn); if (pl && !S.swan){ S.lastSwanQ = qn; S.swan = {t:pl.t, kind:pl.kind}; } }
+  else if (qn >= 4 && !S.swan && sinceSwan >= 3 && (sinceSwan >= 10 || Math.random() < Math.min(0.6, (0.03*sinceSwan + 0.005*(S.diff - 1))*(S.idleMode ? 1.3 : 1)))){
     S.lastSwanQ = qn;
     S.swan = {t:rand(12, 48), kind:pickSwan()};
   }
@@ -4005,6 +4164,11 @@ function earnings(){
   else { lede = "You beat the City’s expectations."; quote = pick(["“Solid quarter. Next time we’ll expect 12% more, for no reason.”","“Cautiously ecstatic.”","“Fine. Good, even. Don’t let it go to your head.”"]); }
   const pct = (S.stock/old - 1)*100;
   bell.t = 3; bell.n = profit >= expected ? 2 : 1; lede += profit >= expected ? " In The Room, the bell rings twice." : " In The Room, the bell rings once.";
+  try { writeGazette({qn, profit, expected, surprise, inLine, strike, old, stock:S.stock}); } catch(e){}
+  let dailyDone = false;
+  if (S.daily){ S.dailyProfit = (S.dailyProfit || 0) + profit;
+    if (S.daily.format === "race" && S.dailyProfit >= S.daily.target){ S.daily.done = {quarters:qn}; dailyDone = true; notes.push(`Daily challenge: you’ve hit the ${fmt(S.daily.target)} target in ${qn} quarter${qn === 1 ? "" : "s"}!`); }
+    else if (qn >= DAILY_Q){ dailyDone = true; notes.push("Daily challenge: that was the final quarter."); } }
   openModal(`<h2>Earnings call, ${qLabel}</h2>
     <p class="dim" style="margin:-4px 0 6px">${ceoN()} takes the call for ${coName()}.</p>
     <div class="stars" aria-label="${stars} of 3 stars">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</div>
@@ -4029,11 +4193,14 @@ function earnings(){
     <div class="move ${pct>=0?"up":"down"}"><span>Share price<br><b>${fmt2(old)} to ${fmt2(S.stock)}</b></span><em>${pct>=0?"+":"−"}${Math.abs(pct).toFixed(1)}%</em></div>
     <blockquote>${quote}<cite>An analyst who has never bought insurance</cite></blockquote>
     ${notes.map(n => `<p class="note">${n}</p>`).join("")}
-    <div class="closeRow"><button class="btn" data-act="close">Hang up</button></div>`, {locked:true, auto:true, onClose:() => {
+    <div class="closeRow"><button class="btn ghost" data-act="gz-read">📰 Read the Gazette</button><button class="btn" data-act="close">Hang up</button></div>`, {locked:true, auto:true, onClose:() => {
+      const toGazette = gazAfterCall; gazAfterCall = false;
       if (S.strikes >= maxStrikes()) return gameOver("licence");
       if (S.conf <= 0) return gameOver("fired");
+      if (dailyDone) return gameOver("daily");
       if (S.conf < 25) toast("The board is losing patience. If their confidence hits zero, you’re out.", "bad");
-      checkRank(); save(); }});
+      checkRank(); save();
+      if (toGazette) setTimeout(() => { if (!modalOpen && !S.over) openBoard(false, false, "gazette"); }, 60); }});
 }
 function checkRank(){
   const next = RANKS[S.rankIdx + 1]; if (!next) return;
@@ -4133,10 +4300,48 @@ function bookHtml(){
     <p class="dim">Compared with an average insurer, based on what you insure and where you are (${cityName()}). Over 1× means a disaster would hit you harder. To soften a big one, buy the cover that pays for it, build the floor that softens it, or write less of the line most in its way.</p>
     <div class="exposures">${swanRows.map(([k, v]) => { const sw = SWANS[k], cov = COVERS[sw.cover], covered = !!(S.cover && S.cover[sw.cover]), cul = swanCulprit(k);
       const mitLv = sw.mitName === "Capital Modelling" ? lvSpec("actuary", "capital") : sw.mitName === "IT" ? lv("it") : sw.mitName === "Legal" ? lv("legal") : sw.mitName === "Compliance" ? lv("compliance") : 0;
-      const tips = [covered ? `✅ ${cov.name} pays 90%` : `⚠️ Not covered: buy ${cov.name} in the Risk tab`,
+      const tips = [covered ? `✅ Covered by ${cov.name.toLowerCase()} (${coverLayer(sw.cover).name.toLowerCase()} protection)` : `⚠️ Not covered: buy ${cov.name.toLowerCase()} in the Risk tab`,
         mitLv ? `🛡️ ${sw.mitName} softens it (level ${mitLv})` : `🛡️ ${sw.mitName} would soften it`];
       if (v > 1.15 && cul) tips.push(`📉 Most exposed through ${LINES[cul].name}${cityRisk(k) > 1.15 ? `, and ${cityName()} makes it worse` : ""}`);
       return `<div class="expo ${v > 1.15 ? "hi" : v < 0.85 ? "lo" : ""}"><div class="expo-top"><b>${sw.title}</b><span>${bar(v)} <b>${v.toFixed(1)}×</b></span></div><ul>${tips.map(t => `<li>${t}</li>`).join("")}</ul></div>`; }).join("")}</div>`;
+}
+
+/* One cover in the Risk tab. Beginners pick Light, Balanced or Strong; "Customise" reveals the layer sliders. */
+function coverCardHtml(k){
+  const c = COVERS[k], L = coverLayer(k), sel = coverSel(k), SL = layerOf(sel), qP = Math.max(1, income()*Q_LEN), cost = coverCost(k, qP, SL);
+  const x = coverPriceParts(k, SL), sw = citySwans().filter(s => SWANS[s].cover === k), typical = Math.round(2.8*qP*x.exposure*(1 - (sw.length ? SWANS[sw[0]].mit() : 0)));
+  const u = layerSize(k, qP), you = Math.min(typical, SL.ret*u), re = clamp(typical - SL.ret*u, 0, SL.lim*u), over = Math.max(0, typical - (SL.ret + SL.lim)*u), tot = Math.max(1, typical);
+  const same = L && JSON.stringify(sel) === JSON.stringify(S.cover[k] === true ? "balanced" : S.cover[k]);
+  const custom = typeof sel === "object";
+  const why = [[`Base: ${Math.round(x.base*1000)/10}% of your premium`, fmt(Math.round(qP*x.base))], ["Your protection", "×" + x.layer.toFixed(2)],
+    [`Your exposure (${cityName()}${Object.keys(bookMix()).length ? ", your book" : ""})`, "×" + x.exposure.toFixed(2)]];
+  if (x.market > 1.02) why.push(["Market: a recent disaster", "×" + x.market.toFixed(2)]);
+  if (x.capital < 1) why.push(["Capital Modelling actuaries", "×" + x.capital.toFixed(2)]);
+  if (x.perk < 1) why.push(["Reinsurance discount perk", "×0.75"]);
+  return `<div class="cv${L ? " on" : ""}">
+    <div class="cv-top"><h3>${L ? "🛡️ " : ""}${c.name}</h3><span class="cv-state">${L ? `Active: ${L.name}` : "Not covered"}</span></div>
+    <p class="dim" style="margin:2px 0 8px">${c.desc}</p>
+    <div class="cv-opts">${Object.keys(PROTECTION).map(pk => `<button class="cv-opt" data-act="cvsel:${k}:${pk}" aria-pressed="${sel === pk}"><b>${PROTECTION[pk].name}</b><small>${PROTECTION[pk].blurb}</small></button>`).join("")}</div>
+    <p class="cv-cap">If a typical disaster of this kind hit you (about ${fmt(typical)})</p>
+    <div class="cv-bar"><i style="width:${you/tot*100}%;background:#B23A3A">${you/tot > 0.18 ? "You" : ""}</i><i style="width:${re/tot*100}%;background:#2E7D4F">${re/tot > 0.18 ? "Reinsurer" : ""}</i><i style="width:${over/tot*100}%;background:#7A2424">${over/tot > 0.18 ? "You" : ""}</i></div>
+    <p class="cv-cap">You’d pay ${fmt(Math.round(you + over))}, the reinsurer ${fmt(Math.round(re))}.${over ? " The rest is above your limit." : ""}</p>
+    <div class="cv-price"><span>${L && !same ? "New price" : "Cost each quarter"}</span><b>${fmt(cost)}</b></div>
+    <details class="cv-why"><summary>Why this price?</summary><div>${why.map(([a, v]) => `<span class="cv-chip">${a} <b>${v}</b></span>`).join("")}</div></details>
+    <details class="cv-why" ${custom ? "open" : ""}><summary>Customise the layer</summary>
+      <label class="cv-range">You pay first <input type="range" min="0.1" max="3" step="0.1" value="${SL.ret}" data-cv="${k}" data-f="ret"><output>${fmt(Math.round(SL.ret*u))}</output></label>
+      <label class="cv-range">Reinsurer pays up to <input type="range" min="0.5" max="6" step="0.5" value="${SL.lim}" data-cv="${k}" data-f="lim"><output>${fmt(Math.round(SL.lim*u))}</output></label></details>
+    <div class="cv-act">${!L ? `<button class="btn green" data-act="cover:${k}:on" ${S.cash < cost ? "disabled" : ""}>Buy for ${fmt(cost)}</button>`
+      : same ? `<button class="btn ghost" data-act="cover:${k}:off">Cancel cover</button>`
+      : `<button class="btn" data-act="cover:${k}:switch">Switch to ${SL.name}</button><button class="btn ghost" data-act="cover:${k}:off">Cancel</button>`}</div>
+  </div>`;
+}
+function wireCoverSliders(){
+  document.querySelectorAll('input[data-cv]').forEach(inp => {
+    const k = inp.dataset.cv, u = layerSize(k, Math.max(1, income()*Q_LEN)), out = inp.nextElementSibling;
+    inp.addEventListener("input", () => { if (out) out.textContent = fmt(Math.round(+inp.value*u)); });
+    inp.addEventListener("change", () => { const cur = layerOf(coverSel(k)); S.coverPick = S.coverPick || {};
+      S.coverPick[k] = {ret:inp.dataset.f === "ret" ? +inp.value : cur.ret, lim:inp.dataset.f === "lim" ? +inp.value : cur.lim}; openBoard(); });
+  });
 }
 
 /* game/score.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
@@ -4398,7 +4603,7 @@ function execsHtml(){
         ${locked ? `<button class="btn ghost" disabled>🔒 ${RANKS[x.rank].name}</button>` : on ? `<button class="btn ghost" data-act="exec:${x.id}:off">Let go</button>` : `<button class="btn green" data-act="exec:${x.id}:on">Hire</button>`}</div>`; }).join("")}`;
 }
 function offlineCheck(){
-  if (!S.savedAt || S.over || !S.seen || !S.setupDone) return;
+  if (!S.savedAt || S.over || !S.seen || !S.setupDone || S.daily) return;
   const away = (Date.now() - S.savedAt)/1000;
   if (away < 120) return;
   const quarters = Math.min(12, away/Q_LEN), whole = Math.floor(quarters);
@@ -4422,8 +4627,9 @@ function offlineCheck(){
     if (S.quarter < 5 || q - lastQ < 3 || Math.random() >= 0.1) continue;
     lastQ = q;
     const kind = pickSwan(), sw = SWANS[kind], gross = qPrem*rand(2.2, 3.4)*swanExposure(kind)*(1 - sw.mit())*(1 - Math.min(0.2, 0.04*lv("risk")));
-    const covered = !!(S.cover && S.cover[sw.cover]), net = covered ? gross*0.1 : gross;
-    swanNet += net; swanCover += covered ? gross*0.9 : 0; swans.push({title:sw.title, covered, net});
+    const CL = coverLayer(sw.cover), covered = !!CL, paid = CL ? clamp(gross - CL.ret*qPrem*coverExposure(sw.cover), 0, CL.lim*qPrem*coverExposure(sw.cover)) : 0, net = gross - paid;
+    S.reMkt = S.reMkt || {}; S.reMkt[sw.cover] = Math.min(2, reMarket(sw.cover) + 0.35);
+    swanNet += net; swanCover += paid; swans.push({title:sw.title, covered, net});
   }
   const total = Math.round(prem - legit - fraud - wages - covers - swanNet);
   const limit = -overdraft()*0.8, applied = Math.max(total, Math.min(0, limit - S.cash));
@@ -4466,8 +4672,9 @@ function lbTable(hl){
   return `<table class="lb"><tr><th>#</th><th>Syndicate</th><th>Score</th><th>Grade</th><th>Qtrs</th></tr>${runs.map((r, k) => `<tr class="${r.id === hl ? "me" : ""}"><td>${k + 1}</td><td>${esc(r.name)}<small>${esc(r.title)}</small>${r.ceo ? `<small style="display:block;color:var(--ink-dim)">led by ${esc(r.ceo)}</small>` : ""}</td><td>${r.score.toLocaleString("en-GB")}</td><td>${r.grade}</td><td>${r.quarters}</td></tr>`).join("")}</table>`;
 }
 function openLeaderboard(tab, city, page){
-  tab = tab === "global" && onlineOk() ? "global" : (tab || (onlineOk() ? "global" : "local")); city = city || "all"; page = Math.max(0, +page || 0);
-  const tabs = onlineOk() ? `<div class="seg two">${[["global","🌍 Global"],["local","📱 This device"]].map(([k, l]) => `<button class="btn" data-act="lb:${k}" aria-pressed="${tab === k}">${l}</button>`).join("")}</div>` : "";
+  tab = (tab === "global" || tab === "daily") && onlineOk() ? tab : (tab || (onlineOk() ? "global" : "local")); city = city || "all"; page = Math.max(0, +page || 0);
+  if (tab === "daily") return openDailyBoard();
+  const tabs = onlineOk() ? `<div class="seg three">${[["global","🌍 Global"],["daily","📅 Today"],["local","📱 This device"]].map(([k, l]) => `<button class="btn" data-act="lb:${k}" aria-pressed="${tab === k}">${l}</button>`).join("")}</div>` : "";
   const cities = tab === "global" ? `<div class="seg lb-cities" style="margin-top:6px">${[["all","All"],["london","London"],["nyc","New York"],["bermuda","Bermuda"],["zurich","Zurich"]].map(([k, l]) => `<button class="btn" data-act="lb:global:${k}" aria-pressed="${city === k}">${l}</button>`).join("")}</div>` : "";
   const mine = myGlobalBest(city);
   openModal(`<div class="top"><h2>Leaderboard</h2>${xBtn}</div>${tabs}${cities}
@@ -4515,7 +4722,7 @@ function loadPending(){ try { return JSON.parse(localStorage.getItem(PENDING_KEY
 function savePending(list){ try { localStorage.setItem(PENDING_KEY, JSON.stringify(list.slice(-5))); } catch(e){} }
 async function flushPending(){
   if (!onlineOk()) return; const list = loadPending(); if (!list.length) return; const keep = [];
-  for (const p of list){ try { const res = await postScore(p); rememberMine(p, res); } catch(e){ if (!e.status || e.status >= 500 || e.status === 429) keep.push(p); } }
+  for (const p of list){ p.version = VERSION; try { const res = await postScore(p); rememberMine(p, res); } catch(e){ if (!e.status || e.status >= 500 || e.status === 429 || e.status === 426) keep.push(p); } }
   savePending(keep);
 }
 function loadMine(){ try { return JSON.parse(localStorage.getItem(MINE_KEY)) || []; } catch(e){ return []; } }
@@ -4535,7 +4742,8 @@ async function submitGlobal(sp){
     if (res.rank && res.rank <= 5){ try { localStorage.setItem(CELEBRATE_KEY, JSON.stringify({name:p.name, ceo:p.ceo, score:res.score, until:Date.now() + 15*60e3})); } catch(e){} }
     return res;
   }
-  catch(e){ if (!e.status || e.status >= 500 || e.status === 429){ queuePending(p); return {queued:true}; } if (/already submitted/.test(e.message)){ S.globalSent = true; save(); return {skipped:"sent"}; } return {error:e.message}; }
+  catch(e){ if (e.status === 426){ queuePending(p); checkForUpdate(); return {update:true}; }
+    if (!e.status || e.status >= 500 || e.status === 429){ queuePending(p); return {queued:true}; } if (/already submitted/.test(e.message)){ S.globalSent = true; save(); return {skipped:"sent"}; } return {error:e.message}; }
 }
 function queuePending(p){ const list = loadPending().filter(x => x.runId !== p.runId); list.push(p); savePending(list); }
 async function fetchGlobal(city, page){
@@ -4590,6 +4798,34 @@ function celebrateRank(rank){
   if (rank === 1){ const cv = $("#podiumCv"), p0 = performance.now(); const frame = () => { if (!cv || !cv.isConnected) return; CUT.drawScene(cv.getContext("2d"), "podium", ((performance.now() - p0)/5000) % 1); requestAnimationFrame(frame); }; requestAnimationFrame(frame); }
 }
 
+/* ---------- the daily leaderboard ---------- */
+async function fetchDaily(day, offset, limit){
+  const q = `${ONLINE.url}/rest/v1/daily_scores?select=name,ceo,city,format,score,quarters,finished,progress,objective_met,attempts&day=eq.${day}&order=rank_key.desc,created_at.asc`;
+  const r = await withTimeout(fetch(q, {headers:{apikey:ONLINE.key, "Range-Unit":"items", Range:`${offset || 0}-${(offset || 0) + (limit || 50) - 1}`, Prefer:"count=exact"}}), 9000);
+  if (!r.ok && r.status !== 206) throw new Error(String(r.status));
+  const rows = await r.json(), cr = r.headers.get("content-range") || ""; return {rows, total:+(cr.split("/")[1] || 0) || rows.length};
+}
+async function submitDaily(res){
+  const d = S.daily, sp = scoreParts();
+  const p = {type:"daily", day:d.day, playerId:playerId(), name:companyName(), ceo:ceoName(), city:d.city, format:d.format,
+    quarters:res.quarters, days:daysSurvived(), earned:Math.round(S.earned || 0), stars:S.stars || 0, achievements:sp.achN, rankIdx:S.rankIdx, avgMood:Math.round(sp.rep),
+    finished:res.finished, progress:Math.round(res.progress*1000)/1000, objectiveMet:res.objectiveMet, version:VERSION};
+  try { return await postScore(p); } catch(e){ if (e.status === 426){ checkForUpdate(); return {error:"update the game first"}; } return !e.status || e.status >= 500 ? {queued:true} : {error:e.message}; }
+}
+function openDailyBoard(){
+  const spec = dailySpec(dailyDate()), f = DAILY_FORMATS[spec.format];
+  openModal(`<div class="top"><h2>Leaderboard</h2>${xBtn}</div>
+    <div class="seg three">${[["global","🌍 Global"],["daily","📅 Today"],["local","📱 This device"]].map(([k, l]) => `<button class="btn" data-act="lb:${k}" aria-pressed="${k === "daily"}">${l}</button>`).join("")}</div>
+    <p class="lb-stats"><span class="dc-tag ${f.cls}">${f.name}</span> ${CITIES[spec.city].flag} ${CITIES[spec.city].name}: ${f.ranks.toLowerCase()}</p>
+    <div id="lbDaily"><p class="dim">Loading today’s leaderboard…</p></div>
+    <p class="dim">Each player’s best attempt today. A new challenge starts in ${nextDailyIn()}.</p>`, {view:"lbdaily"});
+  fetchDaily(spec.day, 0, 50).then(({rows, total}) => { if (view !== "lbdaily") return; const el = $("#lbDaily"); if (!el) return;
+    if (!rows.length){ el.innerHTML = `<div class="empty"><p>No results yet today. Take on the challenge to claim first place.</p></div>`; return; }
+    const medal = ["🥇","🥈","🥉"], mine = companyName();
+    el.innerHTML = `<p class="dim" style="text-align:center">${total} player${total === 1 ? "" : "s"} today</p><table class="lb global"><tr><th class="rk">#</th><th>Syndicate</th><th class="num">${spec.format === "race" ? "Result" : "Score"}</th><th class="num">Tries</th></tr>${rows.map((r, k) => `<tr class="${r.name === mine && r.ceo === ceoName() ? "me" : ""}"><td class="rk">${k < 3 ? medal[k] : k + 1}</td><td class="nm">${esc(r.name)}<small>led by ${esc(r.ceo || "")}</small></td><td class="num">${spec.format === "race" ? (r.finished ? `${r.quarters} qtrs` : `${Math.round(r.progress*100)}%`) : Number(r.score).toLocaleString("en-GB") + (r.objective_met ? " ✓" : "")}</td><td class="num">${r.attempts}</td></tr>`).join("")}</table>`; })
+  .catch(() => { if (view !== "lbdaily") return; const el = $("#lbDaily"); if (el) el.innerHTML = `<p class="note">Couldn’t reach the leaderboard right now.</p>`; });
+}
+
 /* ui/feedback.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* The exit interview: optional feedback when a run ends, before the score screen.
    Sent anonymously (no run or player ID) to a private Supabase table. Players can turn it off after their first run. */
@@ -4632,6 +4868,254 @@ function finishFeedback(send){
   const next = d.next; fbDraft = null; modalLocked = false; closeModal(); if (next) next();
 }
 
+/* ui/update.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
+/* Update check: version metadata is embedded in the built HTML. A newer version shows a gentle banner;
+   a version below minVersion shows a blocking "update required" screen. Reloading adds ?v= so caches can't serve the old file. */
+const UPD_DISMISS_KEY = "fineprint-update-dismissed";
+let updBannerFor = null, updRequired = false;
+function cmpVer(a, b){ const x = String(a).split(".").map(n => parseInt(n, 10) || 0), y = String(b).split(".").map(n => parseInt(n, 10) || 0);
+  for (let i = 0; i < 3; i++){ const d = (x[i] || 0) - (y[i] || 0); if (d) return d > 0 ? 1 : -1; } return 0; }
+function updEnabled(){ return /^https?:$/.test(location.protocol) && !/(^|\.)claude\.(ai|site)$|claudeusercontent|claudemcpcontent/.test(location.hostname); }
+async function checkForUpdate(){
+  if (!updEnabled() || updRequired) return;
+  try {
+    const r = await withTimeout(fetch(`${location.pathname}?t=${Date.now()}`, {cache:"no-store"}), 8000); if (!r.ok) return;
+    const page = new DOMParser().parseFromString(await r.text(), "text/html");
+    const version = page.querySelector('meta[name="app-version"]')?.content;
+    const minVersion = page.querySelector('meta[name="app-min-version"]')?.content;
+    if (!version) return;
+    const notes = JSON.parse(page.querySelector("#app-release-notes")?.textContent || "[]");
+    const v = {version, minVersion, notes};
+    if (v.minVersion && cmpVer(VERSION, v.minVersion) < 0) showUpdateRequired(v);
+    else if (cmpVer(v.version, VERSION) > 0) showUpdateBanner(v);
+  } catch(e){}
+}
+function reloadToVersion(ver){ try { save(); } catch(e){} location.replace(location.pathname + "?v=" + encodeURIComponent(ver || Date.now())); }
+function showUpdateBanner(v){
+  if (updBannerFor === v.version) return;
+  try { if (sessionStorage.getItem(UPD_DISMISS_KEY) === v.version) return; } catch(e){}
+  updBannerFor = v.version;
+  let el = $("#updBanner"); if (!el){ el = document.createElement("div"); el.id = "updBanner"; el.className = "upd-banner"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+  const hud = document.querySelector(".hud"); el.style.top = ((hud ? hud.getBoundingClientRect().bottom : 0) + 6) + "px";
+  el.dataset.ver = v.version;
+  el.innerHTML = `<span>✨ Version ${esc(v.version)} is ready. Your run is saved.</span><button class="btn" type="button">Reload</button><button class="upd-x" type="button" aria-label="Dismiss">×</button>`;
+  el.querySelector(".btn").addEventListener("click", () => reloadToVersion(v.version));
+  el.querySelector(".upd-x").addEventListener("click", () => { try { sessionStorage.setItem(UPD_DISMISS_KEY, v.version); } catch(e){} el.remove(); layoutOverlays(); });
+  layoutOverlays();
+}
+function showUpdateRequired(v){
+  updRequired = true; try { save(); } catch(e){}
+  const notes = (v.notes || []).slice(0, 3), b = $("#updBanner"); if (b) b.remove();
+  modalLocked = false;
+  openModal(`<p class="fb-kicker">Update required</p><h2>The board has approved version ${esc(v.version)}</h2>
+    <p class="dim">This version is needed to keep playing and to post scores to the global leaderboard.</p>
+    ${notes.length ? `<ul class="upd-notes">${notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul>` : ""}
+    <p class="pos">💾 Your current run is saved and will carry on after the update.</p>
+    <button class="btn" style="width:100%" data-act="upd-reload" data-ver="${esc(v.version)}">Update now</button>`, {locked:true, view:"update"});
+}
+function startUpdateChecks(){
+  if (!updEnabled()) return;
+  setTimeout(checkForUpdate, 5000); setInterval(checkForUpdate, 10*60e3);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkForUpdate(); });
+}
+
+/* ui/gazette.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
+/* The Fine Print Gazette: a satirical one-page paper written at each earnings call, read in the Boardroom's Gazette tab.
+   The headline reacts to the quarter's real results; the rest is gossip. The last 8 editions are kept with the run. */
+const GAZ_KEEP = 8;
+let gazAfterCall = false;   // set by "Read the Gazette" on the earnings call; opens the tab once the call closes
+const GAZ_GOSSIP = [
+  "{rival} denies its new “AI underwriter” is a man called Kevin with a dice.",
+  "{rival} has rebranded as a “risk-adjacent lifestyle platform”. Its claims department remains a fax machine.",
+  "Sources say {rival}’s chief executive now attends meetings exclusively by hologram, to avoid questions.",
+  "{rival} insists its record losses were “a strategic investment in humility”.",
+  "{rival} has hired a Chief Vibes Officer. Early results are described as “immaculate”.",
+  "A {rival} broker was seen weeping into a spreadsheet at Leadenhall Market. Colleagues say it was “a pivot table thing”.",
+  "{rival} has written a policy covering “general bad luck”. Actuaries have been sent home with a lie-down.",
+  "{rival}’s new office has a slide, a ball pit and, as of Tuesday, a regulator.",
+  "Rumours that {rival} insures its own rumours have been neither confirmed nor denied, by policy.",
+  "{rival} announced record profits, then announced a recount.",
+  "{rival} has replaced its board with a single, very confident Labrador.",
+  "{rival} is offering brokers free lunches. The lunches have a 400-page exclusion clause.",
+  "{rival} says its underwriting is “data-driven”. The data is driven to work by an intern.",
+  "{rival}’s chairman has insured his moustache for £2 million. The moustache is said to be “thriving”.",
+];
+const GAZ_PERCY = [
+  "Our pigeon correspondent ate a broker’s croissant and has been offered a board seat.",
+  "Percy was spotted sitting on the trading screens again. Analysts are calling it a “bullish perch”.",
+  "Percy has filed a claim for loss of crumbs. It has been accepted, out of fear.",
+  "Percy delivered this quarter’s outlook by dropping it on a windscreen. The outlook was “splat”.",
+  "Percy has been named Employee of the Month for the ninth month running. HR is reviewing the criteria.",
+  "Percy attended the earnings call and was the only participant not to say “synergy”.",
+  "Percy has started a union for office pigeons. Membership: Percy.",
+  "Percy took the lift to the top floor and refused to leave. Facilities say “fair enough”.",
+  "Percy has been appointed head of risk. His first decision: more bread.",
+  "Percy was seen reading the reinsurance treaty. He ate the exclusions.",
+  "Percy has a new nest, made entirely of rejected claim forms. It is, by all accounts, very cosy.",
+  "Percy cooed during the Chair’s speech. Shareholders applauded.",
+];
+const GAZ_ADS = [
+  "For sale: one umbrella, slightly used, insured against rain. Claims history available on request.",
+  "Lost: one actuary, last seen entering a spreadsheet in 2019. Answers to “Gary”. Reward offered.",
+  "Wanted: optimist for the claims department. Must not have read the small print.",
+  "Free to a good home: 40,000 rubber ducks. Some salt damage.",
+  "Seeking: calm and reasonable broker. Serious enquiries only. Unicorns need not apply.",
+  "For hire: loss adjuster. Will adjust any loss, emotionally or financially.",
+  "To let: penthouse office with views of three cranes and a pigeon. No questions asked about the previous tenant.",
+  "Found: one exclusion clause, very long, answers to nobody. Owner please collect.",
+  "Course: “Reading the small print for beginners.” Venue details in the small print.",
+  "For sale: crystal ball, slightly cloudy. Ideal for catastrophe modellers.",
+  "Wanted: volunteers to test our new “no-claims-ever” policy. Unpaid. Uninsured.",
+  "Lonely reinsurance treaty seeks long-term partner. Must enjoy long walks and high retentions.",
+];
+const GAZ_INDEX = {london:["Biscuit index", "Stable, some crumbling"], nyc:["Bagel index", "Everything up"], bermuda:["Rum futures", "Neat"], zurich:["Franc-o-meter", "Firm, obviously"]};
+function gazPick(pool, key){ S.gazUsed = S.gazUsed || {}; const used = S.gazUsed[key] || [], fresh = pool.map((_, i) => i).filter(i => !used.includes(i));
+  const i = pick(fresh.length ? fresh : pool.map((_, i) => i)); S.gazUsed[key] = used.concat(i).slice(-Math.max(1, pool.length - 3)); return pool[i]; }
+function writeGazette(r){
+  const co = companyName(), ceo = ceoName(), sw = S.lastSwanEvent && S.lastSwanEvent.q === r.qn ? S.lastSwanEvent : null, swan = sw && SWANS[sw.kind];
+  let head, lede;
+  if (swan){
+    head = sw.covered ? `${co} weathers “${swan.title}”; insists it saw it coming` : `${co} caught without cover as “${swan.title}” strikes`;
+    lede = sw.covered ? `${ceo} called the quarter “character-building” after the company’s own insurance paid out. Profit came in at ${fmt(r.profit)}.` : `The company paid the full bill of ${fmt(sw.loss)}. ${ceo} told reporters the umbrella stand was “under review”.`;
+  } else if (r.profit < 0){
+    head = pick([`${co} posts a loss; ${ceo} blames “the weather, broadly”`, `${co} in the red; board orders fewer biscuits`, `${co} loses ${fmt(-r.profit)}; shareholders asked to “hold the line, emotionally”`]);
+    lede = `The company lost ${fmt(-r.profit)} in quarter ${r.qn}, against expectations of a ${fmt(r.expected)} profit.`;
+  } else if (r.surprise > 0.3){
+    head = pick([`${co} smashes forecasts; ${ceo} credits “vibes”`, `Record quarter for ${co}; rivals request a recount`, `${co} beats the City by a mile; analysts “need a sit-down”`]);
+    lede = `Profit hit ${fmt(r.profit)}, well ahead of the ${fmt(r.expected)} the City wanted. Analysts called the results “annoyingly competent”.`;
+  } else if (r.inLine || r.surprise >= 0){
+    head = pick([`${co} meets expectations; nobody faints`, `${co} delivers a solid quarter; ${ceo} allows one extra biscuit`, `Steady as she goes at ${co}`]);
+    lede = `Profit of ${fmt(r.profit)} against expectations of ${fmt(r.expected)}. One analyst described it as “a beige carpet of a quarter”.`;
+  } else {
+    head = pick([`${co} misses targets; board demands “more numbers, bigger”`, `${co} falls short; ${ceo} spotted buying a motivational poster`, `Disappointment at ${co} as profits trail forecasts`]);
+    lede = `Profit of ${fmt(r.profit)} missed the City’s ${fmt(r.expected)}. The share price reacted accordingly.`;
+  }
+  if (r.strike) lede += " The regulator has also issued a warning, which the company described as “feedback”.";
+  const rivals = RIVALS.filter(n => n !== co), rival = pick(rivals), rival2 = pick(rivals.filter(n => n !== rival)), idx = GAZ_INDEX[cityId()] || GAZ_INDEX.london;
+  const ed = {q:r.qn, city:cityId(), head, lede, stock:r.stock, stockOld:r.old,
+    rival:{name:rival2, move:Math.round(rand(-12, 12))}, index:idx,
+    gossip:gazPick(GAZ_GOSSIP, "gossip").replace("{rival}", rival), percy:gazPick(GAZ_PERCY, "percy"), ad:gazPick(GAZ_ADS, "ads")};
+  S.gazette = [ed].concat(S.gazette || []).slice(0, GAZ_KEEP); S.gazIdx = 0; S.gazUnread = true; gazetteBadge();
+}
+function gazetteBadge(){ const b = $("#btnBoard"); if (b) b.classList.toggle("has-news", !!S.gazUnread); }
+function gazetteHtml(){
+  const eds = S.gazette || [];
+  if (!eds.length) return `<div class="empty"><p>📰 The first edition of the Fine Print Gazette comes out after your first earnings call.</p></div>`;
+  const i = clamp(S.gazIdx || 0, 0, eds.length - 1), e = eds[i], up = e.stock >= e.stockOld;
+  return `<div class="gz-nav"><button class="btn ghost" data-act="gz:older" ${i >= eds.length - 1 ? "disabled" : ""} aria-label="Older edition">‹</button>
+      <span>Quarter ${e.q} edition${i === 0 ? ", latest" : ""}</span>
+      <button class="btn ghost" data-act="gz:newer" ${i === 0 ? "disabled" : ""} aria-label="Newer edition">›</button></div>
+    <article class="gz">
+      <header><h3 class="gz-mast">The Fine Print Gazette</h3><div class="gz-meta"><span>Quarter ${e.q}</span><span>Price: one claim form</span><span>Est. 1688, probably</span></div></header>
+      <h4 class="gz-head">${esc(e.head)}</h4>
+      <p class="gz-lede">${esc(e.lede)}</p>
+      <div class="gz-cols">
+        <section><h5>Markets</h5>
+          <div class="gz-row"><span>${esc(companyName())}</span><span class="${up ? "pos" : "neg"}">${fmt2(e.stock)} ${up ? "▲" : "▼"}</span></div>
+          <div class="gz-row"><span>${esc(e.rival.name)}</span><span class="${e.rival.move >= 0 ? "pos" : "neg"}">${e.rival.move >= 0 ? "+" : "−"}${Math.abs(e.rival.move)}%</span></div>
+          <div class="gz-row"><span>${esc(e.index[0])}</span><span>${esc(e.index[1])}</span></div></section>
+        <section><h5>Rival gossip</h5><p>${esc(e.gossip)}</p></section>
+        <section><h5>Percy’s corner</h5><p>${esc(e.percy)}</p></section>
+        <section class="gz-ad"><h5>Classifieds</h5><p>${esc(e.ad)}</p></section>
+      </div>
+    </article>`;
+}
+
+/* ui/daily.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
+/* Daily challenge runs live in their own save slot (DAILY_KEY), so the player's main company is never touched. */
+function dailyLocal(){ try { const d = JSON.parse(localStorage.getItem(DAILY_BEST_KEY)) || {}; return d.day === dailyDate() ? d : {day:dailyDate(), attempts:0, best:null}; } catch(e){ return {day:dailyDate(), attempts:0, best:null}; } }
+function saveDailyLocal(d){ try { localStorage.setItem(DAILY_BEST_KEY, JSON.stringify(d)); } catch(e){} }
+function dailySaved(){ try { const s = JSON.parse(localStorage.getItem(DAILY_KEY)); return s && s.daily && s.daily.day === dailyDate() && !s.over ? s : null; } catch(e){ return null; } }
+function dailyBetter(a, b){ if (!b) return true; return dailyRankKey(a) > dailyRankKey(b); }
+function dailyRankKey(x){ return x.format === "race" ? (x.finished ? 1e9 - x.quarters*1e6 + x.score : x.progress*1e6) : x.score; }
+function dailyResultText(x){ if (!x) return "No attempt yet"; return x.format === "race" ? (x.finished ? `Target hit in ${x.quarters} quarter${x.quarters === 1 ? "" : "s"}` : `${Math.round(x.progress*100)}% of the target`) : `${Number(x.score).toLocaleString("en-GB")}${x.objectiveMet ? " (objective met)" : ""}`; }
+function nextDailyIn(){ const now = new Date(), next = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1), m = Math.max(0, Math.round((next - now)/60000)); return `${Math.floor(m/60)}h ${m % 60}m`; }
+function dailyCardHtml(){
+  const spec = dailySpec(dailyDate()), f = DAILY_FORMATS[spec.format], tw = DAILY_TWISTS[spec.twist], loc = dailyLocal(), resume = dailySaved();
+  const when = new Date(spec.day + "T12:00:00Z").toLocaleDateString("en-GB", {weekday:"long", day:"numeric", month:"long", timeZone:"UTC"});
+  return `<div class="dc-card">
+    <div class="dc-top"><span class="dc-kicker">Daily challenge</span><span class="dc-dim">⏱ New in ${nextDailyIn()}</span></div>
+    <h3>${when}</h3>
+    <div class="dc-tags"><span class="dc-tag ${f.cls}">${f.name}</span><span class="dc-tag">${CITIES[spec.city].flag} ${CITIES[spec.city].name}</span><span class="dc-tag dc-twist">Twist: ${tw.name.toLowerCase()}</span></div>
+    <p class="dc-goal"><b>Goal:</b> ${dailyGoalText(spec)} <span class="dc-dim">${tw.desc}</span></p>
+    <div class="dc-stats"><div><span>Your best today</span><b>${dailyResultText(loc.best)}</b></div><div><span>Attempts</span><b>${loc.attempts}</b></div></div>
+    <button class="btn" style="width:100%" data-act="daily:${resume ? "resume" : "start"}">${resume ? "Resume today’s attempt" : loc.attempts ? "Try again" : "Play today’s challenge"}</button>
+    <p class="dc-dim" style="text-align:center;margin:6px 0 0">Same company, start and disasters for everyone. Your best attempt counts${onlineOk() ? " on the daily leaderboard" : ""}. Your main company is kept safe.</p>
+    ${onlineOk() ? `<div class="dc-mini" id="dailyMini"><p class="dc-dim">Loading today’s leaders…</p></div>` : ""}
+  </div>`;
+}
+function loadDailyMini(){ const el = $("#dailyMini"); if (!el || !onlineOk()) return;
+  fetchDaily(dailyDate(), 0, 3).then(({rows, total}) => { const e2 = $("#dailyMini"); if (!e2) return;
+    e2.innerHTML = rows.length ? `<div class="dc-mini-head"><span>Today’s leaders</span><span>${total} player${total === 1 ? "" : "s"}</span></div>${rows.map((r, k) => `<div class="dc-mini-row"><span>${k + 1} ${esc(r.name)}</span><span>${dailyResultText({format:r.format, finished:r.finished, quarters:r.quarters, progress:r.progress, score:r.score, objectiveMet:r.objective_met})}</span></div>`).join("")}` : `<p class="dc-dim">No one has finished today’s challenge yet. Be the first.</p>`; })
+  .catch(() => { const e2 = $("#dailyMini"); if (e2) e2.innerHTML = ""; }); }
+function resetView(){ W = []; CUST = []; popT = []; elev.init = false; S.floors.forEach((f, i) => rebuildWorkers(i)); prevCount = 0; prevLevels = []; pendingBottom = true; lastKey = ""; setCity(cityId()); }
+function startDaily(resume){
+  const saved = resume && dailySaved();
+  if (!saved){
+    if (!S.ceo || !S.ceo.name){ if (typeof readSetupInputs === "function" && $("#ceoName")) readSetupInputs(); }
+    const name = (S.ceo && S.ceo.name) || String((setupDraft && setupDraft.name) || "").replace(/[<>]/g, "").trim().slice(0, 20);
+    if (!name){ toast("Give your CEO a name first, then take on the daily challenge.", "bad"); const n = $("#ceoName"); if (n) n.focus(); return; }
+    const ceo = S.ceo && S.ceo.name ? S.ceo : Object.assign({}, setupDraft, {name}), company = S.companyName || String((setupDraft && setupDraft.company) || "").trim().slice(0, 28) || "Fine Print Syndicate";
+    if (!S.daily) save();
+    const spec = dailySpec(dailyDate()), loc = dailyLocal(); loc.attempts++; saveDailyLocal(loc);
+    S = newState(); S.seen = true; S.setupDone = true; S.ceo = ceo; S.companyName = company; S.city = spec.city; S.daily = Object.assign({attempt:loc.attempts}, spec);
+    if (spec.twist === "richstart") S.cash *= 3;
+    if (spec.twist === "happy") S.happy = 90;
+    if (spec.twist === "treaty") S.floors.forEach(f => { if (f.type === "sales") f.spec = "treaty"; });
+  } else S = saved;
+  resetView(); modalLocked = false; closeModal(); save(); sfx("chime");
+  const f = DAILY_FORMATS[S.daily.format];
+  openModal(`<p class="fb-kicker">Daily challenge</p><h2>${f.name}: ${CITIES[S.daily.city].name}</h2>
+    <p><b>Goal:</b> ${dailyGoalText(S.daily)}</p><p class="note"><b>Twist:</b> ${DAILY_TWISTS[S.daily.twist].name}. ${DAILY_TWISTS[S.daily.twist].desc}</p>
+    <p class="dim">The run ends after 12 quarters${S.daily.format === "race" ? " or as soon as you hit the target" : ""}. Idle mode is off. You can leave at any time from the Boardroom’s Company tab, and your main company will be waiting.</p>
+    <div class="closeRow"><button class="btn" data-act="close">${saved ? "Carry on" : "Let’s go"}</button></div>`, {view:"dailybrief"});
+}
+function exitDaily(){
+  if (S.daily && !S.over) save();
+  S = load() || newState(); S.savedAt = Date.now();   // the main company was paused, so the daily doesn’t count as time away
+  modalLocked = false; closeModal(); resetView(); save();
+  toast(S.setupDone ? `Back at ${companyName()}. Everything is just as you left it.` : "Back to the start.", "good");
+  if (!S.setupDone) setTimeout(openSetup, 60);
+}
+function dailyProgress(){ const d = S.daily; if (!d) return 0; return d.format === "race" ? clamp((S.dailyProfit || 0)/d.target, 0, 1) : clamp((S.quarter - 1)/DAILY_Q, 0, 1); }
+function dailyHud(){
+  let el = $("#dailyBar");
+  if (!S.daily || S.over || !S.setupDone){ if (el) el.remove(); return; }
+  if (!el){ el = document.createElement("div"); el.id = "dailyBar"; el.className = "daily-bar"; document.body.appendChild(el); }
+  const hud = document.querySelector(".hud"), d = S.daily, q = Math.min(S.quarter, DAILY_Q);
+  el.style.top = ((hud ? hud.getBoundingClientRect().bottom : 0) + 6) + "px";
+  const extra = d.format === "race" ? `${fmt(Math.max(0, S.dailyProfit || 0))} of ${fmt(d.target)}` : d.format === "objective" ? (DAILY_OBJECTIVES[d.objective].test() ? "Objective on track ✓" : "Objective not met yet") : DAILY_TWISTS[d.twist].name;
+  layoutOverlays();
+  el.innerHTML = `<span>📅 Daily: quarter ${q} of ${DAILY_Q}</span><span>${extra}</span><i style="width:${Math.round((d.format === "race" ? dailyProgress() : (S.quarter - 1)/DAILY_Q)*100)}%"></i>`;
+}
+/* Stack everything that floats under the HUD so nothing covers the daily bar: the bar, then the update banner, then toasts. */
+function layoutOverlays(){
+  const hud = document.querySelector(".hud"); let y = (hud ? hud.getBoundingClientRect().bottom : 0) + 6, any = false;
+  for (const id of ["dailyBar", "updBanner"]){ const el = document.getElementById(id); if (el){ el.style.top = y + "px"; y += el.offsetHeight + 6; any = true; } }
+  const t = document.getElementById("toasts"); if (t) t.style.top = any ? y + "px" : "";
+}
+setInterval(() => { try { dailyHud(); layoutOverlays(); } catch(e){} }, 1000);
+/* the end of a daily run: work out the result, keep the best, and post it */
+function dailyOver(reason){
+  const d = S.daily, sp = scoreParts(), met = d.format === "objective" && DAILY_OBJECTIVES[d.objective].test();
+  const finished = d.format === "race" && (S.dailyProfit || 0) >= d.target;
+  const quarters = Math.max(1, Math.min(DAILY_Q, d.done ? d.done.quarters : S.quarter - 1));
+  const res = {format:d.format, score:Math.round(sp.total*(met ? 1.5 : 1)), quarters, finished, progress:dailyProgress(), objectiveMet:met};
+  const loc = dailyLocal(), improved = dailyBetter(res, loc.best); if (improved){ loc.best = res; saveDailyLocal(loc); }
+  S.over = true; S.overReason = reason; save();
+  const head = reason === "daily" ? (finished ? "Target hit!" : "Daily challenge complete") : reason === "fired" ? "Fired before the finish" : reason === "bankrupt" ? "Bankrupt before the finish" : reason === "licence" ? "Licence revoked before the finish" : "Daily challenge over";
+  if (reason === "daily" && (finished || met)) fxConfetti(); else sfx(reason === "daily" ? "chime" : "lose");
+  openModal(`<p class="fb-kicker">Daily challenge</p><h2>${head}</h2>
+    <div class="dc-result">${d.format === "race" ? (finished ? `<b>${quarters} quarter${quarters === 1 ? "" : "s"}</b><span>to reach ${fmt(d.target)} profit</span>` : `<b>${Math.round(res.progress*100)}%</b><span>of the ${fmt(d.target)} target</span>`)
+      : `<b>${res.score.toLocaleString("en-GB")}</b><span>${d.format === "objective" ? (met ? "including the 1.5× objective bonus" : "objective not met, so no bonus") : "final score"}</span>`}</div>
+    <p class="${improved ? "pos" : "dim"}">${improved ? (loc.attempts > 1 ? "A new personal best for today." : "Your first result today.") : `Your best today is still ${dailyResultText(loc.best)}.`}</p>
+    ${onlineOk() ? `<p class="dim" id="dailyStatus">Sending your result to today’s leaderboard…</p>` : ""}
+    <div class="seg"><button class="btn ghost" data-act="daily:exit">Back to my company</button><button class="btn" data-act="daily:start">Try again</button></div>
+    ${onlineOk() ? `<div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb:daily">📅 Today’s leaderboard</button></div>` : ""}`, {locked:true, view:"dailyover"});
+  if (onlineOk()) submitDaily(res).then(r => { const el = $("#dailyStatus"); if (!el) return;
+    el.textContent = r && r.rank ? `You’re number ${r.rank} of ${r.players} today${r.best ? "" : " (your earlier attempt was better)"}.` : r && r.queued ? "Couldn’t reach the leaderboard. Your best is saved on this device." : r && r.error ? `The leaderboard didn’t accept this result (${r.error}).` : ""; });
+}
+
 /* game/endings.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 function gameOver(reason){
   reason = reason || "bankrupt";
@@ -4649,6 +5133,7 @@ function gameOver(reason){
     return;
   }
   S.overReason = reason;
+  if (S.daily) return dailyOver(reason);
   if (!S.fbAsked && !window.__bot && feedbackWanted()){ S.fbAsked = true; S.over = true; save(); if (modalOpen){ modalLocked = false; closeModal(); } openFeedback(reason, () => gameOver(reason)); return; }
   const e = ENDINGS[reason]; if (reason !== "exit") sfx("lose");
   const spR = scoreParts(); let run = S.runId ? loadRuns().find(r => r.id === S.runId) : null;
@@ -4675,11 +5160,26 @@ function gameOver(reason){
   if (run && onlineOk()) submitGlobal(sp).then(res => { const el = $("#globalStatus"); if (!el) return;
     if (res.rank) celebrateRank(res.rank);
     el.textContent = res.score != null ? `Your score is on the global leaderboard as ${companyName()}, led by ${ceoName()}${res.rank ? `, at number ${res.rank.toLocaleString("en-GB")} in the world${res.cityRank && cityId() ? ` and number ${res.cityRank.toLocaleString("en-GB")} in ${cityName()}` : ""}` : ""}. Names there are public.`
+      : res.update ? "This version of the game is out of date. Update to post your score: it’s saved and will be sent after the update."
       : res.queued ? "Couldn’t reach the global leaderboard. Your score will be sent next time you play online."
       : res.skipped === "sent" ? "This run is already on the global leaderboard."
       : res.error ? `The global leaderboard didn’t accept this run (${res.error}).` : ""; });
 }
-function coverCost(k, prem){ return Math.round(Math.max(60, prem*COVERS[k].rate)*(perk("reinsdisc") ? 0.75 : 1)*(1 - Math.min(0.25, 0.05*lvSpec("actuary", "capital")))); }
+/* ---------- your own insurance: layers priced on exposure and the market ---------- */
+function layerOf(sel){ if (!sel) return null; if (sel === true) return Object.assign({key:"balanced"}, PROTECTION.balanced);
+  if (typeof sel === "string") return PROTECTION[sel] ? Object.assign({key:sel}, PROTECTION[sel]) : null;
+  if (sel.ret != null) return {key:"custom", name:"Custom", ret:clamp(+sel.ret, 0.1, 3), lim:clamp(+sel.lim, 0.5, 6)}; return null; }
+function coverLayer(k){ return layerOf(S.cover && S.cover[k]); }
+function coverSel(k){ const v = (S.coverPick && S.coverPick[k]) || (S.cover && S.cover[k]) || "balanced"; return v === true ? "balanced" : v; }
+function layerFactor(L){ return clamp(L.lim/3*Math.pow(0.6/L.ret, 0.3), 0.3, 2.4); }
+function coverExposure(k){ const sw = citySwans().filter(s => SWANS[s].cover === k); return sw.length ? clamp(sw.reduce((t, s) => t + swanExposure(s), 0)/sw.length, 0.4, 2.2) : 1; }
+function reMarket(k){ return (S.reMkt && S.reMkt[k]) || 1; }
+function coverPriceParts(k, L){ return {base:COVERS[k].rate, layer:layerFactor(L), exposure:coverExposure(k), market:reMarket(k),
+  capital:1 - Math.min(0.25, 0.05*lvSpec("actuary", "capital")), perk:perk("reinsdisc") ? 0.75 : 1}; }
+function coverCost(k, prem, L){ L = L || coverLayer(k) || layerOf("balanced"); const x = coverPriceParts(k, L);
+  return Math.round(Math.max(60, prem*x.base*x.layer*x.exposure*x.market)*x.capital*x.perk*dailyMod("cover")); }
+function layerSize(k, qPrem){ return qPrem*coverExposure(k); }
+function coverPays(k, net, qPrem){ const L = coverLayer(k); if (!L) return 0; const u = layerSize(k, qPrem); return Math.round(clamp(net - L.ret*u, 0, L.lim*u)); }
 function blackSwan(kind){ if (!SWANS[kind]) kind = pickSwan(); S.swanDone = true; S.cyc = Math.PI/2; playCutscene(kind, () => swanResolve(kind)); }
 function swanResolve(kind){
   const sw = SWANS[kind];
@@ -4690,10 +5190,12 @@ function swanResolve(kind){
     const il = lv("invest") ? Math.round(invCapital()*INV[S.invRisk || 0].crash) : 0; if (il){ S.cash -= il; S.q.other += il; }
     body = `<p>Your share price fell ${Math.round(drop*100)}%. ${lv("ir") ? "Capital Relations softened the blow." : "Capital Relations could have softened the blow."} Board confidence fell.${il ? ` Your ${INV[S.invRisk || 0].name.toLowerCase()} investments lost ${fmt(il)}.` : ""}</p>`;
   } else {
-    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, workFloors() - 10))*(1 + 0.1*Math.max(0, S.diff - 2))*swanExposure(kind)));
+    const gross = Math.round(Math.max(2000, baseIncome()*Q_LEN*rand(2.2, 3.4)*(1 + 0.03*Math.max(0, workFloors() - 10))*(1 + 0.1*Math.max(0, S.diff - 2))*swanExposure(kind)*dailyMod("swan")));
     const mit = sw.mit(), afterMit = Math.round(gross*(1 - mit)), riskCut = Math.min(0.2, 0.04*lv("risk")), net = Math.round(afterMit*(1 - riskCut));
-    const covered = S.cover[sw.cover];
-    const loss = covered ? Math.round(net*0.1) : net;
+    const L = coverLayer(sw.cover), covered = !!L, qP = Math.max(1, income()*Q_LEN), paid = coverPays(sw.cover, net, qP);
+    const loss = net - paid, over = L ? Math.max(0, net - (L.ret + L.lim)*layerSize(sw.cover, qP)) : 0;
+    S.reMkt = S.reMkt || {}; S.reMkt[sw.cover] = Math.min(2, reMarket(sw.cover) + 0.35);
+    S.lastSwanEvent = {kind, q:S.quarter, covered, loss};
     spend(loss, "other");
     if (covered){ S.swansSurvived = (S.swansSurvived || 0) + 1; S.conf = clamp(S.conf - 3, 0, 100); } S.swanKinds = Object.assign(S.swanKinds || {}, {[kind]: true}); if (!covered) S.swanNaked = (S.swanNaked || 0) + 1;
     else S.conf = clamp(S.conf - Math.round(25*prDamp()), 0, 100);
@@ -4702,7 +5204,10 @@ function swanResolve(kind){
       ${mit ? `<tr><td>Saved by ${sw.mitName}</td><td class="pos">+${fmt(gross - afterMit)}</td></tr>` : ""}
       ${riskCut ? `<tr><td>Saved by your Risk Dept</td><td class="pos">+${fmt(afterMit - net)}</td></tr>` : ""}
       ${(() => { const ex = swanExposure(kind), cul = swanCulprit(kind); const cr = cityRisk(kind); return cul && Math.abs(ex - 1) > 0.15 ? `<tr><td colspan="2" class="dim">${ex > 1 ? `Your ${LINES[cul].name} book took the worst of it${cr > 1.15 ? `, and being in ${cityName()} didn’t help` : ""}, so this hit you ${ex.toFixed(1)}× harder than an average insurer.` : `Not much of what you insure was in the way${cr < 0.85 ? `, and ${cityName()} was spared the worst` : ""}: you took ${ex.toFixed(1)}× the usual hit.`}</td></tr>` : ""; })()}
-      ${covered ? `<tr><td>Paid by your ${COVERS[sw.cover].name.toLowerCase()}</td><td class="pos">+${fmt(net - loss)}</td></tr>` : ""}
+      ${covered && paid ? `<tr><td>Paid by your ${COVERS[sw.cover].name.toLowerCase()} (${L.name.toLowerCase()} protection)</td><td class="pos">+${fmt(paid)}</td></tr>` : ""}
+      ${covered && !paid ? `<tr><td colspan="2" class="dim">This one fell within the amount you pay first, so your ${COVERS[sw.cover].name.toLowerCase()} didn’t need to pay.</td></tr>` : ""}
+      ${over ? `<tr><td colspan="2" class="dim">${fmt(over)} was above your protection limit, so it came back to you. ${L.lim >= PROTECTION.strong.lim ? "Even strong protection has a limit: a less exposed book, or more Capital Modelling, would help." : "Stronger protection would have covered more."}</td></tr>` : ""}
+      ${!covered ? `<tr><td colspan="2" class="dim">You had no ${COVERS[sw.cover].name.toLowerCase()}. Reinsurers will charge everyone more for a while after this.</td></tr>` : ""}
       <tr class="total"><td>You pay</td><td class="neg">−${fmt(loss)}</td></tr></table>
       <p>${covered ? "Your cover held. You paid only the 10% retention." : `You had no ${COVERS[sw.cover].name.toLowerCase()}, so you paid the lot. Board confidence −25.`}</p>
       ${S.cash < -overdraft() ? `<p class="note">This loss is bigger than the bank will tolerate.</p>` : ""}`;
@@ -4853,6 +5358,7 @@ $("#sheet").addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
   const [a, p, q] = b.dataset.act.split(":");
   if (S.idleMode && ["build","up","mode","lim","spec","exit","exit-go","stepdown","stepdown-go","demo","demo-yes","pay","deny","stall","cover","perk","price","dividend","loan","cashcall","exec","inv","prcamp","settle","buyback","bonus","ev","idle"].includes(a)){ toast("Idle mode is on. The board makes every decision now.", "bad"); return; }
+  if (a === "idle" && S.daily){ toast("Idle mode is off during daily challenges.", "bad"); return; }
   if (a === "idle"){
     openModal(`<h2>Hand over the keys?</h2><p>The board will make every decision from now on: claims, pricing, insurance, compliance, building, upgrades and events. You can keep watching.</p>
       <p class="dim">Be warned: the board is not you. It makes mistakes, blunders on vanity projects, is slow to buy insurance, and idle companies attract more black swans. It may not last forever.</p>
@@ -4862,6 +5368,8 @@ $("#sheet").addEventListener("click", e => {
   }
   if (a === "idle-yes"){ S.preIdleExecs = Object.assign({}, S.execs); S.idleTainted = true; S.idleMode = true; S.idleSpeed = 0.5; for (const x of EXECS) S.execs[x.id] = true; save(); closeModal(); toast("Idle mode is on. Sit back. The board has it from here.", "good"); return; }
   if (a === "close") closeModal();
+  else if (a === "daily"){ if (p === "exit") exitDaily(); else startDaily(p === "resume"); }
+  else if (a === "gz-read"){ gazAfterCall = true; closeModal(); }
   else if (a === "build") build(p, q);
   else if (a === "spec"){
     const i = +p, f = S.floors[i], opts = f && specOptions(f.type), rc = retrainCost();
@@ -4901,6 +5409,9 @@ $("#sheet").addEventListener("click", e => {
     save(); const k = S.floors.findIndex(f => f.type === "pr"); if (k >= 0) openFloor(k); else closeModal();
   }
   else if (a === "lb") openLeaderboard(p, q);
+  else if (a === "gz"){ const n = (S.gazette || []).length; S.gazIdx = clamp((S.gazIdx || 0) + (p === "older" ? 1 : -1), 0, Math.max(0, n - 1)); sfx("paper"); openBoard(false, false, "gazette"); }
+  else if (a === "cvsel"){ S.coverPick = S.coverPick || {}; S.coverPick[p] = q; sfx("tick"); openBoard(); }
+  else if (a === "upd-reload") reloadToVersion(b.dataset.ver);
   else if (a === "fbstar"){ fbRead(); if (fbDraft){ fbDraft.rating = fbDraft.rating === +p ? 0 : +p; openFeedback(fbDraft.reason, fbDraft.next); } }
   else if (a === "fbtag"){ fbRead(); if (fbDraft){ const t = FB_TAGS[+p]; fbDraft.tags = fbDraft.tags.includes(t) ? fbDraft.tags.filter(x => x !== t) : fbDraft.tags.concat(t); openFeedback(fbDraft.reason, fbDraft.next); } }
   else if (a === "fbsend") finishFeedback(true);
@@ -4977,8 +5488,10 @@ $("#sheet").addEventListener("click", e => {
     toast(`You bought yacht #${S.yachts}: “${YACHTS[(S.yachts-1)%YACHTS.length]}.”`, "good"); openBoard();
   }
   else if (a === "cover"){
-    if (q === "on"){ const c = coverCost(p, income()*Q_LEN); if (S.cash < c) return; S.cash -= c; discSpent += c; S.q.other += c; S.cover[p] = true; toast(`You bought ${COVERS[p].name.toLowerCase()}. It renews each earnings call.`, "good"); }
-    else { S.cover[p] = false; toast(`${COVERS[p].name} cancelled. Good luck.`, "bad"); }
+    if (q === "on"){ const sel = coverSel(p), c = coverCost(p, income()*Q_LEN, layerOf(sel)); if (S.cash < c) return; S.cash -= c; discSpent += c; S.q.other += c; S.cover[p] = sel;
+      if (S.coverPick) delete S.coverPick[p]; sfx("chime"); toast(`${COVERS[p].name} bought: ${layerOf(sel).name.toLowerCase()} protection.`, "good"); }
+    else if (q === "switch"){ S.cover[p] = coverSel(p); if (S.coverPick) delete S.coverPick[p]; sfx("tick"); toast(`Switched to ${coverLayer(p).name.toLowerCase()} protection. The new price applies from the next earnings call.`, "good"); }
+    else { S.cover[p] = false; if (S.coverPick) delete S.coverPick[p]; toast(`${COVERS[p].name} cancelled. Good luck.`, "bad"); }
     save(); openBoard();
   }
   else if (a === "perk"){
@@ -5123,6 +5636,7 @@ function ensureStatic(){
   paint(SK("moon"), 8, 8, () => { R(1,0,6,8,"#F4F1FF"); R(0,1,8,6,"#F4F1FF"); ctx.clearRect(4,1,3,5); }, 0, 0);
   paint(SK("bell"), 14, 8, () => { R(62,7,5,1,"#E0B43A"); R(61,8,7,3,"#FFD23F"); R(60,11,9,1,"#E0B43A"); R(64,12,1,1,"#6B4A2B"); }, -58, -5);
   paint(SK("elev"), 14, 22, () => { R(0,0,14,22,"#1F2A44"); R(1,1,12,20,"#C9A54A"); R(2,2,4,18,"#E8D08A"); R(8,2,4,18,"#E8D08A"); R(6,1,2,20,"#8E7228"); R(3,9,2,1,"#FFF6D0"); R(9,9,2,1,"#FFF6D0"); R(0,21,14,1,"#161B2E"); }, 0, 0);
+
 
   framesTex(SK("percy2"), 13, 20, [["p0", () => percy(6,18,0,1)], ["p1", () => percy(6,18,1,1)]], {outline:true, shadow:[6,18.1,4]});
   ["wait","low","happy","angry","confused"].forEach(k => paint(SK("bub_"+k), 9, 11, () => drawBub(k), 0, 0));
@@ -5522,6 +6036,8 @@ fontReady.then(() => {
   boot();
   setCity(cityId());
   setTimeout(() => flushPending().catch(() => {}), 4000);
+  startUpdateChecks();
+  gazetteBadge();
   $("#verTag").textContent = "v" + VERSION;
   document.title = companyName();
   if (S.lastVersion && S.lastVersion !== VERSION && S.seen && !S.over) setTimeout(() => toast(`Updated to v${VERSION}. Tap ? to see what’s new.`, "good"), 1500);

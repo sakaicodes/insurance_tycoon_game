@@ -45,9 +45,14 @@ function intro(){
     <p><span>🛋️</span><span><b>Idle mode.</b> Prefer to watch? Turn on idle mode in the Boardroom and the board makes every decision. You can take back control any time, but a run that used idle mode isn’t scored.</span></p>
     <p><span>♾️</span><span><b>Play forever, if you can.</b> As your tower matures, the City expects less growth and “in line” results are fine. But regulation keeps piling up, and dividends keep the board sweet.</span></p>
     <p><span>⚖️</span><span><b>Compliance</b> must cover your floors. Fall short and the regulator issues warnings. Three warnings and you lose your licence.</span></p>
+    <p><span>📅</span><span><b>Daily challenge.</b> A new challenge every day, the same for everyone: a city, a twist, and one of three goals. You get 12 quarters, and your best attempt counts. Find it in the Boardroom’s Company tab. Your main company waits safely while you play.</span></p>
     <p><span>📊</span><span><b>What you insure matters.</b> Each Underwriting floor writes a line of business, from Property to Treaty Reinsurance, and each earns, claims and suffers differently. Actuaries can make you more money, cheaper claims or a tougher hide. The Boardroom’s Book tab shows your mix.</span></p>
-    <p><span>🦢</span><span><b>Black swans</b> are huge disasters based on real ones: hurricanes, a ship blocking a canal, a global IT meltdown, a bank collapse and more. They strike with no warning, roughly every 8 to 12 quarters from quarter 5. Without cover you pay the whole loss, which can sink you. Buy reinsurance and your other covers in the Boardroom: they pay 90%.</span></p>
+    <p><span>🦢</span><span><b>Black swans</b> are huge disasters based on real ones: hurricanes, a ship blocking a canal, a global IT meltdown, a bank collapse and more. They strike with no warning. Buy your own insurance in the Boardroom’s Risk tab and pick Light, Balanced or Strong protection: you pay the first slice of a disaster and the reinsurer pays the next. Prices depend on what you insure and where, and rise after any disaster.</span></p>
     <p><span>⭐</span><span><b>Spend stars</b> on perks in the Boardroom, and unlock achievements for extra stars.</span></p>
+    <p><span>📰</span><span><b>The Fine Print Gazette.</b> A satirical newspaper is written after every earnings call, reporting on your results, your rivals and Percy. Read it in the Boardroom’s Gazette tab, or straight from the earnings call.</span></p>
+    <p><span>🌍</span><span><b>Four cities.</b> London, New York, Bermuda and Zurich each have their own skyline, currency, risks and favourite lines of business. Zurich even has two black swans of its own.</span></p>
+    <p><span>🏆</span><span><b>Leaderboards.</b> Finished runs go on the global leaderboard (company and CEO names are public), daily challenges have their own Today board, and This device keeps your personal bests.</span></p>
+    <p><span>🚪</span><span><b>Ending on your terms.</b> Sell the company once it’s big enough for a bonus and a golden ticket, or step down whenever you like from quarter 4 to record your score. You may be asked a few quick, optional questions on the way out.</span></p>
     <p><span>💀</span><span><b>You lose</b> if you go bankrupt, the board’s confidence hits zero, or you lose your licence.</span></p>
     <h3 class="intro-h">The rooms you can build</h3>
     ${ORDER.map(t => `<p class="intro-room"><span class="isw" style="background:${TYPES[t].wall}"></span><span><b>${TYPES[t].name}.</b> ${TYPES[t].desc}<em class="pro">＋ ${TYPES[t].pro}</em><em class="con">− ${TYPES[t].con}</em>${UNLOCKS[t] ? `<em class="dim">🔓 ${UNLOCKS[t].text}</em>` : ""}</span></p>`).join("")}
@@ -248,10 +253,11 @@ function openBoard(confirmRestart, intro, tabArg){
     return;
   }
   const tab = intro ? "overview" : (tabArg || S.boardTab || "overview"); S.boardTab = tab;
-  const BTABS = [["overview","🏢 Overview"],["book","📊 Book"],["risk","🛡️ Risk"],["team","👔 Team"],["money","💷 Money"],["stars","⭐ Stars"],["company","⚙️ Company"]];
+  const BTABS = [["overview","🏢 Overview"],["book","📊 Book"],["risk","🛡️ Risk"],["team","👔 Team"],["money","💷 Money"],["gazette","📰 Gazette"],["stars","⭐ Stars"],["company","⚙️ Company"]];
+  if (tab === "gazette" && S.gazUnread){ S.gazUnread = false; gazetteBadge(); save(); }
   openModal(`<div class="top"><h2>Boardroom</h2>${xBtn}</div>
     ${intro ? pricingIntroHtml() : ""}
-    <div class="btabs" role="tablist">${BTABS.map(([k, l]) => `<button class="btab" role="tab" data-act="btab:${k}" aria-selected="${tab === k}">${l}</button>`).join("")}</div>
+    <div class="btabs" role="tablist">${BTABS.map(([k, l]) => `<button class="btab" role="tab" data-act="btab:${k}" aria-selected="${tab === k}">${l}${k === "gazette" && S.gazUnread ? `<i class="gz-dot" aria-label="New edition"></i>` : ""}</button>`).join("")}</div>
     ${tab === "overview" ? `
     <div class="ceo-card"><canvas id="ceoFace" width="48" height="48" aria-hidden="true"></canvas><div><b>${ceoN()}</b><span>CEO of ${coName()}</span><small>Your title: ${RANKS[r].name}</small></div></div>
     <div class="status">
@@ -267,6 +273,7 @@ function openBoard(confirmRestart, intro, tabArg){
     <div class="seg four">${PRICES.map((pr, k) => `<button class="btn" data-act="price:${k}" aria-pressed="${priceIdx() === k}">${pr.name}</button>`).join("")}</div>
     <p class="dim">${PRICES[priceIdx()].desc} Right now: premium income ×${(marketRate()*volume()).toFixed(2)}, customers ×${volume().toFixed(2)}.</p>` : ""}
     ${tab === "book" ? bookHtml() : ""}
+    ${tab === "gazette" ? gazetteHtml() : ""}
     ${tab === "risk" ? `
     <div class="status">
       <div><span>Capital held</span><b class="${capReq() && S.cash < capReq() ? "neg" : "pos"}">${capReq() ? Math.round(capRatio()*100) + "% of required" : "Not required yet"}</b></div>
@@ -274,10 +281,8 @@ function openBoard(confirmRestart, intro, tabArg){
     </div>
     <p class="dim">The regulator wants enough cash on hand to survive a bad year. Capital Modelling actuaries and catastrophe reinsurance both lower the bar.</p>
     <h3 style="margin-top:14px">Your own insurance</h3>
-    <p class="dim">Black swans strike with no warning, roughly every 8 to 12 quarters, and the longer it’s been since the last one, the closer the next. Without cover you pay the whole loss, which can sink the company. Cover renews at each earnings call.</p>
-    ${Object.keys(COVERS).map(k => { const c = COVERS[k], on = S.cover[k], cost = coverCost(k, income()*Q_LEN);
-      return `<div class="action"><div><h3>${on ? "🛡️ " : ""}${c.name}</h3><p>${c.desc} About ${fmt(cost)} per quarter.</p></div>
-        ${on ? `<button class="btn ghost" data-act="cover:${k}:off">Cancel</button>` : `<button class="btn green" data-act="cover:${k}:on" ${S.cash < cost ? "disabled" : ""}>Buy ${fmt(cost)}</button>`}</div>`; }).join("")}` : ""}
+    <p class="dim">Black swans strike with no warning, roughly every 8 to 12 quarters. Your own insurance pays part of the loss: you pay the first slice, the reinsurer pays the next, up to a limit. Prices depend on how exposed you are, and they rise for a while after any disaster. Cover renews at each earnings call.</p>
+    ${Object.keys(COVERS).map(k => coverCardHtml(k)).join("")}` : ""}
     ${tab === "team" ? `
     ${execsHtml()}` : ""}
     ${tab === "money" ? `
@@ -331,7 +336,9 @@ function openBoard(confirmRestart, intro, tabArg){
     ${[...new Set(ACH.map(a => a.cat))].map(c => { const list = ACH.filter(a => a.cat === c), got = list.filter(a => S.ach[a.id]).length;
       return `<details class="achcat"><summary><b>${c}</b><span>${got} of ${list.length}</span></summary><div class="achs">${list.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div></details>`; }).join("")}` : ""}
     ${tab === "company" ? `
-    <h3>Leaderboard</h3>
+    <h3>Daily challenge</h3>
+    ${S.daily ? `<p>You’re playing today’s daily challenge. Leave whenever you like: your main company is exactly where you left it.</p><button class="btn ghost" style="width:100%" data-act="daily:exit">Leave and return to my company</button>` : dailyCardHtml()}
+    <h3 style="margin-top:14px">Leaderboard</h3>
     <div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb">🏆 Leaderboard</button></div>
     <h3 style="margin-top:14px">Idle mode</h3>
     ${S.idleMode ? `<p class="note">Idle mode is on. The board is making every decision, and this run’s score won’t be recorded.</p>
@@ -350,6 +357,8 @@ function openBoard(confirmRestart, intro, tabArg){
     <button class="btn red" style="width:100%" data-act="restart">Start a new company</button>
     <p class="ver-line">${coName()}, version ${VERSION}</p>` : ""}`, {view:"board-" + tab, focus:false});
   drawCeoFace("#ceoFace");
+  if (tab === "risk") wireCoverSliders();
+  if (tab === "company") loadDailyMini();
 }
 function doBuyback(){ const c = buybackCost(); if (S.cash < c) return false; spend(c, "other"); discSpent += c; S.stock *= 1.04; checkRank(); return true; }
 
@@ -359,6 +368,7 @@ function earnings(){
   const q = S.q;
   const notes = [];
   q.cover = 0;
+  if (S.reMkt) for (const k in S.reMkt){ S.reMkt[k] = 1 + (S.reMkt[k] - 1)*0.7; if (S.reMkt[k] < 1.02) delete S.reMkt[k]; }
   for (const k of Object.keys(COVERS)) if (S.cover[k]){
     const c = coverCost(k, q.prem);
     if (S.cash >= c){ S.cash -= c; q.cover += c; }
@@ -376,7 +386,7 @@ function earnings(){
   const profit = q.prem - q.paid - q.sal - q.other - q.cover - q.loan + q.inv;
   const hist = (S.profHist || []).slice(-3), g = growthRate();
   const avg = hist.length ? hist.reduce((a, b) => a + b, 0)/hist.length : 0;
-  const expected = avg > 0 ? Math.max(40, avg*(1+g)) : 40;
+  const expected = (avg > 0 ? Math.max(40, avg*(1+g)) : 40)*dailyMod("expect");
   const basis = avg > 0 && avg*(1+g) > 40 ? `Your average profit over the last ${hist.length === 1 ? "quarter" : hist.length + " quarters"} (${fmt(avg)}), plus ${Math.round(g*100)}%.` : `Their minimum. They never accept less than ${fmt(40)}.`;
   const surprise = (profit - expected)/Math.max(Math.abs(expected), 40);
   const inLine = profit >= 0 && surprise < 0 && surprise >= -0.05;
@@ -390,7 +400,7 @@ function earnings(){
   const capShort = capReq() > 0 && S.cash < capReq()*0.8;
   if (!capShort && capReq() > 0 && S.cash < capReq()) notes.push(`Your capital is ${Math.round(capRatio()*100)}% of what the regulator requires. That’s within tolerance, but below 80% you’ll get a warning.`);
   if (gap > 0 || S.happy < 20 || gouged || capShort){
-    strike = true; S.strikes++; S.cleanQ = 0; S.cleanRun = 0;
+    strike = true; S.strikes++; S.strikesEver = (S.strikesEver || 0) + 1; S.cleanQ = 0; S.cleanRun = 0;
     const fine = Math.round(Math.max(100, Math.max(0, S.cash)*0.1)*(perk("lobbyist") ? 0.6 : 1)*prDamp()); S.cash -= fine;
     notes.push(`Regulator warning ${S.strikes} of ${maxStrikes()}: ${gap > 0 ? `Compliance only covers ${compHave()} of the ${compNeed()} floors it needs to` : capShort ? `you hold ${fmt(Math.max(0, S.cash))} but must hold ${fmt(capReq())} in capital` : S.happy < 20 ? "customers are miserable" : "your prices failed the fair-value test"}. Fine: ${fmt(fine)}.${S.strikes >= maxStrikes() ? "" : " Two clean quarters remove a warning."}`);
   } else {
@@ -425,7 +435,8 @@ function earnings(){
   if (lv("hr") && S.hrAt == null && Math.random() < Math.min(0.4, 0.08*lv("hr"))) S.hrAt = rand(8, 50);
   if (lv("it") > 0 && S.outageAt == null && Math.random() < Math.min(0.4, 0.06*lv("it"))) S.outageAt = rand(8, 50);
   const sinceSwan = qn - (S.lastSwanQ || 1);
-  if (qn >= 4 && !S.swan && sinceSwan >= 3 && (sinceSwan >= 10 || Math.random() < Math.min(0.6, (0.03*sinceSwan + 0.005*(S.diff - 1))*(S.idleMode ? 1.3 : 1)))){
+  if (S.daily){ const pl = (S.daily.swans || []).find(x => x.q === qn); if (pl && !S.swan){ S.lastSwanQ = qn; S.swan = {t:pl.t, kind:pl.kind}; } }
+  else if (qn >= 4 && !S.swan && sinceSwan >= 3 && (sinceSwan >= 10 || Math.random() < Math.min(0.6, (0.03*sinceSwan + 0.005*(S.diff - 1))*(S.idleMode ? 1.3 : 1)))){
     S.lastSwanQ = qn;
     S.swan = {t:rand(12, 48), kind:pickSwan()};
   }
@@ -443,6 +454,11 @@ function earnings(){
   else { lede = "You beat the City’s expectations."; quote = pick(["“Solid quarter. Next time we’ll expect 12% more, for no reason.”","“Cautiously ecstatic.”","“Fine. Good, even. Don’t let it go to your head.”"]); }
   const pct = (S.stock/old - 1)*100;
   bell.t = 3; bell.n = profit >= expected ? 2 : 1; lede += profit >= expected ? " In The Room, the bell rings twice." : " In The Room, the bell rings once.";
+  try { writeGazette({qn, profit, expected, surprise, inLine, strike, old, stock:S.stock}); } catch(e){}
+  let dailyDone = false;
+  if (S.daily){ S.dailyProfit = (S.dailyProfit || 0) + profit;
+    if (S.daily.format === "race" && S.dailyProfit >= S.daily.target){ S.daily.done = {quarters:qn}; dailyDone = true; notes.push(`Daily challenge: you’ve hit the ${fmt(S.daily.target)} target in ${qn} quarter${qn === 1 ? "" : "s"}!`); }
+    else if (qn >= DAILY_Q){ dailyDone = true; notes.push("Daily challenge: that was the final quarter."); } }
   openModal(`<h2>Earnings call, ${qLabel}</h2>
     <p class="dim" style="margin:-4px 0 6px">${ceoN()} takes the call for ${coName()}.</p>
     <div class="stars" aria-label="${stars} of 3 stars">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</div>
@@ -467,11 +483,14 @@ function earnings(){
     <div class="move ${pct>=0?"up":"down"}"><span>Share price<br><b>${fmt2(old)} to ${fmt2(S.stock)}</b></span><em>${pct>=0?"+":"−"}${Math.abs(pct).toFixed(1)}%</em></div>
     <blockquote>${quote}<cite>An analyst who has never bought insurance</cite></blockquote>
     ${notes.map(n => `<p class="note">${n}</p>`).join("")}
-    <div class="closeRow"><button class="btn" data-act="close">Hang up</button></div>`, {locked:true, auto:true, onClose:() => {
+    <div class="closeRow"><button class="btn ghost" data-act="gz-read">📰 Read the Gazette</button><button class="btn" data-act="close">Hang up</button></div>`, {locked:true, auto:true, onClose:() => {
+      const toGazette = gazAfterCall; gazAfterCall = false;
       if (S.strikes >= maxStrikes()) return gameOver("licence");
       if (S.conf <= 0) return gameOver("fired");
+      if (dailyDone) return gameOver("daily");
       if (S.conf < 25) toast("The board is losing patience. If their confidence hits zero, you’re out.", "bad");
-      checkRank(); save(); }});
+      checkRank(); save();
+      if (toGazette) setTimeout(() => { if (!modalOpen && !S.over) openBoard(false, false, "gazette"); }, 60); }});
 }
 function checkRank(){
   const next = RANKS[S.rankIdx + 1]; if (!next) return;
@@ -571,8 +590,46 @@ function bookHtml(){
     <p class="dim">Compared with an average insurer, based on what you insure and where you are (${cityName()}). Over 1× means a disaster would hit you harder. To soften a big one, buy the cover that pays for it, build the floor that softens it, or write less of the line most in its way.</p>
     <div class="exposures">${swanRows.map(([k, v]) => { const sw = SWANS[k], cov = COVERS[sw.cover], covered = !!(S.cover && S.cover[sw.cover]), cul = swanCulprit(k);
       const mitLv = sw.mitName === "Capital Modelling" ? lvSpec("actuary", "capital") : sw.mitName === "IT" ? lv("it") : sw.mitName === "Legal" ? lv("legal") : sw.mitName === "Compliance" ? lv("compliance") : 0;
-      const tips = [covered ? `✅ ${cov.name} pays 90%` : `⚠️ Not covered: buy ${cov.name} in the Risk tab`,
+      const tips = [covered ? `✅ Covered by ${cov.name.toLowerCase()} (${coverLayer(sw.cover).name.toLowerCase()} protection)` : `⚠️ Not covered: buy ${cov.name.toLowerCase()} in the Risk tab`,
         mitLv ? `🛡️ ${sw.mitName} softens it (level ${mitLv})` : `🛡️ ${sw.mitName} would soften it`];
       if (v > 1.15 && cul) tips.push(`📉 Most exposed through ${LINES[cul].name}${cityRisk(k) > 1.15 ? `, and ${cityName()} makes it worse` : ""}`);
       return `<div class="expo ${v > 1.15 ? "hi" : v < 0.85 ? "lo" : ""}"><div class="expo-top"><b>${sw.title}</b><span>${bar(v)} <b>${v.toFixed(1)}×</b></span></div><ul>${tips.map(t => `<li>${t}</li>`).join("")}</ul></div>`; }).join("")}</div>`;
+}
+
+/* One cover in the Risk tab. Beginners pick Light, Balanced or Strong; "Customise" reveals the layer sliders. */
+function coverCardHtml(k){
+  const c = COVERS[k], L = coverLayer(k), sel = coverSel(k), SL = layerOf(sel), qP = Math.max(1, income()*Q_LEN), cost = coverCost(k, qP, SL);
+  const x = coverPriceParts(k, SL), sw = citySwans().filter(s => SWANS[s].cover === k), typical = Math.round(2.8*qP*x.exposure*(1 - (sw.length ? SWANS[sw[0]].mit() : 0)));
+  const u = layerSize(k, qP), you = Math.min(typical, SL.ret*u), re = clamp(typical - SL.ret*u, 0, SL.lim*u), over = Math.max(0, typical - (SL.ret + SL.lim)*u), tot = Math.max(1, typical);
+  const same = L && JSON.stringify(sel) === JSON.stringify(S.cover[k] === true ? "balanced" : S.cover[k]);
+  const custom = typeof sel === "object";
+  const why = [[`Base: ${Math.round(x.base*1000)/10}% of your premium`, fmt(Math.round(qP*x.base))], ["Your protection", "×" + x.layer.toFixed(2)],
+    [`Your exposure (${cityName()}${Object.keys(bookMix()).length ? ", your book" : ""})`, "×" + x.exposure.toFixed(2)]];
+  if (x.market > 1.02) why.push(["Market: a recent disaster", "×" + x.market.toFixed(2)]);
+  if (x.capital < 1) why.push(["Capital Modelling actuaries", "×" + x.capital.toFixed(2)]);
+  if (x.perk < 1) why.push(["Reinsurance discount perk", "×0.75"]);
+  return `<div class="cv${L ? " on" : ""}">
+    <div class="cv-top"><h3>${L ? "🛡️ " : ""}${c.name}</h3><span class="cv-state">${L ? `Active: ${L.name}` : "Not covered"}</span></div>
+    <p class="dim" style="margin:2px 0 8px">${c.desc}</p>
+    <div class="cv-opts">${Object.keys(PROTECTION).map(pk => `<button class="cv-opt" data-act="cvsel:${k}:${pk}" aria-pressed="${sel === pk}"><b>${PROTECTION[pk].name}</b><small>${PROTECTION[pk].blurb}</small></button>`).join("")}</div>
+    <p class="cv-cap">If a typical disaster of this kind hit you (about ${fmt(typical)})</p>
+    <div class="cv-bar"><i style="width:${you/tot*100}%;background:#B23A3A">${you/tot > 0.18 ? "You" : ""}</i><i style="width:${re/tot*100}%;background:#2E7D4F">${re/tot > 0.18 ? "Reinsurer" : ""}</i><i style="width:${over/tot*100}%;background:#7A2424">${over/tot > 0.18 ? "You" : ""}</i></div>
+    <p class="cv-cap">You’d pay ${fmt(Math.round(you + over))}, the reinsurer ${fmt(Math.round(re))}.${over ? " The rest is above your limit." : ""}</p>
+    <div class="cv-price"><span>${L && !same ? "New price" : "Cost each quarter"}</span><b>${fmt(cost)}</b></div>
+    <details class="cv-why"><summary>Why this price?</summary><div>${why.map(([a, v]) => `<span class="cv-chip">${a} <b>${v}</b></span>`).join("")}</div></details>
+    <details class="cv-why" ${custom ? "open" : ""}><summary>Customise the layer</summary>
+      <label class="cv-range">You pay first <input type="range" min="0.1" max="3" step="0.1" value="${SL.ret}" data-cv="${k}" data-f="ret"><output>${fmt(Math.round(SL.ret*u))}</output></label>
+      <label class="cv-range">Reinsurer pays up to <input type="range" min="0.5" max="6" step="0.5" value="${SL.lim}" data-cv="${k}" data-f="lim"><output>${fmt(Math.round(SL.lim*u))}</output></label></details>
+    <div class="cv-act">${!L ? `<button class="btn green" data-act="cover:${k}:on" ${S.cash < cost ? "disabled" : ""}>Buy for ${fmt(cost)}</button>`
+      : same ? `<button class="btn ghost" data-act="cover:${k}:off">Cancel cover</button>`
+      : `<button class="btn" data-act="cover:${k}:switch">Switch to ${SL.name}</button><button class="btn ghost" data-act="cover:${k}:off">Cancel</button>`}</div>
+  </div>`;
+}
+function wireCoverSliders(){
+  document.querySelectorAll('input[data-cv]').forEach(inp => {
+    const k = inp.dataset.cv, u = layerSize(k, Math.max(1, income()*Q_LEN)), out = inp.nextElementSibling;
+    inp.addEventListener("input", () => { if (out) out.textContent = fmt(Math.round(+inp.value*u)); });
+    inp.addEventListener("change", () => { const cur = layerOf(coverSel(k)); S.coverPick = S.coverPick || {};
+      S.coverPick[k] = {ret:inp.dataset.f === "ret" ? +inp.value : cur.ret, lim:inp.dataset.f === "lim" ? +inp.value : cur.lim}; openBoard(); });
+  });
 }
