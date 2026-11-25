@@ -5,7 +5,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 // Where the game is allowed to submit from. Add a localhost address here if you test locally.
 const ALLOWED = ["https://sakaicodes.github.io", "http://localhost:8080", "http://127.0.0.1:8080"];
-const CITIES = ["london", "nyc", "bermuda", "zurich"];
+const CITIES = ["london", "nyc", "bermuda", "zurich", "singapore"];
 
 function corsFor(req: Request) {
   const origin = req.headers.get("origin") ?? "";

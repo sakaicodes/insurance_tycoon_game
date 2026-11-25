@@ -659,6 +659,47 @@ SCENES2.retire = function(t){
   P(cx + 2, 98, 7, 8, "#C9A54A"); P(cx + 3, 99, 5, 5, "#FFF6D0"); px(cx + 5, 101, "#1F2238"); px(cx + 6, 100, "#1F2238"); P(cx + 1, 106, 9, 1, "#8E7228");
 };
 LINES2.retire = {name:"", line:""};
+SCENES2.haze = function(t){
+  bands(0, 90, ["#C9A27A", "#C8AA88", "#CDB596", "#D3C0A4"]);
+  for (let k = 0; k < 8; k++){ const h = 30 + hs(k, 9)*40; P(10 + k*29, 90 - h, 20, h, "rgba(120,110,100,.45)"); }
+  c.fillStyle = "rgba(160,150,140,.35)"; c.beginPath(); c.ellipse(120, 60, 140, 40, 0, 0, Math.PI*2); c.fill();
+  P(0, 90, SW, 45, "#9E9488"); P(0, 90, SW, 2, "#B8AE9E");
+  // the air quality board, which has run out of adjectives
+  P(146, 18, 82, 40, "#1F2238"); P(146, 18, 82, 2, "#C9A54A"); text("AIR QUALITY", 152, 22, "#E3C064");
+  const v = Math.round(80 + Math.min(1, t*1.4)*260); text(String(v), 152, 32, v > 300 ? "#FF6B6B" : "#F2C14E", 2); text(v > 300 ? "VERY BAD" : v > 200 ? "BAD" : "HMM", 184, 36, v > 300 ? "#FF6B6B" : "#F2C14E");
+  // the outdoor concert, cancelled; a grounded plane; the lion, barely visible
+  P(12, 66, 50, 24, "#5A3E78"); P(12, 64, 50, 3, "#7C5AA6"); P(18, 72, 38, 10, "#F7F2E6"); text("CANCELLED", 19, 74, "#B23A3A");
+  P(84, 80, 34, 5, "#D9DCE2"); P(96, 74, 4, 6, "#D9DCE2"); tri(84, 80, 84, 74, 90, 80, "#D9DCE2"); P(98, 85, 2, 3, "#1B1B22"); P(106, 85, 2, 3, "#1B1B22");
+  c.globalAlpha = 0.35; c.fillStyle = "#E9E2D6"; c.beginPath(); c.moveTo(200, 90); c.lineTo(200, 76); c.quadraticCurveTo(204, 68, 210, 74); c.lineTo(211, 90); c.closePath(); c.fill(); c.globalAlpha = 1;
+  // people in masks, and Percy, who has given up flying
+  for (const [x, k] of [[136, 1], [160, 3], [184, 4]]){ blit(chibi(PEOPLE[k], "stand", "hz" + k), x, 120); P(x - 2.5, 116.5, 6, 2.5, "#F2F2EE"); px(x - 3.5, 116, "#D8D8D8"); px(x + 3.5, 116, "#D8D8D8"); }
+  const percy = makeSprite("percy5", 10, 10, () => { oval(5, 6, 4, 3, "#9AA3B5"); disc(7, 3, 2.5, "#9AA3B5"); P(9, 3, 2, 1, "#E39A2C"); px(7, 2, "#1F2238"); P(6, 3, 3, 2, "#F2F2EE"); });
+  blit(percy, 222, 116 - (Math.floor(t*6) % 2));
+  for (let k = 0; k < 30; k++){ const u = fr(t*0.3 + k/30); px(hs(k, 4)*SW, 20 + u*100, "rgba(90,80,70,.5)"); }
+};
+SCENES2.flood = function(t){
+  bands(0, 70, ["#5A6A80", "#6A7A90", "#7A8AA0", "#8A9AB0"]);
+  for (let k = 0; k < 7; k++){ const h = 30 + hs(k, 3)*40; P(8 + k*34, 92 - h, 26, h, "#7C8EA6"); for (let y = 92 - h + 4; y < 90; y += 6) P(12 + k*34, y, 18, 2, "#9CB0C6"); }
+  P(0, 92, SW, 43, "#4A4650");
+  // the water rises
+  const lvl = 92 - Math.min(1, t*1.3)*30;
+  P(0, lvl, SW, SH - lvl, "rgba(70,120,160,.85)"); for (let x = 0; x < SW; x += 9) P(x + (Math.floor(t*12) % 9), lvl, 5, 1, "#A8D6F0");
+  // a taxi bobbing, a man in a dinghy holding an umbrella, a hawker carrying his wok to safety
+  const bob = Math.sin(t*10)*1.5;
+  P(30, lvl - 6 + bob, 24, 7, "#2F6FE4"); P(36, lvl - 10 + bob, 12, 4, "#2F6FE4"); P(38, lvl - 9 + bob, 4, 3, "#BFE0F2"); P(43, lvl - 9 + bob, 4, 3, "#BFE0F2");
+  c.fillStyle = "#E39A2C"; c.beginPath(); c.ellipse(120, lvl - 2 + bob, 16, 4, 0, 0, Math.PI*2); c.fill();
+  blit(chibi(PEOPLE[2], "stand", "fl2"), 120, lvl - 4 + bob); P(126, lvl - 30 + bob, 1, 14, "#3A3A48"); c.fillStyle = "#B23A3A"; c.beginPath(); c.arc(126.5, lvl - 30 + bob, 9, Math.PI, 0); c.fill();
+  blit(chibi({skin:"#C68650", hair:"#1C1C1C", shirt:"#F7F2E6"}, "stand", "hawker"), 200, Math.min(120, lvl + 4)); disc(200, Math.min(120, lvl + 4) - 21, 6, "#3A3A48"); P(194, Math.min(120, lvl + 4) - 22, 12, 2, "#5A5A64");
+  // and the rain, which stops as suddenly as it started
+  const rain = t < 0.8 ? 1 : Math.max(0, 1 - (t - 0.8)*5);
+  c.globalAlpha = rain; for (let k = 0; k < 60; k++){ const x = hs(k, 7)*SW, y = fr(t*3 + k/60)*SH; P(x, y, 1, 5, "#C8DCF0"); } c.globalAlpha = 1;
+};
+TITLES2.haze = "The Great Haze"; TITLES2.flood = "Monsoon flash floods";
+PORTRAITS2.haze = t => portrait2({t, skin:"#E9C4A0", hair:"#1C1C1C", hairStyle:"bob", shirt:"#7A4FBF", collar:"#E8D9F2", eyes:"normal", brows:"worried", mouth:"talk", bg:"#9E8468", look:-1});
+PORTRAITS2.flood = t => portrait2({t, skin:"#B07A50", hair:"#1C1C1C", shirt:"#2F6FE4", tie:"#F2C14E", eyes:"wide", brows:"worried", mouth:"grit", sweat:true, bg:"#4A6A88"});
+LINES2.haze = {name:"Mei Ling, Events Desk", line:"The concert’s cancelled, the regatta’s cancelled, and I can’t see the lion from my desk any more."};
+LINES2.flood = {name:"Raj, Property Claims", line:"It rained for forty minutes. The car park is now a swimming pool with very expensive inflatables."};
+
 /* ---------- Zurich-only black swans ---------- */
 SCENES2.franc = function(t){
   P(0, 0, SW, SH, "#1F2A44"); for (let x = 0; x < SW; x += 12) P(x, 0, 1, 90, "rgba(255,255,255,.04)");

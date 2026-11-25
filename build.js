@@ -14,14 +14,9 @@ const read = f => fs.readFileSync(path.join(src, f), "utf8");
 
 const styles = manifest.styles.map(read).join("\n");
 const scripts = manifest.scripts.map(f => read(f).trimEnd()).join("\n\n");
-const releaseNotes = new Function(read("data/changelog.js") + "; return CHANGELOG;")()[0]?.notes || [];
-const buildMeta = `<script type="application/json" id="app-release-notes">${JSON.stringify(releaseNotes.slice(0, 3)).replace(/</g, "\\u003c")}</script>`;
-const stamp = s => s.replace(/__VERSION__/g, pkg.version)
-  .replace(/__MIN_VERSION__/g, pkg.minVersion || "0.0.0")
-  .replace(/__BUILD_DATE__/g, new Date().toISOString().slice(0, 10));
+const stamp = s => s.replace(/__VERSION__/g, pkg.version).replace(/__BUILD_DATE__/g, new Date().toISOString().slice(0, 10));
 
 let html = read("index.html")
-  .replace("<!-- @build-meta -->", () => buildMeta)
   .replace("<!-- @styles -->", () => styles)
   .replace("<!-- @scripts -->", () => scripts);
 html = stamp(html);
@@ -29,6 +24,10 @@ html = stamp(html);
 fs.mkdirSync(path.join(root, "dist"), {recursive:true});
 const out = path.join(root, "dist", "index.html");
 fs.writeFileSync(out, html);
+// version.json: the game checks this to offer (or require) an update. Deploy it next to the game.
+let notes = [];
+try { notes = (new Function(read("data/changelog.js") + "; return CHANGELOG;")()[0] || {}).notes || []; } catch(e){}
+fs.writeFileSync(path.join(root, "dist", "version.json"), JSON.stringify({version:pkg.version, minVersion:pkg.minVersion || "0.0.0", notes:notes.slice(0, 3)}, null, 2) + "\n");
 console.log(`Built v${pkg.version}: ${path.relative(root, out)} (${(html.length/1024).toFixed(0)} KB, ${manifest.scripts.length} scripts, ${manifest.styles.length} stylesheets)`);
 
 if (process.argv.includes("--check")){

@@ -1,0 +1,7 @@
+{
+  "version": "0.9.3",
+  "minVersion": "0.6.0",
+  "notes": [
+    "The tutorial’s welcome now names the market in the city you chose, instead of always saying London, and the tour mentions the 🔊 button."
+  ]
+}

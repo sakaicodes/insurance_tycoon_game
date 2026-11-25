@@ -52,6 +52,7 @@
     "ui/update.js",
     "ui/gazette.js",
     "ui/daily.js",
+    "ui/eggs.js",
     "game/endings.js",
     "ui/cutscene-player.js",
     "game/progression.js",

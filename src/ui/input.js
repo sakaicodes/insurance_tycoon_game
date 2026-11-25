@@ -14,6 +14,7 @@ $("#sheet").addEventListener("click", e => {
   }
   if (a === "idle-yes"){ S.preIdleExecs = Object.assign({}, S.execs); S.idleTainted = true; S.idleMode = true; S.idleSpeed = 0.5; for (const x of EXECS) S.execs[x.id] = true; save(); closeModal(); toast("Idle mode is on. Sit back. The board has it from here.", "good"); return; }
   if (a === "close") closeModal();
+  else if (a === "fineprint"){ if (eggFlag("fineprint")) toast("🔍 You read the fine print. You’re the first person in this industry to do so.", "good"); }
   else if (a === "daily"){ if (p === "exit") exitDaily(); else startDaily(p === "resume"); }
   else if (a === "gz-read"){ gazAfterCall = true; closeModal(); }
   else if (a === "build") build(p, q);
@@ -55,7 +56,7 @@ $("#sheet").addEventListener("click", e => {
     save(); const k = S.floors.findIndex(f => f.type === "pr"); if (k >= 0) openFloor(k); else closeModal();
   }
   else if (a === "lb") openLeaderboard(p, q);
-  else if (a === "gz"){ const n = (S.gazette || []).length; S.gazIdx = clamp((S.gazIdx || 0) + (p === "older" ? 1 : -1), 0, Math.max(0, n - 1)); sfx("paper"); openBoard(false, false, "gazette"); }
+  else if (a === "gz"){ const n = (S.gazette || []).length; S.gazIdx = clamp((S.gazIdx || 0) + (p === "older" ? 1 : -1), 0, Math.max(0, n - 1)); openGazette(); }
   else if (a === "cvsel"){ S.coverPick = S.coverPick || {}; S.coverPick[p] = q; sfx("tick"); openBoard(); }
   else if (a === "upd-reload") reloadToVersion(b.dataset.ver);
   else if (a === "fbstar"){ fbRead(); if (fbDraft){ fbDraft.rating = fbDraft.rating === +p ? 0 : +p; openFeedback(fbDraft.reason, fbDraft.next); } }
@@ -74,9 +75,14 @@ $("#sheet").addEventListener("click", e => {
   }
   else if (a === "ispeed"){ S.idleSpeed = +p || 0.5; save(); openBoard(); }
   else if (a === "rival"){ resolveRival(+p, false); }
-  else if (a === "look"){ readSetupInputs(); if (setupDraft){ if (p === "set") applySet(setupDraft, q); else { const list = {skin:SKINS, hair:HAIRS, outfit:OUTFITS}[p]; setupDraft[p] = list ? list[+q] : q; } } sfx("tick"); openSetup(); }
+  else if (a === "look"){ readSetupInputs(); if (setupDraft){ if (p === "city") setupDraft.surprised = false; if (p === "set") applySet(setupDraft, q); else { const list = {skin:SKINS, hair:HAIRS, outfit:OUTFITS}[p]; setupDraft[p] = list ? list[+q] : q; } } sfx("tick"); openSetup(); }
   else if (a === "look-t"){ readSetupInputs(); if (setupDraft) setupDraft[p] = !setupDraft[p]; sfx("tick"); openSetup(); }
   else if (a === "setup-go") finishSetup();
+  else if (a === "setup-next"){ readSetupInputs(); const nm = String(setupDraft && setupDraft.name || "").trim();
+    if (!nm){ toast("Your CEO needs a name. Even just initials will do.", "bad"); const n = $("#ceoName"); if (n) n.focus(); return; }
+    setupDraft.step = 2; sfx("tick"); openSetup(); }
+  else if (a === "setup-back"){ setupDraft.step = 1; setupDraft.surprised = false; sfx("tick"); openSetup(); }
+  else if (a === "setup-surprise"){ const keys = Object.keys(CITIES).filter(k => k !== setupDraft.city); setupDraft.city = pick(keys); setupDraft.surprised = true; sfx("chime"); openSetup(); }
   else if (a === "idle-off"){
     S.idleMode = false; if (S.preIdleExecs) S.execs = Object.assign({}, S.preIdleExecs);
     save(); toast("You’re back in control. Your executives are as you left them. This run still won’t be scored.", "good"); openBoard();
@@ -168,6 +174,7 @@ $("#sheet").addEventListener("click", e => {
 $("#btnFloors").addEventListener("click", openFloors);
 $("#btnClaims").addEventListener("click", () => openClaims());
 $("#btnBoard").addEventListener("click", () => openBoard());
+$("#btnNews").addEventListener("click", () => openGazette());
 
 $("#sheet").addEventListener("keydown", e => {
   if (e.key === "Enter" && e.target && (e.target.id === "ceoName" || e.target.id === "coNameIn")){ e.preventDefault(); finishSetup(); }

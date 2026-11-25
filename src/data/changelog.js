@@ -1,6 +1,22 @@
 /* data/changelog.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
 /* Newest first. Add an entry here whenever you bump "version" in package.json. */
 const CHANGELOG = [
+  {v:"0.9.3", notes:["The tutorial’s welcome now names the market in the city you chose, instead of always saying London, and the tour mentions the 🔊 button."]},
+  {v:"0.9.2", notes:[
+    "The Fine Print Gazette has moved to a 📰 button at the top of the screen. A red dot tells you a new edition is out.",
+    "The daily challenge now has its own 📅 Daily tab in the Boardroom, with today’s leaders and the full leaderboard one tap away.",
+  ]},
+  {v:"0.9.1", notes:[
+    "Setting up a new company is now two short steps: create your CEO, then choose your city.",
+    "Cities are shown as tiles with a little picture of each skyline. Tap one to see its risks and favourite lines of business.",
+    "Can’t decide? Tap “Surprise me” and let the dice pick your city.",
+  ]},
+  {v:"0.9.0", notes:[
+    "New city: Singapore. A garden tower with a rooftop infinity pool, the strait full of ships, glowing Supertrees, the MRT under the street and a gong for every earnings call. Prices in S$.",
+    "Two black swans only Singapore gets: the Great Haze and monsoon flash floods. Marine and Treaty earn a little extra there, and hurricanes never visit.",
+    "Over 50 new claims across every line of business, and 80 more claimant names.",
+    "Easter eggs. Some names do things, Percy appreciates attention, and there are secret achievements to find. We’re not saying any more.",
+  ]},
   {v:"0.8.3", notes:["The daily challenge now lives only in the Boardroom, at the top of the Company tab. Creating your CEO is back to just that, and the tutorial tells you where to find the daily challenge."]},
   {v:"0.8.2", notes:["The tutorial and How to play now cover the Gazette, daily challenges, stepping down, the four cities, the leaderboards and the new insurance protection levels."]},
   {v:"0.8.1", notes:["Fixed: pop-up messages (like denied claims) no longer cover the daily challenge progress bar. Messages now stack neatly below it, and below the update banner."]},

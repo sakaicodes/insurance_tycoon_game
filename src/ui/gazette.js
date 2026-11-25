@@ -76,7 +76,12 @@ function writeGazette(r){
     gossip:gazPick(GAZ_GOSSIP, "gossip").replace("{rival}", rival), percy:gazPick(GAZ_PERCY, "percy"), ad:gazPick(GAZ_ADS, "ads")};
   S.gazette = [ed].concat(S.gazette || []).slice(0, GAZ_KEEP); S.gazIdx = 0; S.gazUnread = true; gazetteBadge();
 }
-function gazetteBadge(){ const b = $("#btnBoard"); if (b) b.classList.toggle("has-news", !!S.gazUnread); }
+function gazetteBadge(){ const b = $("#btnNews"); if (b){ b.classList.toggle("has-news", !!S.gazUnread); b.setAttribute("aria-label", S.gazUnread ? "The Fine Print Gazette: new edition" : "The Fine Print Gazette"); } }
+function openGazette(){
+  if (S.gazUnread){ S.gazUnread = false; gazetteBadge(); save(); }
+  sfx("paper");
+  openModal(`<div class="top"><h2>The Gazette</h2>${xBtn}</div>${gazetteHtml()}`, {view:"gazette"});
+}
 function gazetteHtml(){
   const eds = S.gazette || [];
   if (!eds.length) return `<div class="empty"><p>📰 The first edition of the Fine Print Gazette comes out after your first earnings call.</p></div>`;
@@ -86,7 +91,7 @@ function gazetteHtml(){
       <button class="btn ghost" data-act="gz:newer" ${i === 0 ? "disabled" : ""} aria-label="Newer edition">›</button></div>
     <article class="gz">
       <header><h3 class="gz-mast">The Fine Print Gazette</h3><div class="gz-meta"><span>Quarter ${e.q}</span><span>Price: one claim form</span><span>Est. 1688, probably</span></div></header>
-      <h4 class="gz-head">${esc(e.head)}</h4>
+      <h4 class="gz-head${aprilFools() ? " upside" : ""}">${esc(e.head)}</h4>
       <p class="gz-lede">${esc(e.lede)}</p>
       <div class="gz-cols">
         <section><h5>Markets</h5>

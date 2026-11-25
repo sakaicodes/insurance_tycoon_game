@@ -1,5 +1,5 @@
 /* ui/update.js - part of Fine Print Syndicate. Bundled into one HTML file by build.js. */
-/* Update check: version metadata is embedded in the built HTML. A newer version shows a gentle banner;
+/* Update check: build.js writes version.json next to the game. A newer version shows a gentle banner;
    a version below minVersion shows a blocking "update required" screen. Reloading adds ?v= so caches can't serve the old file. */
 const UPD_DISMISS_KEY = "fineprint-update-dismissed";
 let updBannerFor = null, updRequired = false;
@@ -9,13 +9,8 @@ function updEnabled(){ return /^https?:$/.test(location.protocol) && !/(^|\.)cla
 async function checkForUpdate(){
   if (!updEnabled() || updRequired) return;
   try {
-    const r = await withTimeout(fetch(`${location.pathname}?t=${Date.now()}`, {cache:"no-store"}), 8000); if (!r.ok) return;
-    const page = new DOMParser().parseFromString(await r.text(), "text/html");
-    const version = page.querySelector('meta[name="app-version"]')?.content;
-    const minVersion = page.querySelector('meta[name="app-min-version"]')?.content;
-    if (!version) return;
-    const notes = JSON.parse(page.querySelector("#app-release-notes")?.textContent || "[]");
-    const v = {version, minVersion, notes};
+    const r = await withTimeout(fetch(`version.json?t=${Date.now()}`, {cache:"no-store"}), 8000); if (!r.ok) return;
+    const v = await r.json(); if (!v || !v.version) return;
     if (v.minVersion && cmpVer(VERSION, v.minVersion) < 0) showUpdateRequired(v);
     else if (cmpVer(v.version, VERSION) > 0) showUpdateBanner(v);
   } catch(e){}

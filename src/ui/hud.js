@@ -22,7 +22,7 @@ function hud(){
   $("#happyBar").style.width = S.happy + "%";
   { const mp = moodPct(); $("#happyTxt").textContent = MOODS.find(m => S.happy >= m[0])[1] + ` (${mp >= 0 ? "+" : "−"}${Math.abs(mp)}% premiums)`; }
   const qn = S.quarter;
-  $("#qLabel").textContent = `Q${((qn-1)%4)+1} earnings call in ${Math.ceil((Q_LEN - S.qt)/(S.idleMode ? (S.idleSpeed || 0.5) : 1))}s`;
+  $("#qLabel").textContent = `Q${((qn-1)%4)+1} call in ${Math.ceil((Q_LEN - S.qt)/(S.idleMode ? (S.idleSpeed || 0.5) : 1))}s`;
   $("#qBar").style.width = (S.qt/Q_LEN*100) + "%";
   $("#confBar").style.width = S.conf + "%";
   $("#confBar").style.background = S.conf < 25 ? "var(--danger)" : S.conf < 50 ? "var(--gold)" : "var(--money)";

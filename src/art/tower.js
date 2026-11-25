@@ -102,7 +102,7 @@ function drawSky(L){
   }
 }
 function drawSkyline(L){
-  if (cityId() === "nyc") return skylineNYC(L); if (cityId() === "bermuda") return skylineBermuda(L); if (cityId() === "zurich") return skylineZurich(L, true);
+  if (cityId() === "nyc") return skylineNYC(L); if (cityId() === "bermuda") return skylineBermuda(L); if (cityId() === "zurich") return skylineZurich(L, true); if (cityId() === "singapore") return skylineSingapore(L, true);
   const gy = L.groundY, night = isNight();
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#161B38" : "#73849B";
   const lit = "#FFE88A";
@@ -136,6 +136,7 @@ function drawSkylineFiller(L){
   const gy = L.groundY, night = isNight();
   if (cityId() === "bermuda"){ skylineBermuda(L); return; }
   if (cityId() === "zurich"){ skylineZurich(L, false); return; }
+  if (cityId() === "singapore"){ skylineSingapore(L, false); return; }
   const far = night ? "#272D52" : "#A9B6C6", mid = night ? "#1E2446" : "#8E9DB1", near = night ? "#181D3B" : "#7C8DA4", lit = "#FFE88A";
   for (let x = 0, k = 0; x < 256; k++){ const w = 6 + Math.floor(hash(k + 40, 11)*10), h = 12 + Math.floor(hash(k + 40, 12)*30); R(x, gy-h, w, h, far); if (night && hash(k + 40, 13) > .5) R(x+2, gy-h+3, 1, 1, lit); x += w; }
   for (let x = 2, k = 0; x < 250; k++){
@@ -166,7 +167,7 @@ function drawGround(L){
   for (let x = 2; x < LW; x += 12) R(x, gy+14, 6, 1, "#F2E6C8");
   R(12,gy-26,1,26,"#1F2A44"); R(9,gy-28,7,2,"#1F2A44"); R(10,gy-26,5,1, night ? "#FFE88A" : "#E6D2AE");
   if (night){ ctx.globalAlpha = .22; R(4,gy-25,17,25,"#FFE88A"); ctx.globalAlpha = 1; }
-  if (cityId() === "bermuda") bermudaPalms(gy); else if (cityId() === "nyc") nycStreet(gy, night); else if (cityId() === "zurich") zurichStreet(gy, night);
+  if (cityId() === "bermuda") bermudaPalms(gy); else if (cityId() === "nyc") nycStreet(gy, night); else if (cityId() === "zurich") zurichStreet(gy, night); else if (cityId() === "singapore") singaporeStreet(gy, night);
   if (tunnelH()) drawMetro(gy, night);
   for (const c of cars){
     if (c.wait > 0) continue; const x = Math.round(c.x);
@@ -214,7 +215,7 @@ function facadeRows(L){
   }
 }
 function drawRoof(L){
-  if (cityId() === "nyc") return roofNYC(L); if (cityId() === "bermuda") return roofBermuda(L); if (cityId() === "zurich") return roofZurich(L);
+  if (cityId() === "nyc") return roofNYC(L); if (cityId() === "bermuda") return roofBermuda(L); if (cityId() === "zurich") return roofZurich(L); if (cityId() === "singapore") return roofSingapore(L);
   const base = TOP, night = isNight();
   const tf = flareAt(L, TOP) + 2, x0 = 24 - tf, x1 = 196 + tf, w = x1 - x0;
   for (let x = x0; x < x1; x++){
@@ -405,21 +406,22 @@ function roofBermuda(L){
   roofSign(base, x0, w, night);
 }
 function facadeAlt(L){
-  const night = isNight(), top = TOP, bot = L.groundY, ny = cityId() === "nyc", zh = cityId() === "zurich";
-  const wall = zh ? (night ? "#B8AE95" : "#E6D9BC") : ny ? (night ? "#B4B0A8" : "#ECE8DE") : (night ? "#C68C9C" : "#F4B8C4");
-  const wallD = zh ? (night ? "#97896C" : "#C9B48E") : ny ? (night ? "#8E8A82" : "#CFC9BB") : (night ? "#A87080" : "#E49AAA");
+  const night = isNight(), top = TOP, bot = L.groundY, ny = cityId() === "nyc", zh = cityId() === "zurich", sg = cityId() === "singapore";
+  const wall = sg ? (night ? "#3A5A6A" : "#9CC6D8") : zh ? (night ? "#B8AE95" : "#E6D9BC") : ny ? (night ? "#B4B0A8" : "#ECE8DE") : (night ? "#C68C9C" : "#F4B8C4");
+  const wallD = sg ? (night ? "#2E4A58" : "#6E9FB6") : zh ? (night ? "#97896C" : "#C9B48E") : ny ? (night ? "#8E8A82" : "#CFC9BB") : (night ? "#A87080" : "#E49AAA");
   for (const [x0, x1] of [[10, 24], [196, 210]]){
     R(x0, top, x1 - x0, bot - top, wall);
     if (ny || zh){ R(x0 + 2, top, 1.5, bot - top, wallD); R(x1 - 3.5, top, 1.5, bot - top, wallD); }
     else { for (let y = top; y < bot; y += 6){ R(x0, y, 3, 3, "#FBFBF6"); R(x1 - 3, y + 3, 3, 3, "#FBFBF6"); } }
     for (let i = 0; i < L.n; i++){ const y = floorY(L, i); const lit = night && hash(i, x0) > 0.35;
       if (ny){ R(x0 + 5, y + 10, 4, 12, wallD); R(x0 + 5.5, y + 11, 3, 10.5, lit ? "#FFE18A" : "#7FA3C0"); ctx.fillStyle = wallD; ctx.beginPath(); ctx.arc(x0 + 7, y + 11, 2, Math.PI, 0); ctx.fill(); if (i % 4 === 3) R(x0, y + 1, x1 - x0, 1.2, "#C9A54A"); }
+      else if (sg){ R(x0 + 3, y + 8, 8, 16, lit ? "#FFE18A" : "#BFE3F0"); R(x0 + 7, y + 8, 0.8, 16, wallD); if (i % 3 === 1){ R(x0, y + 26, x1 - x0, 2, "#3E9B4F"); for (let k = 0; k < 3; k++){ ctx.fillStyle = night ? "#2E5446" : "#5DAE62"; ctx.beginPath(); ctx.arc(x0 + 2 + k*5, y + 25, 2, 0, Math.PI*2); ctx.fill(); } } }
       else if (zh){ R(x0 + 4, y + 9, 6, 15, wallD); R(x0 + 5, y + 10, 4, 13, lit ? "#FFE18A" : "#7FA3C0"); R(x0 + 5, y + 16, 4, 0.6, wallD); R(x0, y + 1, x1 - x0, 1.2, wallD); R(x0 + 3.5, y + 24, 7, 1, wallD); }
       else { R(x0 + 4, y + 12, 6, 12, "#FBFBF6"); R(x0 + 5, y + 13, 4, 10, lit ? "#FFE18A" : "#7FB8D0"); R(x0 + 2.5, y + 12, 1.5, 12, "#3E9B6A"); R(x0 + 10, y + 12, 1.5, 12, "#3E9B6A"); } }
     R(x0, L.lobbyY, x1 - x0, bot - L.lobbyY, ny || zh ? wallD : "#FBFBF6");
     if (ny || zh) for (let y = L.lobbyY + 3; y < bot; y += 5) R(x0, y, x1 - x0, 0.6, "rgba(0,0,0,.12)");
   }
-  for (let i = 0; i < L.n; i++){ const y = floorY(L, i); R(24, y + 38, 172, 2, zh ? "#C9B48E" : ny ? "#D2CDC0" : "#FBFBF6"); }
+  for (let i = 0; i < L.n; i++){ const y = floorY(L, i); R(24, y + 38, 172, 2, sg ? "#6E9FB6" : zh ? "#C9B48E" : ny ? "#D2CDC0" : "#FBFBF6"); }
 }
 function skylineNYC(L){
   const gy = L.groundY, night = isNight(), far = night ? "#272D52" : "#A9B6C8", mid = night ? "#1E2446" : "#8A9AB2", near = night ? "#161B38" : "#6E809A", lit = "#FFE88A";
@@ -477,7 +479,7 @@ function drawSpecProp(f, y){
 
 /* London's Tube and New York's subway: a station entrance on the pavement and a cutaway tunnel under the road. */
 function drawMetro(gy, night){
-  const ny = cityId() === "nyc", top = gy + GROUND, h = tunnelH();
+  const ny = cityId() === "nyc" || cityId() === "singapore", sg = cityId() === "singapore", top = gy + GROUND, h = tunnelH();
   // the ground the tunnel is dug through
   R(0, top, LW, h, ny ? "#5E5650" : "#6B5E50");
   for (let x = 0, k = 0; x < LW; x += 7, k++) R(x + (k % 3), top + 1 + (k % 4)*4, 3, 1, ny ? "#4E4842" : "#5A4E42");
@@ -499,18 +501,21 @@ function drawMetro(gy, night){
   for (let k = 0; k < 4; k++) R(ex + 2 + k*3, gy + 3 + k*0.7, 2, 0.6, "#5A5A64");
   R(ex, gy - 6, 1, 8, "#2B2D3A"); R(ex + w - 1, gy - 6, 1, 8, "#2B2D3A"); R(ex, gy - 6, w, 1, "#2B2D3A"); R(ex, gy - 3, w, 0.6, "#2B2D3A");
   if (ny){
-    for (const lx of [ex - 1, ex + w]){ R(lx, gy - 14, 1, 14, "#2B4A2E"); ctx.fillStyle = night ? "#8FF2A8" : "#3E9B4F"; ctx.beginPath(); ctx.arc(lx + 0.5, gy - 15, 1.8, 0, Math.PI*2); ctx.fill(); }
-    R(ex, gy - 10, w, 4, "#141418"); T("SUBWAY", ex + w/2, gy - 7.4, 2.3, "#FFFFFF", "center", 700);
+    if (!sg) for (const lx of [ex - 1, ex + w]){ R(lx, gy - 14, 1, 14, "#2B4A2E"); ctx.fillStyle = night ? "#8FF2A8" : "#3E9B4F"; ctx.beginPath(); ctx.arc(lx + 0.5, gy - 15, 1.8, 0, Math.PI*2); ctx.fill(); }
+    if (sg){ R(ex, gy - 10, w, 4, "#D52B1E"); T("MRT", ex + w/2, gy - 7.4, 2.8, "#FFFFFF", "center", 700);
+      R(ex + 1, gy - 18, 6, 6, "#FFFFFF"); ctx.fillStyle = "#8E9A3A"; ctx.beginPath(); ctx.arc(ex + 4, gy - 15, 1.8, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle = "#D52B1E"; ctx.lineWidth = 0.7; ctx.beginPath(); ctx.arc(ex + 4, gy - 15, 2.6, 0, Math.PI*2); ctx.moveTo(ex + 2.2, gy - 16.8); ctx.lineTo(ex + 5.8, gy - 13.2); ctx.stroke(); }
+    else { R(ex, gy - 10, w, 4, "#141418"); T("SUBWAY", ex + w/2, gy - 7.4, 2.3, "#FFFFFF", "center", 700); }
   } else {
     R(ex, gy - 11, w, 5, "#1F2A44"); R(ex, gy - 11, w, 0.6, "#C9A54A"); T("TUBE", ex + w/2, gy - 7.6, 3, "#FFFFFF", "center", 700);
   }
 }
 function drawTrain(ny){
+  const sg = cityId() === "singapore";
   for (let car = 0; car < 2; car++){
     const x = car*42;
     if (ny){
       R(x, 1, 40, 10, "#B9BEC8"); R(x, 1, 40, 1, "#DDE1E8");
-      for (let k = 2; k < 40; k += 3) R(x + k, 7, 0.6, 3, "#9CA2AE");
+      if (sg){ R(x, 7, 40, 1.4, "#D52B1E"); R(x, 8.6, 40, 1, "#2F6FE4"); } else for (let k = 2; k < 40; k += 3) R(x + k, 7, 0.6, 3, "#9CA2AE");
       for (let k = 0; k < 5; k++) R(x + 3 + k*7.5, 3, 5, 3, isNight() ? "#FFE9A8" : "#2A3040");
       R(x + 18, 2, 4, 8, "#8E94A0");
     } else {
@@ -578,4 +583,49 @@ function zurichStreet(gy, night){
   ctx.strokeStyle = night ? "#6A6A7A" : "#1F2238"; ctx.lineWidth = 0.8;
   ctx.beginPath(); ctx.arc(205, gy - 2.5, 2.4, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(213, gy - 2.5, 2.4, 0, Math.PI*2); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(205, gy - 2.5); ctx.lineTo(208.5, gy - 6); ctx.lineTo(213, gy - 2.5); ctx.moveTo(208.5, gy - 6); ctx.lineTo(211.5, gy - 6); ctx.stroke();
+}
+
+/* ---------- Singapore ---------- */
+/* a garden tower in Raffles Place: green terraces, a rooftop infinity pool and palms */
+function roofSingapore(L){
+  const base = TOP, night = isNight(), x0 = 10, x1 = 210, w = x1 - x0;
+  R(x0, base - 12, w, 3, night ? "#4A6A70" : "#9CC6D8"); R(x0 - 2, base - 9, w + 4, 2, night ? "#2E4A50" : "#6E9FB6");
+  R(x0 + 4, base - 20, w - 8, 8, night ? "#2A5A6A" : "#4FB6D8"); R(x0 + 4, base - 20, w - 8, 2, night ? "#5A8EA0" : "#BFE8F4");
+  for (let x = x0 + 10; x < x1 - 10; x += 14) R(x, base - 17, 6, 1, night ? "#7FB0C0" : "#E6F7FC");
+  for (const px of [x0 + 8, x0 + 40, x1 - 44, x1 - 12]){ R(px, base - 34, 1.6, 14, "#8E5A30");
+    ctx.fillStyle = night ? "#2E5446" : "#3E9B4F"; for (const [dx, dy] of [[-6, -2], [6, -2], [-4, -5], [4, -5], [0, -6]]){ ctx.beginPath(); ctx.ellipse(px + 0.8 + dx*0.7, base - 34 + dy*0.6, 4, 1.4, dx*0.15, 0, Math.PI*2); ctx.fill(); } }
+  R(x0 + 60, base - 24, 80, 4, night ? "#3A4A3E" : "#5DAE62"); R(x0 + 92, base - 30, 16, 6, night ? "#B8AE95" : "#F2EAD6");
+  roofSign(base, x0, w, night);
+}
+function skylineSingapore(L, landmarks){
+  const gy = L.groundY, night = isNight();
+  // the strait, packed with ships, and the port cranes beyond
+  R(0, gy - 44, 256, 16, night ? "#1E3A5A" : "#5E8FB0"); R(0, gy - 44, 256, 1, night ? "#3A5A86" : "#8FB8D2");
+  for (const [x, cols] of [[30, 4], [110, 3], [190, 5]]){ R(x, gy - 38, cols*6 + 6, 4, "#3A4A66"); for (let k = 0; k < cols; k++) R(x + 3 + k*6, gy - 42, 5, 4, ["#C0392B", "#2F6FE4", "#E39A2C", "#3E9B4F", "#7A4FBF"][k % 5]); }
+  for (const x of [70, 86, 150, 232]){ R(x, gy - 70, 2, 30, night ? "#55607A" : "#7A8CA6"); R(x - 10, gy - 70, 16, 2, night ? "#55607A" : "#7A8CA6"); R(x - 9, gy - 68, 1, 8, night ? "#55607A" : "#7A8CA6"); }
+  // the city: glassy towers
+  const tw = [["#9CC6D8", "#7FB0C6"], ["#B8D4DE", "#94B8C6"], ["#A6C2CE", "#86A8B6"]];
+  for (let x = 0, k = 0; x < 256; k++){ const w = 10 + Math.floor(hash(k, 71)*10), h = 26 + Math.floor(hash(k, 72)*34), c = tw[k % 3];
+    R(x, gy - h, w, h, night ? "#3A4A62" : c[0]); R(x, gy - h, 1.5, h, night ? "#2E3A50" : c[1]);
+    for (let yy = gy - h + 3; yy < gy - 2; yy += 4) for (let xx = x + 2; xx < x + w - 2; xx += 3) if (hash(xx, yy) > 0.45) R(xx, yy, 1.2, 1.6, night ? "#FFE18A" : "rgba(255,255,255,.35)");
+    if (hash(k, 73) > 0.6) R(x + 1, gy - h + 6, w - 2, 1.6, night ? "#2E5446" : "#5DAE62");
+    x += w + 2; }
+  if (landmarks){
+    // Supertrees, glowing purple
+    for (const [x, h] of [[3, 34], [12, 46]]){ R(x, gy - h, 2, h, night ? "#5A3E78" : "#7C5AA6"); ctx.fillStyle = night ? "#E39AF2" : "#C77DDB"; ctx.beginPath(); ctx.ellipse(x + 1, gy - h, 6, 2.4, 0, 0, Math.PI*2); ctx.fill();
+      if (night) for (let k = -4; k <= 4; k += 2) R(x + 1 + k, gy - h - 1, 0.8, 0.8, "#FFD7FF"); }
+    // three towers joined by a sky park
+    const bx = 226; for (let k = 0; k < 3; k++){ R(bx + k*10, gy - 64, 7, 64, night ? "#6A7080" : "#C9CFD8"); for (let yy = gy - 60; yy < gy - 4; yy += 5) R(bx + k*10 + 1.5, yy, 4, 1.4, night ? "#FFE18A" : "#7FA3C0"); }
+    R(bx - 4, gy - 69, 34, 5, night ? "#4A5062" : "#A7B0BE"); R(bx + 26, gy - 68, 6, 2, night ? "#4A5062" : "#A7B0BE"); R(bx, gy - 70, 26, 1.4, night ? "#3E7A5A" : "#3E9B4F");
+    // the lion, spouting into the bay
+    ctx.fillStyle = night ? "#B8B2A6" : "#E9E2D6"; ctx.beginPath(); ctx.moveTo(206, gy - 30); ctx.lineTo(206, gy - 40); ctx.quadraticCurveTo(209, gy - 46, 213, gy - 42); ctx.lineTo(214, gy - 30); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = night ? "#8FC8E8" : "#BFE3F5"; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(206, gy - 41); ctx.quadraticCurveTo(198, gy - 44, 194, gy - 30); ctx.stroke();
+  }
+  ctx.globalCompositeOperation = "source-atop"; const hz = ctx.createLinearGradient(0, gy - 160, 0, gy); hz.addColorStop(0, "rgba(255,255,255,0)"); hz.addColorStop(1, night ? "rgba(40,30,70,.3)" : "rgba(255,214,190,.3)"); ctx.fillStyle = hz; ctx.fillRect(0, gy - 160, 256, 160); ctx.globalCompositeOperation = "source-over";
+}
+function singaporeStreet(gy, night){
+  // orchid planters and a hawker stall's red awning, peeking in at the edge
+  for (const [x, c] of [[2, "#C77DDB"], [190, "#E58BC0"]]){ R(x, gy - 4, 10, 4, "#8E5A30"); for (let k = 0; k < 3; k++){ ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 2 + k*3, gy - 5 - (k % 2), 1.6, 0, Math.PI*2); ctx.fill(); } R(x + 1, gy - 5, 8, 1, "#3E9B4F"); }
+  R(202, gy - 14, 12, 3, "#C0392B"); for (let x = 202; x < 214; x += 3) R(x, gy - 11, 1.5, 1.5, "#F7F2E6"); R(203, gy - 11, 1, 11, "#5A3825"); R(212, gy - 11, 1, 11, "#5A3825"); R(203, gy - 6, 10, 2, "#E9C46A");
+  if (night) R(205, gy - 10, 6, 1, "#FFE18A");
 }

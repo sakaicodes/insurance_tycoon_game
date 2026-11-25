@@ -31,6 +31,9 @@ const LINES = {
     blurb:"Insurance for insurance companies. You take a slice of their whole book, so their worst day becomes yours.",
     pro:"The biggest premiums and very few claims. Your customers are other insurers, so public mood barely matters.", con:"Every black swan hits you harder, because you’ve insured the insurers."},
 };
+{ const SG = {haze:{property:0.6, casualty:1.1, excess:0.7, marine:0.9, cyber:0.3, specialty:1.7, treaty:1.2},
+             flood:{property:1.8, casualty:0.8, excess:0.8, marine:1.0, cyber:1.0, specialty:0.9, treaty:1.4}};
+  for (const k in SG) for (const line in SG[k]) LINES[line].swans[k] = SG[k][line]; }
 { const SWISS = {franc:{property:0.7, casualty:0.8, excess:1.0, marine:1.2, cyber:0.8, specialty:1.1, treaty:1.7},
                 gotthard:{property:1.0, casualty:0.6, excess:0.7, marine:1.9, cyber:0.4, specialty:1.3, treaty:1.3}};
   for (const k in SWISS) for (const line in SWISS[k]) LINES[line].swans[k] = SWISS[k][line]; }
@@ -216,7 +219,70 @@ const MORE_NAMES = ["Aisha","Bartholomew","Chiara","Dmitri","Esme","Fatima","Gwe
   "Florian","Greta","Horace","Isadora","Jerome","Kemi","Ludmila","Mo","Nadia","Ophelia","Perpetua","Raj","Stanislav","Tilly","Ugo","Vivienne","Walter","Xiomara","Yuki","Zoltan",
   "Aurelio","Blossom","Cyril","Dagny","Ebenezer","Fenella","Gideon","Honor","Ignatius","Jemima"];
 function lineIncident(line){
+  const egg = typeof eggClaim === "function" && eggClaim(); if (egg) return egg;
   const pool = LINE_INCIDENTS[line] || LINE_INCIDENTS.property;
   if ((line === "property" || line === "casualty") && Math.random() < 0.35) return pickFresh(INCIDENTS, "recentInc", 45);
   return pickFresh(pool, "recentLine_" + line, Math.min(12, pool.length - 3));
 }
+
+/* ---------- more names and claims (0.9.0) ---------- */
+MORE_NAMES.push("Wei Ling","Jun Hao","Siti","Arjun","Mei","Hafiz","Priyanka","Kenji","Hiroko","Min-jun","Seo-yeon","Thanh","Linh","Bao","Nurul","Farhan","Devika","Anand",
+  "Chiamaka","Tunde","Folake","Kwabena","Ama","Zanele","Thabo","Lerato","Sipho","Nomvula","Mateus","Larissa","Joaquín","Lucía","Ximena","Diego","Renata","Paolo",
+  "Giulia","Matteo","Sofia","Lars","Ingrid","Sven","Astrid","Mikko","Aino","Bram","Fenne","Jules","Margaux","Odile","Aurelien","Pádraig","Siobhan","Rhys","Cerys",
+  "Fergus","Isla","Callum","Morag","Dougie","Bernadette","Gertrude","Mildred","Reginald","Cuthbert","Algernon","Hortense","Barnaby","Clementine","Wilbur","Prudence",
+  "Ezekiel","Delilah","Leroy","Shanice","Tyrone","Keisha","Brayden","Kayleigh","Jaxon","Nevaeh");
+LINE_INCIDENTS.property.push(
+  "A smart doorbell recorded the whole burglary. The burglars waved. Twice.",
+  "An office aquarium burst on the 9th floor. The fish are fine. Floors 1 to 8 are not.",
+  "A neighbour’s trampoline blew three gardens over and landed on a greenhouse.",
+  "The landlord insists the mould in the bathroom is ‘a feature wall’.",
+  "Termites ate a wooden staircase from the inside. It looked perfect until someone used it.",
+  "A shop sign fell off in a breeze and took out a parked scooter, a bin and a seagull’s confidence.",
+  "A cat knocked a candle into a pile of tax returns. The tax office has accepted this as a valid excuse.",
+  "A ceiling collapsed under the weight of 30 years of stored Christmas decorations.");
+LINE_INCIDENTS.casualty.push(
+  "A customer slipped on a banana peel in a supermarket. The supermarket does not sell bananas.",
+  "A food delivery robot ran over a pensioner’s foot and then asked for a five-star rating.",
+  "A karaoke machine exploded mid-power-ballad. Witnesses say it was a mercy.",
+  "A yoga instructor’s demonstration of ‘extreme flexibility’ ended in an ambulance.",
+  "A café’s ‘bottomless brunch’ was taken literally by a customer for eleven hours.",
+  "A child’s scooter was left at the top of the escalator. You can guess the rest.",
+  "A shopping trolley rolled down a hill, through a car park and into a wedding photo.",
+  "An office chair with wheels was used as a vehicle in a corridor race. There was a crash.");
+LINE_INCIDENTS.excess.push(
+  "A battery maker’s phones started getting warm. Then very warm. Then very, very warm.",
+  "A food chain’s ‘secret sauce’ turned out to contain a secret, and a class action.",
+  "A ride-sharing app’s map sent 20,000 drivers into the same lake.",
+  "A toy company’s glow-in-the-dark slime turned out to also glow in the light, and the bath.",
+  "A smart-home company’s update locked 300,000 people out of their houses at once.",
+  "A building’s ‘self-cleaning’ glass cleaned itself straight off the building.");
+LINE_INCIDENTS.marine.push(
+  "A container of live lobsters escaped in port and are now ‘at large’.",
+  "A ship’s captain used a paper map from 1962. The harbour has moved since.",
+  "A cruise ship’s buffet ran out of prawns mid-voyage. Passengers have formed a union.",
+  "A cargo of flat-pack furniture arrived assembled, wrongly, by the crew out of boredom.",
+  "A tanker turned left when the pilot said right. The pilot said right very loudly, afterwards.",
+  "Seagulls ate the entire cargo of a fishing boat while the crew were posing for photos.",
+  "A shipment of durians was opened in a sealed hold. The crew have asked to be paid in compensation and air.");
+LINE_INCIDENTS.cyber.push(
+  "The company’s AI chatbot agreed to sell a car for one pound and called it ‘a legally binding deal’.",
+  "Hackers encrypted every file and left a ransom note written entirely in emoji.",
+  "Someone replied-all to 40,000 staff and the email server simply gave up.",
+  "A QR code on a restaurant menu took diners to a site that stole their passwords and their dinner orders.",
+  "An intern’s ‘test’ email to customers went out with the subject line ‘test test is this thing on’.",
+  "The office smart kettle was used to break into the payroll system. Payroll has been very hot ever since.",
+  "A fake invoice for ‘consultancy, misc.’ was paid seventeen times.");
+LINE_INCIDENTS.specialty.push(
+  "A hot-air balloon proposal went wrong when the ring went overboard. The answer was also no.",
+  "A famous violinist left a £2 million violin in a taxi. The taxi driver has taken up lessons.",
+  "A pop star insured her voice and then lost it shouting at a referee.",
+  "A celebrity dog’s grooming went wrong. The dog has 3 million followers and a solicitor.",
+  "A vintage car rally was won by a car that was not, technically, vintage, or a car.",
+  "A film’s lead actor shaved his beard before the final scene. The final scene was a beard scene.",
+  "A food festival ran out of food. The festival is now just ‘a festival’.");
+LINE_INCIDENTS.treaty.push(
+  "A cedant in Singapore wrote 3,000 policies on the same reclaimed land. The sea would like it back.",
+  "An insurer you reinsure discovered its flood model had the river on the wrong side of town.",
+  "A ceding company wrote cyber cover for every bank in one region, on one software supplier, on one bad day.",
+  "Your cedant’s hailstorm claim came with photographs. Of one very large hailstone. On a very small car.",
+  "A quota share partner has asked if ‘act of God’ covers ‘act of intern’.");

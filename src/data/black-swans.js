@@ -28,4 +28,7 @@ const SWANS = {
 /* Zurich-only black swans: they never appear in other cities. */
 SWANS.franc = {city:"zurich", title:"The Franc Shock", text:"At half past ten on a Thursday the central bank stopped holding the franc down. It jumped thirty per cent before lunch, and every claim you owe in euros and dollars now costs a small fortune in francs.", cover:"dno", mit:actMit, mitName:"Capital Modelling"};
 SWANS.gotthard = {city:"zurich", title:"The Gotthard gets blocked", text:"A freight train derailed deep inside the tunnel under the Alps. Europe’s main north–south rail route is shut for months, and every cargo, supply chain and business interruption policy you wrote is taking the very long way round.", cover:"cat", mit:actMit, mitName:"Capital Modelling"};
+/* Singapore-only black swans */
+SWANS.haze = {city:"singapore", title:"The Great Haze", text:"Smoke from fires across the region has blanketed the city for a week. Concerts, races and regattas are cancelled, flights are grounded, and everyone is staying indoors refreshing the air quality app.", cover:"event", mit:actMit, mitName:"Capital Modelling"};
+SWANS.flood = {city:"singapore", title:"Monsoon flash floods", text:"Forty minutes of monsoon rain turned roads into rivers and basements into aquariums. Cars, car parks and a great many server rooms are now underwater.", cover:"cat", mit:actMit, mitName:"Capital Modelling"};
 const SWAN_POOL = ["hurricane","hurricane","canal","canal","outage","outage","ash","cancel","bank","bank","rocket","rocket","solar"];

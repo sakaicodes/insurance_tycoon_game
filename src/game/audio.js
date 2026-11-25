@@ -39,6 +39,7 @@ function sfx(name, n){
     case "stamp": noise(t,0.12,0.35,420); tone(110,t,0.12,"sine",0.25,0.5); break;
     case "paper": noise(t,0.2,0.12,3000,"bandpass"); break;
     case "gavel": noise(t,0.07,0.4,500); tone(150,t,0.1,"triangle",0.25,0.6); noise(t+0.22,0.07,0.4,500); tone(150,t+0.22,0.1,"triangle",0.25,0.6); break;
+    case "gong": tone(98, t, 2.4, "sine", 0.22); tone(196, t, 1.8, "triangle", 0.08); tone(147, t + 0.02, 2.0, "sine", 0.1); break;
     case "cuckoo": for (const s of [0, 0.62]){ tone(784, t + s, 0.2, "sine", 0.13); tone(622, t + s + 0.24, 0.3, "sine", 0.13); } break;
     case "chime": [784,988,1175].forEach((f,k) => tone(f,t+k*0.08,0.25,"triangle",0.08)); break;
     case "bell": for (let k = 0; k < (n || 1); k++){ const tt = t + k*0.55; tone(660,tt,1.4,"sine",0.16); tone(1650,tt,0.7,"sine",0.05); tone(990,tt,1.0,"triangle",0.04); } break;

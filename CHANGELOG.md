@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.9.3
+- Tutorial: the welcome step always said "a syndicate in the London insurance market"; it now uses the chosen city's market (for example, "Singapore’s Asian insurance hub"). "Pause and help" now also mentions the 🔊 button.
+
+## 0.9.2
+- **Gazette button:** the Gazette is no longer a Boardroom tab. A 📰 button in the HUD (beside Pause, ? and 🔊) opens it in its own panel (`openGazette()`), and the unread dot moved from the Boardroom button to it. "Read the Gazette" on the earnings call opens the same panel.
+- **Daily tab:** the Boardroom's 📅 Daily tab (in the Gazette's old place) holds the daily challenge card, today's top three and a button for the full Today leaderboard; during a daily it shows the goal, twist and "Leave and return to my company". The daily section was removed from the Company tab.
+- The HUD timer reads "Q7 call in 41s" (was "Q7 earnings call in 41s"), so the earnings bar keeps its length with the extra button.
+- Tutorial: "Earnings calls" mentions the 📰 button; "The Boardroom" mentions the Daily tab. How to play and the README are updated to match.
+
+## 0.9.1
+- **Two-step setup.** Step 1 (Your CEO) has the name, company and look; "Next: choose your city" checks there's a name first. Step 2 (Your city) shows a two-column grid of city tiles, each with a thumbnail of that city's real skyline (`cityThumb()` draws it once in daytime and caches it), currency and market; the selected city's description, risks and home-market lines appear below. Back returns to step 1 and keeps the typed names.
+- **Surprise me** picks a random city other than the current one and says so. The grid grows by rows, so adding cities no longer lengthens the page much.
+
+## 0.9.0
+- **New city: Singapore** (currency S$). A glass garden tower with green terraces and a rooftop infinity pool with palms (`roofSingapore`); skyline with the strait, ships and port cranes, glassy towers, Supertrees and a three-tower sky park at the edges, and a lion statue for wide screens (`skylineSingapore`); orchid planters and a hawker stall (`singaporeStreet`); an MRT entrance with a "no durians" sign and a red-and-blue-striped train in the tunnel; green buses and blue taxis; a gong for earnings calls. Risks: canal 1.6×, IT meltdown 1.3×, bank 1.2×, hurricane 0.4×, ash 0.5×, solar 0.7×; home bonuses on Marine (1.12×) and Treaty (1.1×). Achievement "Lion City"; Globetrotter now needs all five cities.
+- **Singapore-only black swans:** "The Great Haze" (event cancellation cover; Specialty 1.7×) and "Monsoon flash floods" (catastrophe cover; Property 1.8×, Treaty 1.4×), each with a cutscene, portrait, line and achievement.
+- **Easter eggs** (`src/ui/eggs.js`): company names containing "Lutine" (the bell rings twice) or "1688" (Lloyd's coffee house), CEOs named "Lloyd" or "Percy"; tap Percy 10 times to crown him; tap the version number 7 times for joke credits; the Konami code (↑↑↓↓←→←→BA) starts a minute of pigeon claims; tiny tappable fine print at the bottom of How to play; date eggs for 1 April (prank claims, an upside-down Gazette headline), 24–26 December (festive claims) and Friday the 13th; playing at 3am. Seven secret achievements in a new Secrets category show as "🔒 ???" until found.
+- **Content:** 53 new line-specific claims (193 in total) and 80 more claimant names.
+- **Supabase:** `20261124000000_singapore.sql` adds `singapore` to the allowed cities on `scores`, `plays` and `daily_scores`; `submit-score` accepts it. Both are needed before Singapore runs can reach the leaderboards.
+- The leaderboard's city filters now sit in two rows of three.
+
 ## 0.8.3
 - The daily challenge card is no longer shown on the Create your CEO screen; it's only in the Boardroom, now as the first section of the Company tab.
 - The tutorial's Boardroom step says the daily challenge lives in the Company tab (the mention in "How it ends" was removed so it's explained once).
@@ -27,7 +48,7 @@
 - No Supabase changes.
 
 ## 0.7.0
-- **Update check.** The build embeds `version` and `minVersion` metadata in the single `dist/index.html` file. The game checks the deployed HTML on load, every 10 minutes and when the tab regains focus (skipped on claude.ai and when opened as a local file). A newer version shows a dismissible banner; a current version below `minVersion` shows a blocking "Update required" screen. Both save first and reload with `?v=<version>` to bypass caches.
+- **Update check.** `build.js` now writes `dist/version.json` (`version`, `minVersion` from `package.json`, and the latest three changelog notes). The game fetches it on load, every 10 minutes and when the tab regains focus (skipped on claude.ai and when opened as a local file). A newer version shows a dismissible banner; a current version below `minVersion` shows a blocking "Update required" screen. Both save first and reload with `?v=<version>` to bypass caches. `version.json` must be deployed next to the game.
 - **Server-side minimum version.** `submit-score` rejects finished runs older than the `MIN_VERSION` secret (default `0.0.0`) with status 426. The game queues the score, shows the update screen, and sends it after updating (queued scores are re-stamped with the new version).
 - **Reinsurance layers.** Each cover is a layer: you pay a retention, the reinsurer pays up to a limit, and anything above comes back to you. Presets: Light (retention 1.5, limit 2.0), Balanced (0.6, 3.0) and Strong (0.25, 4.5), in quarters of premium scaled by your exposure to the disasters that cover pays for. "Customise the layer" offers retention and limit sliders. Existing covers become Balanced.
 - **Exposure-based pricing.** Price = base rate × protection factor × exposure (your book and city, averaged over the disasters the cover pays for) × market (+35% after a disaster of that type, easing 30% per quarter) × Capital Modelling discount × reinsurance perk. "Why this price?" shows each factor. Switching level takes effect immediately; the new price applies from the next renewal.

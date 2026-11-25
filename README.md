@@ -1,4 +1,4 @@
-# Insurance Tycoon
+# Fine Print Syndicate
 
 A satirical London-market insurance tower game. You write the source as separate files; `build.js` bundles them into **one self-contained HTML file** that runs anywhere.
 
@@ -32,7 +32,7 @@ src/
     market.js            pricing strategies, market cycle messages, investment strategies
     tutorial.js          tutorial steps
     changelog.js         What's new notes, newest first
-    cities.js            London, New York, Bermuda and Zurich: names, buildings, currency, risks
+    cities.js            London, New York, Bermuda, Zurich and Singapore: names, buildings, currency, risks
     lines.js             lines of business, actuarial specialisms, line-specific claims, extra names
     online.js            global leaderboard URL and publishable key
     daily.js             daily challenge formats, twists, objectives and the date-based generator
@@ -47,6 +47,7 @@ src/
     gazette.js           the Fine Print Gazette
     daily.js             daily challenge runs (own save slot), card, progress bar and results
     feedback.js          the exit interview
+    eggs.js              easter eggs and their secret achievements (spoilers!)
     update.js            the new-version check
   render/renderer.js     the Phaser scene and the game boot
 supabase/
@@ -58,29 +59,30 @@ supabase/
 
 - **Lines of business and actuaries** (`src/data/lines.js`): each Underwriting floor writes a line (premium rate, claim frequency and size, lawsuit appetite, mood sensitivity, black swan exposure); Actuarial floors pick Pricing, Reserving or Capital Modelling. Customer mood scales premiums around a 50% baseline, and business volume grows with the tower.
 - **Your own insurance** (`COVERS` and `PROTECTION` in `src/data/black-swans.js`, pricing in `src/game/endings.js`): Light, Balanced or Strong layers (retention and limit in quarters of premium, scaled by exposure), or a custom layer. Price = base rate × protection × exposure × market (rises after a disaster, eases each quarter) × Capital Modelling × perks.
-- **The Fine Print Gazette** (`src/ui/gazette.js`): one edition per earnings call, headline chosen from the quarter's results, last 8 kept, read in the Boardroom's Gazette tab. Add gossip, Percy lines or classifieds to the pools at the top of the file.
-- **Daily challenges** (`src/data/daily.js`, `src/ui/daily.js`): generated from the UTC date, so every player gets the same one and nothing needs publishing. Started from the top of the Boardroom's Company tab. 12 quarters at most, idle mode off, own save slot so the main company is paused and untouched. New twists and objectives join the rotation automatically.
+- **The Fine Print Gazette** (`src/ui/gazette.js`): one edition per earnings call, headline chosen from the quarter's results, last 8 kept, opened from the 📰 button in the HUD (or "Read the Gazette" on the earnings call). Add gossip, Percy lines or classifieds to the pools at the top of the file.
+- **Daily challenges** (`src/data/daily.js`, `src/ui/daily.js`): generated from the UTC date, so every player gets the same one and nothing needs publishing. Started from the Boardroom's 📅 Daily tab. 12 quarters at most, idle mode off, own save slot so the main company is paused and untouched. New twists and objectives join the rotation automatically.
 - **Endings**: bankruptcy, being fired, losing the licence, selling (private equity or IPO), and stepping down from quarter 4 (`stepDown()` in `src/game/endings.js`). An optional, anonymous exit interview (`src/ui/feedback.js`) can appear before the score screen; players can turn it off.
+- **Easter eggs** (`src/ui/eggs.js`): hidden name reactions, Percy, the credits, the Konami code, the fine print and date-based surprises. Each sets a flag in `S.eggs`, which a secret achievement (`secret:true` in `ACH`) checks; secret achievements show as "???" until unlocked.
 - **Leaderboards**: Global (all finished runs), Today (each player's best daily attempt) and This device. Top-5 global finishes get a rank reveal, and number one gets a podium cutscene.
 
 ## The CEO
 
-Every run starts on the Create your CEO screen (`openSetup()` in `src/ui/panels.js`). The choices are stored in `S.ceo` and `S.companyName` and are locked until the player starts a new company. Use `ceoName()` / `companyName()` for plain text, or `ceoN()` / `coName()` when inserting into HTML (they escape the text).
+Every run starts with a two-step setup (`openSetup()` in `src/ui/panels.js`): step 1 creates the CEO, step 2 picks the city from a grid of tiles with skyline thumbnails (`cityThumb()`) and a Surprise me option. The choices are stored in `S.ceo` and `S.companyName` and are locked until the player starts a new company. Use `ceoName()` / `companyName()` for plain text, or `ceoN()` / `coName()` when inserting into HTML (they escape the text).
 
 ## Cities, exits and the penthouse
 
 `S.city` picks the art in `src/art/tower.js` (`facadeAlt`, `roofNYC`, `roofBermuda`, `skylineNYC`, `skylineBermuda`) and the currency (`setCity()` sets `CUR`, used by `fmt()`). Selling the company lives in `src/game/endings.js` (`exitValue`, `sellCompany`); golden tickets are stored under `fineprint-legacy` so they survive new runs. The penthouse is a normal floor type that `workFloors()` leaves out of every count; `addFloor()` keeps new floors below it.
 
-London and New York have a cutaway metro under the street (`drawMetro()` and `drawTrain()` in `src/art/tower.js`, enabled by `tunnelH()`). Zurich (`roofZurich`, `skylineZurich`, `zurichStreet`) has trams, and two black swans that only happen there: a swan with `city:"zurich"` in `SWANS` is only drawn in that city. Each city's `swans` and `lines` multipliers in `src/data/cities.js` set its disaster risks and home-market bonuses. To add a city: add it to `CITIES`, give it a roof, skyline and street in `tower.js`, and add it to the allowed cities in Supabase (table checks and `CITIES` in the function).
+London, New York and Singapore have a cutaway metro under the street (`drawMetro()` and `drawTrain()` in `src/art/tower.js`, enabled by `tunnelH()`). Zurich (`roofZurich`, `skylineZurich`, `zurichStreet`) has trams, and Singapore (`roofSingapore`, `skylineSingapore`, `singaporeStreet`) a sky-garden tower. Both have two black swans that only happen there: a swan with `city:"zurich"` in `SWANS` is only drawn in that city. Each city's `swans` and `lines` multipliers in `src/data/cities.js` set its disaster risks and home-market bonuses. To add a city: add it to `CITIES`, give it a roof, skyline and street in `tower.js`, and add it to the allowed cities in Supabase (table checks and `CITIES` in the function).
 
 ## Releasing a new version
 
-1. Bump `version` in `package.json` (for example `0.8.2` to `0.8.3`).
+1. Bump `version` in `package.json` (for example `0.8.1` to `0.8.2`).
 2. Add an entry at the top of `src/data/changelog.js` with the same version and a few short notes. Players see these under What's new.
-3. Run `node build.js --check`. This writes the single build artifact, `dist/index.html`.
-4. Deploy `dist/index.html` to GitHub Pages as `index.html`.
+3. Run `node build.js --check`. This writes `dist/index.html` and `dist/version.json`.
+4. Deploy **both** files to GitHub Pages: the game as `index.html`, with `version.json` beside it.
 
-The version is stamped into the game automatically and shown in the corner of the screen. Players with the game open see a banner offering the new version (`src/ui/update.js` checks the deployed `index.html` on load, every 10 minutes and when the tab regains focus).
+The version is stamped into the game automatically and shown in the corner of the screen. Players with the game open see a banner offering the new version (`src/ui/update.js` checks `version.json` on load, every 10 minutes and when the tab regains focus).
 
 To make an update compulsory (for example, after a scoring change), also raise `minVersion` in `package.json` before building: anyone on an older version gets a blocking "Update required" screen. To stop outdated versions posting scores, set the same value as a function secret: `npx supabase secrets set MIN_VERSION=0.8.2`.
 
@@ -92,6 +94,7 @@ The game reads and submits scores using the URL and publishable key in `src/data
 - `supabase/functions/submit-score/index.ts` is the only way scores get written. Deploy it with `npx supabase functions deploy submit-score --no-verify-jwt --use-api`. Its `ALLOWED` list must include the site the game is served from.
 - `supabase/migrations/20261116000000_players_and_stats.sql` adds the anonymous `player_id`, the private `plays` table (run starts), the public `leaderboard_stats` view (players and runs shown in the game), a private `play_stats` view, and restricts public reads to the leaderboard columns.
 - `supabase/migrations/20261118000000_feedback.sql` adds the private `feedback` table for exit interviews. Read it with `select * from feedback order by created_at desc;`.
+- `supabase/migrations/20261124000000_singapore.sql` adds Singapore to the allowed cities. Adding a city always needs a migration like this plus the `CITIES` list in the function.
 - `supabase/migrations/20261122000000_daily.sql` adds `daily_scores` for daily challenges (one row per player per day, holding their best). Add new twists or objectives in `src/data/daily.js` and they join the rotation automatically.
 - Set an `IP_SALT` secret for the function (`npx supabase secrets set IP_SALT=...`) so the stored IP hashes can't be reversed.
 - The score formula is duplicated in the function so the server can recompute it. If you change `scoreParts()` in `src/game/score.js`, change the function to match and redeploy.

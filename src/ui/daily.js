@@ -44,7 +44,7 @@ function startDaily(resume){
   const f = DAILY_FORMATS[S.daily.format];
   openModal(`<p class="fb-kicker">Daily challenge</p><h2>${f.name}: ${CITIES[S.daily.city].name}</h2>
     <p><b>Goal:</b> ${dailyGoalText(S.daily)}</p><p class="note"><b>Twist:</b> ${DAILY_TWISTS[S.daily.twist].name}. ${DAILY_TWISTS[S.daily.twist].desc}</p>
-    <p class="dim">The run ends after 12 quarters${S.daily.format === "race" ? " or as soon as you hit the target" : ""}. Idle mode is off. You can leave at any time from the Boardroom’s Company tab, and your main company will be waiting.</p>
+    <p class="dim">The run ends after 12 quarters${S.daily.format === "race" ? " or as soon as you hit the target" : ""}. Idle mode is off. You can leave at any time from the Boardroom’s Daily tab, and your main company will be waiting.</p>
     <div class="closeRow"><button class="btn" data-act="close">${saved ? "Carry on" : "Let’s go"}</button></div>`, {view:"dailybrief"});
 }
 function exitDaily(){

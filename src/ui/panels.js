@@ -45,15 +45,16 @@ function intro(){
     <p><span>🛋️</span><span><b>Idle mode.</b> Prefer to watch? Turn on idle mode in the Boardroom and the board makes every decision. You can take back control any time, but a run that used idle mode isn’t scored.</span></p>
     <p><span>♾️</span><span><b>Play forever, if you can.</b> As your tower matures, the City expects less growth and “in line” results are fine. But regulation keeps piling up, and dividends keep the board sweet.</span></p>
     <p><span>⚖️</span><span><b>Compliance</b> must cover your floors. Fall short and the regulator issues warnings. Three warnings and you lose your licence.</span></p>
-    <p><span>📅</span><span><b>Daily challenge.</b> A new challenge every day, the same for everyone: a city, a twist, and one of three goals. You get 12 quarters, and your best attempt counts. Find it in the Boardroom’s Company tab. Your main company waits safely while you play.</span></p>
+    <p><span>📅</span><span><b>Daily challenge.</b> A new challenge every day, the same for everyone: a city, a twist, and one of three goals. You get 12 quarters, and your best attempt counts. Find it in the Boardroom’s Daily tab. Your main company waits safely while you play.</span></p>
     <p><span>📊</span><span><b>What you insure matters.</b> Each Underwriting floor writes a line of business, from Property to Treaty Reinsurance, and each earns, claims and suffers differently. Actuaries can make you more money, cheaper claims or a tougher hide. The Boardroom’s Book tab shows your mix.</span></p>
     <p><span>🦢</span><span><b>Black swans</b> are huge disasters based on real ones: hurricanes, a ship blocking a canal, a global IT meltdown, a bank collapse and more. They strike with no warning. Buy your own insurance in the Boardroom’s Risk tab and pick Light, Balanced or Strong protection: you pay the first slice of a disaster and the reinsurer pays the next. Prices depend on what you insure and where, and rise after any disaster.</span></p>
     <p><span>⭐</span><span><b>Spend stars</b> on perks in the Boardroom, and unlock achievements for extra stars.</span></p>
-    <p><span>📰</span><span><b>The Fine Print Gazette.</b> A satirical newspaper is written after every earnings call, reporting on your results, your rivals and Percy. Read it in the Boardroom’s Gazette tab, or straight from the earnings call.</span></p>
-    <p><span>🌍</span><span><b>Four cities.</b> London, New York, Bermuda and Zurich each have their own skyline, currency, risks and favourite lines of business. Zurich even has two black swans of its own.</span></p>
+    <p><span>📰</span><span><b>The Fine Print Gazette.</b> A satirical newspaper is written after every earnings call, reporting on your results, your rivals and Percy. Tap 📰 at the top of the screen to read it, or go straight there from the earnings call.</span></p>
+    <p><span>🌍</span><span><b>Five cities.</b> London, New York, Bermuda, Zurich and Singapore each have their own skyline, currency, risks and favourite lines of business. Zurich and Singapore even have black swans of their own.</span></p>
     <p><span>🏆</span><span><b>Leaderboards.</b> Finished runs go on the global leaderboard (company and CEO names are public), daily challenges have their own Today board, and This device keeps your personal bests.</span></p>
     <p><span>🚪</span><span><b>Ending on your terms.</b> Sell the company once it’s big enough for a bonus and a golden ticket, or step down whenever you like from quarter 4 to record your score. You may be asked a few quick, optional questions on the way out.</span></p>
     <p><span>💀</span><span><b>You lose</b> if you go bankrupt, the board’s confidence hits zero, or you lose your licence.</span></p>
+    <p class="fineprint" data-act="fineprint">By reading this you agree that Percy accepts no liability for anything, ever. If you can read this, tap here.</p>
     <h3 class="intro-h">The rooms you can build</h3>
     ${ORDER.map(t => `<p class="intro-room"><span class="isw" style="background:${TYPES[t].wall}"></span><span><b>${TYPES[t].name}.</b> ${TYPES[t].desc}<em class="pro">＋ ${TYPES[t].pro}</em><em class="con">− ${TYPES[t].con}</em>${UNLOCKS[t] ? `<em class="dim">🔓 ${UNLOCKS[t].text}</em>` : ""}</span></p>`).join("")}
     <p class="intro-tip"><span>💡</span><span>Start with Underwritinges for income, keep a cash buffer for big claims, and add Compliance before your 4th floor.</span></p>
@@ -253,11 +254,10 @@ function openBoard(confirmRestart, intro, tabArg){
     return;
   }
   const tab = intro ? "overview" : (tabArg || S.boardTab || "overview"); S.boardTab = tab;
-  const BTABS = [["overview","🏢 Overview"],["book","📊 Book"],["risk","🛡️ Risk"],["team","👔 Team"],["money","💷 Money"],["gazette","📰 Gazette"],["stars","⭐ Stars"],["company","⚙️ Company"]];
-  if (tab === "gazette" && S.gazUnread){ S.gazUnread = false; gazetteBadge(); save(); }
+  const BTABS = [["overview","🏢 Overview"],["book","📊 Book"],["risk","🛡️ Risk"],["team","👔 Team"],["money","💷 Money"],["daily","📅 Daily"],["stars","⭐ Stars"],["company","⚙️ Company"]];
   openModal(`<div class="top"><h2>Boardroom</h2>${xBtn}</div>
     ${intro ? pricingIntroHtml() : ""}
-    <div class="btabs" role="tablist">${BTABS.map(([k, l]) => `<button class="btab" role="tab" data-act="btab:${k}" aria-selected="${tab === k}">${l}${k === "gazette" && S.gazUnread ? `<i class="gz-dot" aria-label="New edition"></i>` : ""}</button>`).join("")}</div>
+    <div class="btabs" role="tablist">${BTABS.map(([k, l]) => `<button class="btab" role="tab" data-act="btab:${k}" aria-selected="${tab === k}">${l}</button>`).join("")}</div>
     ${tab === "overview" ? `
     <div class="ceo-card"><canvas id="ceoFace" width="48" height="48" aria-hidden="true"></canvas><div><b>${ceoN()}</b><span>CEO of ${coName()}</span><small>Your title: ${RANKS[r].name}</small></div></div>
     <div class="status">
@@ -273,7 +273,10 @@ function openBoard(confirmRestart, intro, tabArg){
     <div class="seg four">${PRICES.map((pr, k) => `<button class="btn" data-act="price:${k}" aria-pressed="${priceIdx() === k}">${pr.name}</button>`).join("")}</div>
     <p class="dim">${PRICES[priceIdx()].desc} Right now: premium income ×${(marketRate()*volume()).toFixed(2)}, customers ×${volume().toFixed(2)}.</p>` : ""}
     ${tab === "book" ? bookHtml() : ""}
-    ${tab === "gazette" ? gazetteHtml() : ""}
+    ${tab === "daily" ? (S.daily ? `<h3>Today’s daily challenge</h3><p>You’re playing today’s challenge: ${DAILY_FORMATS[S.daily.format].name.toLowerCase()} in ${CITIES[S.daily.city].name}.</p>
+      <p class="dc-goal"><b>Goal:</b> ${dailyGoalText(S.daily)}</p><p class="dim">Twist: ${DAILY_TWISTS[S.daily.twist].name}. Your main company is paused and waiting.</p>
+      <button class="btn ghost" style="width:100%" data-act="daily:exit">Leave and return to my company</button>` : dailyCardHtml())
+      + (onlineOk() ? `<button class="btn ghost" style="width:100%;margin-top:8px" data-act="lb:daily">📅 Today’s full leaderboard</button>` : "") : ""}
     ${tab === "risk" ? `
     <div class="status">
       <div><span>Capital held</span><b class="${capReq() && S.cash < capReq() ? "neg" : "pos"}">${capReq() ? Math.round(capRatio()*100) + "% of required" : "Not required yet"}</b></div>
@@ -334,11 +337,9 @@ function openBoard(confirmRestart, intro, tabArg){
     <h3 style="margin-top:14px">Achievements (${ACH.filter(a => S.ach[a.id]).length} of ${ACH.length})</h3>
     <p class="dim">Each one earns a ★. Tap a category to see what’s left.</p>
     ${[...new Set(ACH.map(a => a.cat))].map(c => { const list = ACH.filter(a => a.cat === c), got = list.filter(a => S.ach[a.id]).length;
-      return `<details class="achcat"><summary><b>${c}</b><span>${got} of ${list.length}</span></summary><div class="achs">${list.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}"><b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}</div>`).join("")}</div></details>`; }).join("")}` : ""}
+      return `<details class="achcat"><summary><b>${c}</b><span>${got} of ${list.length}</span></summary><div class="achs">${list.map(a => `<div class="ach ${S.ach[a.id] ? "on" : ""}">${a.secret && !S.ach[a.id] ? `<b>🔒 ???</b>A secret. Keep exploring.` : `<b>${S.ach[a.id] ? "🏅 " : ""}${a.name}</b>${a.desc}`}</div>`).join("")}</div></details>`; }).join("")}` : ""}
     ${tab === "company" ? `
-    <h3>Daily challenge</h3>
-    ${S.daily ? `<p>You’re playing today’s daily challenge. Leave whenever you like: your main company is exactly where you left it.</p><button class="btn ghost" style="width:100%" data-act="daily:exit">Leave and return to my company</button>` : dailyCardHtml()}
-    <h3 style="margin-top:14px">Leaderboard</h3>
+    <h3>Leaderboard</h3>
     <div class="closeRow" style="justify-content:flex-start"><button class="btn ghost" data-act="lb">🏆 Leaderboard</button></div>
     <h3 style="margin-top:14px">Idle mode</h3>
     ${S.idleMode ? `<p class="note">Idle mode is on. The board is making every decision, and this run’s score won’t be recorded.</p>
@@ -358,13 +359,14 @@ function openBoard(confirmRestart, intro, tabArg){
     <p class="ver-line">${coName()}, version ${VERSION}</p>` : ""}`, {view:"board-" + tab, focus:false});
   drawCeoFace("#ceoFace");
   if (tab === "risk") wireCoverSliders();
-  if (tab === "company") loadDailyMini();
+  if (tab === "daily") loadDailyMini();
 }
 function doBuyback(){ const c = buybackCost(); if (S.cash < c) return false; spend(c, "other"); discSpent += c; S.stock *= 1.04; checkRank(); return true; }
 
 /* Earnings */
 function earnings(){
   if (cityId() === "zurich"){ sfx("cuckoo"); toast("Cuckoo! Cuckoo! The earnings call starts precisely on time."); }
+  else if (cityId() === "singapore"){ sfx("gong"); toast("Gong! The earnings call begins. The hawker stall downstairs is already sold out."); }
   const q = S.q;
   const notes = [];
   q.cover = 0;
@@ -490,7 +492,7 @@ function earnings(){
       if (dailyDone) return gameOver("daily");
       if (S.conf < 25) toast("The board is losing patience. If their confidence hits zero, you’re out.", "bad");
       checkRank(); save();
-      if (toGazette) setTimeout(() => { if (!modalOpen && !S.over) openBoard(false, false, "gazette"); }, 60); }});
+      if (toGazette) setTimeout(() => { if (!modalOpen && !S.over) openGazette(); }, 60); }});
 }
 function checkRank(){
   const next = RANKS[S.rankIdx + 1]; if (!next) return;
@@ -531,11 +533,22 @@ function openSetup(){
   if (!setupDraft){ setupDraft = Object.assign(CEO_DEFAULTS(), S.ceo || {}, {name:(S.ceo && S.ceo.name) || "", company:S.companyName || "", city:S.city || "london"}); applySet(setupDraft, guessSet(setupDraft)); }
   const d = setupDraft, sw = (field, list, label) => `<div class="swatches">${list.map((col, i) => `<button class="sw" data-act="look:${field}:${i}" aria-pressed="${d[field] === col}" aria-label="${label} ${i + 1}" style="background:${col}"></button>`).join("")}</div>`;
   const midRun = S.seen && S.quarter > 1;
-  openModal(`<h2>Create your CEO</h2>
+  const step = d.step === 2 ? 2 : 1, steps = `<div class="setup-steps"><span class="${step === 1 ? "on" : ""}">1 · Your CEO</span><span class="${step === 2 ? "on" : ""}">2 · Your city</span></div>`;
+  if (step === 2){
+    const c = CITIES[d.city] || CITIES.london;
+    openModal(`${steps}<h2>Where’s your headquarters?</h2>
+      <p class="dim">Each city has its own skyline, currency, risks and favourite lines of business.</p>
+      <div class="city-grid">${Object.entries(CITIES).map(([k, cc]) => `<button class="city-tile" data-act="look:city:${k}" aria-pressed="${d.city === k}"><img src="${cityThumb(k)}" alt=""><span><b>${cc.flag} ${cc.name}</b><small>${(cc.cur || "£").trim()} · ${esc(cc.market || "")}</small></span></button>`).join("")}
+        <button class="city-tile surprise" data-act="setup-surprise"><span class="dice">🎲</span><span><b>Surprise me</b><small>Pick a city at random</small></span></button></div>
+      <div class="city-detail">${d.surprised ? `<p class="pos" style="margin:0 0 4px">🎲 The dice have spoken: you’re off to ${c.name}.</p>` : ""}<b>${c.flag} ${c.name}, ${c.country}</b><p>${c.building}. ${c.blurb}</p><p>${c.risk}</p>
+        ${c.lines ? `<div>${Object.keys(c.lines).map(l => `<span class="dc-tag">+ ${LINES[l].name}</span>`).join(" ")}</div>` : ""}</div>
+      <p class="note">Choose carefully: your city, your name and your company’s name are set for the whole run. You can pick new ones when you start a new company.</p>
+      <div class="setup-btns"><button class="btn ghost" data-act="setup-back">Back</button><button class="btn" data-act="setup-go">Start my syndicate</button></div>`, {locked:true, view:"setup2", focus:false});
+    return;
+  }
+  openModal(`${steps}  <h2>Create your CEO</h2>
     <p>${midRun ? "Your company is already up and running, so this is a one-time chance to name yourself and the business." : "Every tycoon starts somewhere. Who are you, and what’s on the sign?"}</p>
     ${(() => { const l = loadLegacy(); return l.tickets ? `<p class="note">🎫 <b>Golden ticket${l.tickets > 1 ? "s" : ""} x${l.tickets}.</b> ${l.seed || l.stars ? `This company starts with an extra ${fmt(l.seed)} and ${l.stars} ★, and ` : ""}every company you found earns ${5*Math.min(4, l.tickets)}% more income.</p>` : ""; })()}
-    <h3>Where is your headquarters?</h3>
-    <div class="cities">${Object.entries(CITIES).map(([k, c]) => `<button class="type city" data-act="look:city:${k}" aria-pressed="${d.city === k}"><b>${c.flag} ${c.name}, ${c.country}</b><span>${c.building}</span><span class="dim">${c.blurb}</span><span>${c.risk}</span></button>`).join("")}</div>
     <div class="ceo-setup"><canvas id="ceoPrev" width="48" height="48" aria-label="Your portrait"></canvas>
       <div class="ceo-fields">
         <label>Your name<input id="ceoName" maxlength="20" value="${esc(d.name)}" placeholder="Alex" autocomplete="off"></label>
@@ -549,8 +562,7 @@ function openSetup(){
     <h3>Outfit colour</h3>${sw("outfit", OUTFITS, "Outfit colour")}
     <h3>${STYLE_SETS[d.set].face.title}</h3><div class="seg four">${STYLE_SETS[d.set].face.opts.map(([k, l]) => `<button class="btn" data-act="look:${STYLE_SETS[d.set].face.field}:${k}" aria-pressed="${d[STYLE_SETS[d.set].face.field] === k}">${l}</button>`).join("")}</div>
     <h3>Extras</h3><div class="seg three">${EXTRAS.map(([k, l]) => `<button class="btn" data-act="look-t:${k}" aria-pressed="${!!d[k]}">${l}</button>`).join("")}</div>
-    <p class="note">Choose carefully: your city, your name and your company’s name are set for the whole run. You can pick new ones when you start a new company.</p>
-    <button class="btn" style="width:100%" data-act="setup-go">Start my syndicate</button>`, {locked:true, view:"setup", focus:false});
+    <button class="btn" style="width:100%;margin-top:12px" data-act="setup-next">Next: choose your city</button>`, {locked:true, view:"setup", focus:false});
   drawCeoFace("#ceoPrev", Object.assign({}, d, {lashes:d.set === "f" && (d.makeup === "lashes" || d.makeup === "both"), lipstick:d.set === "f" && (d.makeup === "lipstick" || d.makeup === "both"), facial:d.set === "m" ? d.facial : "none"}));
 }
 function readSetupInputs(){ if (!setupDraft) return; const n = $("#ceoName"), c = $("#coNameIn"); if (n) setupDraft.name = n.value; if (c) setupDraft.company = c.value; }
@@ -563,7 +575,7 @@ function finishSetup(){
   const leg = loadLegacy();
   if (leg.tickets && !S.tickets){ S.tickets = leg.tickets; if (leg.seed || leg.stars){ S.cash += leg.seed || 0; S.favour = (S.favour || 0) + (leg.stars || 0); leg.seed = 0; leg.stars = 0; saveLegacy(leg); } }
   S.ceo = {name, set:d.set, skin:d.skin, hair:d.hair, hairStyle:d.hairStyle, outfit:d.outfit, attire:d.attire, facial:d.set === "m" ? d.facial : "none", makeup:mk, lashes:mk === "lashes" || mk === "both", lipstick:mk === "lipstick" || mk === "both", earrings:!!d.earrings, glasses:!!d.glasses, freckles:!!d.freckles}; S.companyName = company; S.city = d.city || "london"; setCity(S.city); S.setupDone = true; setupDraft = null;
-  document.title = company; save(); closeModal(); sfx("chime"); trackPlay();
+  document.title = company; save(); closeModal(); sfx("chime"); trackPlay(); nameEggs();
   toast(`Welcome aboard, ${name}. ${company} is open for business.`, "good");
   const lg = loadLegacy(); lg.cities = Object.assign(lg.cities || {}, {[S.city]: true}); saveLegacy(lg);
   if (!S.seen) setTimeout(startTutorial, 400); else offlineCheck();
@@ -632,4 +644,18 @@ function wireCoverSliders(){
     inp.addEventListener("change", () => { const cur = layerOf(coverSel(k)); S.coverPick = S.coverPick || {};
       S.coverPick[k] = {ret:inp.dataset.f === "ret" ? +inp.value : cur.ret, lim:inp.dataset.f === "lim" ? +inp.value : cur.lim}; openBoard(); });
   });
+}
+
+/* Small pictures of each city's real skyline for the city tiles, drawn once and cached. Always daytime. */
+const CITY_THUMBS = {};
+function cityThumb(k){
+  if (CITY_THUMBS[k]) return CITY_THUMBS[k];
+  const cv = document.createElement("canvas"); cv.width = 256; cv.height = 84;
+  const g = cv.getContext("2d"), sky = g.createLinearGradient(0, 0, 0, 84);
+  sky.addColorStop(0, k === "singapore" ? "#F2B8A0" : "#8FC6EA"); sky.addColorStop(1, k === "singapore" ? "#F8D8C0" : "#D6ECF8"); g.fillStyle = sky; g.fillRect(0, 0, 256, 84);
+  const prevCtx = ctx, prevCity = S.city, prevQt = S.qt;
+  try { ctx = g; S.city = k; S.qt = 0; drawSkyline({groundY:84, n:0, nw:0, floorsTop:84, lobbyY:84, LH:84}); }
+  catch(e){}
+  finally { ctx = prevCtx; S.city = prevCity; S.qt = prevQt; }
+  return CITY_THUMBS[k] = cv.toDataURL();
 }

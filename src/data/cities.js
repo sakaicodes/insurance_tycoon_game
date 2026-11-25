@@ -17,6 +17,10 @@ const CITIES = {
     building:"A lakeside headquarters on Mythenquai", blurb:"Home to some of the world’s biggest insurers and reinsurers: sandstone, green copper roofs and absolute discretion.",
     risk:"Precision, discretion and very large reinsurance treaties. Bank collapses hit harder here; hurricanes are someone else’s problem.",
     swans:{hurricane:0.6, canal:0.8, outage:1.2, ash:1.2, cancel:1.0, bank:1.4, rocket:0.9, solar:1.0}, lines:{treaty:1.12, property:1.08}},
+  singapore:{name:"Singapore", country:"Singapore", flag:"🇸🇬", cur:"S$", market:"Singapore’s Asian insurance hub",
+    building:"A garden tower in Raffles Place", blurb:"Asia’s insurance and reinsurance hub: glass towers, sky gardens and one of the world’s busiest ports.",
+    risk:"Ships, data and money, all in one place. Blockages at sea and IT meltdowns hit harder; hurricanes never visit.",
+    swans:{hurricane:0.4, canal:1.6, outage:1.3, ash:0.5, cancel:1.0, bank:1.2, rocket:1.0, solar:0.7}, lines:{marine:1.12, treaty:1.1}},
 };
 function setCity(id){ CUR = (CITIES[id] || CITIES.london).cur; }
 function cityRisk(kind){ const c = CITIES[cityId()] || CITIES.london; return (c.swans && c.swans[kind]) || 1; }

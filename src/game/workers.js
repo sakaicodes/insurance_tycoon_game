@@ -36,7 +36,7 @@ S.floors.forEach((f,i) => rebuildWorkers(i));
 
 /* ---------- Layout ---------- */
 const LW = 232, OX = 6, FH = 40, TOP = 82, LOBBY_H = 44, GROUND = 24;
-function tunnelH(){ const c = cityId(); return c === "london" || c === "nyc" ? 20 : 0; }
+function tunnelH(){ const c = cityId(); return c === "london" || c === "nyc" || c === "singapore" ? 20 : 0; }
 function layout(){
   const n = S.floors.length, can = workFloors() < MAXF, ph = n > 0 && S.floors[n-1].type === "penthouse", nw = n - (ph ? 1 : 0);
   const slotY = TOP + (ph ? FH : 0);            // the penthouse sits directly under the roof, above the build slot
