@@ -1,4 +1,4 @@
-# Fine Print Syndicate
+# Insurance Tycoon
 
 A satirical London-market insurance tower game. You write the source as separate files; `build.js` bundles them into **one self-contained HTML file** that runs anywhere.
 
